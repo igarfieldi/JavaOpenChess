@@ -1,0 +1,35 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.jdesktop', name: 'appframework', version: '1.0+'
+    compile group: 'org.jdesktop', name: 'swing-worker', version: '1.1+'
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+test {
+    ignoreFailures = true
+}
+
+sourceSets {
+	main {
+		java {
+		srcDirs = ['src']
+		}
+	resources {
+		srcDirs = ['resources']
+		}
+	}
+	test {
+		java {
+		srcDirs = ['src']
+		}
+	resources {
+		srcDirs = ['resources']
+		}
+	}	
+}
