@@ -1,0 +1,4 @@
+# Ignore the build directories of gradle and eclipse
+bin
+build
+.gradle
