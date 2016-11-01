@@ -46,7 +46,8 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
     {
         super(parent);
 
-        File dir = new File(GUI.getJarPath() + File.separator + "theme"+File.separator);
+        File dir = new File(GUI.getJarPath() + File.separator + "jchess" +
+                            File.separator + "theme" + File.separator);
 
         System.out.println("Theme path: "+dir.getPath());
 
@@ -102,14 +103,13 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
         {
             throw new Exception(Settings.lang("error_when_creating_theme_config_window"));
         }
-
     }
 
     @Override
     public void valueChanged(ListSelectionEvent event)
     {
         String element = this.themesList.getModel().getElementAt(this.themesList.getSelectedIndex()).toString();
-        String path = GUI.getJarPath() + File.separator + "theme/";
+        String path = GUI.getJarPath() + File.separator + "jchess" + File.separator + "theme/";
         //String path  = JChessApp.class.getResource("theme/").getPath().toString();
         System.out.println(path + element + "/images/Preview.png");
         this.themePreview = new ImageIcon(path + element + "/images/Preview.png");
@@ -139,6 +139,7 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
                 }
                 catch (java.io.IOException exc)
                 {
+                	System.err.println("Failed to save config with new theme!");
                 }
                 JOptionPane.showMessageDialog(this, Settings.lang("changes_visible_after_restart"));
                 this.setVisible(false);
