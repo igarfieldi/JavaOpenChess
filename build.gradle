@@ -1,5 +1,15 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 repositories {
     mavenCentral()
@@ -15,21 +25,27 @@ test {
     ignoreFailures = true
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'jchess.JChessApp'
+    }
+}
+
 sourceSets {
 	main {
 		java {
-		srcDirs = ['src']
+			srcDirs = ['src']
 		}
-	resources {
-		srcDirs = ['resources']
+		resources {
+			srcDirs = ['src']
 		}
 	}
 	test {
 		java {
-		srcDirs = ['src']
+			srcDirs = ['src']
 		}
-	resources {
-		srcDirs = ['resources']
+		resources {
+			srcDirs = ['src']
 		}
 	}	
 }
