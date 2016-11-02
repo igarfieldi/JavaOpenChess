@@ -144,6 +144,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
         super(app);
         
         initComponents();
+        
         // status bar initialization - message timeout, idle icon and busy animation, etc
         ResourceMap resourceMap = getResourceMap();
         int messageTimeout = resourceMap.getInteger("StatusBar.messageTimeout");

@@ -25,6 +25,12 @@ test {
     ignoreFailures = true
 }
 
+shadowJar {
+	baseName = 'shadow'
+	classifier = null
+	version = null
+}
+
 jar {
     manifest {
         attributes 'Main-Class': 'jchess.JChessApp'
@@ -45,7 +51,7 @@ sourceSets {
 			srcDirs = ['src']
 		}
 		resources {
-			srcDirs = ['src']
+			srcDirs = ['resources']
 		}
 	}	
 }

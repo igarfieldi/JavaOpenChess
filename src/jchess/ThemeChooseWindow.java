@@ -27,17 +27,19 @@ import java.awt.event.ActionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.FileOutputStream;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 
 public class ThemeChooseWindow extends JDialog implements ActionListener, ListSelectionListener
 {
 
-    JList themesList;
+    JList<String> themesList;
     ImageIcon themePreview;
     GridBagLayout gbl;
-    public String result;
     GridBagConstraints gbc;
     JButton themePreviewButton;
     JButton okButton;
@@ -45,14 +47,36 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
     ThemeChooseWindow(Frame parent) throws Exception
     {
         super(parent);
+        
+        ArrayList<String> themeNames = new ArrayList<String>();
 
-        File dir = new File(GUI.getJarPath() + File.separator + "jchess" +
-                            File.separator + "theme" + File.separator);
-
-        System.out.println("Theme path: "+dir.getPath());
-
-        File[] files = dir.listFiles();
-        if (files != null && dir.exists())
+        // TODO: this does not work when using Eclipse!
+        // Get all resource files in the JAR file and check if they're theme directories
+        java.security.CodeSource src = JChessApp.class.getProtectionDomain().getCodeSource();
+    	if(src != null) {
+    		// General pattern to extract a theme's name
+    		Pattern themePattern = Pattern.compile("/[^/]+/$");
+    		
+			java.net.URL jar = src.getLocation();
+			java.util.zip.ZipInputStream zip = new java.util.zip.ZipInputStream(jar.openStream());
+			java.util.zip.ZipEntry entry;
+			
+			while((entry = zip.getNextEntry()) != null) {
+				// Find the resources we're looking for (the themes)
+				// TODO: If the beginning of the path is not specified we get lots of double matches...
+				if(entry.getName().matches("jchess/resources/theme/[^/]+/$")) {
+					Matcher themeMatcher = themePattern.matcher(entry.getName());
+					if(themeMatcher.find()) {
+						// Remove the '/' from the path
+						themeNames.add(themeMatcher.group(0).replace("/", ""));
+					}
+				}
+			}
+    	} else {
+            throw new Exception(Settings.lang("error_when_creating_theme_config_window"));
+    	}
+    	
+        if(!themeNames.isEmpty())
         {
             this.setTitle(Settings.lang("choose_theme_window_title"));
             Dimension winDim = new Dimension(550, 230);
@@ -61,33 +85,28 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
             this.setSize(winDim);
             this.setResizable(false);
             this.setLayout(null);
-            this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);            
-            String[] dirNames = new String[files.length];
-            for (int i = 0; i < files.length; i++)
-            {
-                dirNames[i] = files[i].getName();
-            }
-            this.themesList = new JList(dirNames);
+            this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            
+            // JList needs an array, so we convert it to one
+            this.themesList = new JList<String>(themeNames.toArray(new String[themeNames.size()]));
             this.themesList.setLocation(new Point(10, 10));
             this.themesList.setSize(new Dimension(100, 120));
             this.add(this.themesList);
             this.themesList.setSelectionMode(0);
             this.themesList.addListSelectionListener(this);
-            Properties prp = GUI.getConfigFile();
             
             this.gbl = new GridBagLayout();
             this.gbc = new GridBagConstraints();
             try
             {
-                this.themePreview = new ImageIcon(GUI.loadImage("Preview.png"));//JChessApp.class.getResource("theme/"+GUI.configFile.getProperty("THEME")+"/images/Preview.png"));
+                this.themePreview = new ImageIcon(GUI.loadThemeImage("Preview.png"));
             }
             catch (java.lang.NullPointerException exc)
             {
-                System.out.println("Cannot find preview image: " + exc);
-                this.themePreview = new ImageIcon(JChessApp.class.getResource("theme/noPreview.png"));
-                return;
+                System.err.println("Cannot find preview image: " + exc);
+                this.themePreview = new ImageIcon(JChessApp.class.getResource("/jchess/resources/theme/noPreview.png"));
+                return ;
             }
-            this.result = "";
             this.themePreviewButton = new JButton(this.themePreview);
             this.themePreviewButton.setLocation(new Point(110, 10));
             this.themePreviewButton.setSize(new Dimension(420, 120));
@@ -108,15 +127,12 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
     @Override
     public void valueChanged(ListSelectionEvent event)
     {
-        String element = this.themesList.getModel().getElementAt(this.themesList.getSelectedIndex()).toString();
-        String path = GUI.getJarPath() + File.separator + "jchess" + File.separator + "theme/";
-        //String path  = JChessApp.class.getResource("theme/").getPath().toString();
-        System.out.println(path + element + "/images/Preview.png");
-        this.themePreview = new ImageIcon(path + element + "/images/Preview.png");
+        String themeName = this.themesList.getModel().getElementAt(this.themesList.getSelectedIndex()).toString();
+        this.themePreview = new ImageIcon(GUI.loadThemeImage("Preview.png", themeName));
         this.themePreviewButton.setIcon(this.themePreview);
     }
 
-    /** Method wich is changing a pawn into queen, rook, bishop or knight
+    /** Method which is changing a pawn into queen, rook, bishop or knight
      * @param arg0 Capt information about performed action
      */
     public void actionPerformed(ActionEvent evt)
@@ -129,15 +145,7 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
             if (GUI.themeIsValid(name))
             {
                 prp.setProperty("THEME", name);
-                try
-                {
-                    //FileOutputStream fOutStr = new FileOutputStream(ThemeChooseWindow.class.getResource("config.txt").getFile());
-                    FileOutputStream fOutStr = new FileOutputStream("config.txt");
-                    prp.store(fOutStr, null);
-                    fOutStr.flush();
-                    fOutStr.close();
-                }
-                catch (java.io.IOException exc)
+                if(!GUI.storeConfigFile(prp))
                 {
                 	System.err.println("Failed to save config with new theme!");
                 }

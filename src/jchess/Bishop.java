@@ -42,8 +42,8 @@ public class Bishop extends Piece
 {
 
     public static short value = 3;
-    protected static final Image imageWhite = GUI.loadImage("Bishop-W.png");
-    protected static final Image imageBlack = GUI.loadImage("Bishop-B.png");
+    protected static final Image imageWhite = GUI.loadThemeImage("Bishop-W.png");
+    protected static final Image imageBlack = GUI.loadThemeImage("Bishop-B.png");
 
     Bishop(Chessboard chessboard, Player player)
     {
