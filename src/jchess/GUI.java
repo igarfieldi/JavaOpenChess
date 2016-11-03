@@ -23,12 +23,11 @@ package jchess;
 import java.awt.*;
 import java.net.*;
 import java.io.*;
-import java.io.InputStreamReader;
+
 import javax.swing.*;
 import javax.swing.JPanel;
-import java.io.IOException;
+
 import java.util.Properties;
-import java.io.FileOutputStream;
 import java.util.logging.Logger;
 
 /** Class representing the game interface which is seen by a player and
@@ -53,81 +52,85 @@ public class GUI
      * @returns  : image or null if cannot load
      * */
 
-    static Image loadImage(String name)
+    static Image loadThemeImage(String imageName)
     {
-        if (configFile == null)
-        {
+        return GUI.loadThemeImage(imageName, configFile.getProperty("THEME", "default"));
+    }/*--endOf-loadImage--*/
+
+    static Image loadThemeImage(String imageName, String theme)
+    {
+    	// TODO: is this necessary? Shouldn't we create a config file if none exists or work with default values?
+        if (configFile == null) {
             return null;
         }
-        Image img = null;
-        URL url = null;
+        
         Toolkit tk = Toolkit.getDefaultToolkit();
         try
         {
-            String imageLink = "theme/" + configFile.getProperty("THEME", "default") + "/images/" + name;
-            System.out.println(configFile.getProperty("THEME"));
-            url = JChessApp.class.getResource(imageLink);
-            img = tk.getImage(url);
-
+        	// Locate the image in the theme folder
+            String imageLink = "/jchess/resources/theme/" + theme + "/images/" + imageName;
+            return tk.getImage(JChessApp.class.getResource(imageLink));
         }
-        catch (Exception e)
+        catch (Exception exc)
         {
-            System.out.println("some error loading image!");
-            e.printStackTrace();
+            System.err.println("Failed to load image " + imageName + " from theme " + theme + ": " + exc);
+            exc.printStackTrace();
         }
-        return img;
-    }/*--endOf-loadImage--*/
-
+        return null;
+    }
 
     static boolean themeIsValid(String name)
     {
+    	// LUL
         return true;
     }
 
     static String getJarPath()
     {
-        String path = GUI.class.getProtectionDomain().getCodeSource().getLocation().getFile();
-        path = path.replaceAll("[a-zA-Z0-9%!@#$%^&*\\(\\)\\[\\]\\{\\}\\.\\,\\s]+\\.jar", "");
-        int lastSlash = path.lastIndexOf(File.separator); 
-        if(path.length()-1 == lastSlash)
-        {
-            path = path.substring(0, lastSlash);
-        }
-        path = path.replace("%20", " ");
-        return path;
+    	File jar = new File(GUI.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+    	if(jar.isDirectory()) {
+    		return jar.getAbsolutePath();
+    	} else {
+    		return jar.getParent();
+    	}
     }
 
     static Properties getConfigFile()
     {
-        Properties defConfFile = new Properties();
-        Properties confFile = new Properties();
-        File outFile = new File(GUI.getJarPath() + File.separator + "config.txt");
-        try
-        {
-            defConfFile.load(GUI.class.getResourceAsStream("config.txt"));
+        Properties configuration = new Properties();
+        // Configuration files cannot be part of the JAR, so it's just a file in the same directory
+        File configFile = new File(GUI.getJarPath() + File.separator + "config.txt");
+        System.out.println("Configuration file: " + configFile);
+        
+        if (!configFile.exists()) {
+            GUI.storeConfigFile(configuration);
         }
-        catch (java.io.IOException exc)
+        try (InputStream is = new FileInputStream(configFile))
         {
-            System.out.println("some error loading image! what goes: " + exc);
+        	configuration.load(is);
+        	System.out.println("Active theme: " + configuration.getProperty("THEME"));
+        }
+        catch (IOException exc)
+        {
+        	// This shouldn't happen - if the file didn't exist before we created it above
+            System.err.println("Could not load configuration file: " + exc);
             exc.printStackTrace();
         }
-        if (!outFile.exists())
+        return configuration;
+    }
+    
+    static boolean storeConfigFile(Properties configuration)
+    {
+        File configFile = new File(GUI.getJarPath() + File.separator + "config.txt");
+    	try (OutputStream configFileStream = new FileOutputStream(configFile))
         {
-            try
-            {
-                defConfFile.store(new FileOutputStream(outFile), null);
-            }
-            catch (java.io.IOException exc)
-            {
-            }
-        }
-        try
-        {   
-            confFile.load(new FileInputStream("config.txt"));
+        	configuration.store(configFileStream, null);
+        	return true;
         }
         catch (java.io.IOException exc)
         {
+        	System.err.println("Failed to create config file!");
+        	return false;
         }
-        return confFile;
     }
 }

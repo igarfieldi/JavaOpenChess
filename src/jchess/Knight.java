@@ -31,8 +31,8 @@ public class Knight extends Piece
 {
 
     public static short value = 3;
-    protected static final Image imageWhite = GUI.loadImage("Knight-W.png");
-    protected static final Image imageBlack = GUI.loadImage("Knight-B.png");
+    protected static final Image imageWhite = GUI.loadThemeImage("Knight-W.png");
+    protected static final Image imageBlack = GUI.loadThemeImage("Knight-B.png");
 
     Knight(Chessboard chessboard, Player player)
     {

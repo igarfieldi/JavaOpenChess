@@ -40,11 +40,11 @@ public class Chessboard extends JPanel
     public static final int top = 0;
     public static final int bottom = 7;
     public Square squares[][];//squares of chessboard
-    private static final Image orgImage = GUI.loadImage("chessboard.png");//image of chessboard
+    private static final Image orgImage = GUI.loadThemeImage("chessboard.png");//image of chessboard
     private static Image image = Chessboard.orgImage;//image of chessboard
-    private static final Image org_sel_square = GUI.loadImage("sel_square.png");//image of highlited square
+    private static final Image org_sel_square = GUI.loadThemeImage("sel_square.png");//image of highlited square
     private static Image sel_square = org_sel_square;//image of highlited square
-    private static final Image org_able_square = GUI.loadImage("able_square.png");//image of square where piece can go
+    private static final Image org_able_square = GUI.loadThemeImage("able_square.png");//image of square where piece can go
     private static Image able_square = org_able_square;//image of square where piece can go
     public Square activeSquare;
     private Image upDownLabel = null;
