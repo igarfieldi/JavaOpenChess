@@ -31,8 +31,6 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.FileOutputStream;
-import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 
 public class ThemeChooseWindow extends JDialog implements ActionListener, ListSelectionListener
 {
@@ -49,34 +47,58 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
         super(parent);
         
         ArrayList<String> themeNames = new ArrayList<String>();
-
-        // TODO: this does not work when using Eclipse!
-        // Get all resource files in the JAR file and check if they're theme directories
+        
         java.security.CodeSource src = JChessApp.class.getProtectionDomain().getCodeSource();
-    	if(src != null) {
-    		// General pattern to extract a theme's name
-    		Pattern themePattern = Pattern.compile("/[^/]+/$");
-    		
-			java.net.URL jar = src.getLocation();
-			java.util.zip.ZipInputStream zip = new java.util.zip.ZipInputStream(jar.openStream());
-			java.util.zip.ZipEntry entry;
-			
-			while((entry = zip.getNextEntry()) != null) {
-				// Find the resources we're looking for (the themes)
-				// TODO: If the beginning of the path is not specified we get lots of double matches...
-				if(entry.getName().matches("jchess/resources/theme/[^/]+/$")) {
-					Matcher themeMatcher = themePattern.matcher(entry.getName());
-					if(themeMatcher.find()) {
-						// Remove the '/' from the path
-						themeNames.add(themeMatcher.group(0).replace("/", ""));
-					}
-				}
-			}
-    	} else {
+    	if(src != null)
+    	{
+    		File jarPath = new File(src.getLocation().getPath());
+    		if(jarPath.isDirectory())
+    		{
+    			// We're not in a JAR, but instead in some directory
+    			// => Scan through the directories to find the themes
+    			File themePath = new File(jarPath.getAbsolutePath() + File.separator + "jchess" +
+    									File.separator + "resources" + File.separator + "theme");
+    			File[] themeFiles = themePath.listFiles();
+    			for(int i = 0; i < themeFiles.length; i++)
+    			{
+    				if(themeFiles[i].isDirectory())
+    				{
+    					themeNames.add(themeFiles[i].getName());
+    				}
+    			}
+    		}
+    		else
+    		{
+    			// We're in a JAR
+    			// General pattern to extract a theme's name
+        		Pattern themePattern = Pattern.compile("/[^/]+/$");
+        		
+    			java.net.URL jar = src.getLocation();
+    			java.util.zip.ZipInputStream zip = new java.util.zip.ZipInputStream(jar.openStream());
+    			java.util.zip.ZipEntry entry;
+    			
+    			while((entry = zip.getNextEntry()) != null)
+    			{
+    				// Find the resources we're looking for (the themes)
+    				// TODO: If the beginning of the path is not specified we get lots of double matches...
+    				if(entry.getName().matches("jchess/resources/theme/[^/]+/$"))
+    				{
+    					Matcher themeMatcher = themePattern.matcher(entry.getName());
+    					if(themeMatcher.find())
+    					{
+    						// Remove the '/' from the path
+    						themeNames.add(themeMatcher.group(0).replace("/", ""));
+    					}
+    				}
+    			}
+    		}
+    	}
+    	else
+    	{
             throw new Exception(Settings.lang("error_when_creating_theme_config_window"));
     	}
     	
-        if(!themeNames.isEmpty())
+        if(themeNames.size() > 0)
         {
             this.setTitle(Settings.lang("choose_theme_window_title"));
             Dimension winDim = new Dimension(550, 230);

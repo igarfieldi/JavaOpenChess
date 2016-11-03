@@ -108,7 +108,7 @@ public class GUI
         try (InputStream is = new FileInputStream(configFile))
         {
         	configuration.load(is);
-        	System.out.println("Active theme: " + configuration.getProperty("Theme"));
+        	System.out.println("Active theme: " + configuration.getProperty("THEME"));
         }
         catch (IOException exc)
         {
