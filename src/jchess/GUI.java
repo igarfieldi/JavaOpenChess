@@ -24,11 +24,7 @@ import java.awt.*;
 import java.net.*;
 import java.io.*;
 
-import javax.swing.*;
-import javax.swing.JPanel;
-
 import java.util.Properties;
-import java.util.logging.Logger;
 
 /** Class representing the game interface which is seen by a player and
  * where are lockated available for player opptions, current games and where
@@ -87,11 +83,22 @@ public class GUI
 
     static String getJarPath()
     {
-    	File jar = new File(GUI.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-    	if(jar.isDirectory()) {
-    		return jar.getAbsolutePath();
-    	} else {
-    		return jar.getParent();
+    	try
+    	{
+	    	File jar = new File(GUI.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+	    	if(jar.isDirectory()) {
+	    		return jar.getAbsolutePath();
+	    	} else {
+	    		return jar.getParent();
+	    	}
+    	}
+    	catch(SecurityException|NullPointerException|URISyntaxException exc) {
+    		// Possible issues:
+    		// 1. No permission to get protection domain
+    		// 2. Code source might be null
+    		// 3. JAR URI cannot be converted (pathological case)
+    		System.out.println("Failed to locate JAR execution path; Using current working directory instead!");
+    		return ".";
     	}
     }
 
@@ -108,7 +115,7 @@ public class GUI
         try (InputStream is = new FileInputStream(configFile))
         {
         	configuration.load(is);
-        	System.out.println("Active theme: " + configuration.getProperty("THEME"));
+        	System.out.println("Active theme: " + configuration.getProperty("THEME", "default"));
         }
         catch (IOException exc)
         {
