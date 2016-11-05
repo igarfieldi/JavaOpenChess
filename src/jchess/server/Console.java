@@ -24,7 +24,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jchess.MD5;
+
+import jchess.network.MD5;
 
 public class Console
 {
