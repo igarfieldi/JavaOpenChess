@@ -183,7 +183,7 @@ public class DrawLocalSettings extends JPanel implements ActionListener, TextLis
             }
             System.out.println(this.time4Game.getActionCommand());
             //this.time4Game.getComponent(this.time4Game.getSelectedIndex());
-            System.out.println("****************\nStarting new game: " + pl1.name + " vs. " + pl2.name
+            System.out.println("****************\nStarting new game: " + pl1.getName() + " vs. " + pl2.getName()
                     + "\ntime 4 game: " + sett.timeForGame + "\ntime limit set: " + sett.timeLimitSet
                     + "\nwhite on top?: " + sett.upsideDown + "\n****************");//4test
             newGUI.newGame();//start new Game

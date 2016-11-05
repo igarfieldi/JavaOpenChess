@@ -41,10 +41,10 @@ Class to represent a piece (any kind) - this class should be extended to represe
 public abstract class Piece
 {
 
-    Chessboard chessboard; // <-- this relations isn't in class diagram, but it's necessary :/
+    public Chessboard chessboard; // <-- this relations isn't in class diagram, but it's necessary :/
     public Square square;
     public Player player;
-    String name;
+    public String name;
     protected String symbol;
     protected static Image imageBlack;// = null;
     protected static Image imageWhite;// = null;
@@ -71,7 +71,7 @@ public abstract class Piece
      * @graph : where to draw
      */
 
-    final void draw(Graphics g)
+    public final void draw(Graphics g)
     {
         try
         {

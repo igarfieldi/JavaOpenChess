@@ -50,7 +50,7 @@ public class Bishop extends Piece
     protected static final Image imageWhite = GUI.loadThemeImage("Bishop-W.png");
     protected static final Image imageBlack = GUI.loadThemeImage("Bishop-B.png");
 
-    Bishop(Chessboard chessboard, Player player)
+    public Bishop(Chessboard chessboard, Player player)
     {
         super(chessboard, player);      //call initializer of super type: Piece
         //this.setImages("Bishop-W.png", "Bishop-B.png");

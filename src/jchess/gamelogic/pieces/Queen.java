@@ -49,7 +49,7 @@ public class Queen extends Piece
     protected static final Image imageWhite = GUI.loadThemeImage("Queen-W.png");
     protected static final Image imageBlack = GUI.loadThemeImage("Queen-B.png");
 
-    Queen(Chessboard chessboard, Player player)
+    public Queen(Chessboard chessboard, Player player)
     {
         super(chessboard, player);//call initializer of super type: Piece
         //this.setImages("Queen-W.png", "Queen-B.png");

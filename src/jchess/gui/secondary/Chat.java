@@ -48,7 +48,7 @@ public class Chat extends JPanel implements ActionListener
     private JTextField textInput;
     private JButton buttonSend;
 
-    Chat()
+    public Chat()
     {
         super();
 

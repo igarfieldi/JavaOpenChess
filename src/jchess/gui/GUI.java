@@ -51,12 +51,12 @@ public class GUI
      * @returns  : image or null if cannot load
      * */
 
-    static Image loadThemeImage(String imageName)
+    public static Image loadThemeImage(String imageName)
     {
         return GUI.loadThemeImage(imageName, configFile.getProperty("THEME", "default"));
     }/*--endOf-loadImage--*/
 
-    static Image loadThemeImage(String imageName, String theme)
+    public static Image loadThemeImage(String imageName, String theme)
     {
     	// TODO: is this necessary? Shouldn't we create a config file if none exists or work with default values?
         if (configFile == null) {
@@ -78,7 +78,7 @@ public class GUI
         return null;
     }
 
-    static boolean themeIsValid(String name)
+    public static boolean themeIsValid(String name)
     {
     	// LUL
         return true;
@@ -105,7 +105,7 @@ public class GUI
     	}
     }
 
-    static Properties getConfigFile()
+    public static Properties getConfigFile()
     {
         Properties configuration = new Properties();
         // Configuration files cannot be part of the JAR, so it's just a file in the same directory
@@ -129,7 +129,7 @@ public class GUI
         return configuration;
     }
     
-    static boolean storeConfigFile(Properties configuration)
+    public static boolean storeConfigFile(Properties configuration)
     {
         File configFile = new File(GUI.getJarPath() + File.separator + "config.txt");
     	try (OutputStream configFileStream = new FileOutputStream(configFile))

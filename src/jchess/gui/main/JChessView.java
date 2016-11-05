@@ -587,7 +587,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
         throw new UnsupportedOperationException("Not supported yet.");
     }
     
-    protected Game getActiveTabGame() throws ArrayIndexOutOfBoundsException
+    public Game getActiveTabGame() throws ArrayIndexOutOfBoundsException
     {
         Game activeGame = (Game)this.gamesPane.getComponentAt(this.gamesPane.getSelectedIndex());
         return activeGame;

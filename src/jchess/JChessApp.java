@@ -24,7 +24,7 @@ import jchess.gui.main.JChessView;
  * The main class of the application.
  */
 public class JChessApp extends SingleFrameApplication {
-     static JChessView jcv;
+     public static JChessView jcv;
     /**
      * At startup create and show the main frame of the application.
      */

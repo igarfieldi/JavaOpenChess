@@ -61,7 +61,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
     public Moves moves;
     public Chat chat;
 
-    Game()
+    public Game()
     {
         this.setLayout(null);
         this.moves = new Moves(this);

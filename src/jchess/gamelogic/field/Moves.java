@@ -65,7 +65,7 @@ public class Moves extends AbstractTableModel
         none, shortCastling, longCastling
     }
 
-    Moves(Game game)
+    public Moves(Game game)
     {
         super();
         this.tableModel = new MyDefaultTableModel();
@@ -178,7 +178,7 @@ public class Moves extends AbstractTableModel
     public void addMove(Square begin, Square end, boolean registerInHistory, castling castlingMove, boolean wasEnPassant, Piece promotedPiece)
     {
         boolean wasCastling = castlingMove != castling.none;
-        String locMove = new String(begin.piece.symbol);
+        String locMove = new String(begin.piece.getSymbol());
         
         if( game.settings.upsideDown )
         {
@@ -211,7 +211,7 @@ public class Moves extends AbstractTableModel
             locMove += Integer.toString(8 - end.pozY);//add number of Square to which move was made
         }
         
-        if (begin.piece.symbol.equals("") && begin.pozX - end.pozX != 0 && end.piece == null)
+        if (begin.piece.getSymbol().equals("") && begin.pozX - end.pozX != 0 && end.piece == null)
         {
             locMove += "(e.p)";//pawn take down opponent en passant
             wasEnPassant = true;

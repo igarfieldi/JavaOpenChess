@@ -55,7 +55,7 @@ public class King extends Piece
     private static final Image imageWhite = GUI.loadThemeImage("King-W.png");
     private static final Image imageBlack = GUI.loadThemeImage("King-B.png");
 
-    King(Chessboard chessboard, Player player)
+    public King(Chessboard chessboard, Player player)
     {
         super(chessboard, player);
         //this.setImages("King-W.png", "King-B.png");

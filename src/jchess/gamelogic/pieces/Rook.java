@@ -48,12 +48,12 @@ import java.awt.Image;
 public class Rook extends Piece
 {
 
-    boolean wasMotion = false;
+    public boolean wasMotion = false;
     protected static final Image imageWhite = GUI.loadThemeImage("Rook-W.png");
     protected static final Image imageBlack = GUI.loadThemeImage("Rook-B.png");
     public static short value = 5;
 
-    Rook(Chessboard chessboard, Player player)
+    public Rook(Chessboard chessboard, Player player)
     {
         super(chessboard, player);//call initializer of super type: Piece
         //this.setImages("Rook-W.png", "Rook-B.png");

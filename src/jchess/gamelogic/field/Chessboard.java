@@ -317,7 +317,7 @@ public class Chessboard extends JPanel
     }/*--endOf-get_widht--*/
 
 
-    int get_height(boolean includeLabels)
+    public int get_height(boolean includeLabels)
     {
         if (this.settings.renderLabels)
         {
@@ -327,7 +327,7 @@ public class Chessboard extends JPanel
     }/*--endOf-get_height--*/
 
 
-    int get_square_height()
+    public int get_square_height()
     {
         int result = (int) this.square_height;
         return result;
@@ -679,7 +679,7 @@ public class Chessboard extends JPanel
      * Method to draw Chessboard and their elements (pieces etc.)
      * @deprecated 
      */
-    void draw()
+    public void draw()
     {
         this.getGraphics().drawImage(image, this.getTopLeftPoint().x, this.getTopLeftPoint().y, null);//draw an Image of chessboard
         this.drawLabels();

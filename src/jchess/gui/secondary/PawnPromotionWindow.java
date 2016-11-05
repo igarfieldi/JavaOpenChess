@@ -45,7 +45,7 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
     public String result;
     GridBagConstraints gbc;
 
-    PawnPromotionWindow(Frame parent, String color)
+    public PawnPromotionWindow(Frame parent, String color)
     {
         super(parent);
         this.setTitle("Choose piece");

@@ -46,7 +46,7 @@ public class GameClock extends JPanel implements Runnable
     private BufferedImage background;
     private Graphics bufferedGraphics;
 
-    GameClock(Game game)
+    public GameClock(Game game)
     {
         super();
         this.clock1 = new Clock();//white player clock
