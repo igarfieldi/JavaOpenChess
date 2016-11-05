@@ -46,8 +46,8 @@ public class King extends Piece
     public boolean wasMotion = false;//maybe change to: 'wasMotioned'
     //public boolean checked     = false;
     public static short value = 99;
-    private static final Image imageWhite = GUI.loadImage("King-W.png");
-    private static final Image imageBlack = GUI.loadImage("King-B.png");
+    private static final Image imageWhite = GUI.loadThemeImage("King-W.png");
+    private static final Image imageBlack = GUI.loadThemeImage("King-B.png");
 
     King(Chessboard chessboard, Player player)
     {

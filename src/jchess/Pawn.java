@@ -66,8 +66,8 @@ public class Pawn extends Piece
 {
 
     boolean down;
-    protected static final Image imageWhite = GUI.loadImage("Pawn-W.png");
-    protected static final Image imageBlack = GUI.loadImage("Pawn-B.png");
+    protected static final Image imageWhite = GUI.loadThemeImage("Pawn-W.png");
+    protected static final Image imageBlack = GUI.loadThemeImage("Pawn-B.png");
     public static short value = 1;
 
     Pawn(Chessboard chessboard, Player player)

@@ -41,8 +41,8 @@ public class Queen extends Piece
 {
 
     public static short value = 9;
-    protected static final Image imageWhite = GUI.loadImage("Queen-W.png");
-    protected static final Image imageBlack = GUI.loadImage("Queen-B.png");
+    protected static final Image imageWhite = GUI.loadThemeImage("Queen-W.png");
+    protected static final Image imageBlack = GUI.loadThemeImage("Queen-B.png");
 
     Queen(Chessboard chessboard, Player player)
     {

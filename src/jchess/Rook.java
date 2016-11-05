@@ -44,8 +44,8 @@ public class Rook extends Piece
 {
 
     boolean wasMotion = false;
-    protected static final Image imageWhite = GUI.loadImage("Rook-W.png");
-    protected static final Image imageBlack = GUI.loadImage("Rook-B.png");
+    protected static final Image imageWhite = GUI.loadThemeImage("Rook-W.png");
+    protected static final Image imageBlack = GUI.loadThemeImage("Rook-B.png");
     public static short value = 5;
 
     Rook(Chessboard chessboard, Player player)
