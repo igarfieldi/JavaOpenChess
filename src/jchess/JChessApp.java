@@ -18,8 +18,6 @@ package jchess;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
-import jchess.gui.main.JChessView;
-
 /**
  * The main class of the application.
  */

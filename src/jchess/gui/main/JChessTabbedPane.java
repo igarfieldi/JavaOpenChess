@@ -39,7 +39,7 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
     private Image unclickedAddIcon = null;
     private Rectangle addIconRect = null;
 
-    JChessTabbedPane()
+    public JChessTabbedPane()
     {
         super();
         this.closeIcon = new TabbedPaneIcon(this.closeIcon);

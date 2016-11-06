@@ -13,7 +13,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package jchess.gui.main;
+package jchess;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
@@ -21,10 +21,10 @@ import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
 import org.jdesktop.application.TaskMonitor;
 
-import jchess.JChessApp;
 import jchess.gamelogic.Game;
 import jchess.gamelogic.Settings;
 import jchess.gui.GUI;
+import jchess.gui.main.JChessTabbedPane;
 import jchess.gui.secondary.JChessAboutBox;
 import jchess.gui.secondary.PawnPromotionWindow;
 import jchess.gui.secondary.ThemeChooseWindow;
