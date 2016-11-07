@@ -28,6 +28,7 @@ import java.awt.*;
 import javax.swing.text.BadLocationException;
 
 import jchess.JChessApp;
+import jchess.Localization;
 import jchess.gamelogic.Game;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
@@ -60,7 +61,7 @@ public class DrawLocalSettings extends JPanel implements ActionListener, TextLis
     JComboBox time4Game;
     String colors[] =
     {
-        Settings.lang("white"), Settings.lang("black")
+        Localization.getMessage("white"), Localization.getMessage("black")
     };
     String times[] =
     {
@@ -133,19 +134,19 @@ public class DrawLocalSettings extends JPanel implements ActionListener, TextLis
             if (!this.oponentComp.isSelected()
                     && (this.firstName.getText().length() == 0 || this.secondName.getText().length() == 0))
             {
-                JOptionPane.showMessageDialog(this, Settings.lang("fill_names"));
+                JOptionPane.showMessageDialog(this, Localization.getMessage("fill_names"));
                 return;
             }
             if ((this.oponentComp.isSelected() && this.firstName.getText().length() == 0))
             {
-                JOptionPane.showMessageDialog(this, Settings.lang("fill_name"));
+                JOptionPane.showMessageDialog(this, Localization.getMessage("fill_name"));
                 return;
             }
             Game newGUI = JChessApp.jcv.addNewTab(this.firstName.getText() + " vs " + this.secondName.getText());
             Settings sett = newGUI.settings;//sett local settings variable
-            Player pl1 = sett.playerWhite;//set local player variable
-            Player pl2 = sett.playerBlack;//set local player variable
-            sett.gameMode = Settings.gameModes.newGame;
+            Player pl1 = sett.getWhitePlayer();//set local player variable
+            Player pl2 = sett.getBlackPlayer();//set local player variable
+            sett.setGameMode(Settings.GameMode.NEW_GAME);
             //if(this.firstName.getText().length() >9 ) this.firstName.setText(this.firstName.getText(0,8));
             if (this.color.getActionCommand().equals("biały")) //if first player is white
             {
@@ -159,33 +160,33 @@ public class DrawLocalSettings extends JPanel implements ActionListener, TextLis
             }
             pl1.setType(Player.Type.LOCAL);//set type of player
             pl2.setType(Player.Type.LOCAL);//set type of player
-            sett.gameType = Settings.gameTypes.local;
+            sett.setGameType(Settings.GameType.LOCAL);
             if (this.oponentComp.isSelected()) //if computer oponent is checked
             {
                 pl2.setType(Player.Type.COMPUTER);
             }
             if (this.upsideDown.isSelected()) //if upsideDown is checked
             { 
-                sett.upsideDown = true;
+                sett.setUpsideDown(true);
             }
             else
             {
-                sett.upsideDown = false;
+                sett.setUpsideDown(false);
             }
             if (this.timeGame.isSelected()) //if timeGame is checked
             {
                 String value = this.times[this.time4Game.getSelectedIndex()];//set time for game
                 Integer val = new Integer(value);
-                sett.timeLimitSet = true;
-                sett.timeForGame = (int) val * 60;//set time for game and mult it to seconds
-                newGUI.gameClock.setTimes(sett.timeForGame, sett.timeForGame);
+                sett.setTimeLimit(true);
+                sett.setTimeForGame((int) val * 60);//set time for game and mult it to seconds
+                newGUI.gameClock.setTimes(sett.getTimeForGame(), sett.getTimeForGame());
                 newGUI.gameClock.start();
             }
             System.out.println(this.time4Game.getActionCommand());
             //this.time4Game.getComponent(this.time4Game.getSelectedIndex());
             System.out.println("****************\nStarting new game: " + pl1.getName() + " vs. " + pl2.getName()
-                    + "\ntime 4 game: " + sett.timeForGame + "\ntime limit set: " + sett.timeLimitSet
-                    + "\nwhite on top?: " + sett.upsideDown + "\n****************");//4test
+                    + "\ntime 4 game: " + sett.getTimeForGame() + "\ntime limit set: " + sett.isTimeLimitSet()
+                    + "\nwhite on top?: " + sett.isUpsideDown() + "\n****************");//4test
             newGUI.newGame();//start new Game
             this.parent.setVisible(false);//hide parent
             newGUI.chessboard.repaint();
@@ -203,23 +204,23 @@ public class DrawLocalSettings extends JPanel implements ActionListener, TextLis
         this.gbl = new GridBagLayout();
         this.gbc = new GridBagConstraints();
         this.sep = new JSeparator();
-        this.okButton = new JButton(Settings.lang("ok"));
-        this.compLevLab = new JLabel(Settings.lang("computer_level"));
+        this.okButton = new JButton(Localization.getMessage("ok"));
+        this.compLevLab = new JLabel(Localization.getMessage("computer_level"));
 
         this.firstName = new JTextField("", 10);
         this.firstName.setSize(new Dimension(200, 50));
         this.secondName = new JTextField("", 10);
         this.secondName.setSize(new Dimension(200, 50));
-        this.firstNameLab = new JLabel(Settings.lang("first_player_name") + ": ");
-        this.secondNameLab = new JLabel(Settings.lang("second_player_name") + ": ");
+        this.firstNameLab = new JLabel(Localization.getMessage("first_player_name") + ": ");
+        this.secondNameLab = new JLabel(Localization.getMessage("second_player_name") + ": ");
         this.oponentChoos = new ButtonGroup();
         this.computerLevel = new JSlider();
-        this.upsideDown = new JCheckBox(Settings.lang("upside_down"));
-        this.timeGame = new JCheckBox(Settings.lang("time_game_min"));
+        this.upsideDown = new JCheckBox(Localization.getMessage("upside_down"));
+        this.timeGame = new JCheckBox(Localization.getMessage("time_game_min"));
         this.time4Game = new JComboBox(times);
 
-        this.oponentComp = new JRadioButton(Settings.lang("against_computer"), false);
-        this.oponentHuman = new JRadioButton(Settings.lang("against_other_human"), true);
+        this.oponentComp = new JRadioButton(Localization.getMessage("against_computer"), false);
+        this.oponentHuman = new JRadioButton(Localization.getMessage("against_other_human"), true);
 
         this.setLayout(gbl);
         this.oponentComp.addActionListener(this);

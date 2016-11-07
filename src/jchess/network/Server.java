@@ -299,33 +299,33 @@ public class Server implements Runnable
             player1Set = new Settings();
             player2Set = new Settings();
 
-            player1Set.gameMode = Settings.gameModes.newGame;
-            player1Set.playerWhite.setName(clientPlayer1.nick);
-            player1Set.playerBlack.setName(clientPlayer2.nick);
-            player1Set.playerWhite.setType(Player.Type.LOCAL);
-            player1Set.playerBlack.setType(Player.Type.NETWORK);
-            player1Set.gameType = Settings.gameTypes.network;
-            player1Set.upsideDown = true;
+            player1Set.setGameMode(Settings.GameMode.NEW_GAME);
+            player1Set.getWhitePlayer().setName(clientPlayer1.nick);
+            player1Set.getBlackPlayer().setName(clientPlayer2.nick);
+            player1Set.getWhitePlayer().setType(Player.Type.LOCAL);
+            player1Set.getBlackPlayer().setType(Player.Type.NETWORK);
+            player1Set.setGameType(Settings.GameType.NETWORK);
+            player1Set.setUpsideDown(true);
 
-            player2Set.gameMode = Settings.gameModes.newGame;
-            player2Set.playerWhite.setName(clientPlayer1.nick);
-            player2Set.playerBlack.setName(clientPlayer2.nick);
-            player2Set.playerWhite.setType(Player.Type.NETWORK);
-            player2Set.playerBlack.setType(Player.Type.LOCAL);
-            player2Set.gameType = Settings.gameTypes.network;
-            player2Set.upsideDown = false;
+            player2Set.setGameMode(Settings.GameMode.NEW_GAME);
+            player2Set.getWhitePlayer().setName(clientPlayer1.nick);
+            player2Set.getBlackPlayer().setName(clientPlayer2.nick);
+            player2Set.getWhitePlayer().setType(Player.Type.NETWORK);
+            player2Set.getBlackPlayer().setType(Player.Type.LOCAL);
+            player2Set.setGameType(Settings.GameType.NETWORK);
+            player2Set.setUpsideDown(false);
 
-            if(canObserversJoin())
+            if (canObserversJoin())
             {
                 observerSettings = new Settings();
 
-                observerSettings.gameMode = Settings.gameModes.newGame;
-                observerSettings.playerWhite.setName(clientPlayer1.nick);
-                observerSettings.playerBlack.setName(clientPlayer2.nick);
-                observerSettings.playerWhite.setType(Player.Type.NETWORK);
-                observerSettings.playerBlack.setType(Player.Type.NETWORK);
-                observerSettings.gameType = Settings.gameTypes.network;
-                observerSettings.upsideDown = true;
+                observerSettings.setGameMode(Settings.GameMode.NEW_GAME);
+                observerSettings.getWhitePlayer().setName(clientPlayer1.nick);
+                observerSettings.getBlackPlayer().setName(clientPlayer2.nick);
+                observerSettings.getWhitePlayer().setType(Player.Type.NETWORK);
+                observerSettings.getBlackPlayer().setType(Player.Type.NETWORK);
+                observerSettings.setGameType(Settings.GameType.NETWORK);
+                observerSettings.setUpsideDown(true);
             }
         }
 

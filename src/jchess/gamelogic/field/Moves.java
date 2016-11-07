@@ -27,6 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.*;
 
+import jchess.Localization;
 import jchess.gamelogic.Game;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
@@ -50,7 +51,7 @@ public class Moves extends AbstractTableModel
     private int rowsNum = 0;
     private String[] names = new String[]
     {
-        Settings.lang("white"), Settings.lang("black")
+        Localization.getMessage("white"), Localization.getMessage("black")
     };
     private MyDefaultTableModel tableModel;
     private JScrollPane scrollPane;
@@ -180,7 +181,7 @@ public class Moves extends AbstractTableModel
         boolean wasCastling = castlingMove != castling.none;
         String locMove = new String(begin.piece.getSymbol());
         
-        if( game.settings.upsideDown )
+        if( game.settings.isUpsideDown() )
         {
             locMove += Character.toString((char) ( ( Chessboard.bottom - begin.pozX) + 97));//add letter of Square from which move was made
             locMove += Integer.toString( begin.pozY + 1 );//add number of Square from which move was made
@@ -200,7 +201,7 @@ public class Moves extends AbstractTableModel
             locMove += "-";//normal move
         }
         
-        if ( game.settings.upsideDown )
+        if ( game.settings.isUpsideDown() )
         {
             locMove += Character.toString((char) (( Chessboard.bottom - end.pozX) +  97));//add letter of Square to which move was made
             locMove += Integer.toString( end.pozY + 1 );//add number of Square to which move was made
@@ -300,7 +301,7 @@ public class Moves extends AbstractTableModel
             Move last = this.moveBackStack.pop();
             if (last != null)
             {
-                if( this.game.settings.gameType == Settings.gameTypes.local ) //moveForward / redo available only for local game
+                if( this.game.settings.getGameType() == Settings.GameType.LOCAL ) //moveForward / redo available only for local game
                 {
                     this.moveForwardStack.push(last);
                 }
@@ -341,7 +342,7 @@ public class Moves extends AbstractTableModel
     {
         try
         {
-            if( this.game.settings.gameType == Settings.gameTypes.local)
+            if( this.game.settings.getGameType() == Settings.GameType.LOCAL)
             {
                 Move first = this.moveForwardStack.pop();
                 this.moveBackStack.push(first);
@@ -497,7 +498,7 @@ public class Moves extends AbstractTableModel
         {
             if (!Moves.isMoveCorrect(locMove.trim())) //if not
             {
-                JOptionPane.showMessageDialog(this.game, Settings.lang("invalid_file_to_load") + move);
+                JOptionPane.showMessageDialog(this.game, Localization.getMessage("invalid_file_to_load") + move);
                 return;//show message and finish reading game
             }
         }
@@ -545,7 +546,7 @@ public class Moves extends AbstractTableModel
                 
                 if (!canMove) //if move is illegal
                 {
-                    JOptionPane.showMessageDialog(this.game, Settings.lang("illegal_move_on") + locMove);
+                    JOptionPane.showMessageDialog(this.game, Localization.getMessage("illegal_move_on") + locMove);
                     return;//finish reading game and show message
                 }
                 continue;
@@ -598,7 +599,7 @@ public class Moves extends AbstractTableModel
             canMove = this.game.simulateMove(xFrom, yFrom, xTo, yTo);
             if (!canMove) //if move is illegal
             {
-                JOptionPane.showMessageDialog(this.game, Settings.lang("illegal_move_on") + locMove);
+                JOptionPane.showMessageDialog(this.game, Localization.getMessage("illegal_move_on") + locMove);
                 this.game.chessboard.activeSquare = null;
                 return;//finish reading game and show message
             }
