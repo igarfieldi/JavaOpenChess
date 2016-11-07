@@ -40,7 +40,6 @@ public class Settings implements Serializable
 
     public enum gameModes
     {
-
         newGame, loadGame
     }
     public gameModes gameMode;
@@ -58,8 +57,8 @@ public class Settings implements Serializable
     public Settings()
     {
         //temporally
-        this.playerWhite = new Player("", "white");
-        this.playerBlack = new Player("", "black");
+        this.playerWhite = new Player("", "WHITE");
+        this.playerBlack = new Player("", "BLACK");
         this.timeLimitSet = false;
 
         gameMode = gameModes.newGame;

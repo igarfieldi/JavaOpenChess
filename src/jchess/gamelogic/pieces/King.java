@@ -67,7 +67,7 @@ public class King extends Piece
     @Override
     void setImage()
     {
-        if (this.player.color == this.player.color.black)
+        if (this.player.getColor() == Player.Color.BLACK)
         {
             image = imageBlack;
         }
@@ -578,7 +578,7 @@ public class King extends Piece
         }
 
         // Pawn
-        if (this.player.goDown) //check if player "go" down or up
+        if (this.player.isTopSide()) //check if player "go" down or up
         {//System.out.println("go down");
             newX = s.pozX - 1;
             newY = s.pozY + 1;

@@ -50,7 +50,7 @@ public class Knight extends Piece
     @Override
     void setImage()
     {
-        if (this.player.color == this.player.color.black)
+        if (this.player.getColor() == Player.Color.BLACK)
         {
             image = imageBlack;
         }
@@ -91,7 +91,7 @@ public class Knight extends Piece
 
         if (!isout(newX, newY) && checkPiece(newX, newY))
         {
-            if (this.player.color == Player.colors.white) //white
+            if (this.player.getColor() == Player.Color.WHITE) //white
             {
                 if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[newX][newY]))
                 {
@@ -113,7 +113,7 @@ public class Knight extends Piece
 
         if (!isout(newX, newY) && checkPiece(newX, newY))
         {
-            if (this.player.color == Player.colors.white) //white
+            if (this.player.getColor() == Player.Color.WHITE) //white
             {
                 if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[newX][newY]))
                 {
@@ -135,7 +135,7 @@ public class Knight extends Piece
 
         if (!isout(newX, newY) && checkPiece(newX, newY))
         {
-            if (this.player.color == Player.colors.white) //white
+            if (this.player.getColor() == Player.Color.WHITE) //white
             {
                 if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[newX][newY]))
                 {
@@ -157,7 +157,7 @@ public class Knight extends Piece
 
         if (!isout(newX, newY) && checkPiece(newX, newY))
         {
-            if (this.player.color == Player.colors.white) //white
+            if (this.player.getColor() == Player.Color.WHITE) //white
             {
                 if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[newX][newY]))
                 {
@@ -179,7 +179,7 @@ public class Knight extends Piece
 
         if (!isout(newX, newY) && checkPiece(newX, newY))
         {
-            if (this.player.color == Player.colors.white) //white
+            if (this.player.getColor() == Player.Color.WHITE) //white
             {
                 if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[newX][newY]))
                 {
@@ -201,7 +201,7 @@ public class Knight extends Piece
 
         if (!isout(newX, newY) && checkPiece(newX, newY))
         {
-            if (this.player.color == Player.colors.white) //white
+            if (this.player.getColor() == Player.Color.WHITE) //white
             {
                 if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[newX][newY]))
                 {
@@ -223,7 +223,7 @@ public class Knight extends Piece
 
         if (!isout(newX, newY) && checkPiece(newX, newY))
         {
-            if (this.player.color == Player.colors.white) //white
+            if (this.player.getColor() == Player.Color.WHITE) //white
             {
                 if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[newX][newY]))
                 {
@@ -245,7 +245,7 @@ public class Knight extends Piece
 
         if (!isout(newX, newY) && checkPiece(newX, newY))
         {
-            if (this.player.color == Player.colors.white) //white
+            if (this.player.getColor() == Player.Color.WHITE) //white
             {
                 if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[newX][newY]))
                 {

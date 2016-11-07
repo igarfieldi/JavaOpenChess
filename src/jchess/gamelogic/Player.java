@@ -28,33 +28,59 @@ import java.io.Serializable;
  */
 public class Player implements Serializable
 {
+	private static final long serialVersionUID = 8138895278754660665L;
 
-    String name;
-
-    public enum colors
+	public enum Color
     {
-
-        white, black
+        BLACK,
+        WHITE
     }
-    public colors color;
 
-    public enum playerTypes
+    public enum Type
     {
-
-        localUser, networkUser, computer
+        LOCAL,
+        NETWORK,
+        COMPUTER
     }
-    public playerTypes playerType;
-    public boolean goDown;
+    
+    private String name;
+    private Color color;
+    private Type playerType;
+    private boolean topSide;
 
     public Player()
     {
+    	// TODO: default values?
     }
 
     public Player(String name, String color)
     {
         this.name = name;
-        this.color = colors.valueOf(color);
-        this.goDown = false;
+        this.color = Player.Color.valueOf(color);
+        this.topSide = false;
+    }
+
+    /** Method getting the players name
+     *  @return name of player
+     */
+    public String getName()
+    {
+        return this.name;
+    }
+    
+    public Color getColor()
+    {
+    	return this.color;
+    }
+    
+    public Type getType()
+    {
+    	return this.playerType;
+    }
+    
+    public boolean isTopSide()
+    {
+    	return topSide;
     }
 
     /** Method setting the players name
@@ -65,19 +91,16 @@ public class Player implements Serializable
         this.name = name;
     }
 
-    /** Method getting the players name
-     *  @return name of player
-     */
-    public String getName()
-    {
-        return this.name;
-    }
-
     /** Method setting the players type
      *  @param type type of player - enumerate
      */
-    public void setType(playerTypes type)
+    public void setType(Type type)
     {
         this.playerType = type;
+    }
+    
+    public void setBoardSide(boolean top)
+    {
+    	this.topSide = top;
     }
 }

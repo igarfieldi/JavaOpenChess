@@ -157,12 +157,12 @@ public class DrawLocalSettings extends JPanel implements ActionListener, TextLis
                 pl2.setName(this.firstName.getText());//set name of player
                 pl1.setName(this.secondName.getText());//set name of player
             }
-            pl1.setType(Player.playerTypes.localUser);//set type of player
-            pl2.setType(Player.playerTypes.localUser);//set type of player
+            pl1.setType(Player.Type.LOCAL);//set type of player
+            pl2.setType(Player.Type.LOCAL);//set type of player
             sett.gameType = Settings.gameTypes.local;
             if (this.oponentComp.isSelected()) //if computer oponent is checked
             {
-                pl2.setType(Player.playerTypes.computer);
+                pl2.setType(Player.Type.COMPUTER);
             }
             if (this.upsideDown.isSelected()) //if upsideDown is checked
             { 

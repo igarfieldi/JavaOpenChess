@@ -177,7 +177,7 @@ public class Chessboard extends JPanel
         }
         else if (i == 0)
         {
-            player.goDown = true;
+            player.setBoardSide(true);
         }
 
         this.squares[0][i].setPiece(new Rook(this, player));
@@ -189,7 +189,7 @@ public class Chessboard extends JPanel
         if (upsideDown)
         {
             this.squares[4][i].setPiece(new Queen(this, player));
-            if (player.color == Player.colors.white)
+            if (player.getColor() == Player.Color.WHITE)
             {
                 this.squares[3][i].setPiece(kingWhite = new King(this, player));
             }
@@ -201,7 +201,7 @@ public class Chessboard extends JPanel
         else
         {
             this.squares[3][i].setPiece(new Queen(this, player));
-            if (player.color == Player.colors.white)
+            if (player.getColor() == Player.Color.WHITE)
             {
                 this.squares[4][i].setPiece(kingWhite = new King(this, player));
             }
@@ -462,7 +462,7 @@ public class Chessboard extends JPanel
                 if (clearForwardHistory)
                 {
                     String color;
-                    if (end.piece.player.color == Player.colors.white)
+                    if (end.piece.player.getColor() == Player.Color.WHITE)
                     {
                         color = "W"; // promotionWindow was show with pieces in this color
                     }
