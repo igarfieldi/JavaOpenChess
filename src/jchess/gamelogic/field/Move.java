@@ -18,79 +18,80 @@
  */
 package jchess.gamelogic.field;
 
-import jchess.gamelogic.field.Moves.castling;
+import jchess.gamelogic.field.Moves.CastlingType;
 import jchess.gamelogic.pieces.Piece;
 
-class Move
+public class Move
 {
-
-    protected Square from = null;
-    protected Square to = null;
-    protected Piece movedPiece = null;
-    protected Piece takenPiece = null;
-    protected Piece promotedTo = null;
-    protected boolean wasEnPassant = false;
-    protected castling castlingMove = castling.none;
-    protected boolean wasPawnTwoFieldsMove = false;
-
-    Move(Square from, Square to, Piece movedPiece, Piece takenPiece, castling castlingMove, boolean wasEnPassant, Piece promotedPiece)
-    {
-        this.from = from;
-        this.to = to;
-
-        this.movedPiece = movedPiece;
-        this.takenPiece = takenPiece;
-
-        this.castlingMove = castlingMove;
-        this.wasEnPassant = wasEnPassant;
-
-        if (movedPiece.name.equals("Pawn") && Math.abs(to.pozY - from.pozY) == 2)
-        {
-            this.wasPawnTwoFieldsMove = true;
-        }
-        else if (movedPiece.name.equals("Pawn") && to.pozY == Chessboard.bottom || to.pozY == Chessboard.top && promotedPiece != null)
-        {
-            this.promotedTo = promotedPiece;
-        }
-    }
-
-    public Square getFrom()
-    {
-        return this.from;
-    }
-
-    public Square getTo()
-    {
-        return this.to;
-    }
-
-    public Piece getMovedPiece()
-    {
-        return this.movedPiece;
-    }
-
-    public Piece getTakenPiece()
-    {
-        return this.takenPiece;
-    }
-
-    public boolean wasEnPassant()
-    {
-        return this.wasEnPassant;
-    }
-
-    public boolean wasPawnTwoFieldsMove()
-    {
-        return this.wasPawnTwoFieldsMove;
-    }
-
-    public castling getCastlingMove()
-    {
-        return this.castlingMove;
-    }
-
-    public Piece getPromotedPiece()
-    {
-        return this.promotedTo;
-    }
+	
+	protected Square from = null;
+	protected Square to = null;
+	protected Piece movedPiece = null;
+	protected Piece takenPiece = null;
+	protected Piece promotedTo = null;
+	protected boolean wasEnPassant = false;
+	protected CastlingType castlingMove = CastlingType.NONE;
+	protected boolean wasPawnTwoFieldsMove = false;
+	
+	Move(Square from, Square to, Piece movedPiece, Piece takenPiece, CastlingType castlingMove, boolean wasEnPassant,
+	        Piece promotedPiece)
+	{
+		this.from = from;
+		this.to = to;
+		
+		this.movedPiece = movedPiece;
+		this.takenPiece = takenPiece;
+		
+		this.castlingMove = castlingMove;
+		this.wasEnPassant = wasEnPassant;
+		
+		if(movedPiece.name.equals("Pawn") && Math.abs(to.getPosY() - from.getPosY()) == 2)
+		{
+			this.wasPawnTwoFieldsMove = true;
+		} else if(movedPiece.name.equals("Pawn") && to.getPosY() == Chessboard.BOTTOM
+		        || to.getPosY() == Chessboard.TOP && promotedPiece != null)
+		{
+			this.promotedTo = promotedPiece;
+		}
+	}
+	
+	public Square getFrom()
+	{
+		return this.from;
+	}
+	
+	public Square getTo()
+	{
+		return this.to;
+	}
+	
+	public Piece getMovedPiece()
+	{
+		return this.movedPiece;
+	}
+	
+	public Piece getTakenPiece()
+	{
+		return this.takenPiece;
+	}
+	
+	public boolean wasEnPassant()
+	{
+		return this.wasEnPassant;
+	}
+	
+	public boolean wasPawnTwoFieldsMove()
+	{
+		return this.wasPawnTwoFieldsMove;
+	}
+	
+	public CastlingType getCastlingMove()
+	{
+		return this.castlingMove;
+	}
+	
+	public Piece getPromotedPiece()
+	{
+		return this.promotedTo;
+	}
 }

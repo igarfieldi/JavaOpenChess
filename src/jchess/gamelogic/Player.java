@@ -22,85 +22,89 @@ package jchess.gamelogic;
 
 import java.io.Serializable;
 
-
 /**
  * Class representing the player in the game
  */
 public class Player implements Serializable
 {
 	private static final long serialVersionUID = 8138895278754660665L;
-
+	
 	public enum Color
-    {
-        BLACK,
-        WHITE
-    }
-
-    public enum Type
-    {
-        LOCAL,
-        NETWORK,
-        COMPUTER
-    }
-    
-    private String name;
-    private Color color;
-    private Type playerType;
-    private boolean topSide;
-
-    public Player()
-    {
-    	// TODO: default values?
-    }
-
-    public Player(String name, String color)
-    {
-        this.name = name;
-        this.color = Player.Color.valueOf(color);
-        this.topSide = false;
-    }
-
-    /** Method getting the players name
-     *  @return name of player
-     */
-    public String getName()
-    {
-        return this.name;
-    }
-    
-    public Color getColor()
-    {
-    	return this.color;
-    }
-    
-    public Type getType()
-    {
-    	return this.playerType;
-    }
-    
-    public boolean isTopSide()
-    {
-    	return topSide;
-    }
-
-    /** Method setting the players name
-     *  @param name name of player
-     */
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    /** Method setting the players type
-     *  @param type type of player - enumerate
-     */
-    public void setType(Type type)
-    {
-        this.playerType = type;
-    }
-    
-    public void setBoardSide(boolean top)
-    {
-    	this.topSide = top;
-    }
+	{
+		BLACK, WHITE
+	}
+	
+	public enum Type
+	{
+		LOCAL, NETWORK, COMPUTER
+	}
+	
+	private String name;
+	private Color color;
+	private Type playerType;
+	private boolean topSide;
+	
+	public Player()
+	{
+		// TODO: default values?
+	}
+	
+	public Player(String name, String color)
+	{
+		this.name = name;
+		this.color = Player.Color.valueOf(color);
+		this.topSide = false;
+	}
+	
+	/**
+	 * Method getting the players name
+	 * 
+	 * @return name of player
+	 */
+	public String getName()
+	{
+		return this.name;
+	}
+	
+	public Color getColor()
+	{
+		return this.color;
+	}
+	
+	public Type getType()
+	{
+		return this.playerType;
+	}
+	
+	public boolean isTopSide()
+	{
+		return topSide;
+	}
+	
+	/**
+	 * Method setting the players name
+	 * 
+	 * @param name
+	 *            name of player
+	 */
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+	
+	/**
+	 * Method setting the players type
+	 * 
+	 * @param type
+	 *            type of player - enumerate
+	 */
+	public void setType(Type type)
+	{
+		this.playerType = type;
+	}
+	
+	public void setBoardSide(boolean top)
+	{
+		this.topSide = top;
+	}
 }

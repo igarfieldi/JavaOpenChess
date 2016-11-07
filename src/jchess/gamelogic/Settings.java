@@ -22,111 +22,122 @@ package jchess.gamelogic;
 
 import java.io.Serializable;
 
-/** Class representings game settings available for the current player
+/**
+ * Class representings game settings available for the current player
  */
 public class Settings implements Serializable
 {
 	private static final long serialVersionUID = -8411751126357662563L;
-
-    public enum GameMode
-    {
-        NEW_GAME, LOAD_GAME
-    }
-    
-    public enum GameType
-    {
-        LOCAL, NETWORK
-    }
+	
+	public enum GameMode
+	{
+		NEW_GAME, LOAD_GAME
+	}
+	
+	public enum GameType
+	{
+		LOCAL, NETWORK
+	}
 	
 	private int timeForGame;
-    private boolean runningChat;
-    private boolean runningGameClock;
-    private boolean timeLimitSet; //tel us if player choose time 4 game or it's infinity
-    private boolean upsideDown;
-    private GameMode gameMode;
-    private GameType gameType;
-    private Player playerWhite;
-    private Player playerBlack;
-    private boolean renderLabels = true;
-
-    public Settings()
-    {
-        //temporally
-        this.playerWhite = new Player("", "WHITE");
-        this.playerBlack = new Player("", "BLACK");
-        this.timeLimitSet = false;
-
-        gameMode = GameMode.NEW_GAME;
-    }
-
-    /** Method to get game time set by player
-     *  @return timeFofGame int with how long the game will leasts
-     */
-    public int getTimeForGame()
-    {
-        return this.timeForGame;
-    }
-    
-    public boolean isGameClockRunning()
-    {
-    	return runningGameClock;
-    }
-    
-    public boolean isChatRunning()
-    {
-    	return runningChat;
-    }
-    
-    public boolean isTimeLimitSet()
-    {
-    	return timeLimitSet;
-    }
-    
-    public boolean isUpsideDown()
-    {
-    	return upsideDown;
-    }
-    
-    public GameMode getGameMode() {
-    	return gameMode;
-    }
-    
-    public Player getWhitePlayer() {
-    	return playerWhite;
-    }
-    
-    public Player getBlackPlayer() {
-    	return playerBlack;
-    }
-    
-    public GameType getGameType() {
-    	return gameType;
-    }
-    
-    public boolean isLabelRenderingEnabled() {
-    	return renderLabels;
-    }
-    
-    public void setTimeForGame(int time)
-    {
-    	this.timeForGame = time;
-    }
-    
-    public void setTimeLimit(boolean set)
-    {
-    	this.timeLimitSet = set;
-    }
-    
-    public void setUpsideDown(boolean down)
-    {
-    	this.upsideDown = down;
-    }
-    
-    public void setGameMode(GameMode mode) {
-    	this.gameMode = mode;
-    }
-    
-    public void setGameType(GameType type) {
-    	this.gameType = type;
-    }
+	private boolean runningChat;
+	private boolean runningGameClock;
+	private boolean timeLimitSet; // tel us if player choose time 4 game
+	                              // or it's infinity
+	private boolean upsideDown;
+	private GameMode gameMode;
+	private GameType gameType;
+	private Player playerWhite;
+	private Player playerBlack;
+	private boolean renderLabels = true;
+	
+	public Settings()
+	{
+		// temporally
+		this.playerWhite = new Player("", "WHITE");
+		this.playerBlack = new Player("", "BLACK");
+		this.timeLimitSet = false;
+		
+		gameMode = GameMode.NEW_GAME;
+	}
+	
+	/**
+	 * Method to get game time set by player
+	 * 
+	 * @return timeFofGame int with how long the game will leasts
+	 */
+	public int getTimeForGame()
+	{
+		return this.timeForGame;
+	}
+	
+	public boolean isGameClockRunning()
+	{
+		return runningGameClock;
+	}
+	
+	public boolean isChatRunning()
+	{
+		return runningChat;
+	}
+	
+	public boolean isTimeLimitSet()
+	{
+		return timeLimitSet;
+	}
+	
+	public boolean isUpsideDown()
+	{
+		return upsideDown;
+	}
+	
+	public GameMode getGameMode()
+	{
+		return gameMode;
+	}
+	
+	public Player getWhitePlayer()
+	{
+		return playerWhite;
+	}
+	
+	public Player getBlackPlayer()
+	{
+		return playerBlack;
+	}
+	
+	public GameType getGameType()
+	{
+		return gameType;
+	}
+	
+	public boolean isLabelRenderingEnabled()
+	{
+		return renderLabels;
+	}
+	
+	public void setTimeForGame(int time)
+	{
+		this.timeForGame = time;
+	}
+	
+	public void setTimeLimit(boolean set)
+	{
+		this.timeLimitSet = set;
+	}
+	
+	public void setUpsideDown(boolean down)
+	{
+		this.upsideDown = down;
+	}
+	
+	public void setGameMode(GameMode mode)
+	{
+		this.gameMode = mode;
+	}
+	
+	public void setGameType(GameType type)
+	{
+		this.gameType = type;
+	}
 }

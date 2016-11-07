@@ -27,34 +27,49 @@ import jchess.gamelogic.pieces.Piece;
  */
 public class Square
 {
-
-    public int pozX; // 0-7, becouse 8 squares for row/column
-    public int pozY; // 0-7, becouse 8 squares for row/column
-    public Piece piece = null;//object Piece on square (and extending Piecie)
-
-    Square(int pozX, int pozY, Piece piece)
-    {
-        this.pozX = pozX;
-        this.pozY = pozY;
-        this.piece = piece;
-    }/*--endOf-Square--*/
-
-
-    Square(Square square)
-    {
-        this.pozX = square.pozX;
-        this.pozY = square.pozY;
-        this.piece = square.piece;
-    }
-
-    public Square clone(Square square)
-    {
-        return new Square(square);
-    }
-
-    void setPiece(Piece piece)
-    {
-        this.piece = piece;
-        this.piece.square = this;
-    }
+	
+	private int posX; // 0-7, becouse 8 squares for row/column
+	private int posY; // 0-7, becouse 8 squares for row/column
+	private Piece piece = null;// object Piece on square (and extending Piecie)
+	
+	Square(int pozX, int pozY, Piece piece)
+	{
+		this.posX = pozX;
+		this.posY = pozY;
+		this.piece = piece;
+	}/*--endOf-Square--*/
+	
+	Square(Square square)
+	{
+		this.posX = square.posX;
+		this.posY = square.posY;
+		this.piece = square.piece;
+	}
+	
+	public Square clone(Square square)
+	{
+		return new Square(square);
+	}
+	
+	public int getPosX()
+	{
+		return posX;
+	}
+	
+	public int getPosY()
+	{
+		return posY;
+	}
+	
+	public Piece getPiece()
+	{
+		return piece;
+	}
+	
+	public void setPiece(Piece piece)
+	{
+		this.piece = piece;
+		if(this.piece != null)
+			this.piece.square = this;
+	}
 }
