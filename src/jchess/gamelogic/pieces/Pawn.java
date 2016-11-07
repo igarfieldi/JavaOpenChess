@@ -109,173 +109,173 @@ public class Pawn extends Piece
         ArrayList list = new ArrayList();
         Square sq;
         Square sq1;
-        int first = this.square.pozY - 1;//number where to move
-        int second = this.square.pozY - 2;//number where to move (only in first move)
+        int first = this.square.getPosY() - 1;//number where to move
+        int second = this.square.getPosY() - 2;//number where to move (only in first move)
         if (this.player.isTopSide())
         {//check if player "go" down or up
-            first = this.square.pozY + 1;//if yes, change value
-            second = this.square.pozY + 2;//if yes, change value
+            first = this.square.getPosY() + 1;//if yes, change value
+            second = this.square.getPosY() + 2;//if yes, change value
         }
         if (this.isout(first, first))
         {//out of bounds protection
             return list;//return empty list
         }
-        sq = chessboard.squares[this.square.pozX][first];
-        if (sq.piece == null)
+        sq = chessboard.squares[this.square.getPosX()][first];
+        if (sq.getPiece() == null)
         {//if next is free
             //list.add(sq);//add
             if (this.player.getColor() == Player.Color.WHITE)
             {//white
 
-                if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.pozX][first]))
+                if (this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.getPosX()][first]))
                 {
-                    list.add(chessboard.squares[this.square.pozX][first]);
+                    list.add(chessboard.squares[this.square.getPosX()][first]);
                 }
             }
             else
             {//or black
 
-                if (this.chessboard.kingBlack.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.pozX][first]))
+                if (this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.getPosX()][first]))
                 {
-                    list.add(chessboard.squares[this.square.pozX][first]);
+                    list.add(chessboard.squares[this.square.getPosX()][first]);
                 }
             }
 
-            if ((player.isTopSide() && this.square.pozY == 1) || (!player.isTopSide() && this.square.pozY == 6))
+            if ((player.isTopSide() && this.square.getPosY() == 1) || (!player.isTopSide() && this.square.getPosY() == 6))
             {
-                sq1 = chessboard.squares[this.square.pozX][second];
-                if (sq1.piece == null)
+                sq1 = chessboard.squares[this.square.getPosX()][second];
+                if (sq1.getPiece() == null)
                 {
                     //list.add(sq1);//only in first move
                     if (this.player.getColor() == Player.Color.WHITE)
                     {//white
 
-                        if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.pozX][second]))
+                        if (this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.getPosX()][second]))
                         {
-                            list.add(chessboard.squares[this.square.pozX][second]);
+                            list.add(chessboard.squares[this.square.getPosX()][second]);
                         }
                     }
                     else
                     {//or black
 
-                        if (this.chessboard.kingBlack.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.pozX][second]))
+                        if (this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.getPosX()][second]))
                         {
-                            list.add(chessboard.squares[this.square.pozX][second]);
+                            list.add(chessboard.squares[this.square.getPosX()][second]);
                         }
                     }
                 }
             }
         }
-        if (!this.isout(this.square.pozX - 1, this.square.pozY)) //out of bounds protection
+        if (!this.isout(this.square.getPosX() - 1, this.square.getPosY())) //out of bounds protection
         {
             //capture
-            sq = chessboard.squares[this.square.pozX - 1][first];
-            if (sq.piece != null)
+            sq = chessboard.squares[this.square.getPosX() - 1][first];
+            if (sq.getPiece() != null)
             {//check if can hit left
-                if (this.player != sq.piece.player && !sq.piece.name.equals("King"))
+                if (this.player != sq.getPiece().player && !sq.getPiece().name.equals("King"))
                 {
                     //list.add(sq);
                     if (this.player.getColor() == Player.Color.WHITE)
                     {//white
 
-                        if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.pozX - 1][first]))
+                        if (this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.getPosX() - 1][first]))
                         {
-                            list.add(chessboard.squares[this.square.pozX - 1][first]);
+                            list.add(chessboard.squares[this.square.getPosX() - 1][first]);
                         }
                     }
                     else
                     {//or black
 
-                        if (this.chessboard.kingBlack.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.pozX - 1][first]))
+                        if (this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.getPosX() - 1][first]))
                         {
-                            list.add(chessboard.squares[this.square.pozX - 1][first]);
+                            list.add(chessboard.squares[this.square.getPosX() - 1][first]);
                         }
                     }
                 }
             }
 
             //En passant
-            sq = chessboard.squares[this.square.pozX - 1][this.square.pozY];
-            if (sq.piece != null
-                    && this.chessboard.twoSquareMovedPawn != null
-                    && sq == this.chessboard.twoSquareMovedPawn.square)
+            sq = chessboard.squares[this.square.getPosX() - 1][this.square.getPosY()];
+            if (sq.getPiece() != null
+                    && this.chessboard.getTwoSquareMovedPawn() != null
+                    && sq == this.chessboard.getTwoSquareMovedPawn().square)
             {//check if can hit left
-                if (this.player != sq.piece.player && !sq.piece.name.equals("King"))
+                if (this.player != sq.getPiece().player && !sq.getPiece().name.equals("King"))
                 {// unnecessary
 
                     //list.add(sq);
                     if (this.player.getColor() == Player.Color.WHITE)
                     {//white
 
-                        if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.pozX - 1][first]))
+                        if (this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.getPosX() - 1][first]))
                         {
-                            list.add(chessboard.squares[this.square.pozX - 1][first]);
+                            list.add(chessboard.squares[this.square.getPosX() - 1][first]);
                         }
                     }
                     else
                     {//or black
 
-                        if (this.chessboard.kingBlack.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.pozX - 1][first]))
+                        if (this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.getPosX() - 1][first]))
                         {
-                            list.add(chessboard.squares[this.square.pozX - 1][first]);
+                            list.add(chessboard.squares[this.square.getPosX() - 1][first]);
                         }
                     }
                 }
             }
         }
-        if (!this.isout(this.square.pozX + 1, this.square.pozY))
+        if (!this.isout(this.square.getPosX() + 1, this.square.getPosY()))
         {//out of bounds protection
 
             //capture
-            sq = chessboard.squares[this.square.pozX + 1][first];
-            if (sq.piece != null)
+            sq = chessboard.squares[this.square.getPosX() + 1][first];
+            if (sq.getPiece() != null)
             {//check if can hit right
-                if (this.player != sq.piece.player && !sq.piece.name.equals("King"))
+                if (this.player != sq.getPiece().player && !sq.getPiece().name.equals("King"))
                 {
                     //list.add(sq);
                     if (this.player.getColor() == Player.Color.WHITE)
                     { //white
 
-                        if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.pozX + 1][first]))
+                        if (this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.getPosX() + 1][first]))
                         {
-                            list.add(chessboard.squares[this.square.pozX + 1][first]);
+                            list.add(chessboard.squares[this.square.getPosX() + 1][first]);
                         }
                     }
                     else
                     {//or black
 
-                        if (this.chessboard.kingBlack.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.pozX + 1][first]))
+                        if (this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.getPosX() + 1][first]))
                         {
-                            list.add(chessboard.squares[this.square.pozX + 1][first]);
+                            list.add(chessboard.squares[this.square.getPosX() + 1][first]);
                         }
                     }
                 }
             }
 
             //En passant
-            sq = chessboard.squares[this.square.pozX + 1][this.square.pozY];
-            if (sq.piece != null
-                    && this.chessboard.twoSquareMovedPawn != null
-                    && sq == this.chessboard.twoSquareMovedPawn.square)
+            sq = chessboard.squares[this.square.getPosX() + 1][this.square.getPosY()];
+            if (sq.getPiece() != null
+                    && this.chessboard.getTwoSquareMovedPawn() != null
+                    && sq == this.chessboard.getTwoSquareMovedPawn().square)
             {//check if can hit left
-                if (this.player != sq.piece.player && !sq.piece.name.equals("King"))
+                if (this.player != sq.getPiece().player && !sq.getPiece().name.equals("King"))
                 {// unnecessary
 
                     //list.add(sq);
                     if (this.player.getColor() == Player.Color.WHITE)
                     {//white
 
-                        if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.pozX + 1][first]))
+                        if (this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.getPosX() + 1][first]))
                         {
-                            list.add(chessboard.squares[this.square.pozX + 1][first]);
+                            list.add(chessboard.squares[this.square.getPosX() + 1][first]);
                         }
                     }
                     else
                     {//or black
 
-                        if (this.chessboard.kingBlack.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.pozX + 1][first]))
+                        if (this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.getPosX() + 1][first]))
                         {
-                            list.add(chessboard.squares[this.square.pozX + 1][first]);
+                            list.add(chessboard.squares[this.square.getPosX() + 1][first]);
                         }
                     }
                 }

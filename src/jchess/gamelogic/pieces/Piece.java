@@ -30,6 +30,7 @@ import java.util.Iterator;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
 import jchess.gamelogic.field.Square;
+import jchess.gamelogic.field.Move;
 
 import java.awt.Point;
 import java.awt.RenderingHints;
@@ -79,8 +80,8 @@ public abstract class Piece
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             Point topLeft = this.chessboard.getTopLeftPoint();
             int height = this.chessboard.get_square_height();
-            int x = (this.square.pozX * height) + topLeft.x;
-            int y = (this.square.pozY * height) + topLeft.y;
+            int x = (this.square.getPosX() * height) + topLeft.x;
+            int y = (this.square.getPosY() * height) + topLeft.y;
             float addX = (height - image.getWidth(null)) / 2;
             float addY = (height - image.getHeight(null)) / 2;
             if (image != null && g != null)
@@ -154,7 +155,7 @@ public abstract class Piece
     //     }
     //  }/*--endOf-setImages(String white, String black)--*/
 
-    abstract public ArrayList allMoves();
+    abstract public ArrayList<Square> allMoves();
 
     /** Method is useful for out of bounds protection
      * @param x  x position on chessboard
@@ -177,12 +178,12 @@ public abstract class Piece
      * */
     protected boolean checkPiece(int x, int y)
     {
-        if (chessboard.squares[x][y].piece != null
-                && chessboard.squares[x][y].piece.name.equals("King"))
+        if (chessboard.squares[x][y].getPiece() != null
+                && chessboard.squares[x][y].getPiece().name.equals("King"))
         {
             return false;
         }
-        Piece piece = chessboard.squares[x][y].piece;
+        Piece piece = chessboard.squares[x][y].getPiece();
         if (piece == null || //if this sqhuare is empty
                 piece.player != this.player) //or piece is another player
         {
@@ -199,11 +200,11 @@ public abstract class Piece
     protected boolean otherOwner(int x, int y)
     {
         Square sq = chessboard.squares[x][y];
-        if (sq.piece == null)
+        if (sq.getPiece() == null)
         {
             return false;
         }
-        if (this.player != sq.piece.player)
+        if (this.player != sq.getPiece().player)
         {
             return true;
         }
