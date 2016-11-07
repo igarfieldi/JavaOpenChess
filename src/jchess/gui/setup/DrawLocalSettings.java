@@ -143,7 +143,7 @@ public class DrawLocalSettings extends JPanel implements ActionListener, TextLis
                 return;
             }
             Game newGUI = JChessApp.jcv.addNewTab(this.firstName.getText() + " vs " + this.secondName.getText());
-            Settings sett = newGUI.settings;//sett local settings variable
+            Settings sett = newGUI.getSettings();//sett local settings variable
             Player pl1 = sett.getWhitePlayer();//set local player variable
             Player pl2 = sett.getBlackPlayer();//set local player variable
             sett.setGameMode(Settings.GameMode.NEW_GAME);
@@ -179,8 +179,8 @@ public class DrawLocalSettings extends JPanel implements ActionListener, TextLis
                 Integer val = new Integer(value);
                 sett.setTimeLimit(true);
                 sett.setTimeForGame((int) val * 60);//set time for game and mult it to seconds
-                newGUI.gameClock.setTimes(sett.getTimeForGame(), sett.getTimeForGame());
-                newGUI.gameClock.start();
+                newGUI.getGameClock().setTimes(sett.getTimeForGame(), sett.getTimeForGame());
+                newGUI.getGameClock().start();
             }
             System.out.println(this.time4Game.getActionCommand());
             //this.time4Game.getComponent(this.time4Game.getSelectedIndex());
@@ -189,8 +189,8 @@ public class DrawLocalSettings extends JPanel implements ActionListener, TextLis
                     + "\nwhite on top?: " + sett.isUpsideDown() + "\n****************");//4test
             newGUI.newGame();//start new Game
             this.parent.setVisible(false);//hide parent
-            newGUI.chessboard.repaint();
-            newGUI.chessboard.draw();
+            newGUI.getChessboard().repaint();
+            newGUI.getChessboard().draw();
         }
 
     }
