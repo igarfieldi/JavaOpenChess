@@ -64,7 +64,7 @@ public class Rook extends Piece
     @Override
     void setImage()
     {
-        if (this.player.color == this.player.color.black)
+        if (this.player.getColor() == Player.Color.BLACK)
         {
             image = imageBlack;
         }
@@ -90,7 +90,7 @@ public class Rook extends Piece
             if (this.checkPiece(this.square.pozX, i))
             {//if on this sqhuare isn't piece
 
-                if (this.player.color == Player.colors.white)
+                if (this.player.getColor() == Player.Color.WHITE)
                 {//white
 
                     if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.pozX][i]))
@@ -125,7 +125,7 @@ public class Rook extends Piece
             if (this.checkPiece(this.square.pozX, i))
             {//if on this sqhuare isn't piece
 
-                if (this.player.color == Player.colors.white)
+                if (this.player.getColor() == Player.Color.WHITE)
                 {//white
 
                     if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[this.square.pozX][i]))
@@ -159,7 +159,7 @@ public class Rook extends Piece
             if (this.checkPiece(i, this.square.pozY))
             {//if on this sqhuare isn't piece
 
-                if (this.player.color == Player.colors.white)
+                if (this.player.getColor() == Player.Color.WHITE)
                 {//white
 
                     if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[i][this.square.pozY]))
@@ -193,7 +193,7 @@ public class Rook extends Piece
             if (this.checkPiece(i, this.square.pozY))
             {//if on this sqhuare isn't piece
 
-                if (this.player.color == Player.colors.white)
+                if (this.player.getColor() == Player.Color.WHITE)
                 {//white
 
                     if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[i][this.square.pozY]))

@@ -56,7 +56,7 @@ public abstract class Piece
     {
         this.chessboard = chessboard;
         this.player = player;
-        if (player.color == player.color.black)
+        if (player.getColor() == Player.Color.BLACK)
         {
             image = imageBlack;
         }
@@ -131,7 +131,7 @@ public abstract class Piece
 
     void setImage()
     {
-        if (this.player.color == this.player.color.black)
+        if (this.player.getColor() == Player.Color.BLACK)
         {
             image = imageBlack;
         }

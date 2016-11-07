@@ -61,7 +61,7 @@ public class Bishop extends Piece
     @Override
     void setImage()
     {
-        if (this.player.color == this.player.color.black)
+        if (this.player.getColor() == Player.Color.BLACK)
         {
             image = imageBlack;
         }
@@ -85,7 +85,7 @@ public class Bishop extends Piece
         {
             if (this.checkPiece(h, i)) //if on this sqhuare isn't piece
             {
-                if (this.player.color == Player.colors.white) //white
+                if (this.player.getColor() == Player.Color.WHITE) //white
                 {
                     if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[h][i]))
                     {
@@ -115,7 +115,7 @@ public class Bishop extends Piece
         {
             if (this.checkPiece(h, i)) //if on this sqhuare isn't piece
             {
-                if (this.player.color == Player.colors.white) //white
+                if (this.player.getColor() == Player.Color.WHITE) //white
                 {
                     if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[h][i]))
                     {
@@ -145,7 +145,7 @@ public class Bishop extends Piece
         {
             if (this.checkPiece(h, i)) //if on this sqhuare isn't piece
             {
-                if (this.player.color == Player.colors.white) //white
+                if (this.player.getColor() == Player.Color.WHITE) //white
                 {
                     if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[h][i]))
                     {
@@ -175,7 +175,7 @@ public class Bishop extends Piece
         {
             if (this.checkPiece(h, i)) //if on this sqhuare isn't piece
             {
-                if (this.player.color == Player.colors.white) //white
+                if (this.player.getColor() == Player.Color.WHITE) //white
                 {
                     if (this.chessboard.kingWhite.willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[h][i]))
                     {

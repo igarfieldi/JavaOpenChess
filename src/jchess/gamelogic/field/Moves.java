@@ -509,7 +509,7 @@ public class Moves extends AbstractTableModel
                 int[] values = new int[4];
                 if (locMove.equals("O-O-O"))
                 {
-                    if (this.game.getActivePlayer().color == Player.colors.black) //if black turn
+                    if (this.game.getActivePlayer().getColor() == Player.Color.BLACK) //if black turn
                     { 
                         values = new int[]
                         {
@@ -526,7 +526,7 @@ public class Moves extends AbstractTableModel
                 }
                 else if (locMove.equals("O-O")) //if short castling
                 { 
-                    if (this.game.getActivePlayer().color == Player.colors.black) //if black turn
+                    if (this.game.getActivePlayer().getColor() == Player.Color.BLACK) //if black turn
                     {
                         values = new int[]
                         {
@@ -570,7 +570,7 @@ public class Moves extends AbstractTableModel
                 {
                     for(int j=0; j<squares[i].length && !pieceFound; j++)
                     {
-                        if(squares[i][j].piece == null || this.game.getActivePlayer().color != squares[i][j].piece.player.color)
+                        if(squares[i][j].piece == null || this.game.getActivePlayer().getColor() != squares[i][j].piece.player.getColor())
                         {
                             continue;
                         }
