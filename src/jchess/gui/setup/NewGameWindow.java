@@ -22,6 +22,7 @@ package jchess.gui.setup;
 
 import javax.swing.*;
 
+import jchess.Localization;
 import jchess.gamelogic.Settings;
 
 import java.awt.event.ActionListener;
@@ -43,8 +44,8 @@ public class NewGameWindow extends JDialog {
 
         this.setSize(400, 700);
         this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        this.jTabbedPane1.addTab(Settings.lang("local_game"), new DrawLocalSettings(this));
-        this.jTabbedPane1.addTab(Settings.lang("network_game"), new DrawNetworkSettings(this));
+        this.jTabbedPane1.addTab(Localization.getMessage("local_game"), new DrawLocalSettings(this));
+        this.jTabbedPane1.addTab(Localization.getMessage("network_game"), new DrawNetworkSettings(this));
     }
 
     /** This method is called from within the constructor to

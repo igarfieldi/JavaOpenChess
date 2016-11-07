@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import jchess.JChessApp;
+import jchess.Localization;
 import jchess.gamelogic.Settings;
 import jchess.gui.GUI;
 
@@ -100,12 +101,12 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
     	}
     	else
     	{
-            throw new Exception(Settings.lang("error_when_creating_theme_config_window"));
+            throw new Exception(Localization.getMessage("error_when_creating_theme_config_window"));
     	}
     	
         if(themeNames.size() > 0)
         {
-            this.setTitle(Settings.lang("choose_theme_window_title"));
+            this.setTitle(Localization.getMessage("choose_theme_window_title"));
             Dimension winDim = new Dimension(550, 230);
             this.setMinimumSize(winDim);
             this.setMaximumSize(winDim);
@@ -147,7 +148,7 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
         }
         else
         {
-            throw new Exception(Settings.lang("error_when_creating_theme_config_window"));
+            throw new Exception(Localization.getMessage("error_when_creating_theme_config_window"));
         }
     }
 
@@ -176,7 +177,7 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
                 {
                 	System.err.println("Failed to save config with new theme!");
                 }
-                JOptionPane.showMessageDialog(this, Settings.lang("changes_visible_after_restart"));
+                JOptionPane.showMessageDialog(this, Localization.getMessage("changes_visible_after_restart"));
                 this.setVisible(false);
 
             }

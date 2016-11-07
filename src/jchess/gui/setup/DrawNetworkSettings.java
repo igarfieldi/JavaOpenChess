@@ -38,6 +38,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import jchess.JChessApp;
+import jchess.Localization;
 import jchess.gamelogic.Game;
 import jchess.gamelogic.Settings;
 import jchess.network.Client;
@@ -77,18 +78,18 @@ public class DrawNetworkSettings extends JPanel implements ActionListener
         //components
         this.parent = parent;
 
-        this.radioServer = new JRadioButton(Settings.lang("create_server"), true);
-        this.radioClient = new JRadioButton(Settings.lang("connect_2_server"), false);
+        this.radioServer = new JRadioButton(Localization.getMessage("create_server"), true);
+        this.radioClient = new JRadioButton(Localization.getMessage("connect_2_server"), false);
         this.serverORclient = new ButtonGroup();
         this.serverORclient.add(this.radioServer);
         this.serverORclient.add(this.radioClient);
         this.radioServer.addActionListener(this);
         this.radioClient.addActionListener(this);
 
-        this.labelNick = new JLabel(Settings.lang("nickname"));
-        this.labelPassword = new JLabel(Settings.lang("password"));
-        this.labelGameID = new JLabel(Settings.lang("game_id"));
-        this.labelOptions = new JLabel(Settings.lang("server_options"));
+        this.labelNick = new JLabel(Localization.getMessage("nickname"));
+        this.labelPassword = new JLabel(Localization.getMessage("password"));
+        this.labelGameID = new JLabel(Localization.getMessage("game_id"));
+        this.labelOptions = new JLabel(Localization.getMessage("server_options"));
 
         this.textNick = new JTextField();
         this.textPassword = new JPasswordField();
@@ -98,7 +99,7 @@ public class DrawNetworkSettings extends JPanel implements ActionListener
         this.clientOptions = new ClientOptionsPanel();
         this.servOptions = new ServOptionsPanel();
 
-        this.buttonStart = new JButton(Settings.lang("start"));
+        this.buttonStart = new JButton(Localization.getMessage("start"));
         this.buttonStart.addActionListener(this);
 
         //add components
@@ -199,26 +200,26 @@ public class DrawNetworkSettings extends JPanel implements ActionListener
             String error = "";
             if (this.textGameID.getText().isEmpty())
             {
-                error = Settings.lang("fill_game_id") + "\n";
+                error = Localization.getMessage("fill_game_id") + "\n";
             }
             if (this.textNick.getText().length() == 0)
             {
-                error += Settings.lang("fill_name") + "\n";
+                error += Localization.getMessage("fill_name") + "\n";
             }
             if (this.textPassword.getText().length() <= 4)
             {
-                error += Settings.lang("fill_pass_with_more_than_4_signs") + "\n";
+                error += Localization.getMessage("fill_pass_with_more_than_4_signs") + "\n";
             }
             if (this.radioClient.isSelected() && this.clientOptions.textServIP.getText().length() == 0)
             {
-                error += Settings.lang("please_fill_field") + " IP \n";
+                error += Localization.getMessage("please_fill_field") + " IP \n";
             }
             else if (this.radioClient.isSelected())
             {
                 Pattern ipPattern = Pattern.compile("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
                 if (!ipPattern.matcher(this.clientOptions.textServIP.getText()).matches())
                 {
-                    error += Settings.lang("bad_ip_format") + "\n";
+                    error += Localization.getMessage("bad_ip_format") + "\n";
                 }
             }
             if (error.length() > 0)
@@ -265,7 +266,7 @@ public class DrawNetworkSettings extends JPanel implements ActionListener
                 }
                 else
                 {
-                    JOptionPane.showMessageDialog(this, Settings.lang("error_connecting_to_server"));
+                    JOptionPane.showMessageDialog(this, Localization.getMessage("error_connecting_to_server"));
                 }
 
             }
@@ -293,10 +294,10 @@ public class DrawNetworkSettings extends JPanel implements ActionListener
         {
             super();
 
-            labelGameTime = new JLabel(Settings.lang("time_game_min"));
+            labelGameTime = new JLabel(Localization.getMessage("time_game_min"));
             textGameTime = new JTextField();
-            checkWitchoutObserver = new JCheckBox(Settings.lang("without_observers"));
-            checkDisableChat = new JCheckBox(Settings.lang("without_chat"));
+            checkWitchoutObserver = new JCheckBox(Localization.getMessage("without_observers"));
+            checkDisableChat = new JCheckBox(Localization.getMessage("without_chat"));
 
             //temporary disabled options
             this.labelGameTime.setEnabled(false);
@@ -350,9 +351,9 @@ public class DrawNetworkSettings extends JPanel implements ActionListener
         {
             super();
 
-            this.labelServIP = new JLabel(Settings.lang("server_ip"));
+            this.labelServIP = new JLabel(Localization.getMessage("server_ip"));
             this.textServIP = new JTextField();
-            this.checkOnlyWatch = new JCheckBox(Settings.lang("only_observe"));
+            this.checkOnlyWatch = new JCheckBox(Localization.getMessage("only_observe"));
 
             this.gbl = new GridBagLayout();
             this.gbc = new GridBagConstraints();

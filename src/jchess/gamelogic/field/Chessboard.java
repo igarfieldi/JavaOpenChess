@@ -124,7 +124,7 @@ public class Chessboard extends JPanel
 
         if (places.equals("")) //if newGame
         {
-            if (this.settings.upsideDown)
+            if (this.settings.isUpsideDown())
             {
                 this.setPieces4NewGame(true, plWhite, plBlack);
             }
@@ -241,7 +241,7 @@ public class Chessboard extends JPanel
             System.out.println("click out of chessboard.");
             return null;
         }
-        if (this.settings.renderLabels)
+        if (this.settings.isLabelRenderingEnabled())
         {
             x -= this.upDownLabel.getHeight(null);
             y -= this.upDownLabel.getHeight(null);
@@ -319,7 +319,7 @@ public class Chessboard extends JPanel
 
     public int get_height(boolean includeLabels)
     {
-        if (this.settings.renderLabels)
+        if (this.settings.isLabelRenderingEnabled())
         {
             return Chessboard.image.getHeight(null) + upDownLabel.getHeight(null);
         }
@@ -540,7 +540,7 @@ public class Chessboard extends JPanel
 
     public boolean redo(boolean refresh)
     {
-        if ( this.settings.gameType == Settings.gameTypes.local ) //redo only for local game
+        if ( this.settings.getGameType() == Settings.GameType.LOCAL ) //redo only for local game
         {
             Move first = this.moves_history.redo();
 
@@ -698,7 +698,7 @@ public class Chessboard extends JPanel
 
     public Point getTopLeftPoint()
     {
-        if (this.settings.renderLabels)
+        if (this.settings.isLabelRenderingEnabled())
         {
             return new Point(this.topLeft.x + this.upDownLabel.getHeight(null), this.topLeft.y + this.upDownLabel.getHeight(null));
         }
@@ -711,7 +711,7 @@ public class Chessboard extends JPanel
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         Point topLeftPoint = this.getTopLeftPoint();
-        if (this.settings.renderLabels)
+        if (this.settings.isLabelRenderingEnabled())
         {
             if(topLeftPoint.x <= 0 && topLeftPoint.y <= 0) //if renderLabels and (0,0), than draw it! (for first run)
             {
@@ -763,7 +763,7 @@ public class Chessboard extends JPanel
         g.dispose();
         Chessboard.image = resized.getScaledInstance(height, height, 0);
         this.square_height = (float) (height / 8);
-        if (this.settings.renderLabels)
+        if (this.settings.isLabelRenderingEnabled())
         {
             height += 2 * (this.upDownLabel.getHeight(null));
         }
@@ -804,7 +804,7 @@ public class Chessboard extends JPanel
         uDL2D.setColor(Color.black);
         uDL2D.setFont(new Font("Arial", Font.BOLD, 12));
         int addX = (square_height / 2);
-        if (this.settings.renderLabels)
+        if (this.settings.isLabelRenderingEnabled())
         {
             addX += labelHeight;
         }
@@ -813,7 +813,7 @@ public class Chessboard extends JPanel
         {
             "a", "b", "c", "d", "e", "f", "g", "h"
         };
-        if (!this.settings.upsideDown)
+        if (!this.settings.isUpsideDown())
         {
             for (int i = 1; i <= letters.length; i++)
             {
@@ -840,7 +840,7 @@ public class Chessboard extends JPanel
         uDL2D.setColor(Color.black);
         uDL2D.setFont(new Font("Arial", Font.BOLD, 12));
 
-        if (this.settings.upsideDown)
+        if (this.settings.isUpsideDown())
         {
             for (int i = 1; i <= 8; i++)
             {

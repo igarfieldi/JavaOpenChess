@@ -75,7 +75,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
         { //saveGame
             if (this.gamesPane.getTabCount() == 0)
             {
-                JOptionPane.showMessageDialog(null, Settings.lang("save_not_called_for_tab"));
+                JOptionPane.showMessageDialog(null, Localization.getMessage("save_not_called_for_tab"));
                 return;
             }
             while (true)
@@ -99,7 +99,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
                     }
                     else if (selFile.exists())
                     {
-                        int opt = JOptionPane.showConfirmDialog(tempGUI, Settings.lang("file_exists"), Settings.lang("file_exists"), JOptionPane.YES_NO_OPTION);
+                        int opt = JOptionPane.showConfirmDialog(tempGUI, Localization.getMessage("file_exists"), Localization.getMessage("file_exists"), JOptionPane.YES_NO_OPTION);
                         if (opt == JOptionPane.NO_OPTION)//if user choose to now overwrite
                         {
                             continue; // go back to file choose

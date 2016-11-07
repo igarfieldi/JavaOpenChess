@@ -21,38 +21,33 @@
 package jchess.gamelogic;
 
 import java.io.Serializable;
-import java.util.Locale;
-import java.util.Locale;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
 
 /** Class representings game settings available for the current player
  */
 public class Settings implements Serializable
 {
+	private static final long serialVersionUID = -8411751126357662563L;
 
-    private static ResourceBundle loc = null;
-    public int timeForGame;
-    public boolean runningChat;
-    public boolean runningGameClock;
-    public boolean timeLimitSet;//tel us if player choose time 4 game or it's infinity
-    public boolean upsideDown;
-
-    public enum gameModes
+    public enum GameMode
     {
-        newGame, loadGame
+        NEW_GAME, LOAD_GAME
     }
-    public gameModes gameMode;
-    public Player playerWhite;
-    public Player playerBlack;
-
-    public enum gameTypes
+    
+    public enum GameType
     {
-
-        local, network
+        LOCAL, NETWORK
     }
-    public gameTypes gameType;
-    public boolean renderLabels = true;
+	
+	private int timeForGame;
+    private boolean runningChat;
+    private boolean runningGameClock;
+    private boolean timeLimitSet; //tel us if player choose time 4 game or it's infinity
+    private boolean upsideDown;
+    private GameMode gameMode;
+    private GameType gameType;
+    private Player playerWhite;
+    private Player playerBlack;
+    private boolean renderLabels = true;
 
     public Settings()
     {
@@ -61,7 +56,7 @@ public class Settings implements Serializable
         this.playerBlack = new Player("", "BLACK");
         this.timeLimitSet = false;
 
-        gameMode = gameModes.newGame;
+        gameMode = GameMode.NEW_GAME;
     }
 
     /** Method to get game time set by player
@@ -71,24 +66,67 @@ public class Settings implements Serializable
     {
         return this.timeForGame;
     }
-
-    public static String lang(String key)
+    
+    public boolean isGameClockRunning()
     {
-        if (Settings.loc == null)
-        {
-            Settings.loc = PropertyResourceBundle.getBundle("jchess.resources.i18n.main");
-            Locale.setDefault(Locale.ENGLISH);
-        }
-        String result = "";
-        try
-        {
-            result = Settings.loc.getString(key);
-        }
-        catch (java.util.MissingResourceException exc)
-        {
-            result = key;
-        }
-        System.out.println(Settings.loc.getLocale().toString());
-        return result;
+    	return runningGameClock;
+    }
+    
+    public boolean isChatRunning()
+    {
+    	return runningChat;
+    }
+    
+    public boolean isTimeLimitSet()
+    {
+    	return timeLimitSet;
+    }
+    
+    public boolean isUpsideDown()
+    {
+    	return upsideDown;
+    }
+    
+    public GameMode getGameMode() {
+    	return gameMode;
+    }
+    
+    public Player getWhitePlayer() {
+    	return playerWhite;
+    }
+    
+    public Player getBlackPlayer() {
+    	return playerBlack;
+    }
+    
+    public GameType getGameType() {
+    	return gameType;
+    }
+    
+    public boolean isLabelRenderingEnabled() {
+    	return renderLabels;
+    }
+    
+    public void setTimeForGame(int time)
+    {
+    	this.timeForGame = time;
+    }
+    
+    public void setTimeLimit(boolean set)
+    {
+    	this.timeLimitSet = set;
+    }
+    
+    public void setUpsideDown(boolean down)
+    {
+    	this.upsideDown = down;
+    }
+    
+    public void setGameMode(GameMode mode) {
+    	this.gameMode = mode;
+    }
+    
+    public void setGameType(GameType type) {
+    	this.gameType = type;
     }
 }
