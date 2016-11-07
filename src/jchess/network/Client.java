@@ -152,7 +152,7 @@ public class Client implements Runnable
                 {
                     String str = input.readUTF();
 
-                    game.chat.addMessage(str);
+                    game.getChat().addMessage(str);
                 }
                 else if (in.equals("#settings")) //getting settings from server
                 {
@@ -165,15 +165,15 @@ public class Client implements Runnable
                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                     }
 
-                    game.settings = this.sett;
-                    game.client = this;
-                    game.chat.client = this;
+                    game.setSettings(this.sett);
+                    game.setClient(this);
+                    game.getChat().client = this;
                     game.newGame();//start new Game
-                    game.chessboard.draw();
+                    game.getChessboard().draw();
                 }
                 else if (in.equals("#errorConnection"))
                 {
-                    game.chat.addMessage("** "+Localization.getMessage("error_connecting_one_of_player")+" **");
+                    game.getChat().addMessage("** "+Localization.getMessage("error_connecting_one_of_player")+" **");
                 }
                 else if(in.equals("#undoAsk") && !this.isObserver)
                 {
@@ -186,7 +186,7 @@ public class Client implements Runnable
                     
                     if( result == JOptionPane.YES_OPTION )
                     {
-                        game.chessboard.undo();
+                        game.getChessboard().undo();
                         game.switchActive();
                         this.sendUndoAnswerPositive();
                     }
@@ -198,19 +198,19 @@ public class Client implements Runnable
                 else if(in.equals("#undoAnswerPositive") && ( this.wait4undoAnswer || this.isObserver ) )
                 {
                     this.wait4undoAnswer = false;
-                    String lastMove = game.moves.getMoves().get( game.moves.getMoves().size() -1 );
-                    game.chat.addMessage("** "+Localization.getMessage("permision_ok_4_undo_move")+": "+lastMove+"**");
-                    game.chessboard.undo();
+                    String lastMove = game.getMoves().getMoveList().get( game.getMoves().getMoveList().size() -1 );
+                    game.getChat().addMessage("** "+Localization.getMessage("permision_ok_4_undo_move")+": "+lastMove+"**");
+                    game.getChessboard().undo();
                 }
                 else if(in.equals("#undoAnswerNegative") && this.wait4undoAnswer)
                 {
-                    game.chat.addMessage( Localization.getMessage("no_permision_4_undo_move") );
+                    game.getChat().addMessage( Localization.getMessage("no_permision_4_undo_move") );
                 }
             }
             catch (IOException ex)
             {
                 isOK = false;
-                game.chat.addMessage("** "+Localization.getMessage("error_connecting_to_server")+" **");
+                game.getChat().addMessage("** "+Localization.getMessage("error_connecting_to_server")+" **");
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

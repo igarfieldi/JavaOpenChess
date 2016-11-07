@@ -52,15 +52,16 @@ import java.util.logging.Logger;
  */
 public class Game extends JPanel implements MouseListener, ComponentListener
 {
-
-    public Settings settings;
-    public boolean blockedChessboard;
-    public Chessboard chessboard;
+	private static final long serialVersionUID = -1534339244756885176L;
+	
+	private Settings settings;
+	private boolean blockedChessboard;
+	private Chessboard chessboard;
     private Player activePlayer;
-    public GameClock gameClock;
-    public Client client;
-    public Moves moves;
-    public Chat chat;
+    private GameClock gameClock;
+    private Client client;
+    private Moves moves;
+    private Chat chat;
 
     public Game()
     {
@@ -94,6 +95,34 @@ public class Game extends JPanel implements MouseListener, ComponentListener
         this.addComponentListener(this);
         this.setDoubleBuffered(true);
     }
+    
+    public Settings getSettings() {
+    	return settings;
+    }
+    
+    public Chessboard getChessboard() {
+    	return chessboard;
+    }
+    
+    public GameClock getGameClock() {
+    	return gameClock;
+    }
+    
+    public Chat getChat() {
+    	return chat;
+    }
+    
+    public Moves getMoves() {
+    	return moves;
+    }
+    
+    public void setSettings(Settings settings) {
+    	this.settings = settings;
+    }
+    
+    public void setClient(Client client) {
+    	this.client = client;
+    }
 
     /** Method to save actual state of game
      * @param path address of place where game will be saved
@@ -114,8 +143,12 @@ public class Game extends JPanel implements MouseListener, ComponentListener
         }
         Calendar cal = Calendar.getInstance();
         String str = new String("");
-        String info = new String("[Event \"Game\"]\n[Date \"" + cal.get(cal.YEAR) + "." + (cal.get(cal.MONTH) + 1) + "." + cal.get(cal.DAY_OF_MONTH) + "\"]\n"
-                + "[White \"" + this.settings.getWhitePlayer().getName() + "\"]\n[Black \"" + this.settings.getBlackPlayer().getName() + "\"]\n\n");
+        String info = new String("[Event \"Game\"]\n[Date \"" +
+        							cal.get(Calendar.YEAR) + "." +
+        							(cal.get(Calendar.MONTH) + 1) + "." +
+        							cal.get(Calendar.DAY_OF_MONTH) + "\"]\n" +
+        							"[White \"" + this.settings.getWhitePlayer().getName() + "\"]\n" +
+        							"[Black \"" + this.settings.getBlackPlayer().getName() + "\"]\n\n");
         str += info;
         str += this.moves.getMovesInString();
         try
@@ -491,7 +524,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
                     int y = event.getY();//get Y position of mouse
 
                     Square sq = chessboard.getSquare(x, y);
-                    if ((sq == null && sq.piece == null && chessboard.activeSquare == null)
+                    if ((sq == null && chessboard.activeSquare == null)
                             || (this.chessboard.activeSquare == null && sq.piece != null && sq.piece.player != this.activePlayer))
                     {
                         return;
@@ -605,4 +638,5 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 
 class ReadGameError extends Exception
 {
+	private static final long serialVersionUID = -7273990297881723999L;
 }

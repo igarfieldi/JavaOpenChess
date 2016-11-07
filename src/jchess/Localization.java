@@ -5,7 +5,7 @@ import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 public class Localization {
-	private static ResourceBundle messages;
+	private final static ResourceBundle messages;
 	
 	static {
 		messages = PropertyResourceBundle.getBundle("jchess.resources.i18n.main");
