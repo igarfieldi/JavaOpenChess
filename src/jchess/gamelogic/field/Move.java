@@ -23,15 +23,14 @@ import jchess.gamelogic.pieces.Piece;
 
 public class Move
 {
-	
-	protected Square from = null;
-	protected Square to = null;
-	protected Piece movedPiece = null;
-	protected Piece takenPiece = null;
-	protected Piece promotedTo = null;
-	protected boolean wasEnPassant = false;
-	protected CastlingType castlingMove = CastlingType.NONE;
-	protected boolean wasPawnTwoFieldsMove = false;
+	private Square from = null;
+	private Square to = null;
+	private Piece movedPiece = null;
+	private Piece takenPiece = null;
+	private Piece promotedTo = null;
+	private boolean wasEnPassant = false;
+	private CastlingType castlingMove = CastlingType.NONE;
+	private boolean wasPawnTwoFieldsMove = false;
 	
 	Move(Square from, Square to, Piece movedPiece, Piece takenPiece, CastlingType castlingMove, boolean wasEnPassant,
 	        Piece promotedPiece)
@@ -51,6 +50,7 @@ public class Move
 		} else if(movedPiece.name.equals("Pawn") && to.getPosY() == Chessboard.BOTTOM
 		        || to.getPosY() == Chessboard.TOP && promotedPiece != null)
 		{
+			// TODO: simplify condition (shouldn't promotedPiece always be null expect when promoted?)
 			this.promotedTo = promotedPiece;
 		}
 	}
