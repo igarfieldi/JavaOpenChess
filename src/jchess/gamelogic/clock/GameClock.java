@@ -22,6 +22,9 @@ package jchess.gamelogic.clock;
 
 import java.awt.*;
 import java.awt.image.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.swing.JPanel;
 
 import jchess.gamelogic.Game;
@@ -35,6 +38,7 @@ import jchess.gamelogic.Settings;
 public class GameClock extends JPanel implements Runnable
 {
 	private static final long serialVersionUID = -5791210552595733310L;
+	private static Logger log = Logger.getLogger(GameClock.class.getName());
 	
 	private Clock clock1;
 	private Clock clock2;
@@ -208,9 +212,9 @@ public class GameClock extends JPanel implements Runnable
 				try
 				{
 					Thread.sleep(1000);
-				} catch(InterruptedException e)
+				} catch(InterruptedException exc)
 				{
-					System.out.println("Some error in gameClock thread: " + e);
+					log.log(Level.SEVERE, "Error putting game clock to sleep!", exc);
 				}
 			} else
 			{
