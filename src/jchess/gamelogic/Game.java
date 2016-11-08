@@ -353,7 +353,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 			activePlayer = settings.getWhitePlayer();
 		}
 		
-		this.gameClock.switch_clocks();
+		this.gameClock.switchClocks();
 	}
 	
 	/**
