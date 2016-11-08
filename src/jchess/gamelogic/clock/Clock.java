@@ -29,17 +29,17 @@ import jchess.gamelogic.Player;
 public class Clock
 {
 	
-	private int time_left;
+	private int timeLeft;
 	private Player player;
 	
 	Clock()
 	{
-		this.init(time_left);
+		this.resetClock(0);
 	}
 	
 	Clock(int time)
 	{
-		this.init(time);
+		this.resetClock(time);
 	}
 	
 	/**
@@ -48,9 +48,9 @@ public class Clock
 	 * @param time
 	 *            tell method with how much time init clock
 	 */
-	public void init(int time)
+	public void resetClock(int time)
 	{
-		this.time_left = time;
+		this.timeLeft = time;
 	}
 	
 	/**
@@ -60,9 +60,9 @@ public class Clock
 	 */
 	public boolean decrement()
 	{
-		if(this.time_left > 0)
+		if(this.timeLeft > 0)
 		{
-			this.time_left = this.time_left - 1;
+			this.timeLeft = this.timeLeft - 1;
 			return true;
 		}
 		return false;
@@ -70,6 +70,7 @@ public class Clock
 	
 	public void pause()
 	{
+		// ??
 	}
 	
 	/**
@@ -77,9 +78,9 @@ public class Clock
 	 * 
 	 * @return Player int integer of seconds
 	 */
-	public int get_left_time()
+	public int getSecondsLeft()
 	{
-		return this.time_left;
+		return this.timeLeft;
 	}
 	
 	/**
@@ -108,27 +109,11 @@ public class Clock
 	 * 
 	 * @return String of actual left game time with ':' digits in mm:ss format
 	 */
-	public String prepareString()
+	@Override
+	public String toString()
 	{
-		String strMin = new String();
-		Integer time_min = new Integer(this.get_left_time() / 60);
-		Integer time_sec = new Integer(this.get_left_time() % 60);
-		if(time_min < 10)
-		{// prepare MINUTES
-			strMin = "0" + time_min.toString();
-		} else
-		{
-			strMin = time_min.toString();
-		}
-		String result = new String(strMin + ":");
-		if(time_sec < 10)
-		{// prepare SECONDS
-			result = result + "0" + time_sec.toString();
-		} else
-		{
-			result = result + time_sec.toString();
-		}
-		
-		return result;
+		int minutes = getSecondsLeft() / 60;
+		int seconds = getSecondsLeft() % 60;
+		return String.format("%02d:%02d", minutes, seconds);
 	}
 }
