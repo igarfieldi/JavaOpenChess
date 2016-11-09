@@ -167,7 +167,7 @@ public class Client implements Runnable
 
                     game.setSettings(this.sett);
                     game.setClient(this);
-                    game.getChat().client = this;
+                    game.getChat().setClient(this);
                     game.newGame();//start new Game
                     game.getChessboard().draw();
                 }
