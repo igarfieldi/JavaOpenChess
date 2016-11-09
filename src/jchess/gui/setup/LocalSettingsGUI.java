@@ -26,7 +26,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.TextListener;
 import java.awt.event.TextEvent;
 import java.awt.*;
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import jchess.JChessApp;
 import jchess.Localization;
@@ -39,6 +40,8 @@ import jchess.gamelogic.Settings;
  */
 public class LocalSettingsGUI extends JPanel implements ActionListener, TextListener
 {
+	private static Logger log = Logger.getLogger(LocalSettingsGUI.class.getName());
+	
 	private JDialog localSettingsWindow;
 	
 	private ButtonGroup opponentChoiceButtonGroup;
@@ -192,7 +195,7 @@ public class LocalSettingsGUI extends JPanel implements ActionListener, TextList
 				}
 				catch(BadLocationException exception)
 				{
-					System.out.println("Something wrong in editables: \n" + exception);
+					log.log(Level.SEVERE, "Something wrong in edit tables: \n", exception);
 				}
 			}
 		}
@@ -270,9 +273,9 @@ public class LocalSettingsGUI extends JPanel implements ActionListener, TextList
 		{
 			result = input.getText(0, length);
 		}
-		catch(BadLocationException exc)
+		catch(BadLocationException exception)
 		{
-			System.out.println("Something wrong in editables: \n" + exc);
+			log.log(Level.SEVERE, "Something wrong in edit tables: \n", exception);
 		}
 		return result;
 	}
@@ -292,12 +295,12 @@ public class LocalSettingsGUI extends JPanel implements ActionListener, TextList
 		setFigureColorPlacementOnBoard(localSettings);
 		setTimeLimit(gameWindow, localSettings);
 		
-		printGameInfoToConsole(localSettings, firstPlayer, secondPlayer);
+		logGameInfo(localSettings, firstPlayer, secondPlayer);
 	}
 
 	private void assignPlayerNames(Player firstPlayer, Player secondPlayer)
 	{
-		if(this.playerColorChoiceComboBox.getActionCommand().equals("White"))
+		if(this.playerColorChoiceComboBox.getSelectedItem().equals("White"))
 		{
 			firstPlayer.setName(this.firstPlayerNameTextField.getText());
 			secondPlayer.setName(this.secondPlayerNameTextField.getText());
@@ -342,10 +345,10 @@ public class LocalSettingsGUI extends JPanel implements ActionListener, TextList
 		}
 	}
 
-	private void printGameInfoToConsole(Settings localSettings, Player firstPlayer, Player secondPlayer)
+	private void logGameInfo(Settings localSettings, Player firstPlayer, Player secondPlayer)
 	{
-		System.out.println(this.timeLimitsComboBox.getActionCommand());
-		System.out.println("****************\nStarting new game: " + firstPlayer.getName() + " vs. " + secondPlayer.getName()
+		log.info(this.timeLimitsComboBox.getActionCommand());
+		log.info("****************\nStarting new game: " + firstPlayer.getName() + " vs. " + secondPlayer.getName()
 		        + "\ntime 4 game: " + localSettings.getTimeForGame() + "\ntime limit set: " + localSettings.isTimeLimitSet()
 		        + "\nwhite on top?: " + localSettings.isUpsideDown() + "\n****************");// 4test
 	}
