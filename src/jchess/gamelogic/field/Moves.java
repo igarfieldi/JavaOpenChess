@@ -22,6 +22,9 @@ package jchess.gamelogic.field;
 
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.*;
@@ -47,6 +50,7 @@ import javax.swing.JOptionPane;
 public class Moves extends AbstractTableModel
 {
 	private static final long serialVersionUID = -316401211821501289L;
+	private static Logger log = Logger.getLogger(Moves.class.getName());
 	
 	private ArrayList<String> move = new ArrayList<String>();
 	private int columnsNum = 3;
@@ -433,7 +437,7 @@ public class Moves extends AbstractTableModel
 					break; // R like Rook
 			}
 			sign = move.charAt(from);
-			System.out.println(sign);
+			log.log(Level.FINE, "Sign: " + sign);
 			if(sign < 97 || sign > 104) // if lower than 'a' or higher than 'h'
 			{
 				return false;
@@ -524,13 +528,13 @@ public class Moves extends AbstractTableModel
 		{
 			from = moves.indexOf(" ", from);
 			to = moves.indexOf(" ", from + 1);
-			// System.out.println(from+">"+to);
+			log.log(Level.FINE, from + ">" + to);
 			try
 			{
 				tempArray.add(moves.substring(from + 1, to).trim());
 			} catch(java.lang.StringIndexOutOfBoundsException exc)
 			{
-				System.out.println("error parsing file to load: " + exc);
+				log.log(Level.SEVERE, "Error while parsing moves from file!", exc);
 				break;
 			}
 			if(n % 2 == 0)

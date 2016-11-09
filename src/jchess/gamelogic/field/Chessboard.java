@@ -26,6 +26,9 @@ import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.swing.JPanel;
 
 import jchess.JChessApp;
@@ -48,6 +51,8 @@ import jchess.gui.GUI;
  */
 public class Chessboard extends JPanel
 {
+	private static Logger log = Logger.getLogger(Chessboard.class.getName());
+	
 	private static final long serialVersionUID = 1971410121780567341L;
 	public static final int TOP = 0;
 	public static final int BOTTOM = 7;
@@ -180,7 +185,7 @@ public class Chessboard extends JPanel
 		
 		if(i != 0 && i != 7)
 		{
-			System.out.println("error setting figures like rook etc.");
+			log.log(Level.SEVERE, "Error setting up Rook/Knight/Bishop/Queen/King!");
 			return;
 		} else if(i == 0)
 		{
@@ -228,7 +233,7 @@ public class Chessboard extends JPanel
 	{
 		if(i != 1 && i != 6)
 		{
-			System.out.println("error setting pawns etc.");
+			log.log(Level.SEVERE, "Error setting up pawn!");
 			return;
 		}
 		for(int x = 0; x < 8; x++)
@@ -252,7 +257,7 @@ public class Chessboard extends JPanel
 		                                                      // is out of
 		                                                      // chessboard
 		{
-			System.out.println("click out of chessboard.");
+			log.log(Level.FINE, "Clicked outside of the chessboard");
 			return null;
 		}
 		if(this.settings.isLabelRenderingEnabled())
@@ -275,13 +280,13 @@ public class Chessboard extends JPanel
 		}
 		// Square newActiveSquare =
 		// this.squares[(int)square_x-1][(int)square_y-1];//4test
-		System.out.println("square_x: " + square_x + " square_y: " + square_y + " \n"); // 4tests
+		log.log(Level.FINE, "Square X: " + square_x + " | Square Y: " + square_y);
 		try
 		{
 			return this.squares[(int) square_x - 1][(int) square_y - 1];
 		} catch(java.lang.ArrayIndexOutOfBoundsException exc)
 		{
-			System.out.println("!!Array out of bounds when getting Square with Chessboard.getSquare(int,int) : " + exc);
+			log.log(Level.SEVERE, "Accessed square outside of field!", exc);
 			return null;
 		}
 	}
@@ -299,7 +304,7 @@ public class Chessboard extends JPanel
 		this.active_y_square = sq.getPosY() + 1;
 		
 		// this.draw();//redraw
-		System.out.println("active_x: " + this.active_x_square + " active_y: " + this.active_y_square);// 4tests
+		log.log(Level.FINE, "Active X: " + active_x_square + " | Active Y: " + active_y_square);
 		repaint();
 		
 	}/*--endOf-select--*/
@@ -370,7 +375,7 @@ public class Chessboard extends JPanel
 			this.move(this.squares[xFrom][yFrom], this.squares[xTo][yTo], true);
 		} catch(java.lang.IndexOutOfBoundsException exc)
 		{
-			System.out.println("error moving piece: " + exc);
+			log.log(Level.SEVERE, "Tried to move piece outside of field!", exc);
 			return;
 		}
 	}
