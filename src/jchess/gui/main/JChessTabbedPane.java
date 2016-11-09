@@ -24,16 +24,20 @@ import javax.swing.*;
 
 import jchess.JChessApp;
 import jchess.gui.GUI;
+import jchess.gui.setup.LocalSettingsGUI;
 import jchess.gui.setup.NewGameWindow;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.ImageObserver;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class JChessTabbedPane extends JTabbedPane implements MouseListener, ImageObserver
 {
-
-    private TabbedPaneIcon closeIcon;
+	private static Logger log = Logger.getLogger(JChessTabbedPane.class.getName());
+    
+	private TabbedPaneIcon closeIcon;
     private Image addIcon = null;
     private Image clickedAddIcon = null;
     private Image unclickedAddIcon = null;
@@ -59,7 +63,7 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
     public void addTab(String title, Component component, Icon closeIcon)
     {
         super.addTab(title, new TabbedPaneIcon(closeIcon), component);
-        System.out.println("Present number of tabs: " + this.getTabCount());
+        log.log(Level.FINE, "Present number of tabs: " + this.getTabCount());
         this.updateAddIconRect();
     }
 
@@ -90,7 +94,7 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
             rect = ((TabbedPaneIcon) getIconAt(tabNumber)).getBounds();
             if (rect.contains(e.getX(), e.getY()))
             {
-                System.out.println("Removing tab with " + tabNumber + " number!...");
+                log.log(Level.FINE, "Removing tab with " + tabNumber + " number!...");
                 this.removeTabAt(tabNumber);//remove tab
                 this.updateAddIconRect();
             }
@@ -101,7 +105,7 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
         }
         else if (this.addIconRect != null && this.addIconRect.contains(e.getX(), e.getY()))
         {
-            System.out.println("newGame by + button");
+            log.info("newGame by + button");
             this.showNewGameWindow();
         }
         //System.out.println("x:" +e.getX()+" y: "+e.getY()+" x:"+this.addIconRect.x+" y::"+this.addIconRect.y+" width:"+this.addIconRect.width+" height: "+this.addIconRect.height);

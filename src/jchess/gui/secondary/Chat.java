@@ -31,83 +31,95 @@ import javax.swing.JTextField;
 import jchess.network.Client;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 
 /**
- * Class representing the game chat
- * Players are in touch and can write a messages to each other
+ * Class representing the game chat Players are in touch and can write a
+ * messages to each other
  */
 public class Chat extends JPanel implements ActionListener
 {
+	private Client client;
+	private GridBagLayout gridBagLayout;
+	private GridBagConstraints gridBagConstraints;
+	private JScrollPane scrollPane;
+	private JTextArea textOutput;
+	private JTextField textInput;
+	private JButton sendButton;
 
-    public Client client;
-    private GridBagLayout gbl;
-    private GridBagConstraints gbc;
-    private JScrollPane scrollPane;
-    private JTextArea textOutput;
-    private JTextField textInput;
-    private JButton buttonSend;
+	public void setClient(Client client)
+	{
+		this.client = client;
+	}
 
-    public Chat()
-    {
-        super();
-
-        this.textOutput = new JTextArea();
-        this.textOutput.setEditable(false);
-        this.scrollPane = new JScrollPane();
-        this.scrollPane.setViewportView(this.textOutput);
-        this.textInput = new JTextField();
-        this.textInput.addActionListener(this);
-        this.buttonSend = new JButton("^");
-        this.buttonSend.addActionListener(this);
-
-        //add components
-        this.gbl = new GridBagLayout();
-        this.gbc = new GridBagConstraints();
-        this.gbc.fill = GridBagConstraints.BOTH;
-        this.setLayout(gbl);
-
-        this.gbc.gridx = 0;
-        this.gbc.gridy = 0;
-        this.gbc.gridwidth = 2;
-        this.gbc.gridheight = 1;
-        this.gbc.weighty = 1.0;
-        this.gbc.weightx = 0;
-        this.gbl.setConstraints(scrollPane, gbc);
-        this.add(scrollPane);
-
-        this.gbc.gridx = 0;
-        this.gbc.gridy = 1;
-        this.gbc.gridwidth = 1;
-        this.gbc.gridheight = 1;
-        this.gbc.weighty = 0;
-        this.gbc.weightx = 1.0;
-        this.gbl.setConstraints(textInput, gbc);
-        this.add(textInput);
-
-        this.gbc.gridx = 1;
-        this.gbc.gridy = 1;
-        this.gbc.gridwidth = 1;
-        this.gbc.gridheight = 1;
-        this.gbc.weighty = 0;
-        this.gbc.weightx = 0;
-        this.gbl.setConstraints(buttonSend, gbc);
-        this.add(buttonSend);
-    }
-
-    /** Method of adding message to the list
-     */
-    public void addMessage(String str) //added message to list
-    {
-        textOutput.append(str + "\n");
-        textOutput.setCaretPosition(textOutput.getDocument().getLength());
-    }
-
-    /** Sending message method
-     */
-    public void actionPerformed(ActionEvent arg0) //sending message
-    {
-        this.client.sendMassage(textInput.getText());
-        textInput.setText("");
-    }
+	public Chat()
+	{
+		super();
+		
+		createGuiElements();
+		createGridBagLayout();
+		placeGuiElementsOnWindowWithPositionConstraints();
+	}
+	
+	private void createGuiElements()
+	{
+		this.textOutput = new JTextArea();
+		this.textOutput.setEditable(false);
+		
+		this.scrollPane = new JScrollPane();
+		this.scrollPane.setViewportView(this.textOutput);
+		
+		this.textInput = new JTextField();
+		this.textInput.addActionListener(this);
+		
+		this.sendButton = new JButton("^");
+		this.sendButton.addActionListener(this);
+	}
+	
+	private void createGridBagLayout()
+	{
+		this.gridBagLayout = new GridBagLayout();
+		this.gridBagConstraints = new GridBagConstraints();
+		this.gridBagConstraints.fill = GridBagConstraints.BOTH;
+		this.setLayout(gridBagLayout);
+	}
+	
+	private void placeGuiElementsOnWindowWithPositionConstraints()
+	{
+		setGridBagConstraints(0, 0, 2, 1, 0, 1.0, scrollPane);
+		setGridBagConstraints(0, 1, 1, 1, 1.0, 0, textInput);
+		setGridBagConstraints(1, 1, 1, 1, 0, 0, sendButton);
+	}
+	
+	private void setGridBagConstraints(int gridx, int gridy, int gridwidth, int gridheight, double weightx,
+	        double weighty, JComponent guiElement)
+	{
+		this.gridBagConstraints.gridx = gridx;
+		this.gridBagConstraints.gridy = gridy;
+		this.gridBagConstraints.gridwidth = gridwidth;
+		this.gridBagConstraints.gridheight = gridheight;
+		this.gridBagConstraints.weightx = weightx;
+		this.gridBagConstraints.weighty = weighty;
+		this.gridBagLayout.setConstraints(guiElement, gridBagConstraints);
+		this.add(guiElement);
+	}
+	
+	/**
+	 * Method of adding message to the list
+	 */
+	public void addMessage(String message) // added message to list
+	{
+		textOutput.append(message + "\n");
+		textOutput.setCaretPosition(textOutput.getDocument().getLength());
+	}
+	
+	/**
+	 * Sending message method
+	 */
+	public void actionPerformed(ActionEvent arg0) // sending message
+	{
+		this.client.sendMassage(textInput.getText());
+		textInput.setText("");
+	}
 }
