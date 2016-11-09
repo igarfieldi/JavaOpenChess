@@ -29,74 +29,78 @@ import jchess.Localization;
  *
  * @author donmateo
  */
-public class NewGameWindow extends JDialog {
-    private JTabbedPane windowPane;
-    
+public class NewGameWindow extends JDialog
+{
+	private JTabbedPane windowPane;
+	
 	/** Creates new form NewGameWindow */
-    public NewGameWindow() {
-        initializeComponents();
-        createWindow();
-    }
-
-    /** This method is called from within the constructor to*/
-    private void initializeComponents() {
-        initializeWindowPane();
-        initializeGroupLayout();
-        pack();
-    }
-
-	private void initializeWindowPane() {
+	public NewGameWindow()
+	{
+		initializeComponents();
+		createWindow();
+	}
+	
+	/** This method is called from within the constructor to */
+	private void initializeComponents()
+	{
+		initializeWindowPane();
+		initializeGroupLayout();
+		pack();
+	}
+	
+	private void initializeWindowPane()
+	{
 		windowPane = new JTabbedPane();
-
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setAlwaysOnTop(true);
-        setName("Form"); // NOI18N
-
-        windowPane.setName("jTabbedPane1"); // NOI18N
+		
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		setAlwaysOnTop(true);
+		setName("Form"); // NOI18N
+		
+		windowPane.setName("jTabbedPane1"); // NOI18N
 	}
 	
-	private void initializeGroupLayout() {
+	private void initializeGroupLayout()
+	{
 		GroupLayout layout = new GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        setHorizontalLayoutGroup(layout);
-        setVerticalLayoutGroup(layout);
-	}
-
-	private void setVerticalLayoutGroup(GroupLayout layout) {
-		layout.setVerticalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(windowPane, GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-	}
-
-	private void setHorizontalLayoutGroup(GroupLayout layout) {
-		layout.setHorizontalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(windowPane, GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
-                .addContainerGap())
-        );
+		getContentPane().setLayout(layout);
+		setHorizontalLayoutGroup(layout);
+		setVerticalLayoutGroup(layout);
 	}
 	
-	private void createWindow() {
-		this.setSize(400, 700);
-        this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        this.windowPane.addTab(Localization.getMessage("local_game"), new DrawLocalSettings(this));
-        this.windowPane.addTab(Localization.getMessage("network_game"), new DrawNetworkSettings(this));
+	private void setVerticalLayoutGroup(GroupLayout layout)
+	{
+		layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+		        .addGroup(layout.createSequentialGroup().addGap(20, 20, 20)
+		                .addComponent(windowPane, GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE).addContainerGap()));
 	}
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new NewGameWindow().setVisible(true);
-            }
-        });
-    }
+	
+	private void setHorizontalLayoutGroup(GroupLayout layout)
+	{
+		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+		        .addGroup(layout.createSequentialGroup().addContainerGap()
+		                .addComponent(windowPane, GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE).addContainerGap()));
+	}
+	
+	private void createWindow()
+	{
+		this.setSize(400, 700);
+		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		this.windowPane.addTab(Localization.getMessage("local_game"), new LocalSettingsGUI(this));
+		this.windowPane.addTab(Localization.getMessage("network_game"), new DrawNetworkSettings(this));
+	}
+	
+	/**
+	 * @param args
+	 *            the command line arguments
+	 */
+	public static void main(String args[])
+	{
+		EventQueue.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				new NewGameWindow().setVisible(true);
+			}
+		});
+	}
 }
