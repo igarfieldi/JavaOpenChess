@@ -6,6 +6,8 @@ import java.util.ResourceBundle;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import jchess.JChessApp;
+
 /**
  * Adds wrapper methods to a ResourceBundle allowing typed access to its resources.
  * @author Florian Bethe
@@ -46,6 +48,6 @@ public class TypedResourceBundle {
 	 * @return icon resource
 	 */
 	public Icon getIcon(String key) {
-		return new ImageIcon(resource.getString(key));
+		return new ImageIcon(JChessApp.class.getResource("/jchess/resources/" + resource.getString(key)));
 	}
 }
