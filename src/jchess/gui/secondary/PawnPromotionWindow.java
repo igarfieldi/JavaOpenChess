@@ -28,85 +28,95 @@ import jchess.gui.GUI;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-/** Class responsible for promotion of a pawn.
- * When pawn reach the end of the chessboard it can be change to rook,
- * bishop, queen or knight. For what pawn is promoted decideds player.
+/**
+ * Class responsible for promotion of a pawn. When a pawn reaches the end of the
+ * chessboard, it can be changed into a rook, bishop, queen or knight. To what a pawn
+ * is promoted decides the player.
+ * 
  * @param parent Information about the current piece
  * @param color The player color
  */
 public class PawnPromotionWindow extends JDialog implements ActionListener
 {
+	private String selectedPromotion;
+	
+	private JButton knightButton;
+	private JButton bishopButton;
+	private JButton rookButton;
+	private JButton queenButton;
+	
+	public String getSelectedPromotion()
+	{
+		return selectedPromotion;
+	}
 
-    JButton knightButton;
-    JButton bishopButton;
-    JButton rookButton;
-    JButton queenButton;
-    GridBagLayout gbl;
-    public String result;
-    GridBagConstraints gbc;
+	public PawnPromotionWindow(Frame parent, String color)
+	{
+		super(parent);
+		this.selectedPromotion = "";
+		
+		initializeWindow();	
+		initializePieceButtons(color);
+	}
 
-    public PawnPromotionWindow(Frame parent, String color)
-    {
-        super(parent);
-        this.setTitle("Choose piece");
-        this.setMinimumSize(new Dimension(520, 130));
-        this.setSize(new Dimension(520, 130));
-        this.setMaximumSize(new Dimension(520, 130));
-        this.setResizable(false);
-        this.setLayout(new GridLayout(1, 4));
-        //this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+	private void initializeWindow()
+	{
+		this.setTitle("Choose piece");
+		this.setMinimumSize(new Dimension(520, 130));
+		this.setSize(new Dimension(520, 130));
+		this.setMaximumSize(new Dimension(520, 130));
+		this.setResizable(false);
+		this.setLayout(new GridLayout(1, 4));
+	}
 
-        this.gbl = new GridBagLayout();
-        this.gbc = new GridBagConstraints();
-        this.knightButton = new JButton(new ImageIcon(GUI.loadThemeImage("Knight-" + color + ".png")));
-        this.bishopButton = new JButton(new ImageIcon(GUI.loadThemeImage("Bishop-" + color + ".png")));
-        this.rookButton = new JButton(new ImageIcon(GUI.loadThemeImage("Rook-" + color + ".png")));
-        this.queenButton = new JButton(new ImageIcon(GUI.loadThemeImage("Queen-" + color + ".png")));
-        this.result = "";
+	private void initializePieceButtons(String color)
+	{
+		createPieceButton(queenButton, "Queen-", color);
+		createPieceButton(rookButton, "Rook-", color);
+		createPieceButton(bishopButton, "Bishop-", color);
+		createPieceButton(knightButton, "Knight-", color);
+	}
 
-        this.knightButton.addActionListener(this);
-        this.bishopButton.addActionListener(this);
-        this.rookButton.addActionListener(this);
-        this.queenButton.addActionListener(this);
+	private void createPieceButton(JButton pieceButton, String pieceResourceName, String color)
+	{
+		pieceButton = new JButton(new ImageIcon(GUI.loadThemeImage(pieceResourceName + color + ".png")));
+		pieceButton.addActionListener(this);
+		this.add(pieceButton);
+	}
 
-        this.add(queenButton);
-        this.add(rookButton);
-        this.add(bishopButton);
-        this.add(knightButton);
-    }
+	/**
+	 * Method for setting the color of promoted pawn
+	 * 
+	 * @param color The players color
+	 */
+	public void setColor(String color)
+	{
+		this.knightButton.setIcon(new ImageIcon(GUI.loadThemeImage("Knight-" + color + ".png")));
+		this.bishopButton.setIcon(new ImageIcon(GUI.loadThemeImage("Bishop-" + color + ".png")));
+		this.rookButton.setIcon(new ImageIcon(GUI.loadThemeImage("Rook-" + color + ".png")));
+		this.queenButton.setIcon(new ImageIcon(GUI.loadThemeImage("Queen-" + color + ".png")));
+	}
+	
+	/**
+	 * Method which is changing a pawn into queen, rook, bishop or knight
+	 * 
+	 * @param button Information about performed action
+	 */
+	public void actionPerformed(ActionEvent button)
+	{
+		chooseSelectedPiece(button);
+		this.setVisible(false);
+	}
 
-    /** Method setting the color fo promoted pawn
-     * @param color The players color
-     */
-    public void setColor(String color)
-    {
-        this.knightButton.setIcon(new ImageIcon(GUI.loadThemeImage("Knight-" + color + ".png")));
-        this.bishopButton.setIcon(new ImageIcon(GUI.loadThemeImage("Bishop-" + color + ".png")));
-        this.rookButton.setIcon(new ImageIcon(GUI.loadThemeImage("Rook-" + color + ".png")));
-        this.queenButton.setIcon(new ImageIcon(GUI.loadThemeImage("Queen-" + color + ".png")));
-    }
-
-    /** Method wich is changing a pawn into queen, rook, bishop or knight
-     * @param arg0 Capt information about performed action
-     */
-    public void actionPerformed(ActionEvent arg0)
-    {
-        if (arg0.getSource() == queenButton)
-        {
-            result = "Queen";
-        }
-        else if (arg0.getSource() == rookButton)
-        {
-            result = "Rook";
-        }
-        else if (arg0.getSource() == bishopButton)
-        {
-            result = "Bishop";
-        }
-        else //knight
-        {
-            result = "Knight";
-        }
-        this.setVisible(false);
-    }
+	private void chooseSelectedPiece(ActionEvent button)
+	{
+		if(button.getSource() == queenButton)
+			this.selectedPromotion = "Queen";
+		else if(button.getSource() == rookButton)
+			this.selectedPromotion = "Rook";
+		else if(button.getSource() == bishopButton)
+			this.selectedPromotion = "Bishop";
+		else
+			this.selectedPromotion = "Knight";
+	}
 }

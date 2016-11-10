@@ -234,7 +234,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		promotionBox.setColor(color);
 		JChessApp.getApplication().show(promotionBox);
 		
-		return promotionBox.result;
+		return promotionBox.getSelectedPromotion();
 	}
 	
 	public String showSaveWindow()
