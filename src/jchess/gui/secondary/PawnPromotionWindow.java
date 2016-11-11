@@ -30,11 +30,13 @@ import java.awt.event.ActionEvent;
 
 /**
  * Class responsible for promotion of a pawn. When a pawn reaches the end of the
- * chessboard, it can be changed into a rook, bishop, queen or knight. To what a pawn
- * is promoted decides the player.
+ * chessboard, it can be changed into a rook, bishop, queen or knight. To what a
+ * pawn is promoted decides the player.
  * 
- * @param parent Information about the current piece
- * @param color The player color
+ * @param parent
+ *            Information about the current piece
+ * @param color
+ *            The player color
  */
 public class PawnPromotionWindow extends JDialog implements ActionListener
 {
@@ -49,14 +51,15 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 	{
 		return selectedPromotion;
 	}
-
+	
 	public PawnPromotionWindow(Frame parent, String color)
 	{
 		super(parent);
 		this.selectedPromotion = "";
 		
-		initializeWindow();	
-		initializePieceButtons(color);
+		initializeWindow();
+        createPieceButtons(color);
+        initializePieceButtons();
 	}
 
 	private void initializeWindow()
@@ -69,25 +72,33 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 		this.setLayout(new GridLayout(1, 4));
 	}
 
-	private void initializePieceButtons(String color)
+	private void createPieceButtons(String color)
 	{
-		createPieceButton(queenButton, "Queen-", color);
-		createPieceButton(rookButton, "Rook-", color);
-		createPieceButton(bishopButton, "Bishop-", color);
-		createPieceButton(knightButton, "Knight-", color);
+		this.knightButton = new JButton(new ImageIcon(GUI.loadThemeImage("Knight-" + color + ".png")));
+        this.bishopButton = new JButton(new ImageIcon(GUI.loadThemeImage("Bishop-" + color + ".png")));
+        this.rookButton = new JButton(new ImageIcon(GUI.loadThemeImage("Rook-" + color + ".png")));
+        this.queenButton = new JButton(new ImageIcon(GUI.loadThemeImage("Queen-" + color + ".png")));
 	}
-
-	private void createPieceButton(JButton pieceButton, String pieceResourceName, String color)
+	
+	private void initializePieceButtons()
 	{
-		pieceButton = new JButton(new ImageIcon(GUI.loadThemeImage(pieceResourceName + color + ".png")));
+		addPieceButtonToWindow(this.queenButton);
+		addPieceButtonToWindow(this.rookButton);
+		addPieceButtonToWindow(this.bishopButton);
+		addPieceButtonToWindow(this.knightButton);
+	}
+	
+	private void addPieceButtonToWindow(JButton pieceButton)
+	{
 		pieceButton.addActionListener(this);
 		this.add(pieceButton);
 	}
-
+	
 	/**
 	 * Method for setting the color of promoted pawn
 	 * 
-	 * @param color The players color
+	 * @param color
+	 *            The players color
 	 */
 	public void setColor(String color)
 	{
@@ -100,14 +111,15 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 	/**
 	 * Method which is changing a pawn into queen, rook, bishop or knight
 	 * 
-	 * @param button Information about performed action
+	 * @param button
+	 *            Information about performed action
 	 */
 	public void actionPerformed(ActionEvent button)
 	{
 		chooseSelectedPiece(button);
 		this.setVisible(false);
 	}
-
+	
 	private void chooseSelectedPiece(ActionEvent button)
 	{
 		if(button.getSource() == queenButton)

@@ -28,7 +28,6 @@ import javax.swing.event.ListSelectionListener;
 
 import jchess.JChessApp;
 import jchess.Localization;
-import jchess.gamelogic.Settings;
 import jchess.gui.GUI;
 
 import javax.swing.event.ListSelectionEvent;
