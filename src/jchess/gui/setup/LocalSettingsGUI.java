@@ -40,6 +40,7 @@ import jchess.gamelogic.Settings;
  */
 public class LocalSettingsGUI extends JPanel implements ActionListener, TextListener
 {
+	private static final long serialVersionUID = -9175716765749855635L;
 	private static Logger log = Logger.getLogger(LocalSettingsGUI.class.getName());
 	
 	private JDialog localSettingsWindow;

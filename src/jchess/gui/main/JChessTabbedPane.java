@@ -24,7 +24,6 @@ import javax.swing.*;
 
 import jchess.JChessApp;
 import jchess.gui.GUI;
-import jchess.gui.setup.LocalSettingsGUI;
 import jchess.gui.setup.NewGameWindow;
 
 import java.awt.*;
@@ -35,185 +34,174 @@ import java.util.logging.Logger;
 
 public class JChessTabbedPane extends JTabbedPane implements MouseListener, ImageObserver
 {
+	private static final long serialVersionUID = -7046648284513652282L;
 	private static Logger log = Logger.getLogger(JChessTabbedPane.class.getName());
-    
+	
 	private TabbedPaneIcon closeIcon;
-    private Image addIcon = null;
-    private Image clickedAddIcon = null;
-    private Image unclickedAddIcon = null;
-    private Rectangle addIconRect = null;
+	private Image addIcon;
+	private Image unclickedAddIcon;
+	private Rectangle addIconRectangle = null;
+	
+	public JChessTabbedPane()
+	{
+		super();
+		this.closeIcon = new TabbedPaneIcon(this.closeIcon);
+		this.unclickedAddIcon = GUI.loadThemeImage("add-tab-icon.png");
+		this.addIcon = this.unclickedAddIcon;
+		
+		this.setDoubleBuffered(true);
+		super.addMouseListener(this);
+	}
+	
+	public void mouseReleased(MouseEvent event)
+	{
+	}
+	
+	public void mousePressed(MouseEvent event)
+	{
+	}
+	
+	@Override
+	public void mouseClicked(MouseEvent event)
+	{
+		int tabNumber = getUI().tabForCoordinate(this, event.getX(), event.getY());
+		if(tabNumber >= 0)
+		{
+			closeGameTab(event, tabNumber);
+			if(this.getTabCount() == 0)
+				this.showNewGameWindow();
+		}
+		else if(this.addIconRectangle != null && this.addIconRectangle.contains(event.getX(), event.getY()))
+		{
+			log.log(Level.FINE, "newGame by + button");
+			this.showNewGameWindow();
+		}
+	}
 
-    public JChessTabbedPane()
-    {
-        super();
-        this.closeIcon = new TabbedPaneIcon(this.closeIcon);
-        this.unclickedAddIcon = GUI.loadThemeImage("add-tab-icon.png");
-        this.clickedAddIcon = GUI.loadThemeImage("clicked-add-tab-icon.png");
-        this.addIcon = this.unclickedAddIcon;
-        this.setDoubleBuffered(true);
-        super.addMouseListener(this);
-    }
+	private void closeGameTab(MouseEvent event, int tabNumber)
+	{
+		Rectangle closeIconRectangle = ((TabbedPaneIcon) getIconAt(tabNumber)).getBounds();
+		if(closeIconRectangle.contains(event.getX(), event.getY()))
+		{
+			log.log(Level.FINE, "Removing tab with " + tabNumber + " number!...");
+			this.removeTabAt(tabNumber);
+			this.updateAddIconRectangle();
+		}
+	}
 
-    @Override
-    public void addTab(String title, Component component)
-    {
-        this.addTab(title, component, null);
-    }
+	private void updateAddIconRectangle()
+	{
+		if(this.getTabCount() > 0)
+		{
+			Rectangle newRectangleBounds = this.getBoundsAt(this.getTabCount() - 1);
+			this.addIconRectangle = new Rectangle(newRectangleBounds.x + newRectangleBounds.width + 5,
+			        newRectangleBounds.y, this.addIcon.getWidth(this), this.addIcon.getHeight(this));
+		}
+		else
+			this.addIconRectangle = null;
+	}
 
-    public void addTab(String title, Component component, Icon closeIcon)
-    {
-        super.addTab(title, new TabbedPaneIcon(closeIcon), component);
-        log.log(Level.FINE, "Present number of tabs: " + this.getTabCount());
-        this.updateAddIconRect();
-    }
+	private void showNewGameWindow()
+	{
+		if(JChessApp.jcv.newGameFrame == null)
+			JChessApp.jcv.newGameFrame = new NewGameWindow();
+		
+		JChessApp.getApplication().show(JChessApp.jcv.newGameFrame);
+	}
+	
+	public void mouseEntered(MouseEvent event)
+	{
+	}
+	
+	public void mouseExited(MouseEvent event)
+	{
+	}
+	
+	@Override
+	public void addTab(String title, Component component)
+	{
+		super.addTab(title, new TabbedPaneIcon(null), component);
+		log.info("Present number of tabs: " + this.getTabCount());
+		this.updateAddIconRectangle();
+	}
 
-    public void mouseReleased(MouseEvent e)
-    {
-    }
+	@Override
+	public boolean imageUpdate(Image image, int infoflags, int x, int y, int width, int height)
+	{
+		super.imageUpdate(image, infoflags, x, y, width, height);
+		this.updateAddIconRectangle();
+		return true;
+	}
+	
+	@Override
+	public void paint(Graphics graphics)
+	{
+		super.paint(graphics);
+		if(addIconRectangle != null)
+			graphics.drawImage(this.addIcon, addIconRectangle.x, addIconRectangle.y, null);
+	}
+	
+	@Override
+	public void update(Graphics graphics)
+	{
+		this.repaint();
+	}
+	
+	private class TabbedPaneIcon implements Icon
+	{
+		private int xPosition;
+		private int yPosition;
+		private int width;
+		private int height;
+		private Icon fileIcon;
+		
+		public TabbedPaneIcon(Icon fileIcon)
+		{
+			this.fileIcon = fileIcon;
+			this.width = 16;
+			this.height = 16;
+		}
+		
+		@Override
+		public void paintIcon(Component component, Graphics graphics, int x, int y)
+		{
+			this.xPosition = x;
+			this.yPosition = y;
+			
+			Color iconColor = graphics.getColor();
+			graphics.setColor(Color.black);
+			
+			int yOffset = y + 2;
+			drawIcon(graphics, x, yOffset);
+			
+			graphics.setColor(iconColor);
+			if(fileIcon != null)
+				fileIcon.paintIcon(component, graphics, x + width, yOffset);
+		}
 
-    public void mousePressed(MouseEvent e)
-    {
-    }
-
-    private void showNewGameWindow()
-    {
-        if (JChessApp.jcv.newGameFrame == null)
-        {
-            JChessApp.jcv.newGameFrame = new NewGameWindow();
-        }
-        JChessApp.getApplication().show(JChessApp.jcv.newGameFrame);
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e)
-    {
-        Rectangle rect; 
-        int tabNumber = getUI().tabForCoordinate(this, e.getX(), e.getY());
-        if (tabNumber >= 0)
-        {
-            rect = ((TabbedPaneIcon) getIconAt(tabNumber)).getBounds();
-            if (rect.contains(e.getX(), e.getY()))
-            {
-                log.log(Level.FINE, "Removing tab with " + tabNumber + " number!...");
-                this.removeTabAt(tabNumber);//remove tab
-                this.updateAddIconRect();
-            }
-            if(this.getTabCount() == 0)
-            {
-                this.showNewGameWindow();
-            }
-        }
-        else if (this.addIconRect != null && this.addIconRect.contains(e.getX(), e.getY()))
-        {
-            log.info("newGame by + button");
-            this.showNewGameWindow();
-        }
-        //System.out.println("x:" +e.getX()+" y: "+e.getY()+" x:"+this.addIconRect.x+" y::"+this.addIconRect.y+" width:"+this.addIconRect.width+" height: "+this.addIconRect.height);
-    }
-
-    public void mouseEntered(MouseEvent e)
-    {
-    }
-
-    public void mouseExited(MouseEvent e)
-    {
-    }
-
-    private void updateAddIconRect()
-    {
-        if (this.getTabCount() > 0)
-        {
-            Rectangle rect = this.getBoundsAt(this.getTabCount() - 1);
-            this.addIconRect = new Rectangle(rect.x + rect.width + 5, rect.y, this.addIcon.getWidth(this), this.addIcon.getHeight(this));
-        }
-        else
-        {
-            this.addIconRect = null;
-        }
-    }
-
-    private Rectangle getAddIconRect()
-    {
-        return this.addIconRect;
-    }
-
-    @Override
-    public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height)
-    {
-        super.imageUpdate(img, infoflags, x, y, width, height);
-        this.updateAddIconRect();
-        return true;
-    }
-
-    @Override
-    public void paint(Graphics g)
-    {
-        super.paint(g);
-        Rectangle rect = this.getAddIconRect();
-        if (rect != null)
-        {
-            g.drawImage(this.addIcon, rect.x, rect.y, null);
-        }
-    }
-
-    @Override
-    public void update(Graphics g)
-    {
-        this.repaint();
-    }
-}
-
-class TabbedPaneIcon implements Icon
-{
-
-    private int x_pos;
-    private int y_pos;
-    private int width;
-    private int height;
-    private Icon fileIcon;
-
-    public TabbedPaneIcon(Icon fileIcon)
-    {
-        this.fileIcon = fileIcon;
-        width = 16;
-        height = 16;
-    }//--endOf-TabbedPaneIcon--
-
-    @Override
-    public void paintIcon(Component c, Graphics g, int x, int y)
-    {
-        this.x_pos = x;
-        this.y_pos = y;
-
-        Color col = g.getColor();
-
-        g.setColor(Color.black);
-        int y_p = y + 2;
-        g.drawLine(x + 3, y_p + 3, x + 10, y_p + 10);
-        g.drawLine(x + 3, y_p + 4, x + 9, y_p + 10);
-        g.drawLine(x + 4, y_p + 3, x + 10, y_p + 9);
-        g.drawLine(x + 10, y_p + 3, x + 3, y_p + 10);
-        g.drawLine(x + 10, y_p + 4, x + 4, y_p + 10);
-        g.drawLine(x + 9, y_p + 3, x + 3, y_p + 9);
-        g.setColor(col);
-        if (fileIcon != null)
-        {
-            fileIcon.paintIcon(c, g, x + width, y_p);
-        }
-    }//--endOf-PaintIcon--
-
-    public int getIconWidth()
-    {
-        return width + (fileIcon != null ? fileIcon.getIconWidth() : 0);
-    }//--endOf-getIconWidth--
-
-    public int getIconHeight()
-    {
-        return height;
-    }//--endOf-getIconHeight()--
-
-    public Rectangle getBounds()
-    {
-        return new Rectangle(x_pos, y_pos, width, height);
-    }
+		private void drawIcon(Graphics graphics, int x, int line_y)
+		{
+			graphics.drawLine(x + 3, line_y + 3, x + 10, line_y + 10);
+			graphics.drawLine(x + 3, line_y + 4, x + 9, line_y + 10);
+			graphics.drawLine(x + 4, line_y + 3, x + 10, line_y + 9);
+			graphics.drawLine(x + 10, line_y + 3, x + 3, line_y + 10);
+			graphics.drawLine(x + 10, line_y + 4, x + 4, line_y + 10);
+			graphics.drawLine(x + 9, line_y + 3, x + 3, line_y + 9);
+		}
+		
+		public int getIconWidth()
+		{
+			return width + (fileIcon != null ? fileIcon.getIconWidth() : 0);
+		}
+		
+		public int getIconHeight()
+		{
+			return height;
+		}
+		
+		public Rectangle getBounds()
+		{
+			return new Rectangle(xPosition, yPosition, width, height);
+		}
+	}
 }

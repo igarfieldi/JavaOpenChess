@@ -31,6 +31,7 @@ import jchess.Localization;
  */
 public class NewGameWindow extends JDialog
 {
+	private static final long serialVersionUID = -6260320901046879928L;
 	private JTabbedPane windowPane;
 	
 	/** Creates new form NewGameWindow */

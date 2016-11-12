@@ -48,6 +48,7 @@ import java.util.logging.Logger;
 
 public class ThemeChooseWindow extends JDialog implements ActionListener, ListSelectionListener
 {
+	private static final long serialVersionUID = -6866033656313872022L;
 	private static Logger log = Logger.getLogger(ThemeChooseWindow.class.getName());
 	
 	private JList<String> themesList;

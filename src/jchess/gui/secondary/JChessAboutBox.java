@@ -24,6 +24,8 @@ import jchess.*;
 
 public class JChessAboutBox extends JDialog
 {
+	private static final long serialVersionUID = -729853003784600697L;
+
 	private JButton closeButton;
 	
 	private JLabel appTitleLabel;

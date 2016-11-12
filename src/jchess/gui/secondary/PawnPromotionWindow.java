@@ -40,6 +40,8 @@ import java.awt.event.ActionEvent;
  */
 public class PawnPromotionWindow extends JDialog implements ActionListener
 {
+	private static final long serialVersionUID = -1026252750919159633L;
+
 	private String selectedPromotion;
 	
 	private JButton knightButton;
