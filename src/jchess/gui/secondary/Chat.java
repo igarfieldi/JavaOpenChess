@@ -40,6 +40,8 @@ import javax.swing.JScrollPane;
  */
 public class Chat extends JPanel implements ActionListener
 {
+	private static final long serialVersionUID = -329754604543507459L;
+	
 	private Client client;
 	private GridBagLayout gridBagLayout;
 	private GridBagConstraints gridBagConstraints;
