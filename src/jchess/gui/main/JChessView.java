@@ -469,9 +469,9 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	
 	private void moveBackItemActionPerformed(java.awt.event.ActionEvent evt)// GEN-FIRST:event_moveBackItemActionPerformed
 	{// GEN-HEADEREND:event_moveBackItemActionPerformed
-		if(gui != null && gui.game != null)
+		if(gui != null && gui.getGame() != null)
 		{
-			gui.game.undo();
+			gui.getGame().undo();
 		} else
 		{
 			try
@@ -507,9 +507,9 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	private void moveForwardItemActionPerformed(java.awt.event.ActionEvent evt)// GEN-FIRST:event_moveForwardItemActionPerformed
 	{// GEN-HEADEREND:event_moveForwardItemActionPerformed
 	 // TODO add your handling code here:
-		if(gui != null && gui.game != null)
+		if(gui != null && gui.getGame() != null)
 		{
-			gui.game.redo();
+			gui.getGame().redo();
 		} else
 		{
 			try
