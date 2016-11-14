@@ -24,9 +24,9 @@ import java.util.ArrayList;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
+import jchess.gamelogic.field.Square;
 import jchess.gui.GUI;
 
-import java.awt.Graphics;
 import java.awt.Image;
 
 /**
@@ -52,7 +52,7 @@ public class Bishop extends Piece
 
     public Bishop(Chessboard chessboard, Player player)
     {
-        super(chessboard, player);      //call initializer of super type: Piece
+        super(chessboard, player);      //call initialiser of super type: Piece
         //this.setImages("Bishop-W.png", "Bishop-B.png");
         this.symbol = "B";
         this.setImage();
@@ -74,16 +74,16 @@ public class Bishop extends Piece
 
     /**
      * Annotation to superclass Piece changing pawns location
-     * @return  ArrayList with new possition of piece
+     * @return  ArrayList with new position of piece
      */
     @Override
-    public ArrayList allMoves()
+    public ArrayList<Square> allMoves()
     {
-        ArrayList list = new ArrayList();
+        ArrayList<Square> list = new ArrayList<Square>();
 
         for (int h = this.square.getPosX() - 1, i = this.square.getPosY() + 1; !isout(h, i); --h, ++i) //left-up
         {
-            if (this.checkPiece(h, i)) //if on this sqhuare isn't piece
+            if (this.checkPiece(h, i))//if there isn't a piece on this square
             {
                 if (this.player.getColor() == Player.Color.WHITE) //white
                 {
@@ -107,13 +107,13 @@ public class Bishop extends Piece
             }
             else
             {
-                break;//we've to break becouse we cannot go beside other piece!!
+                break;//we have to break because we cannot go over other pieces!
             }
         }
 
         for (int h = this.square.getPosX() - 1, i = this.square.getPosY() - 1; !isout(h, i); --h, --i) //left-down
         {
-            if (this.checkPiece(h, i)) //if on this sqhuare isn't piece
+            if (this.checkPiece(h, i)) //if there isn't a piece on this square
             {
                 if (this.player.getColor() == Player.Color.WHITE) //white
                 {
@@ -137,13 +137,13 @@ public class Bishop extends Piece
             }
             else
             {
-                break;//we've to break becouse we cannot go beside other piece!!
+                break; //we have to break because we cannot go over other pieces!
             }
         }
 
         for (int h = this.square.getPosX() + 1, i = this.square.getPosY() + 1; !isout(h, i); ++h, ++i) //right-up
         {
-            if (this.checkPiece(h, i)) //if on this sqhuare isn't piece
+            if (this.checkPiece(h, i))//if there isn't a piece on this square
             {
                 if (this.player.getColor() == Player.Color.WHITE) //white
                 {
@@ -167,13 +167,13 @@ public class Bishop extends Piece
             }
             else
             {
-                break;//we've to break becouse we cannot go beside other piece!!
+                break;//we have to break because we cannot go over other pieces!
             }
         }
 
         for (int h = this.square.getPosX() + 1, i = this.square.getPosY() - 1; !isout(h, i); ++h, --i) //right-down
         {
-            if (this.checkPiece(h, i)) //if on this sqhuare isn't piece
+            if (this.checkPiece(h, i))//if there isn't a piece on this square
             {
                 if (this.player.getColor() == Player.Color.WHITE) //white
                 {
@@ -197,7 +197,7 @@ public class Bishop extends Piece
             }
             else
             {
-                break;//we've to break becouse we cannot go beside other piece!!
+                break;//we have to break because we cannot go over other pieces!
             }
         }
 
