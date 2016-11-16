@@ -631,7 +631,7 @@ public class Moves extends AbstractTableModel
 						{
 							continue;
 						}
-						ArrayList<Square> pieceMoves = squares[i][j].getPiece().allMoves();
+						ArrayList<Square> pieceMoves = squares[i][j].getPiece().possibleMoves();
 						for(Object square : pieceMoves)
 						{
 							Square currSquare = (Square) square;

@@ -778,7 +778,7 @@ public class Chessboard extends JPanel
 			if(tmpSquare.getPiece() != null)
 			{
 				this.moves = this.squares[(int) (this.active_x_square - 1)][(int) (this.active_y_square - 1)].getPiece()
-				        .allMoves();
+				        .possibleMoves();
 			}
 			
 			for(Iterator<Square> it = moves.iterator(); moves != null && it.hasNext();)
