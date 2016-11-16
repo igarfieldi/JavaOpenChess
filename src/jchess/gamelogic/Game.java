@@ -395,7 +395,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 		try
 		{
 			chessboard.select(chessboard.squares[beginX][beginY]);
-			if(chessboard.getActiveSquare().getPiece().allMoves().indexOf(chessboard.squares[endX][endY]) != -1) // move
+			if(chessboard.getActiveSquare().getPiece().possibleMoves().indexOf(chessboard.squares[endX][endY]) != -1) // move
 			{
 				chessboard.move(chessboard.squares[beginX][beginY], chessboard.squares[endX][endY]);
 			} else
@@ -540,7 +540,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 					{
 						chessboard.unselect();
 					} else if(chessboard.getActiveSquare() != null && chessboard.getActiveSquare().getPiece() != null
-					        && chessboard.getActiveSquare().getPiece().allMoves().indexOf(sq) != -1) // move
+					        && chessboard.getActiveSquare().getPiece().possibleMoves().indexOf(sq) != -1) // move
 					{
 						if(settings.getGameType() == Settings.GameType.LOCAL)
 						{

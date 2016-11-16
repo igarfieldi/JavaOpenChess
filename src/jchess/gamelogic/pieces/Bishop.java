@@ -30,8 +30,7 @@ import jchess.gui.GUI;
 import java.awt.Image;
 
 /**
- * Class to represent a chess pawn bishop
- * Bishop can move across the chessboard
+ * Class to represent a chess pawn bishop Bishop can move across the chessboard
  *
 |_|_|_|_|_|_|_|X|7
 |X|_|_|_|_|_|X|_|6
@@ -45,162 +44,166 @@ import java.awt.Image;
  */
 public class Bishop extends Piece
 {
-
-    public static short value = 3;
-    protected static final Image imageWhite = GUI.loadThemeImage("Bishop-W.png");
-    protected static final Image imageBlack = GUI.loadThemeImage("Bishop-B.png");
-
-    public Bishop(Chessboard chessboard, Player player)
-    {
-        super(chessboard, player);      //call initialiser of super type: Piece
-        //this.setImages("Bishop-W.png", "Bishop-B.png");
-        this.symbol = "B";
-        this.setImage();
-    }
-
-    @Override
-    void setImage()
-    {
-        if (this.player.getColor() == Player.Color.BLACK)
-        {
-            image = imageBlack;
-        }
-        else
-        {
-            image = imageWhite;
-        }
-        orgImage = image;
-    }
-
-    /**
-     * Annotation to superclass Piece changing pawns location
-     * @return  ArrayList with new position of piece
-     */
-    @Override
-    public ArrayList<Square> allMoves()
-    {
-        ArrayList<Square> list = new ArrayList<Square>();
-
-        for (int h = this.square.getPosX() - 1, i = this.square.getPosY() + 1; !isout(h, i); --h, ++i) //left-up
-        {
-            if (this.checkPiece(h, i))//if there isn't a piece on this square
-            {
-                if (this.player.getColor() == Player.Color.WHITE) //white
-                {
-                    if (this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[h][i]))
-                    {
-                        list.add(chessboard.squares[h][i]);
-                    }
-                }
-                else //or black
-                {
-                    if (this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[h][i]))
-                    {
-                        list.add(chessboard.squares[h][i]);
-                    }
-                }
-
-                if (this.otherOwner(h, i))
-                {
-                    break;
-                }
-            }
-            else
-            {
-                break;//we have to break because we cannot go over other pieces!
-            }
-        }
-
-        for (int h = this.square.getPosX() - 1, i = this.square.getPosY() - 1; !isout(h, i); --h, --i) //left-down
-        {
-            if (this.checkPiece(h, i)) //if there isn't a piece on this square
-            {
-                if (this.player.getColor() == Player.Color.WHITE) //white
-                {
-                    if (this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[h][i]))
-                    {
-                        list.add(chessboard.squares[h][i]);
-                    }
-                }
-                else //or black
-                {
-                    if (this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[h][i]))
-                    {
-                        list.add(chessboard.squares[h][i]);
-                    }
-                }
-
-                if (this.otherOwner(h, i))
-                {
-                    break;
-                }
-            }
-            else
-            {
-                break; //we have to break because we cannot go over other pieces!
-            }
-        }
-
-        for (int h = this.square.getPosX() + 1, i = this.square.getPosY() + 1; !isout(h, i); ++h, ++i) //right-up
-        {
-            if (this.checkPiece(h, i))//if there isn't a piece on this square
-            {
-                if (this.player.getColor() == Player.Color.WHITE) //white
-                {
-                    if (this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[h][i]))
-                    {
-                        list.add(chessboard.squares[h][i]);
-                    }
-                }
-                else //or black
-                {
-                    if (this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[h][i]))
-                    {
-                        list.add(chessboard.squares[h][i]);
-                    }
-                }
-
-                if (this.otherOwner(h, i))
-                {
-                    break;
-                }
-            }
-            else
-            {
-                break;//we have to break because we cannot go over other pieces!
-            }
-        }
-
-        for (int h = this.square.getPosX() + 1, i = this.square.getPosY() - 1; !isout(h, i); ++h, --i) //right-down
-        {
-            if (this.checkPiece(h, i))//if there isn't a piece on this square
-            {
-                if (this.player.getColor() == Player.Color.WHITE) //white
-                {
-                    if (this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[h][i]))
-                    {
-                        list.add(chessboard.squares[h][i]);
-                    }
-                }
-                else //or black
-                {
-                    if (this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square, chessboard.squares[h][i]))
-                    {
-                        list.add(chessboard.squares[h][i]);
-                    }
-                }
-
-                if (this.otherOwner(h, i))
-                {
-                    break;
-                }
-            }
-            else
-            {
-                break;//we have to break because we cannot go over other pieces!
-            }
-        }
-
-        return list;
-    }
+	
+	public static short value = 3;
+	protected static final Image imageWhite = GUI.loadThemeImage("Bishop-W.png");
+	protected static final Image imageBlack = GUI.loadThemeImage("Bishop-B.png");
+	
+	public Bishop(Chessboard chessboard, Player player)
+	{
+		super(chessboard, player); // call initialiser of super type: Piece
+		// this.setImages("Bishop-W.png", "Bishop-B.png");
+		this.symbol = "B";
+		this.setImage();
+	}
+	
+	@Override
+	void setImage()
+	{
+		if(this.player.getColor() == Player.Color.BLACK)
+		{
+			image = imageBlack;
+		} else
+		{
+			image = imageWhite;
+		}
+		orgImage = image;
+	}
+	
+	/**
+	 * Annotation to superclass Piece changing pawns location
+	 * 
+	 * @return ArrayList with new position of piece
+	 */
+	@Override
+	public ArrayList<Square> possibleMoves()
+	{
+		ArrayList<Square> list = new ArrayList<Square>();
+		
+		for(int h = this.square.getPosX() - 1, i = this.square.getPosY() + 1; !isout(h, i); --h, ++i) // left-up
+		{
+			if(this.checkPiece(h, i))// if there isn't a piece on this square
+			{
+				if(this.player.getColor() == Player.Color.WHITE) // white
+				{
+					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
+					        chessboard.squares[h][i]))
+					{
+						list.add(chessboard.squares[h][i]);
+					}
+				} else // or black
+				{
+					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
+					        chessboard.squares[h][i]))
+					{
+						list.add(chessboard.squares[h][i]);
+					}
+				}
+				
+				if(this.otherOwner(h, i))
+				{
+					break;
+				}
+			} else
+			{
+				break;// we have to break because we cannot go over other
+				      // pieces!
+			}
+		}
+		
+		for(int h = this.square.getPosX() - 1, i = this.square.getPosY() - 1; !isout(h, i); --h, --i) // left-down
+		{
+			if(this.checkPiece(h, i)) // if there isn't a piece on this square
+			{
+				if(this.player.getColor() == Player.Color.WHITE) // white
+				{
+					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
+					        chessboard.squares[h][i]))
+					{
+						list.add(chessboard.squares[h][i]);
+					}
+				} else // or black
+				{
+					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
+					        chessboard.squares[h][i]))
+					{
+						list.add(chessboard.squares[h][i]);
+					}
+				}
+				
+				if(this.otherOwner(h, i))
+				{
+					break;
+				}
+			} else
+			{
+				break; // we have to break because we cannot go over other
+				       // pieces!
+			}
+		}
+		
+		for(int h = this.square.getPosX() + 1, i = this.square.getPosY() + 1; !isout(h, i); ++h, ++i) // right-up
+		{
+			if(this.checkPiece(h, i))// if there isn't a piece on this square
+			{
+				if(this.player.getColor() == Player.Color.WHITE) // white
+				{
+					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
+					        chessboard.squares[h][i]))
+					{
+						list.add(chessboard.squares[h][i]);
+					}
+				} else // or black
+				{
+					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
+					        chessboard.squares[h][i]))
+					{
+						list.add(chessboard.squares[h][i]);
+					}
+				}
+				
+				if(this.otherOwner(h, i))
+				{
+					break;
+				}
+			} else
+			{
+				break;// we have to break because we cannot go over other
+				      // pieces!
+			}
+		}
+		
+		for(int h = this.square.getPosX() + 1, i = this.square.getPosY() - 1; !isout(h, i); ++h, --i) // right-down
+		{
+			if(this.checkPiece(h, i))// if there isn't a piece on this square
+			{
+				if(this.player.getColor() == Player.Color.WHITE) // white
+				{
+					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
+					        chessboard.squares[h][i]))
+					{
+						list.add(chessboard.squares[h][i]);
+					}
+				} else // or black
+				{
+					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
+					        chessboard.squares[h][i]))
+					{
+						list.add(chessboard.squares[h][i]);
+					}
+				}
+				
+				if(this.otherOwner(h, i))
+				{
+					break;
+				}
+			} else
+			{
+				break;// we have to break because we cannot go over other
+				      // pieces!
+			}
+		}
+		
+		return list;
+	}
 }
