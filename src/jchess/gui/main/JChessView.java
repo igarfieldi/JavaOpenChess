@@ -15,15 +15,13 @@
 
 package jchess.gui.main;
 
+import org.jdesktop.application.*;
 import org.jdesktop.application.Action;
-import org.jdesktop.application.SingleFrameApplication;
-import org.jdesktop.application.FrameView;
-import org.jdesktop.application.TaskMonitor;
 
 import jchess.JChessApp;
 import jchess.Localization;
 import jchess.gamelogic.Game;
-import jchess.gamelogic.Settings;
+import jchess.gui.main.JChessTabbedPane;
 import jchess.gui.GUI;
 import jchess.gui.secondary.JChessAboutBox;
 import jchess.gui.secondary.PawnPromotionWindow;
@@ -31,146 +29,433 @@ import jchess.gui.secondary.ThemeChooseWindow;
 import jchess.gui.setup.NewGameWindow;
 import jchess.util.TypedResourceBundle;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.Timer;
-import javax.swing.Icon;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
+import java.awt.*;
+import java.beans.*;
+
 import javax.swing.*;
 import java.awt.event.*;
-import java.io.File;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
+import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The application's main frame.
  */
 public class JChessView extends FrameView implements ActionListener, ComponentListener
 {
+	private static Logger log = Logger.getLogger(JChessView.class.getName());
 	private static final TypedResourceBundle VIEW_PROPERTIES = new TypedResourceBundle("jchess.resources.JChessView");
-	private static final TypedResourceBundle APP_PROPERTIES = new TypedResourceBundle("jchess.resources.JChessApp");
-    static GUI gui = null;
-    GUI activeGUI;//in future it will be reference to active tab
+	
+	private static GUI gui = null;
+	
+	private JMenu gameMenu;
+	private JTabbedPane gamesPane;
+	private JMenuItem loadGameItem;
+	private JPanel mainPanel;
+	private JMenuBar menuBar;
+	private JMenuItem moveBackItem;
+	private JMenuItem moveForwardItem;
+	private JMenuItem newGameItem;
+	private JMenu optionsMenu;
+	private JProgressBar progressBar;
+	private JMenuItem rewindToBeginItem;
+	private JMenuItem rewindToEndItem;
+	private JMenuItem saveGameItem;
+	private JLabel statusAnimationLabel;
+	private JLabel statusMessageLabel;
+	private JPanel statusPanel;
+	private JMenuItem themeSettingsMenu;
+	
+	private Timer messageTimer;
+	private Timer busyIconTimer;
+	private Icon idleIcon;
+	private final Icon[] busyIcons = new Icon[15];
+	private int busyIconIndex = 0;
+	
+	private JDialog aboutBox;
+	private PawnPromotionWindow pawnPromotionBox;
+	public JDialog newGameFrame;
+	
+	public JChessView(SingleFrameApplication app)
+	{
+		super(app);
+		
+		initializeComponents();
+		
+		// status bar initialization - message timeout, idle icon and busy
+		// animation, etc
+		initializeTimers(VIEW_PROPERTIES);
+		initializeIcons(VIEW_PROPERTIES);
+		
+		// connecting action tasks to status bar via TaskMonitor
+		initializeTaskMonitor();
+	}
 
-    public Game addNewTab(String title)
-    {
-        Game newGUI = new Game();
-        this.gamesPane.addTab(title, newGUI);
-        return newGUI;
-    }
+	private void initializeComponents()
+	{
+		initializeGuiElements();
+		initializeMainPanel();
+		initializeMenuBar();
+		initializeStatusPanel();
+	}
 
-    public void actionPerformed(ActionEvent event)
-    {
-        Object target = event.getSource();
-        if (target == newGameItem)
-        {
-            this.newGameFrame = new NewGameWindow();
-            JChessApp.getApplication().show(this.newGameFrame);
-        }
-        else if (target == saveGameItem)
-        { //saveGame
-            if (this.gamesPane.getTabCount() == 0)
-            {
-                JOptionPane.showMessageDialog(null, Localization.getMessage("save_not_called_for_tab"));
-                return;
-            }
-            while (true)
-            {//until
-                JFileChooser fc = new JFileChooser();
-                int retVal = fc.showSaveDialog(this.gamesPane);
-                if (retVal == JFileChooser.APPROVE_OPTION)
-                {
-                    File selFile = fc.getSelectedFile();
-                    Game tempGUI = (Game) this.gamesPane.getComponentAt(this.gamesPane.getSelectedIndex());
-                    if (!selFile.exists())
-                    {
-                        try
-                        {
-                            selFile.createNewFile();
-                        }
-                        catch (java.io.IOException exc)
-                        {
-                            System.out.println("error creating file: " + exc);
-                        }
-                    }
-                    else if (selFile.exists())
-                    {
-                        int opt = JOptionPane.showConfirmDialog(tempGUI, Localization.getMessage("file_exists"), Localization.getMessage("file_exists"), JOptionPane.YES_NO_OPTION);
-                        if (opt == JOptionPane.NO_OPTION)//if user choose to now overwrite
-                        {
-                            continue; // go back to file choose
-                        }
-                    }
-                    if (selFile.canWrite())
-                    {
-                        tempGUI.saveGame(selFile);
-                    }
-                    System.out.println(fc.getSelectedFile().isFile());
-                    break;
-                }
-                else if (retVal == JFileChooser.CANCEL_OPTION)
-                {
-                    break;
-                }
-                ///JChessView.gui.game.saveGame(fc.);
-            }
-        }
-        else if (target == loadGameItem)
-        { //loadGame
-            JFileChooser fc = new JFileChooser();
-            int retVal = fc.showOpenDialog(this.gamesPane);
-            if (retVal == JFileChooser.APPROVE_OPTION)
-            {
-                File file = fc.getSelectedFile();
-                if (file.exists() && file.canRead())
-                {
-                    Game.loadGame(file);
-                }
-            }
-        }
-        else if (target == this.themeSettingsMenu)
-        {
-            try
-            {
-                ThemeChooseWindow choose = new ThemeChooseWindow(this.getFrame());
-                JChessApp.getApplication().show(choose);
-            } 
-            catch(Exception exc)
-            {
-                JOptionPane.showMessageDialog(
-                    JChessApp.getApplication().getMainFrame(), 
-                    exc.getMessage()
-                );
-                System.out.println("Something wrong creating window - perhaps themeList is null");                
-            }
-        }
-    }
+	private void initializeGuiElements()
+	{
+		menuBar = new JMenuBar();
+		newGameItem = new JMenuItem();
+		loadGameItem = new JMenuItem();
+		saveGameItem = new JMenuItem();
+		gameMenu = new JMenu();
+		moveBackItem = new JMenuItem();
+		moveForwardItem = new JMenuItem();
+		rewindToBeginItem = new JMenuItem();
+		rewindToEndItem = new JMenuItem();
+		optionsMenu = new JMenu();
+		themeSettingsMenu = new JMenuItem();
+		statusPanel = new JPanel();
+		statusMessageLabel = new JLabel();
+		statusAnimationLabel = new JLabel();
+		progressBar = new JProgressBar();
+	}
 
- 
-    ///--endOf- don't delete, becouse they're interfaces for MouseEvent
-        
+	private void initializeMainPanel()
+	{
+		mainPanel = new JPanel();
+		gamesPane = new JChessTabbedPane();
+		
+		configureMainPanelSize();
+		configureMainPanelLayout();
+		setComponent(mainPanel);
+	}
 
-    public JChessView(SingleFrameApplication app) {
-        super(app);
-        
-        initComponents();
-        
-        // status bar initialization - message timeout, idle icon and busy animation, etc
-        int messageTimeout = VIEW_PROPERTIES.getInteger("StatusBar.messageTimeout");
-		messageTimer = new Timer(messageTimeout, new ActionListener()
+	private void configureMainPanelSize()
+	{
+		mainPanel.setMaximumSize(new Dimension(800, 600));
+		mainPanel.setMinimumSize(new Dimension(800, 600));
+		mainPanel.setName("mainPanel");
+		mainPanel.setPreferredSize(new Dimension(800, 600));
+	}
+
+	private void configureMainPanelLayout()
+	{
+		gamesPane.setName("gamesPane");
+		
+		GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
+		mainPanel.setLayout(mainPanelLayout);
+		mainPanelLayout.setHorizontalGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+		        .addGroup(mainPanelLayout.createSequentialGroup().addContainerGap()
+		                .addComponent(gamesPane, GroupLayout.DEFAULT_SIZE, 776, Short.MAX_VALUE).addContainerGap()));
+		mainPanelLayout.setVerticalGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+		        .addGroup(mainPanelLayout.createSequentialGroup().addContainerGap().addComponent(gamesPane,
+		                GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)));
+	}
+
+	private void initializeMenuBar()
+	{
+		ActionMap actionMap = Application.getInstance(JChessApp.class).getContext()
+		        .getActionMap(JChessView.class, this);
+		
+		menuBar.setName("menuBar"); // NOI18N
+		
+		addFileMenu(VIEW_PROPERTIES, actionMap);
+		addGameMenu(VIEW_PROPERTIES);
+		addOptionsMenu(VIEW_PROPERTIES);
+		addHelpMenu(VIEW_PROPERTIES, actionMap);
+		
+		setMenuBar(menuBar);
+	}
+
+	private void addFileMenu(TypedResourceBundle resourceBundle, ActionMap actionMap)
+	{
+		JMenu fileMenu = new JMenu();
+		JMenuItem exitMenuItem = new JMenuItem();
+		
+		fileMenu.setText(resourceBundle.getString("fileMenu.text")); // NOI18N
+		fileMenu.setName("fileMenu"); // NOI18N
+		
+		setMenuItem(fileMenu, resourceBundle, newGameItem, KeyEvent.VK_N, "newGameItem");
+		setMenuItem(fileMenu, resourceBundle, loadGameItem, KeyEvent.VK_L, "loadGameItem");
+		setMenuItem(fileMenu, resourceBundle, saveGameItem, KeyEvent.VK_S, "saveGameItem");
+		
+		exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
+		exitMenuItem.setName("exitMenuItem"); // NOI18N
+		fileMenu.add(exitMenuItem);
+		
+		menuBar.add(fileMenu);
+	}
+
+	private void setMenuItem(JMenu fileMenu, TypedResourceBundle resourceBundle, JMenuItem menuItem, int hotkey, String menuItemName)
+	{
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(hotkey, InputEvent.CTRL_MASK));
+		menuItem.setText(resourceBundle.getString(menuItemName + ".text"));
+		menuItem.setName(menuItemName);
+		fileMenu.add(menuItem);
+		menuItem.addActionListener(this);
+	}
+
+	private void addGameMenu(TypedResourceBundle resourceBundle)
+	{
+		gameMenu.setText(resourceBundle.getString("gameMenu.text")); // NOI18N
+		gameMenu.setName("gameMenu"); // NOI18N
+		
+		setMoveBackItem(resourceBundle);
+		setMoveForwardItem(resourceBundle);
+		setRewindToBeginItem(resourceBundle);
+		setRewindToEndItem(resourceBundle);
+		
+		menuBar.add(gameMenu);
+	}
+
+	private void setMoveBackItem(TypedResourceBundle resourceBundle)
+	{
+		moveBackItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
+		moveBackItem.setText(resourceBundle.getString("moveBackItem.text"));
+		moveBackItem.setName("moveBackItem"); 
+		moveBackItem.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent event)
+			{
+				moveBackItemActionPerformed(event);
+			}
+		});
+		gameMenu.add(moveBackItem);
+	}
+
+	private void moveBackItemActionPerformed(ActionEvent event)
+	{
+		if(gui != null && gui.getGame() != null)
+			gui.getGame().undo();
+		else
+			try
+			{
+				Game activeGame = this.getActiveTabGame();
+				if(!activeGame.undo())
+					JOptionPane.showMessageDialog(null, "Cannot undo!");
+			}
+			catch(ArrayIndexOutOfBoundsException exception)
+			{
+				JOptionPane.showMessageDialog(null, "No active tabs!");
+			}
+			catch(UnsupportedOperationException exception)
+			{
+				JOptionPane.showMessageDialog(null, exception.getMessage());
+			}
+	}
+
+	private void setMoveForwardItem(TypedResourceBundle resourceBundle)
+	{
+		moveForwardItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_MASK));
+		moveForwardItem.setText(resourceBundle.getString("moveForwardItem.text")); // NOI18N
+		moveForwardItem.setName("moveForwardItem"); // NOI18N
+		moveForwardItem.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent event)
+			{
+				moveForwardItemActionPerformed(event);
+			}
+		});
+		gameMenu.add(moveForwardItem);
+	}
+
+	private void moveForwardItemActionPerformed(ActionEvent event)
+	{
+		if(gui != null && gui.getGame() != null)
+			gui.getGame().redo();
+		else
+		{
+			try
+			{
+				Game activeGame = this.getActiveTabGame();
+				if(!activeGame.redo())
+					JOptionPane.showMessageDialog(null, "Cannot redo any further!");
+			}
+			catch(ArrayIndexOutOfBoundsException exception)
+			{
+				JOptionPane.showMessageDialog(null, "No active tabs!");
+			}
+			catch(UnsupportedOperationException exception)
+			{
+				JOptionPane.showMessageDialog(null, exception.getMessage());
+			}
+		}
+	}
+
+	private void setRewindToBeginItem(TypedResourceBundle resourceBundle)
+	{
+		rewindToBeginItem
+		        .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK));
+		rewindToBeginItem.setText(resourceBundle.getString("rewindToBegin.text")); // NOI18N
+		rewindToBeginItem.setName("rewindToBegin"); // NOI18N
+		rewindToBeginItem.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent event)
+			{
+				rewindToBeginActionPerformed(event);
+			}
+		});
+		gameMenu.add(rewindToBeginItem);
+	}
+
+	private void rewindToBeginActionPerformed(ActionEvent event)
+	{
+		try
+		{
+			Game activeGame = this.getActiveTabGame();
+			if(!activeGame.rewindToBegin())
+				JOptionPane.showMessageDialog(null, "Cannot rewind to beginning!");
+		}
+		catch(ArrayIndexOutOfBoundsException exception)
+		{
+			JOptionPane.showMessageDialog(null, "No active tabs!");
+		}
+		catch(UnsupportedOperationException exception)
+		{
+			JOptionPane.showMessageDialog(null, exception.getMessage());
+		}
+	}
+
+	private void setRewindToEndItem(TypedResourceBundle resourceBundle)
+	{
+		rewindToEndItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
+		        InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK));
+		rewindToEndItem.setText(resourceBundle.getString("rewindToEnd.text")); // NOI18N
+		rewindToEndItem.setName("rewindToEnd"); // NOI18N
+		rewindToEndItem.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent event)
+			{
+				rewindToEndActionPerformed(event);
+			}
+		});
+		gameMenu.add(rewindToEndItem);
+	}
+
+	private void rewindToEndActionPerformed(ActionEvent event)
+	{
+		try
+		{
+			Game activeGame = this.getActiveTabGame();
+			if(!activeGame.rewindToEnd())
+				JOptionPane.showMessageDialog(null, "Cannot rewind to end!");
+		}
+		catch(ArrayIndexOutOfBoundsException exception)
+		{
+			JOptionPane.showMessageDialog(null, "No active tabs!");
+		}
+		catch(UnsupportedOperationException exception)
+		{
+			JOptionPane.showMessageDialog(null, exception.getMessage());
+		}
+	}
+
+	private void addOptionsMenu(TypedResourceBundle resourceBundle)
+	{
+		optionsMenu.setText(resourceBundle.getString("optionsMenu.text")); // NOI18N
+		optionsMenu.setName("optionsMenu"); // NOI18N
+		
+		themeSettingsMenu.setText(resourceBundle.getString("themeSettingsMenu.text")); // NOI18N
+		themeSettingsMenu.setName("themeSettingsMenu"); // NOI18N
+		themeSettingsMenu.addActionListener(this);
+		optionsMenu.add(themeSettingsMenu);
+		
+		menuBar.add(optionsMenu);
+	}
+
+	private void addHelpMenu(TypedResourceBundle resourceBundle, ActionMap actionMap)
+	{
+		JMenu helpMenu = new JMenu();
+		JMenuItem aboutMenuItem = new JMenuItem();
+		
+		helpMenu.setText(resourceBundle.getString("helpMenu.text")); // NOI18N
+		helpMenu.setName("helpMenu"); // NOI18N
+		
+		aboutMenuItem.setAction(actionMap.get("showAboutBox")); // NOI18N
+		aboutMenuItem.setName("aboutMenuItem"); // NOI18N
+		helpMenu.add(aboutMenuItem);
+		
+		menuBar.add(helpMenu);
+	}
+
+	private void initializeStatusPanel()
+	{
+		JSeparator statusPanelSeparator = new JSeparator();
+		
+		setStatusGuiElementNames(statusPanelSeparator);
+		
+		GroupLayout statusPanelLayout = new GroupLayout(statusPanel);
+		statusPanel.setLayout(statusPanelLayout);
+		setHorizontalStatusPanelLayout(statusPanelSeparator, statusPanelLayout);
+		setVerticalStatusPanelLayout(statusPanelSeparator, statusPanelLayout);
+		
+		setStatusBar(statusPanel);
+	}
+
+	private void setStatusGuiElementNames(JSeparator statusPanelSeparator)
+	{
+		statusPanel.setName("statusPanel"); // NOI18N
+		
+		statusPanelSeparator.setName("statusPanelSeparator"); // NOI18N
+		
+		statusMessageLabel.setName("statusMessageLabel"); // NOI18N
+		
+		statusAnimationLabel.setHorizontalAlignment(SwingConstants.LEFT);
+		statusAnimationLabel.setName("statusAnimationLabel"); // NOI18N
+		
+		progressBar.setName("progressBar");
+	}
+
+	private void setHorizontalStatusPanelLayout(JSeparator statusPanelSeparator, GroupLayout statusPanelLayout)
+	{
+		statusPanelLayout.setHorizontalGroup(statusPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+		        .addComponent(statusPanelSeparator, GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
+		        .addGroup(statusPanelLayout.createSequentialGroup().addContainerGap().addComponent(statusMessageLabel)
+		                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 616, Short.MAX_VALUE)
+		                .addComponent(progressBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+		                        GroupLayout.PREFERRED_SIZE)
+		                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(statusAnimationLabel)
+		                .addContainerGap()));
+	}
+
+	private void setVerticalStatusPanelLayout(JSeparator statusPanelSeparator, GroupLayout statusPanelLayout)
+	{
+		statusPanelLayout.setVerticalGroup(statusPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+		        .addGroup(statusPanelLayout.createSequentialGroup()
+		                .addComponent(statusPanelSeparator, GroupLayout.PREFERRED_SIZE, 2, GroupLayout.PREFERRED_SIZE)
+		                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE,
+		                        Short.MAX_VALUE)
+		                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+		                        .addComponent(statusMessageLabel).addComponent(statusAnimationLabel).addComponent(
+		                                progressBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+		                                GroupLayout.PREFERRED_SIZE))
+		                .addGap(3, 3, 3)));
+	}
+
+	private void initializeTimers(TypedResourceBundle resourceBundle)
+	{
+		int messageTimeout = resourceBundle.getInteger("StatusBar.messageTimeout");
+		messageTimer = setMessageTimer(messageTimeout);
+		messageTimer.setRepeats(false);
+		
+		int busyAnimationRate = resourceBundle.getInteger("StatusBar.busyAnimationRate");
+		for(int i = 0; i < busyIcons.length; i++)
+			busyIcons[i] = resourceBundle.getIcon("StatusBar.busyIcons[" + i + "]");
+		busyIconTimer = setBusyIconTimer(busyAnimationRate);
+	}
+
+	private Timer setMessageTimer(int messageTimeout)
+	{
+		return new Timer(messageTimeout, new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
 				statusMessageLabel.setText("");
 			}
 		});
-		messageTimer.setRepeats(false);
-        int busyAnimationRate = VIEW_PROPERTIES.getInteger("StatusBar.busyAnimationRate");
-        for (int i = 0; i < busyIcons.length; i++) {
-            busyIcons[i] = VIEW_PROPERTIES.getIcon("StatusBar.busyIcons[" + i + "]");
-		}
-		busyIconTimer = new Timer(busyAnimationRate, new ActionListener()
+	}
+
+	private Timer setBusyIconTimer(int busyAnimationRate)
+	{
+		return new Timer(busyAnimationRate, new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
@@ -178,50 +463,165 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 				statusAnimationLabel.setIcon(busyIcons[busyIconIndex]);
 			}
 		});
-        idleIcon = VIEW_PROPERTIES.getIcon("StatusBar.idleIcon");
+	}
+
+	private void initializeIcons(TypedResourceBundle resourceBundle)
+	{
+		idleIcon = resourceBundle.getIcon("StatusBar.idleIcon");
 		statusAnimationLabel.setIcon(idleIcon);
 		progressBar.setVisible(false);
-		
-		// connecting action tasks to status bar via TaskMonitor
+	}
+
+	private void initializeTaskMonitor()
+	{
 		TaskMonitor taskMonitor = new TaskMonitor(getApplication().getContext());
-		taskMonitor.addPropertyChangeListener(new java.beans.PropertyChangeListener()
+		taskMonitor.addPropertyChangeListener(new PropertyChangeListener()
 		{
-			public void propertyChange(java.beans.PropertyChangeEvent evt)
+			public void propertyChange(PropertyChangeEvent event)
 			{
-				String propertyName = evt.getPropertyName();
+				String propertyName = event.getPropertyName();
 				if("started".equals(propertyName))
+					startProgressTracking();
+				else if("done".equals(propertyName))
+					stopProgressTracking();
+				else if("message".equals(propertyName))
+					receiveMessage(event);
+				else if("progress".equals(propertyName))
+					updateProgress(event);
+			}
+
+			private void startProgressTracking()
+			{
+				if(!busyIconTimer.isRunning())
 				{
-					if(!busyIconTimer.isRunning())
-					{
-						statusAnimationLabel.setIcon(busyIcons[0]);
-						busyIconIndex = 0;
-						busyIconTimer.start();
-					}
-					progressBar.setVisible(true);
-					progressBar.setIndeterminate(true);
-				} else if("done".equals(propertyName))
-				{
-					busyIconTimer.stop();
-					statusAnimationLabel.setIcon(idleIcon);
-					progressBar.setVisible(false);
-					progressBar.setValue(0);
-				} else if("message".equals(propertyName))
-				{
-					String text = (String) (evt.getNewValue());
-					statusMessageLabel.setText((text == null) ? "" : text);
-					messageTimer.restart();
-				} else if("progress".equals(propertyName))
-				{
-					int value = (Integer) (evt.getNewValue());
-					progressBar.setVisible(true);
-					progressBar.setIndeterminate(false);
-					progressBar.setValue(value);
+					statusAnimationLabel.setIcon(busyIcons[0]);
+					busyIconIndex = 0;
+					busyIconTimer.start();
 				}
+				progressBar.setVisible(true);
+				progressBar.setIndeterminate(true);
+			}
+
+			private void stopProgressTracking()
+			{
+				busyIconTimer.stop();
+				statusAnimationLabel.setIcon(idleIcon);
+				progressBar.setVisible(false);
+				progressBar.setValue(0);
+			}
+
+			private void receiveMessage(PropertyChangeEvent event)
+			{
+				String text = (String) (event.getNewValue());
+				statusMessageLabel.setText((text == null) ? "" : text);
+				messageTimer.restart();
+			}
+
+			private void updateProgress(PropertyChangeEvent event)
+			{
+				int value = (Integer) (event.getNewValue());
+				progressBar.setVisible(true);
+				progressBar.setIndeterminate(false);
+				progressBar.setValue(value);
 			}
 		});
-		
+	}
+
+	public Game addNewTab(String title)
+	{
+		Game newGameTab = new Game();
+		this.gamesPane.addTab(title, newGameTab);
+		return newGameTab;
 	}
 	
+	public void actionPerformed(ActionEvent event)
+	{
+		Object target = event.getSource();
+		if(target == newGameItem)
+		{
+			this.newGameFrame = new NewGameWindow();
+			JChessApp.getApplication().show(this.newGameFrame);
+		}
+		else if(target == saveGameItem)
+		{ // saveGame
+			if(this.gamesPane.getTabCount() == 0)
+			{
+				JOptionPane.showMessageDialog(null, Localization.getMessage("save_not_called_for_tab"));
+				return;
+			}
+			while(true)
+			{// until
+				JFileChooser fileChooser = new JFileChooser();
+				int retVal = fileChooser.showSaveDialog(this.gamesPane);
+				if(retVal == JFileChooser.APPROVE_OPTION)
+				{
+					File selectedFile = fileChooser.getSelectedFile();
+					Game tempGUI = (Game) this.gamesPane.getComponentAt(this.gamesPane.getSelectedIndex());
+					if(!selectedFile.exists())
+						createSaveFile(selectedFile);
+					else if(selectedFile.exists())
+					{
+						int opt = JOptionPane.showConfirmDialog(tempGUI, Localization.getMessage("file_exists"),
+						        Localization.getMessage("file_exists"), JOptionPane.YES_NO_OPTION);
+						if(opt == JOptionPane.NO_OPTION) // if user choose to now overwrite
+							continue; // go back to file choose
+					}
+					if(selectedFile.canWrite())
+						tempGUI.saveGame(selectedFile);
+					
+					log.info(Boolean.toString(fileChooser.getSelectedFile().isFile()));
+					break;
+				}
+				else if(retVal == JFileChooser.CANCEL_OPTION)
+				{
+					break;
+				}
+			}
+		}
+		else if(target == loadGameItem)
+			loadGame();
+		else if(target == this.themeSettingsMenu)
+			showThemeChooseWindow();
+	}
+
+	private void createSaveFile(File selectedFile)
+	{
+		try
+		{
+			selectedFile.createNewFile();
+		}
+		catch(IOException exception)
+		{
+			log.log(Level.SEVERE, "error creating file: ", exception);
+		}
+	}
+
+	private void loadGame()
+	{
+		JFileChooser fileChooser = new JFileChooser();
+		int retVal = fileChooser.showOpenDialog(this.gamesPane);
+		if(retVal == JFileChooser.APPROVE_OPTION)
+		{
+			File file = fileChooser.getSelectedFile();
+			if(file.exists() && file.canRead())
+				Game.loadGame(file);
+		}
+	}
+
+	private void showThemeChooseWindow()
+	{
+		try
+		{
+			ThemeChooseWindow themeChooseWindow = new ThemeChooseWindow(this.getFrame());
+			JChessApp.getApplication().show(themeChooseWindow);
+		}
+		catch(Exception exception)
+		{
+			JOptionPane.showMessageDialog(JChessApp.getApplication().getMainFrame(), exception.getMessage());
+			log.log(Level.SEVERE, "Something wrong creating window - perhaps themeList is null", exception);
+		}
+	}
+
 	@Action
 	public void showAboutBox()
 	{
@@ -236,368 +636,28 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	
 	public String showPawnPromotionBox(String color)
 	{
-		if(promotionBox == null)
+		if(pawnPromotionBox == null)
 		{
 			JFrame mainFrame = JChessApp.getApplication().getMainFrame();
-			promotionBox = new PawnPromotionWindow(mainFrame, color);
-			promotionBox.setLocationRelativeTo(mainFrame);
-			promotionBox.setModal(true);
+			pawnPromotionBox = new PawnPromotionWindow(mainFrame, color);
+			pawnPromotionBox.setLocationRelativeTo(mainFrame);
+			pawnPromotionBox.setModal(true);
 			
 		}
-		promotionBox.setColor(color);
-		JChessApp.getApplication().show(promotionBox);
+		pawnPromotionBox.setColor(color);
+		JChessApp.getApplication().show(pawnPromotionBox);
 		
-		return promotionBox.getSelectedPromotion();
+		return pawnPromotionBox.getSelectedPromotion();
 	}
 	
 	public String showSaveWindow()
 	{
-		
 		return "";
 	}
 	
-	/**
-	 * This method is called from within the constructor to initialize the form.
-	 * WARNING: Do NOT modify this code. The content of this method is always
-	 * regenerated by the Form Editor.
-	 */
-	// <editor-fold defaultstate="collapsed" desc="Generated
-	// Code">//GEN-BEGIN:initComponents
-	private void initComponents()
+	public void componentResized(ComponentEvent event)
 	{
-		
-		mainPanel = new javax.swing.JPanel();
-		gamesPane = new jchess.gui.main.JChessTabbedPane();
-		menuBar = new javax.swing.JMenuBar();
-		javax.swing.JMenu fileMenu = new javax.swing.JMenu();
-		newGameItem = new javax.swing.JMenuItem();
-		loadGameItem = new javax.swing.JMenuItem();
-		saveGameItem = new javax.swing.JMenuItem();
-		javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
-		gameMenu = new javax.swing.JMenu();
-		moveBackItem = new javax.swing.JMenuItem();
-		moveForwardItem = new javax.swing.JMenuItem();
-		rewindToBegin = new javax.swing.JMenuItem();
-		rewindToEnd = new javax.swing.JMenuItem();
-		optionsMenu = new javax.swing.JMenu();
-		themeSettingsMenu = new javax.swing.JMenuItem();
-		javax.swing.JMenu helpMenu = new javax.swing.JMenu();
-		javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
-		statusPanel = new javax.swing.JPanel();
-		javax.swing.JSeparator statusPanelSeparator = new javax.swing.JSeparator();
-		statusMessageLabel = new javax.swing.JLabel();
-		statusAnimationLabel = new javax.swing.JLabel();
-		progressBar = new javax.swing.JProgressBar();
-		
-		mainPanel.setMaximumSize(new java.awt.Dimension(800, 600));
-		mainPanel.setMinimumSize(new java.awt.Dimension(800, 600));
-		mainPanel.setName("mainPanel"); // NOI18N
-		mainPanel.setPreferredSize(new java.awt.Dimension(800, 600));
-		
-		gamesPane.setName("gamesPane"); // NOI18N
-		
-		javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
-		mainPanel.setLayout(mainPanelLayout);
-		mainPanelLayout
-		        .setHorizontalGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-		                .addGroup(mainPanelLayout.createSequentialGroup().addContainerGap()
-		                        .addComponent(gamesPane, javax.swing.GroupLayout.DEFAULT_SIZE, 776, Short.MAX_VALUE)
-		                        .addContainerGap()));
-		mainPanelLayout.setVerticalGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-		        .addGroup(mainPanelLayout.createSequentialGroup().addContainerGap().addComponent(gamesPane,
-		                javax.swing.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)));
-		
-		menuBar.setName("menuBar"); // NOI18N
-		
-        fileMenu.setText(VIEW_PROPERTIES.getString("fileMenu.text")); // NOI18N
-        fileMenu.setName("fileMenu"); // NOI18N
-
-        newGameItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
-        newGameItem.setText(VIEW_PROPERTIES.getString("newGameItem.text")); // NOI18N
-        newGameItem.setName("newGameItem"); // NOI18N
-        fileMenu.add(newGameItem);
-        newGameItem.addActionListener(this);
-
-        loadGameItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L, java.awt.event.InputEvent.CTRL_MASK));
-        loadGameItem.setText(VIEW_PROPERTIES.getString("loadGameItem.text")); // NOI18N
-        loadGameItem.setName("loadGameItem"); // NOI18N
-        fileMenu.add(loadGameItem);
-        loadGameItem.addActionListener(this);
-
-        saveGameItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
-        saveGameItem.setText(VIEW_PROPERTIES.getString("saveGameItem.text")); // NOI18N
-		saveGameItem.setName("saveGameItem"); // NOI18N
-		fileMenu.add(saveGameItem);
-		saveGameItem.addActionListener(this);
-		
-		javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(jchess.JChessApp.class)
-		        .getContext().getActionMap(JChessView.class, this);
-		exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
-		exitMenuItem.setName("exitMenuItem"); // NOI18N
-		fileMenu.add(exitMenuItem);
-		
-		menuBar.add(fileMenu);
-		
-        gameMenu.setText(VIEW_PROPERTIES.getString("gameMenu.text")); // NOI18N
-        gameMenu.setName("gameMenu"); // NOI18N
-
-        moveBackItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
-        moveBackItem.setText(VIEW_PROPERTIES.getString("moveBackItem.text")); // NOI18N
-		moveBackItem.setName("moveBackItem"); // NOI18N
-		moveBackItem.addMouseListener(new java.awt.event.MouseAdapter()
-		{
-			public void mouseClicked(java.awt.event.MouseEvent evt)
-			{
-				moveBackItemMouseClicked(evt);
-			}
-		});
-		moveBackItem.addActionListener(new java.awt.event.ActionListener()
-		{
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-				moveBackItemActionPerformed(evt);
-			}
-		});
-		gameMenu.add(moveBackItem);
-		
-		moveForwardItem.setAccelerator(
-				javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
-        moveForwardItem.setText(VIEW_PROPERTIES.getString("moveForwardItem.text")); // NOI18N
-		moveForwardItem.setName("moveForwardItem"); // NOI18N
-		moveForwardItem.addMouseListener(new java.awt.event.MouseAdapter()
-		{
-			public void mouseClicked(java.awt.event.MouseEvent evt)
-			{
-				moveForwardItemMouseClicked(evt);
-			}
-		});
-		moveForwardItem.addActionListener(new java.awt.event.ActionListener()
-		{
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-				moveForwardItemActionPerformed(evt);
-			}
-		});
-		gameMenu.add(moveForwardItem);
-		
-		rewindToBegin.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z,
-				java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        rewindToBegin.setText(VIEW_PROPERTIES.getString("rewindToBegin.text")); // NOI18N
-		rewindToBegin.setName("rewindToBegin"); // NOI18N
-		rewindToBegin.addActionListener(new java.awt.event.ActionListener()
-		{
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-				rewindToBeginActionPerformed(evt);
-			}
-		});
-		gameMenu.add(rewindToBegin);
-		
-		rewindToEnd.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y,
-				java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        rewindToEnd.setText(VIEW_PROPERTIES.getString("rewindToEnd.text")); // NOI18N
-		rewindToEnd.setName("rewindToEnd"); // NOI18N
-		rewindToEnd.addActionListener(new java.awt.event.ActionListener()
-		{
-			public void actionPerformed(java.awt.event.ActionEvent evt)
-			{
-				rewindToEndActionPerformed(evt);
-			}
-		});
-		gameMenu.add(rewindToEnd);
-		
-		menuBar.add(gameMenu);
-		
-        optionsMenu.setText(VIEW_PROPERTIES.getString("optionsMenu.text")); // NOI18N
-		optionsMenu.setName("optionsMenu"); // NOI18N
-		
-        themeSettingsMenu.setText(VIEW_PROPERTIES.getString("themeSettingsMenu.text")); // NOI18N
-		themeSettingsMenu.setName("themeSettingsMenu"); // NOI18N
-		optionsMenu.add(themeSettingsMenu);
-		themeSettingsMenu.addActionListener(this);
-		
-		menuBar.add(optionsMenu);
-		
-        helpMenu.setText(VIEW_PROPERTIES.getString("helpMenu.text")); // NOI18N
-		helpMenu.setName("helpMenu"); // NOI18N
-		
-		aboutMenuItem.setAction(actionMap.get("showAboutBox")); // NOI18N
-		aboutMenuItem.setName("aboutMenuItem"); // NOI18N
-		helpMenu.add(aboutMenuItem);
-		
-		menuBar.add(helpMenu);
-		
-		statusPanel.setName("statusPanel"); // NOI18N
-		
-		statusPanelSeparator.setName("statusPanelSeparator"); // NOI18N
-		
-		statusMessageLabel.setName("statusMessageLabel"); // NOI18N
-		
-		statusAnimationLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-		statusAnimationLabel.setName("statusAnimationLabel"); // NOI18N
-		
-		progressBar.setName("progressBar"); // NOI18N
-		
-		javax.swing.GroupLayout statusPanelLayout = new javax.swing.GroupLayout(statusPanel);
-		statusPanel.setLayout(statusPanelLayout);
-		statusPanelLayout.setHorizontalGroup(statusPanelLayout
-		        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-		        .addComponent(statusPanelSeparator, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
-		        .addGroup(statusPanelLayout.createSequentialGroup().addContainerGap().addComponent(statusMessageLabel)
-		                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 616, Short.MAX_VALUE)
-		                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE,
-		                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-		                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-		                .addComponent(statusAnimationLabel).addContainerGap()));
-		statusPanelLayout.setVerticalGroup(statusPanelLayout
-		        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-		        .addGroup(statusPanelLayout.createSequentialGroup()
-		                .addComponent(statusPanelSeparator, javax.swing.GroupLayout.PREFERRED_SIZE, 2,
-		                        javax.swing.GroupLayout.PREFERRED_SIZE)
-		                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED,
-		                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-		                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-		                        .addComponent(statusMessageLabel).addComponent(statusAnimationLabel).addComponent(
-		                                progressBar, javax.swing.GroupLayout.PREFERRED_SIZE,
-		                                javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-		                .addGap(3, 3, 3)));
-		
-		setComponent(mainPanel);
-		setMenuBar(menuBar);
-		setStatusBar(statusPanel);
-	}// </editor-fold>//GEN-END:initComponents
-	
-	private void moveBackItemActionPerformed(java.awt.event.ActionEvent evt)// GEN-FIRST:event_moveBackItemActionPerformed
-	{// GEN-HEADEREND:event_moveBackItemActionPerformed
-		if(gui != null && gui.getGame() != null)
-		{
-			gui.getGame().undo();
-		} else
-		{
-			try
-			{
-				Game activeGame = this.getActiveTabGame();
-				if(!activeGame.undo())
-				{
-					JOptionPane.showMessageDialog(null, "Nie da sie cofnac!");
-				}
-			} catch(java.lang.ArrayIndexOutOfBoundsException exc)
-			{
-				JOptionPane.showMessageDialog(null, "Brak aktywnej karty!");
-			} catch(UnsupportedOperationException exc)
-			{
-				JOptionPane.showMessageDialog(null, exc.getMessage());
-			}
-		}
-		
-	}// GEN-LAST:event_moveBackItemActionPerformed
-	
-	private void moveBackItemMouseClicked(java.awt.event.MouseEvent evt)// GEN-FIRST:event_moveBackItemMouseClicked
-	{// GEN-HEADEREND:event_moveBackItemMouseClicked
-	 // TODO add your handling code here:
-	
-	}// GEN-LAST:event_moveBackItemMouseClicked
-	
-	private void moveForwardItemMouseClicked(java.awt.event.MouseEvent evt)// GEN-FIRST:event_moveForwardItemMouseClicked
-	{// GEN-HEADEREND:event_moveForwardItemMouseClicked
-	 // TODO add your handling code here:
-	
-	}// GEN-LAST:event_moveForwardItemMouseClicked
-	
-	private void moveForwardItemActionPerformed(java.awt.event.ActionEvent evt)// GEN-FIRST:event_moveForwardItemActionPerformed
-	{// GEN-HEADEREND:event_moveForwardItemActionPerformed
-	 // TODO add your handling code here:
-		if(gui != null && gui.getGame() != null)
-		{
-			gui.getGame().redo();
-		} else
-		{
-			try
-			{
-				Game activeGame = this.getActiveTabGame();
-				if(!activeGame.redo())
-				{
-					JOptionPane.showMessageDialog(null, "W pamieci brak ruchow do przodu!");
-				}
-			} catch(java.lang.ArrayIndexOutOfBoundsException exc)
-			{
-				JOptionPane.showMessageDialog(null, "Brak aktywnej karty!");
-			} catch(UnsupportedOperationException exc)
-			{
-				JOptionPane.showMessageDialog(null, exc.getMessage());
-			}
-		}
-	}// GEN-LAST:event_moveForwardItemActionPerformed
-	
-	private void rewindToBeginActionPerformed(java.awt.event.ActionEvent evt)// GEN-FIRST:event_rewindToBeginActionPerformed
-	{// GEN-HEADEREND:event_rewindToBeginActionPerformed
-		try
-		{
-			Game activeGame = this.getActiveTabGame();
-			if(!activeGame.rewindToBegin())
-			{
-				JOptionPane.showMessageDialog(null, "W pamieci brak ruchow do przodu!");
-			}
-		} catch(ArrayIndexOutOfBoundsException exc)
-		{
-			JOptionPane.showMessageDialog(null, "Brak aktywnej karty!");
-		} catch(UnsupportedOperationException exc)
-		{
-			JOptionPane.showMessageDialog(null, exc.getMessage());
-		}
-	}// GEN-LAST:event_rewindToBeginActionPerformed
-	
-	private void rewindToEndActionPerformed(java.awt.event.ActionEvent evt)// GEN-FIRST:event_rewindToEndActionPerformed
-	{// GEN-HEADEREND:event_rewindToEndActionPerformed
-		try
-		{
-			Game activeGame = this.getActiveTabGame();
-			if(!activeGame.rewindToEnd())
-			{
-				JOptionPane.showMessageDialog(null, "W pamieci brak ruchow wstecz!");
-			}
-		} catch(ArrayIndexOutOfBoundsException exc)
-		{
-			JOptionPane.showMessageDialog(null, "Brak aktywnej karty!");
-		} catch(UnsupportedOperationException exc)
-		{
-			JOptionPane.showMessageDialog(null, exc.getMessage());
-		}
-	}// GEN-LAST:event_rewindToEndActionPerformed
-	
-	// Variables declaration - do not modify//GEN-BEGIN:variables
-	private javax.swing.JMenu gameMenu;
-	private javax.swing.JTabbedPane gamesPane;
-	private javax.swing.JMenuItem loadGameItem;
-	public javax.swing.JPanel mainPanel;
-	private javax.swing.JMenuBar menuBar;
-	private javax.swing.JMenuItem moveBackItem;
-	private javax.swing.JMenuItem moveForwardItem;
-	private javax.swing.JMenuItem newGameItem;
-	private javax.swing.JMenu optionsMenu;
-	private javax.swing.JProgressBar progressBar;
-	private javax.swing.JMenuItem rewindToBegin;
-	private javax.swing.JMenuItem rewindToEnd;
-	private javax.swing.JMenuItem saveGameItem;
-	private javax.swing.JLabel statusAnimationLabel;
-	private javax.swing.JLabel statusMessageLabel;
-	private javax.swing.JPanel statusPanel;
-	private javax.swing.JMenuItem themeSettingsMenu;
-	// End of variables declaration//GEN-END:variables
-	// private JTabbedPaneWithIcon gamesPane;
-	private final Timer messageTimer;
-	private final Timer busyIconTimer;
-	private final Icon idleIcon;
-	private final Icon[] busyIcons = new Icon[15];
-	private int busyIconIndex = 0;
-	
-	private JDialog aboutBox;
-	private PawnPromotionWindow promotionBox;
-	public JDialog newGameFrame;
-	
-	public void componentResized(ComponentEvent e)
-	{
-		System.out.println("jchessView resized!!;");
+		log.log(Level.SEVERE, "jchessView resized!!;");
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	
@@ -612,19 +672,18 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		return this.gamesPane.getTabCount();
 	}
 	
-	public void componentMoved(ComponentEvent e)
+	public void componentMoved(ComponentEvent event)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	
-	public void componentShown(ComponentEvent e)
+	public void componentShown(ComponentEvent event)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	
-	public void componentHidden(ComponentEvent e)
+	public void componentHidden(ComponentEvent event)
 	{
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
-	
 }
