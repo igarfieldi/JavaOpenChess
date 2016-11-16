@@ -27,17 +27,17 @@ import jchess.gamelogic.field.Chessboard;
 import jchess.gamelogic.field.Square;
 import jchess.gui.GUI;
 
-import java.awt.Graphics;
 import java.awt.Image;
 
 /**
  * Class to represent a pawn piece
- * Pawn can move only forvard and can beat only across
- * In first move pawn can move 2 sqares
- * pawn can be upgreade to rook, knight, bishop, Queen if it's in the
- * squers nearest the side where opponent is lockated
- * Firat move of pawn:
- *       |_|_|_|_|_|_|_|_|7
+ * Pawn can move only forward and can beat only across
+ * In first move pawn can move 2 squares
+ * Pawn can be upgrade to rook, knight, bishop, Queen if it's in the
+ * squares nearest the side where opponent is located
+ * First move of pawn:
+ *
+|_|_|_|_|_|_|_|_|7
 |_|_|_|_|_|_|_|_|6
 |_|_|_|X|_|_|_|_|5
 |_|_|_|X|_|_|_|_|4
@@ -48,7 +48,8 @@ import java.awt.Image;
 0 1 2 3 4 5 6 7
  *
  * Move of a pawn:
- *       |_|_|_|_|_|_|_|_|7
+ *       
+|_|_|_|_|_|_|_|_|7
 |_|_|_|_|_|_|_|_|6
 |_|_|_|_|_|_|_|_|5
 |_|_|_|X|_|_|_|_|4
@@ -57,8 +58,10 @@ import java.awt.Image;
 |_|_|_|_|_|_|_|_|1
 |_|_|_|_|_|_|_|_|0
 0 1 2 3 4 5 6 7
+ *
  * Beats with can take pawn:
- *       |_|_|_|_|_|_|_|_|7
+ *
+|_|_|_|_|_|_|_|_|7
 |_|_|_|_|_|_|_|_|6
 |_|_|_|_|_|_|_|_|5
 |_|_|X|_|X|_|_|_|4
@@ -100,21 +103,26 @@ public class Pawn extends Piece
 
     /**
      * Annotation to superclass Piece changing pawns location
-     * @return  ArrayList with new possition of piece
+     * @return  ArrayList with new position of piece
      */
     @Override
-    public ArrayList allMoves()
+    public ArrayList<Square> allMoves()
     {
         //System.out.println(this.player.goDown);//4test
-        ArrayList list = new ArrayList();
+        ArrayList<Square> list = new ArrayList<Square>();
         Square sq;
         Square sq1;
-        int first = this.square.getPosY() - 1;//number where to move
-        int second = this.square.getPosY() - 2;//number where to move (only in first move)
+        int first;
+        int second;
         if (this.player.isTopSide())
         {//check if player "go" down or up
-            first = this.square.getPosY() + 1;//if yes, change value
-            second = this.square.getPosY() + 2;//if yes, change value
+            first = this.square.getPosY() + 1;//where to move, if the player is on the top side
+            second = this.square.getPosY() + 2;//where to move, if the player is on the top side for the first move
+        }
+        else
+        {
+        	first = this.square.getPosY() - 1;//same, for bottom side
+            second = this.square.getPosY() - 2;//same, for bottom side
         }
         if (this.isout(first, first))
         {//out of bounds protection

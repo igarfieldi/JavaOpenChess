@@ -24,13 +24,25 @@ import java.util.ArrayList;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
+import jchess.gamelogic.field.Square;
 import jchess.gui.GUI;
 
-import java.awt.Graphics;
 import java.awt.Image;
 
 /**
  * Class to represent a chess pawn knight
+ * Knight's movements:
+ *  
+
+|_|_|_|_|_|_|_|_|7
+|_|_|_|_|_|_|_|_|6
+|_|_|2|_|3|_|_|_|5
+|_|1|_|_|_|4|_|_|4
+|_|_|_|K|_|_|_|_|3
+|_|8|_|_|_|5|_|_|2
+|_|_|7|_|6|_|_|_|1
+|_|_|_|_|_|_|_|_|0
+0 1 2 3 4 5 6 7
  */
 public class Knight extends Piece
 {
@@ -41,7 +53,7 @@ public class Knight extends Piece
 
     public Knight(Chessboard chessboard, Player player)
     {
-        super(chessboard, player);//call initializer of super type: Piece
+        super(chessboard, player);//call initialiser of super type: Piece
         //this.setImages("Knight-W.png", "Knight-B.png");
         this.symbol = "N";
         this.setImage();
@@ -63,29 +75,14 @@ public class Knight extends Piece
 
     /**
      *  Annotation to superclass Piece changing pawns location
-     * @return  ArrayList with new possition of pawn
+     * @return  ArrayList with new position of pawn
      */
     @Override
-    public ArrayList allMoves()
+    public ArrayList<Square> allMoves()
     {
-        ArrayList list = new ArrayList();
-
-        // knight all moves
-        //  _______________ Y:
-        // |_|_|_|_|_|_|_|_|7
-        // |_|_|_|_|_|_|_|_|6
-        // |_|_|2|_|3|_|_|_|5
-        // |_|1|_|_|_|4|_|_|4
-        // |_|_|_|K|_|_|_|_|3
-        // |_|8|_|_|_|5|_|_|2
-        // |_|_|7|_|6|_|_|_|1
-        // |_|_|_|_|_|_|_|_|0
-        //X:0 1 2 3 4 5 6 7
-        //
-
+        ArrayList<Square> list = new ArrayList<Square>();
         int newX, newY;
-
-        //1
+        //1st move from the grid 
         newX = this.square.getPosX() - 2;
         newY = this.square.getPosY() + 1;
 
@@ -107,7 +104,7 @@ public class Knight extends Piece
             }
         }
 
-        //2
+        //2nd move from the grid
         newX = this.square.getPosX() - 1;
         newY = this.square.getPosY() + 2;
 
@@ -129,7 +126,7 @@ public class Knight extends Piece
             }
         }
 
-        //3
+        //3rd move from the grid
         newX = this.square.getPosX() + 1;
         newY = this.square.getPosY() + 2;
 
@@ -151,7 +148,7 @@ public class Knight extends Piece
             }
         }
 
-        //4
+        //4th move from the grid
         newX = this.square.getPosX() + 2;
         newY = this.square.getPosY() + 1;
 
@@ -173,7 +170,7 @@ public class Knight extends Piece
             }
         }
 
-        //5
+        //5th move from the grid
         newX = this.square.getPosX() + 2;
         newY = this.square.getPosY() - 1;
 
@@ -195,7 +192,7 @@ public class Knight extends Piece
             }
         }
 
-        //6
+        //6th move from the grid
         newX = this.square.getPosX() + 1;
         newY = this.square.getPosY() - 2;
 
@@ -217,7 +214,7 @@ public class Knight extends Piece
             }
         }
 
-        //7
+        //7th move from the grid
         newX = this.square.getPosX() - 1;
         newY = this.square.getPosY() - 2;
 
@@ -239,7 +236,7 @@ public class Knight extends Piece
             }
         }
 
-        //8
+        //8th move from the grid
         newX = this.square.getPosX() - 2;
         newY = this.square.getPosY() - 1;
 

@@ -30,8 +30,6 @@ import java.util.Iterator;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
 import jchess.gamelogic.field.Square;
-import jchess.gamelogic.field.Move;
-
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -42,7 +40,7 @@ Class to represent a piece (any kind) - this class should be extended to represe
 public abstract class Piece
 {
 
-    public Chessboard chessboard; // <-- this relations isn't in class diagram, but it's necessary :/
+    public Chessboard chessboard; // <-- this relation isn't in class diagram, but it's necessary :/
     public Square square;
     public Player player;
     public String name;
@@ -115,15 +113,15 @@ public abstract class Piece
      * @param square square where piece want to move (Square object)
      * @param allmoves  all moves which can piece do
      * */
-    boolean canMove(Square square, ArrayList allmoves)
+    boolean canMove(Square square, ArrayList<?> allmoves)
     {
         //throw new UnsupportedOperationException("Not supported yet.");
-        ArrayList moves = allmoves;
-        for (Iterator it = moves.iterator(); it.hasNext();)
+        ArrayList<?> moves = allmoves;
+        for (Iterator<?> it = moves.iterator(); it.hasNext();)
         {
             Square sq = (Square) it.next();//get next from iterator
             if (sq == square)
-            {//if adress is the same
+            {//if address is the same
                 return true; //piece canMove
             }
         }
@@ -142,7 +140,7 @@ public abstract class Piece
         }
     }
     //void setImages(String white, String black) {
-        /* method set image to black or white (depends on player color)
+        /* method set image to black or white (depends on player colour)
      * @white: String with name of image with white piece
      * @black: String with name of image with black piece
      * */
@@ -184,7 +182,7 @@ public abstract class Piece
             return false;
         }
         Piece piece = chessboard.squares[x][y].getPiece();
-        if (piece == null || //if this sqhuare is empty
+        if (piece == null || //if this square is empty
                 piece.player != this.player) //or piece is another player
         {
             return true;

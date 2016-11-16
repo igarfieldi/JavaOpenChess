@@ -24,15 +24,16 @@ import java.util.ArrayList;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
+import jchess.gamelogic.field.Square;
 import jchess.gui.GUI;
 
-import java.awt.Graphics;
 import java.awt.Image;
 
 /**
  * Class to represent a queen piece
  * Queen can move almost in every way:
- * |_|_|_|X|_|_|_|X|7
+ * 
+ 	|_|_|_|X|_|_|_|X|7
     |X|_|_|X|_|_|X|_|6
     |_|X|_|X|_|X|_|_|5
     |_|_|X|X|x|_|_|_|4
@@ -51,7 +52,7 @@ public class Queen extends Piece
 
     public Queen(Chessboard chessboard, Player player)
     {
-        super(chessboard, player);//call initializer of super type: Piece
+        super(chessboard, player);//call initialiser of super type: Piece
         //this.setImages("Queen-W.png", "Queen-B.png");
         this.symbol = "Q";
         this.setImage();
@@ -73,19 +74,19 @@ public class Queen extends Piece
 
     /**
      * Annotation to superclass Piece changing pawns location
-     * @return  ArrayList with new possition of piece
+     * @return  ArrayList with new position of piece
      */
     @Override
-    public ArrayList allMoves()
+    public ArrayList<Square> allMoves()
     {
-        ArrayList list = new ArrayList();
+        ArrayList<Square> list = new ArrayList<Square>();
 
         // ------------- as Rook --------------
         for (int i = this.square.getPosY() + 1; i <= 7; ++i)
         {//up
 
             if (this.checkPiece(this.square.getPosX(), i))
-            {//if on this sqhuare isn't piece
+            {//if there isn't a piece on this square
 
                 if (this.player.getColor() == Player.Color.WHITE)
                 {//white
@@ -109,9 +110,10 @@ public class Queen extends Piece
                     break;
                 }
             }
-            else //if on this square is piece
+            else //if there is a piece on this square
+
             {
-                break;//we've to break becouse we cannot go beside other piece!!
+                break;//we have to break because we cannot go over other pieces!
             }
         }
 
@@ -119,7 +121,7 @@ public class Queen extends Piece
         {//down
 
             if (this.checkPiece(this.square.getPosX(), i))
-            {//if on this sqhuare isn't piece
+            {//if there isn't a piece on this square
 
                 if (this.player.getColor() == Player.Color.WHITE)
                 {//white
@@ -144,9 +146,9 @@ public class Queen extends Piece
                 }
             }
             else
-            {//if on this square is piece
+            {//if there is a piece on this square
 
-                break;//we've to break becouse we cannot go beside other piece!!
+                break;//we have to break because we cannot go over other pieces!
             }
         }
 
@@ -154,7 +156,7 @@ public class Queen extends Piece
         {//left
 
             if (this.checkPiece(i, this.square.getPosY()))
-            {//if on this sqhuare isn't piece
+            {//if there isn't a piece on this square
 
                 if (this.player.getColor() == Player.Color.WHITE)
                 {//white
@@ -179,9 +181,9 @@ public class Queen extends Piece
                 }
             }
             else
-            {//if on this square is piece
+            {//if there is a piece on this square
 
-                break;//we've to break becouse we cannot go beside other piece!!
+                break;//we have to break because we cannot go over other pieces!
             }
         }
 
@@ -189,7 +191,7 @@ public class Queen extends Piece
         {//right
 
             if (this.checkPiece(i, this.square.getPosY()))
-            {//if on this sqhuare isn't piece
+            {//if there isn't a piece on this square
 
                 if (this.player.getColor() == Player.Color.WHITE)
                 {//white
@@ -214,9 +216,9 @@ public class Queen extends Piece
                 }
             }
             else
-            {//if on this square is piece
+            {//if there is a piece on this square
 
-                break;//we've to break becouse we cannot go beside other piece!!
+                break;//we have to break because we cannot go over other pieces!
             }
         }
 
@@ -225,7 +227,7 @@ public class Queen extends Piece
         {//left-up
 
             if (this.checkPiece(h, i))
-            {//if on this sqhuare isn't piece
+            {//if there isn't a piece on this square
 
                 if (this.player.getColor() == Player.Color.WHITE)
                 {//white
@@ -249,9 +251,9 @@ public class Queen extends Piece
                 }
             }
             else
-            {//if on this square is piece
+            {//if there is a piece on this square
 
-                break;//we've to break becouse we cannot go beside other piece!!
+                break;//we have to break because we cannot go over other pieces!
             }
         }
 
@@ -259,7 +261,8 @@ public class Queen extends Piece
         {//left-down
 
             if (this.checkPiece(h, i))
-            {//if on this sqhuare isn't piece
+            {//if there isn't a piece on this square
+
 
                 if (this.player.getColor() == Player.Color.WHITE)
                 {//white
@@ -284,9 +287,9 @@ public class Queen extends Piece
                 }
             }
             else
-            {//if on this square is piece
+            {//if there is a piece on this square
 
-                break;//we've to break becouse we cannot go beside other piece!!
+                break;//we have to break because we cannot go over other pieces!
             }
         }
 
@@ -294,7 +297,7 @@ public class Queen extends Piece
         {//right-up
 
             if (this.checkPiece(h, i))
-            {//if on this sqhuare isn't piece
+            {//if there isn't a piece on this square
 
                 if (this.player.getColor() == Player.Color.WHITE)
                 {//white
@@ -319,9 +322,9 @@ public class Queen extends Piece
                 }
             }
             else
-            {//if on this square is piece
+            {//if there is a piece on this square
 
-                break;//we've to break becouse we cannot go beside other piece!!
+                break;//we have to break because we cannot go over other pieces!
             }
         }
 
@@ -329,7 +332,7 @@ public class Queen extends Piece
         {//right-down
 
             if (this.checkPiece(h, i))
-            {//if on this sqhuare isn't piece
+            {//if there isn't a piece on this square
 
                 if (this.player.getColor() == Player.Color.WHITE)
                 {//white
@@ -354,9 +357,9 @@ public class Queen extends Piece
                 }
             }
             else
-            { //if on this square is piece
+            {//if there is a piece on this square
 
-                break;//we've to break becouse we cannot go beside other piece!!
+                break;//we have to break because we cannot go over other pieces!
             }
         }
         // ------------------------------------
