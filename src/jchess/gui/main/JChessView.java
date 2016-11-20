@@ -22,7 +22,7 @@ import jchess.JChessApp;
 import jchess.Localization;
 import jchess.gamelogic.Game;
 import jchess.gui.main.JChessTabbedPane;
-import jchess.gui.GUI;
+import jchess.gui.ThemeConfigurator;
 import jchess.gui.secondary.JChessAboutBox;
 import jchess.gui.secondary.PawnPromotionWindow;
 import jchess.gui.secondary.ThemeChooseWindow;
@@ -46,7 +46,8 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	private static Logger log = Logger.getLogger(JChessView.class.getName());
 	private static final TypedResourceBundle VIEW_PROPERTIES = new TypedResourceBundle("jchess.resources.JChessView");
 	
-	private static GUI gui = null;
+	private static ThemeConfigurator themeConfigurator = null;
+	private Game game;
 	
 	private JMenu gameMenu;
 	private JTabbedPane gamesPane;
@@ -79,6 +80,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	public JChessView(SingleFrameApplication app)
 	{
 		super(app);
+		this.game = new Game();
 		
 		initializeComponents();
 		
@@ -223,8 +225,8 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 
 	private void moveBackItemActionPerformed(ActionEvent event)
 	{
-		if(gui != null && gui.getGame() != null)
-			gui.getGame().undo();
+		if(themeConfigurator != null && game != null)
+			game.undo();
 		else
 			try
 			{
@@ -259,8 +261,8 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 
 	private void moveForwardItemActionPerformed(ActionEvent event)
 	{
-		if(gui != null && gui.getGame() != null)
-			gui.getGame().redo();
+		if(themeConfigurator != null && game != null)
+			game.redo();
 		else
 		{
 			try

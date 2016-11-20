@@ -20,7 +20,6 @@
  */
 package jchess.gui;
 
-import java.awt.*;
 import java.net.*;
 import java.io.*;
 
@@ -28,8 +27,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import jchess.JChessApp;
-import jchess.gamelogic.Game;
 import jchess.gui.setup.LocalSettingsGUI;
 
 /**
@@ -37,72 +34,31 @@ import jchess.gui.setup.LocalSettingsGUI;
  * lockated available for player opptions, current games and where can he start
  * a new game (load it or save it)
  */
-public class GUI
+public class ThemeConfigurator
 {
 	private static Logger log = Logger.getLogger(LocalSettingsGUI.class.getName());
 	
-	private Game game;
-	static final public Properties configFile = GUI.getConfigFile();
-	
-	public Game getGame()
+	public static Properties getConfigFile()
 	{
-		return game;
-	}
-
-	public void setGame(Game game)
-	{
-		this.game = game;
-	}
-
-	public GUI()
-	{
-		this.game = new Game();
-	}
-	
-	/*
-	 * Method load image by a given name with extension
-	 * 
-	 * @name : string of image to load for ex. "chessboard.jpg"
-	 * 
-	 * @returns : image or null if cannot load
-	 */
-	public static Image loadThemeImage(String imageName)
-	{
-		return GUI.loadThemeImage(imageName, configFile.getProperty("THEME", "default"));
-	}
-	
-	public static Image loadThemeImage(String imageName, String theme)
-	{
-		// TODO: is this necessary? Shouldn't we create a config file if none
-		// exists or work with default values?
-		if(configFile == null)
-			return null;
+		Properties configuration = new Properties();
+		// Configuration files cannot be part of the JAR, so it's just a file in
+		// the same directory
+		File configFile = new File(ThemeConfigurator.getJarPath() + File.separator + "config.txt");
+		log.info("Configuration file: " + configFile);
 		
-		Toolkit toolkit = Toolkit.getDefaultToolkit();
-		try
-		{
-			// Locate the image in the theme folder
-			String imageLink = "/jchess/resources/theme/" + theme + "/images/" + imageName;
-			return toolkit.getImage(JChessApp.class.getResource(imageLink));
-		}
-		catch(Exception exception)
-		{
-			log.log(Level.SEVERE, "Failed to load image " + imageName + " from theme " + theme + ": ", exception);
-			exception.printStackTrace();
-		}
-		return null;
+		if(!configFile.exists())
+			ThemeConfigurator.storeConfigFile(configuration);
+		
+		loadConfiguration(configuration, configFile);
+		
+		return configuration;
 	}
-	
-	public static boolean themeIsValid(String name)
-	{
-		return true;
-	}
-	
+
 	private static String getJarPath()
 	{
 		try
 		{
-			File jar = new File(GUI.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+			File jar = new File(ThemeConfigurator.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 			if(jar.isDirectory())
 				return jar.getAbsolutePath();
 			else
@@ -117,22 +73,6 @@ public class GUI
 			log.log(Level.SEVERE, "Failed to locate JAR execution path; Using current working directory instead!", exception);
 			return ".";
 		}
-	}
-	
-	public static Properties getConfigFile()
-	{
-		Properties configuration = new Properties();
-		// Configuration files cannot be part of the JAR, so it's just a file in
-		// the same directory
-		File configFile = new File(GUI.getJarPath() + File.separator + "config.txt");
-		log.info("Configuration file: " + configFile);
-		
-		if(!configFile.exists())
-			GUI.storeConfigFile(configuration);
-		
-		loadConfiguration(configuration, configFile);
-		
-		return configuration;
 	}
 
 	private static void loadConfiguration(Properties configuration, File configFile)
@@ -153,13 +93,13 @@ public class GUI
 	
 	public static boolean storeConfigFile(Properties configuration)
 	{
-		File configFile = new File(GUI.getJarPath() + File.separator + "config.txt");
+		File configFile = new File(ThemeConfigurator.getJarPath() + File.separator + "config.txt");
 		try(OutputStream configFileStream = new FileOutputStream(configFile))
 		{
 			configuration.store(configFileStream, null);
 			return true;
 		}
-		catch(java.io.IOException exception)
+		catch(IOException exception)
 		{
 			log.log(Level.SEVERE, "Failed to create config file!", exception);
 			return false;

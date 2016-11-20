@@ -29,7 +29,8 @@ import javax.swing.event.ListSelectionListener;
 
 import jchess.JChessApp;
 import jchess.Localization;
-import jchess.gui.GUI;
+import jchess.gui.ThemeConfigurator;
+import jchess.gui.ThemeLoader;
 
 import javax.swing.event.ListSelectionEvent;
 import java.io.File;
@@ -164,7 +165,7 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 	{
 		try
 		{
-			this.themePreviewImage = new ImageIcon(GUI.loadThemeImage("Preview.png"));
+			this.themePreviewImage = new ImageIcon(ThemeLoader.loadThemeImage("Preview.png"));
 		}
 		catch(NullPointerException exception)
 		{
@@ -188,7 +189,7 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 	public void valueChanged(ListSelectionEvent event)
 	{
 		String themeName = this.themesList.getModel().getElementAt(this.themesList.getSelectedIndex()).toString();
-		this.themePreviewImage = new ImageIcon(GUI.loadThemeImage("Preview.png", themeName));
+		this.themePreviewImage = new ImageIcon(ThemeLoader.loadThemeImage("Preview.png", themeName));
 		this.themePreviewButton.setIcon(this.themePreviewImage);
 	}
 
@@ -200,14 +201,14 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 
 	private void setTheme()
 	{
-		Properties properties = GUI.getConfigFile();
+		Properties properties = ThemeConfigurator.getConfigFile();
 		int selectedThemeIndex = this.themesList.getSelectedIndex();
 		String themeName = this.themesList.getModel().getElementAt(selectedThemeIndex).toString();
 		
-		if(GUI.themeIsValid(themeName))
+		if(ThemeLoader.themeIsValid(themeName))
 		{
 			properties.setProperty("THEME", themeName);
-			if(!GUI.storeConfigFile(properties))
+			if(!ThemeConfigurator.storeConfigFile(properties))
 				log.log(Level.SEVERE, "Failed to save config with new theme!");
 			
 			JOptionPane.showMessageDialog(this, Localization.getMessage("changes_visible_after_restart"));
