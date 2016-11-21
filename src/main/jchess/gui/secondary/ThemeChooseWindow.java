@@ -32,7 +32,7 @@ import jchess.JChessApp;
 import jchess.Localization;
 import jchess.gui.ThemeConfigurator;
 import jchess.gui.ThemeFileReader;
-import jchess.gui.ThemeLoader;
+import jchess.gui.ThemeImageLoader;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -101,7 +101,7 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 	{
 		try
 		{
-			this.themePreviewImage = new ImageIcon(ThemeLoader.loadThemeImage("Preview.png"));
+			this.themePreviewImage = new ImageIcon(ThemeImageLoader.loadThemeImage("Preview.png"));
 		}
 		catch(NullPointerException exception)
 		{
@@ -125,7 +125,7 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 	public void valueChanged(ListSelectionEvent event)
 	{
 		String themeName = this.themesList.getModel().getElementAt(this.themesList.getSelectedIndex()).toString();
-		this.themePreviewImage = new ImageIcon(ThemeLoader.loadThemeImage("Preview.png", themeName));
+		this.themePreviewImage = new ImageIcon(ThemeImageLoader.loadThemeImage("Preview.png", themeName));
 		this.themePreviewButton.setIcon(this.themePreviewImage);
 	}
 

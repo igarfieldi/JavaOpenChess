@@ -23,7 +23,7 @@ package jchess.gui.main;
 import javax.swing.*;
 
 import jchess.JChessApp;
-import jchess.gui.ThemeLoader;
+import jchess.gui.ThemeImageLoader;
 import jchess.gui.setup.NewGameWindow;
 
 import java.awt.*;
@@ -46,7 +46,7 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 	{
 		super();
 		this.closeIcon = new TabbedPaneIcon(this.closeIcon);
-		this.unclickedAddIcon = ThemeLoader.loadThemeImage("add-tab-icon.png");
+		this.unclickedAddIcon = ThemeImageLoader.loadThemeImage("add-tab-icon.png");
 		this.addIcon = this.unclickedAddIcon;
 		
 		this.setDoubleBuffered(true);
