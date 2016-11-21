@@ -13,14 +13,22 @@ public class ClockTest
 	public void setUp() throws Exception
 	{
 		chessClock = new Clock();
-		chessClock.resetClock(100);
 	}
 	
 	@Test
-	public void testDecrement()
+	public void testDecrementByOne()
 	{
-		chessClock.decrement();
+		chessClock.resetClock(100);
+		assertTrue(chessClock.decrement());
 		assertEquals(chessClock.getSecondsLeft(), 99);
+	}
+	
+	@Test
+	public void testDecrementWithZero()
+	{
+		chessClock.resetClock(0);
+		assertFalse(chessClock.decrement());
+		assertEquals(chessClock.getSecondsLeft(), 0);
 	}
 	
 }
