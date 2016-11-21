@@ -42,7 +42,7 @@ import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.pieces.Queen;
 import jchess.gamelogic.pieces.Rook;
-import jchess.gui.GUI;
+import jchess.gui.ThemeLoader;
 
 /**
  * Class to represent chessboard. Chessboard is made from squares. It is setting
@@ -64,9 +64,9 @@ public class Chessboard extends JPanel
 	                                      // JChessView class!)
 	public static final int IMG_WIDTH = 480;// image width
 	public static final int IMG_HEIGHT = IMG_WIDTH;// image height
-	private static final Image ORG_IMAGE = GUI.loadThemeImage("chessboard.png");
-	private static final Image ORG_SEL_IMAGE = GUI.loadThemeImage("sel_square.png");
-	private static final Image ORG_ARLE_IMAGE = GUI.loadThemeImage("able_square.png");
+	private static final Image ORG_IMAGE = ThemeLoader.loadThemeImage("chessboard.png");
+	private static final Image ORG_SEL_IMAGE = ThemeLoader.loadThemeImage("sel_square.png");
+	private static final Image ORG_ARLE_IMAGE = ThemeLoader.loadThemeImage("able_square.png");
 	
 	// TODO: replace the final static images with the construction-time call to
 	// the GUI class?
