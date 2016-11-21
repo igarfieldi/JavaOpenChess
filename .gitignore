@@ -1,4 +1,8 @@
 # Ignore the build directories of gradle and eclipse
 bin/
-build/
+build/*
+!build/test-results/
+build/test-results/*
+!build/test-results/test/
+build/test-results/test/binary
 .gradle/
