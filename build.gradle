@@ -40,18 +40,18 @@ jar {
 sourceSets {
 	main {
 		java {
-			srcDirs = ['src']
+			srcDirs = ['src/main']
 		}
 		resources {
-			srcDirs = ['src']
+			srcDirs = ['src/main']
 		}
 	}
 	test {
 		java {
-			srcDirs = ['src']
+			srcDirs = ['src/test']
 		}
 		resources {
-			srcDirs = ['src']
+			srcDirs = ['src/test']
 		}
 	}	
 }
