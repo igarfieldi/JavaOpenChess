@@ -23,6 +23,7 @@ public class KingTest
 	@Before
 	public void setUp() throws Exception
 	{
+		// TODO: test in reverse (white on top!)
 		p1 = new Player("p1", "WHITE");
 		p2 = new Player("p2", "BLACK");
 		p2.setBoardSide(true);

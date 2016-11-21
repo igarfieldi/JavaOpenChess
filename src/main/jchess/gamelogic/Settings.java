@@ -59,6 +59,7 @@ public class Settings implements Serializable
 		this.timeLimitSet = false;
 		
 		gameMode = GameMode.NEW_GAME;
+		gameType = GameType.LOCAL;
 	}
 	
 	/**
