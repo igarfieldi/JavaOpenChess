@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
-import jchess.gamelogic.field.Square;
+import jchess.gamelogic.field.Field;
 import jchess.gui.GUI;
 
 /**
@@ -78,9 +78,9 @@ public class Rook extends Piece
 	 * @return ArrayList with new position of piece
 	 */
 	@Override
-	public ArrayList<Square> possibleMoves()
+	public ArrayList<Field> possibleMoves()
 	{
-		ArrayList<Square> list = new ArrayList<Square>();
+		ArrayList<Field> list = new ArrayList<Field>();
 		
 		for(int i = this.square.getPosY() + 1; i <= 7; ++i)
 		{// up
@@ -92,17 +92,17 @@ public class Rook extends Piece
 				{// for white
 					
 					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
-					        chessboard.squares[this.square.getPosX()][i]))
+					        chessboard.getBoard().getField(this.square.getPosX(), i)))
 					{
-						list.add(chessboard.squares[this.square.getPosX()][i]);
+						list.add(chessboard.getBoard().getField(this.square.getPosX(), i));
 					}
 				} else
 				{// or black
 					
 					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
-					        chessboard.squares[this.square.getPosX()][i]))
+					        chessboard.getBoard().getField(this.square.getPosX(), i)))
 					{
-						list.add(chessboard.squares[this.square.getPosX()][i]);
+						list.add(chessboard.getBoard().getField(this.square.getPosX(), i));
 					}
 				}
 				
@@ -128,17 +128,17 @@ public class Rook extends Piece
 				{// white
 					
 					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
-					        chessboard.squares[this.square.getPosX()][i]))
+					        chessboard.getBoard().getField(this.square.getPosX(), i)))
 					{
-						list.add(chessboard.squares[this.square.getPosX()][i]);
+						list.add(chessboard.getBoard().getField(this.square.getPosX(), i));
 					}
 				} else
 				{// or black
 					
 					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
-					        chessboard.squares[this.square.getPosX()][i]))
+					        chessboard.getBoard().getField(this.square.getPosX(), i)))
 					{
-						list.add(chessboard.squares[this.square.getPosX()][i]);
+						list.add(chessboard.getBoard().getField(this.square.getPosX(), i));
 					}
 				}
 				
@@ -163,17 +163,17 @@ public class Rook extends Piece
 				{// white
 					
 					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
-					        chessboard.squares[i][this.square.getPosY()]))
+					        chessboard.getBoard().getField(i, this.square.getPosY())))
 					{
-						list.add(chessboard.squares[i][this.square.getPosY()]);
+						list.add(chessboard.getBoard().getField(i, this.square.getPosY()));
 					}
 				} else
 				{// or black
 					
 					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
-					        chessboard.squares[i][this.square.getPosY()]))
+					        chessboard.getBoard().getField(i, this.square.getPosY())))
 					{
-						list.add(chessboard.squares[i][this.square.getPosY()]);
+						list.add(chessboard.getBoard().getField(i, this.square.getPosY()));
 					}
 				}
 				
@@ -198,17 +198,17 @@ public class Rook extends Piece
 				{// white
 					
 					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
-					        chessboard.squares[i][this.square.getPosY()]))
+					        chessboard.getBoard().getField(i, this.square.getPosY())))
 					{
-						list.add(chessboard.squares[i][this.square.getPosY()]);
+						list.add(chessboard.getBoard().getField(i, this.square.getPosY()));
 					}
 				} else
 				{// or black
 					
 					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
-					        chessboard.squares[i][this.square.getPosY()]))
+					        chessboard.getBoard().getField(i, this.square.getPosY())))
 					{
-						list.add(chessboard.squares[i][this.square.getPosY()]);
+						list.add(chessboard.getBoard().getField(i, this.square.getPosY()));
 					}
 				}
 				

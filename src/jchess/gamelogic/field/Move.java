@@ -23,8 +23,8 @@ import jchess.gamelogic.pieces.Piece;
 
 public class Move
 {
-	private Square from = null;
-	private Square to = null;
+	private Field from = null;
+	private Field to = null;
 	private Piece movedPiece = null;
 	private Piece takenPiece = null;
 	private Piece promotedTo = null;
@@ -32,7 +32,7 @@ public class Move
 	private CastlingType castlingMove = CastlingType.NONE;
 	private boolean wasPawnTwoFieldsMove = false;
 	
-	Move(Square from, Square to, Piece movedPiece, Piece takenPiece, CastlingType castlingMove, boolean wasEnPassant,
+	Move(Field from, Field to, Piece movedPiece, Piece takenPiece, CastlingType castlingMove, boolean wasEnPassant,
 	        Piece promotedPiece)
 	{
 		this.from = from;
@@ -55,12 +55,12 @@ public class Move
 		}
 	}
 	
-	public Square getFrom()
+	public Field getFrom()
 	{
 		return this.from;
 	}
 	
-	public Square getTo()
+	public Field getTo()
 	{
 		return this.to;
 	}

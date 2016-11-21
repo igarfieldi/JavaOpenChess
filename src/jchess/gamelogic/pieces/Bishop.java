@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
-import jchess.gamelogic.field.Square;
+import jchess.gamelogic.field.Field;
 import jchess.gui.GUI;
 
 import java.awt.Image;
@@ -76,9 +76,9 @@ public class Bishop extends Piece
 	 * @return ArrayList with new position of piece
 	 */
 	@Override
-	public ArrayList<Square> possibleMoves()
+	public ArrayList<Field> possibleMoves()
 	{
-		ArrayList<Square> list = new ArrayList<Square>();
+		ArrayList<Field> list = new ArrayList<Field>();
 		
 		for(int h = this.square.getPosX() - 1, i = this.square.getPosY() + 1; !isout(h, i); --h, ++i) // left-up
 		{
@@ -87,16 +87,16 @@ public class Bishop extends Piece
 				if(this.player.getColor() == Player.Color.WHITE) // white
 				{
 					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
-					        chessboard.squares[h][i]))
+					        chessboard.getBoard().getField(h, i)))
 					{
-						list.add(chessboard.squares[h][i]);
+						list.add(chessboard.getBoard().getField(h, i));
 					}
 				} else // or black
 				{
 					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
-					        chessboard.squares[h][i]))
+					        chessboard.getBoard().getField(h, i)))
 					{
-						list.add(chessboard.squares[h][i]);
+						list.add(chessboard.getBoard().getField(h, i));
 					}
 				}
 				
@@ -118,16 +118,16 @@ public class Bishop extends Piece
 				if(this.player.getColor() == Player.Color.WHITE) // white
 				{
 					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
-					        chessboard.squares[h][i]))
+					        chessboard.getBoard().getField(h, i)))
 					{
-						list.add(chessboard.squares[h][i]);
+						list.add(chessboard.getBoard().getField(h, i));
 					}
 				} else // or black
 				{
 					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
-					        chessboard.squares[h][i]))
+					        chessboard.getBoard().getField(h, i)))
 					{
-						list.add(chessboard.squares[h][i]);
+						list.add(chessboard.getBoard().getField(h, i));
 					}
 				}
 				
@@ -149,16 +149,16 @@ public class Bishop extends Piece
 				if(this.player.getColor() == Player.Color.WHITE) // white
 				{
 					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
-					        chessboard.squares[h][i]))
+					        chessboard.getBoard().getField(h, i)))
 					{
-						list.add(chessboard.squares[h][i]);
+						list.add(chessboard.getBoard().getField(h, i));
 					}
 				} else // or black
 				{
 					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
-					        chessboard.squares[h][i]))
+					        chessboard.getBoard().getField(h, i)))
 					{
-						list.add(chessboard.squares[h][i]);
+						list.add(chessboard.getBoard().getField(h, i));
 					}
 				}
 				
@@ -180,16 +180,16 @@ public class Bishop extends Piece
 				if(this.player.getColor() == Player.Color.WHITE) // white
 				{
 					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
-					        chessboard.squares[h][i]))
+					        chessboard.getBoard().getField(h, i)))
 					{
-						list.add(chessboard.squares[h][i]);
+						list.add(chessboard.getBoard().getField(h, i));
 					}
 				} else // or black
 				{
 					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
-					        chessboard.squares[h][i]))
+					        chessboard.getBoard().getField(h, i)))
 					{
-						list.add(chessboard.squares[h][i]);
+						list.add(chessboard.getBoard().getField(h, i));
 					}
 				}
 				

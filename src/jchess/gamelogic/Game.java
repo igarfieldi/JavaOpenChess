@@ -30,7 +30,7 @@ import jchess.Localization;
 import jchess.gamelogic.clock.GameClock;
 import jchess.gamelogic.field.Chessboard;
 import jchess.gamelogic.field.Moves;
-import jchess.gamelogic.field.Square;
+import jchess.gamelogic.field.Field;
 import jchess.gamelogic.pieces.King;
 import jchess.gui.secondary.Chat;
 import jchess.network.Client;
@@ -394,10 +394,10 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 	{
 		try
 		{
-			chessboard.select(chessboard.squares[beginX][beginY]);
-			if(chessboard.getActiveSquare().getPiece().possibleMoves().indexOf(chessboard.squares[endX][endY]) != -1) // move
+			chessboard.select(chessboard.getBoard().getField(beginX, beginY));
+			if(chessboard.getActiveSquare().getPiece().possibleMoves().indexOf(chessboard.getBoard().getField(endX, endY)) != -1) // move
 			{
-				chessboard.move(chessboard.squares[beginX][beginY], chessboard.squares[endX][endY]);
+				chessboard.move(chessboard.getBoard().getField(beginX, beginY), chessboard.getBoard().getField(endX, endY));
 			} else
 			{
 				log.log(Level.WARNING, "Bad move!");
@@ -523,7 +523,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 					int x = event.getX();// get X position of mouse
 					int y = event.getY();// get Y position of mouse
 					
-					Square sq = chessboard.getSquare(x, y);
+					Field sq = chessboard.getSquare(x, y);
 					if((sq == null && chessboard.getActiveSquare() == null)
 					        || (this.chessboard.getActiveSquare() == null && sq.getPiece() != null
 					                && sq.getPiece().player != this.activePlayer))

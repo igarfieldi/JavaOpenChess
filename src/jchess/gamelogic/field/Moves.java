@@ -189,7 +189,7 @@ public class Moves extends AbstractTableModel
 		
 	}
 	
-	public void addMove(Square begin, Square end, boolean registerInHistory, CastlingType castlingMove,
+	public void addMove(Field begin, Field end, boolean registerInHistory, CastlingType castlingMove,
 	        boolean wasEnPassant, Piece promotedPiece)
 	{
 		String locMove = new String(begin.getPiece().getSymbol());
@@ -297,7 +297,7 @@ public class Moves extends AbstractTableModel
 		
 		if(registerInHistory)
 		{
-			this.moveBackStack.add(new Move(new Square(begin), new Square(end), begin.getPiece(), end.getPiece(),
+			this.moveBackStack.add(new Move(new Field(begin), new Field(end), begin.getPiece(), end.getPiece(),
 			        castlingMove, wasEnPassant, promotedPiece));
 		}
 	}
@@ -618,30 +618,26 @@ public class Moves extends AbstractTableModel
 			boolean pieceFound = false;
 			if(locMove.length() <= 3)
 			{
-				Square[][] squares = this.game.getChessboard().squares;
 				xTo = locMove.charAt(from) - 97;// from ASCII
 				yTo = Chessboard.BOTTOM - (locMove.charAt(from + 1) - 49);// from
 				                                                          // ASCII
-				for(int i = 0; i < squares.length && !pieceFound; i++)
-				{
-					for(int j = 0; j < squares[i].length && !pieceFound; j++)
+				
+				for(Field field : game.getChessboard().getBoard().getFields()) {
+					if(field.getPiece() == null || this.game.getActivePlayer().getColor() != field.getPiece().player.getColor()) {
+						continue;
+					}
+					ArrayList<Field> pieceMoves = field.getPiece().possibleMoves();
+					for(Field possibleMove : pieceMoves)
 					{
-						if(squares[i][j].getPiece() == null
-						        || this.game.getActivePlayer().getColor() != squares[i][j].getPiece().player.getColor())
+						if(possibleMove.getPosX() == xTo && possibleMove.getPosY() == yTo)
 						{
-							continue;
+							xFrom = field.getPiece().square.getPosX();
+							yFrom = field.getPiece().square.getPosY();
+							pieceFound = true;
 						}
-						ArrayList<Square> pieceMoves = squares[i][j].getPiece().possibleMoves();
-						for(Object square : pieceMoves)
-						{
-							Square currSquare = (Square) square;
-							if(currSquare.getPosX() == xTo && currSquare.getPosY() == yTo)
-							{
-								xFrom = squares[i][j].getPiece().square.getPosX();
-								yFrom = squares[i][j].getPiece().square.getPosY();
-								pieceFound = true;
-							}
-						}
+					}
+					if(pieceFound) {
+						break;
 					}
 				}
 			} else

@@ -28,7 +28,7 @@ import java.util.Iterator;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
-import jchess.gamelogic.field.Square;
+import jchess.gamelogic.field.Field;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -42,15 +42,14 @@ public abstract class Piece
 	
 	public Chessboard chessboard; // <-- this relation isn't in class diagram,
 	                              // but it's necessary :/
-	public Square square;
+	public Field square;
 	public Player player;
 	public String name;
 	protected String symbol;
 	protected static Image imageBlack;// = null;
 	protected static Image imageWhite;// = null;
-	public Image orgImage;
-	public Image image;
-	public static short value = 0;
+	protected Image orgImage;
+	protected Image image;
 	
 	Piece(Chessboard chessboard, Player player)
 	{
@@ -117,13 +116,13 @@ public abstract class Piece
 	 * @param possibleMoves
 	 *            all moves which can piece do
 	 */
-	boolean canMove(Square square, ArrayList<?> allmoves)
+	boolean canMove(Field square, ArrayList<?> allmoves)
 	{
 		// throw new UnsupportedOperationException("Not supported yet.");
 		ArrayList<?> moves = allmoves;
 		for(Iterator<?> it = moves.iterator(); it.hasNext();)
 		{
-			Square sq = (Square) it.next();// get next from iterator
+			Field sq = (Field) it.next();// get next from iterator
 			if(sq == square)
 			{// if address is the same
 				return true; // piece canMove
@@ -159,7 +158,7 @@ public abstract class Piece
 	// }
 	// }/*--endOf-setImages(String white, String black)--*/
 	
-	abstract public ArrayList<Square> possibleMoves();
+	abstract public ArrayList<Field> possibleMoves();
 	
 	/**
 	 * Method is useful for out of bounds protection
@@ -188,11 +187,11 @@ public abstract class Piece
 	 */
 	protected boolean checkPiece(int x, int y)
 	{
-		if(chessboard.squares[x][y].getPiece() != null && chessboard.squares[x][y].getPiece().name.equals("King"))
+		if(chessboard.getBoard().getField(x, y).getPiece() != null && chessboard.getBoard().getField(x, y).getPiece().name.equals("King"))
 		{
 			return false;
 		}
-		Piece piece = chessboard.squares[x][y].getPiece();
+		Piece piece = chessboard.getBoard().getField(x, y).getPiece();
 		if(piece == null || // if this square is empty
 		        piece.player != this.player) // or piece is another player
 		{
@@ -212,7 +211,7 @@ public abstract class Piece
 	 */
 	protected boolean otherOwner(int x, int y)
 	{
-		Square sq = chessboard.squares[x][y];
+		Field sq = chessboard.getBoard().getField(x, y);
 		if(sq.getPiece() == null)
 		{
 			return false;
