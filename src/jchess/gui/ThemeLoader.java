@@ -8,9 +8,9 @@ import java.util.logging.Logger;
 
 import jchess.JChessApp;
 
-public class ThemeImageLoader
+public class ThemeLoader
 {
-	private static Logger log = Logger.getLogger(ThemeImageLoader.class.getName());
+	private static Logger log = Logger.getLogger(ThemeLoader.class.getName());
 	static final private Properties configFile = ThemeConfigurator.getConfigFile();
 	
 	/*

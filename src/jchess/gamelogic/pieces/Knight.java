@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
 import jchess.gamelogic.field.Square;
-import jchess.gui.ThemeImageLoader;
+import jchess.gui.ThemeLoader;
 
 import java.awt.Image;
 
@@ -46,8 +46,8 @@ public class Knight extends Piece
 {
 	
 	public static short value = 3;
-	protected static final Image imageWhite = ThemeImageLoader.loadThemeImage("Knight-W.png");
-	protected static final Image imageBlack = ThemeImageLoader.loadThemeImage("Knight-B.png");
+	protected static final Image imageWhite = ThemeLoader.loadThemeImage("Knight-W.png");
+	protected static final Image imageBlack = ThemeLoader.loadThemeImage("Knight-B.png");
 	
 	public Knight(Chessboard chessboard, Player player)
 	{

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
 import jchess.gamelogic.field.Square;
-import jchess.gui.ThemeImageLoader;
+import jchess.gui.ThemeLoader;
 
 import java.awt.Image;
 
@@ -46,8 +46,8 @@ public class Bishop extends Piece
 {
 	
 	public static short value = 3;
-	protected static final Image imageWhite = ThemeImageLoader.loadThemeImage("Bishop-W.png");
-	protected static final Image imageBlack = ThemeImageLoader.loadThemeImage("Bishop-B.png");
+	protected static final Image imageWhite = ThemeLoader.loadThemeImage("Bishop-W.png");
+	protected static final Image imageBlack = ThemeLoader.loadThemeImage("Bishop-B.png");
 	
 	public Bishop(Chessboard chessboard, Player player)
 	{

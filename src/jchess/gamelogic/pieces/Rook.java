@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
 import jchess.gamelogic.field.Square;
-import jchess.gui.ThemeImageLoader;
+import jchess.gui.ThemeLoader;
 
 /**
  * Class to represent a chess pawn rook Rook can move:
@@ -47,8 +47,8 @@ public class Rook extends Piece
 {
 	
 	public boolean wasMotion = false;
-	protected static final Image imageWhite = ThemeImageLoader.loadThemeImage("Rook-W.png");
-	protected static final Image imageBlack = ThemeImageLoader.loadThemeImage("Rook-B.png");
+	protected static final Image imageWhite = ThemeLoader.loadThemeImage("Rook-W.png");
+	protected static final Image imageBlack = ThemeLoader.loadThemeImage("Rook-B.png");
 	public static short value = 5;
 	
 	public Rook(Chessboard chessboard, Player player)

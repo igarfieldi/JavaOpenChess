@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
 import jchess.gamelogic.field.Square;
-import jchess.gui.ThemeImageLoader;
+import jchess.gui.ThemeLoader;
 
 import java.awt.Image;
 
@@ -46,8 +46,8 @@ public class Queen extends Piece
 {
 	
 	public static short value = 9;
-	protected static final Image imageWhite = ThemeImageLoader.loadThemeImage("Queen-W.png");
-	protected static final Image imageBlack = ThemeImageLoader.loadThemeImage("Queen-B.png");
+	protected static final Image imageWhite = ThemeLoader.loadThemeImage("Queen-W.png");
+	protected static final Image imageBlack = ThemeLoader.loadThemeImage("Queen-B.png");
 	
 	public Queen(Chessboard chessboard, Player player)
 	{

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
 import jchess.gamelogic.field.Square;
-import jchess.gui.ThemeImageLoader;
+import jchess.gui.ThemeLoader;
 
 import java.awt.Image;
 
@@ -73,8 +73,8 @@ public class Pawn extends Piece
 {
 	
 	boolean down;
-	protected static final Image imageWhite = ThemeImageLoader.loadThemeImage("Pawn-W.png");
-	protected static final Image imageBlack = ThemeImageLoader.loadThemeImage("Pawn-B.png");
+	protected static final Image imageWhite = ThemeLoader.loadThemeImage("Pawn-W.png");
+	protected static final Image imageBlack = ThemeLoader.loadThemeImage("Pawn-B.png");
 	public static short value = 1;
 	
 	public Pawn(Chessboard chessboard, Player player)
