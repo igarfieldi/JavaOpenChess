@@ -49,7 +49,7 @@ public class ThemeConfigurator
 		if(!configFile.exists())
 			ThemeConfigurator.storeConfigFile(configuration);
 		
-		loadConfiguration(configuration, configFile);
+		loadThemeConfiguration(configuration, configFile);
 		
 		return configuration;
 	}
@@ -75,7 +75,7 @@ public class ThemeConfigurator
 		}
 	}
 
-	private static void loadConfiguration(Properties configuration, File configFile)
+	private static void loadThemeConfiguration(Properties configuration, File configFile)
 	{
 		try(InputStream inputStream = new FileInputStream(configFile))
 		{
@@ -91,7 +91,7 @@ public class ThemeConfigurator
 		}
 	}
 	
-	public static boolean storeConfigFile(Properties configuration)
+	private static boolean storeConfigFile(Properties configuration)
 	{
 		File configFile = new File(ThemeConfigurator.getJarPath() + File.separator + "config.txt");
 		try(OutputStream configFileStream = new FileOutputStream(configFile))
@@ -104,5 +104,16 @@ public class ThemeConfigurator
 			log.log(Level.SEVERE, "Failed to create config file!", exception);
 			return false;
 		}
+	}
+	
+	public static void saveThemeConfiguration(String themeName)
+	{
+		Properties properties = getConfigFile();
+		
+		properties.setProperty("THEME", themeName);
+		if(!storeConfigFile(properties))
+			log.log(Level.SEVERE, "Failed to save config with new theme!");
+			
+		log.info(properties.getProperty("THEME"));
 	}
 }

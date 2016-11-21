@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
 import jchess.gamelogic.field.Square;
-import jchess.gui.ThemeLoader;
+import jchess.gui.ThemeImageLoader;
 
 import java.awt.Image;
 
@@ -52,8 +52,8 @@ public class King extends Piece
 	public boolean wasMotion = false; // true if the King has moved once
 	// public boolean checked = false;
 	public static short value = 99;
-	private static final Image imageWhite = ThemeLoader.loadThemeImage("King-W.png");
-	private static final Image imageBlack = ThemeLoader.loadThemeImage("King-B.png");
+	private static final Image imageWhite = ThemeImageLoader.loadThemeImage("King-W.png");
+	private static final Image imageBlack = ThemeImageLoader.loadThemeImage("King-B.png");
 	
 	public King(Chessboard chessboard, Player player)
 	{
