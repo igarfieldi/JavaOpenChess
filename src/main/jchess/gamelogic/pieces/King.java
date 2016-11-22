@@ -38,16 +38,39 @@ package jchess.gamelogic.pieces;
 0 1 2 3 4 5 6 7
  */
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
 import jchess.gamelogic.field.Field;
 import jchess.gui.ThemeImageLoader;
+import jchess.util.Direction;
 
 import java.awt.Image;
 
 public class King extends Piece
 {
+	private static final Direction[] NORMAL_MOVEMENT = {
+			new Direction(1, 0),
+			new Direction(-1, 0),
+			new Direction(0, 1),
+			new Direction(0, -1),
+			new Direction(1, 1),
+			new Direction(-1, 1),
+			new Direction(1, -1),
+			new Direction(-1, -1)
+	};
+	
+	@Override
+	public List<Direction> getNormalMovements() {
+		return Arrays.asList(King.NORMAL_MOVEMENT);
+	}
+	
+	@Override
+	public List<Direction> getStrikingMovements() {
+		return Arrays.asList(King.NORMAL_MOVEMENT);
+	}
 	
 	public boolean wasMotion = false; // true if the King has moved once
 	// public boolean checked = false;

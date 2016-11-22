@@ -23,11 +23,14 @@ package jchess.gamelogic.pieces;
 
 import java.awt.Image;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
 import jchess.gamelogic.field.Field;
 import jchess.gui.ThemeImageLoader;
+import jchess.util.Direction;
 
 /**
  * Class to represent a chess pawn rook Rook can move:
@@ -45,6 +48,22 @@ import jchess.gui.ThemeImageLoader;
  */
 public class Rook extends Piece
 {
+	private static final Direction[] NORMAL_MOVEMENT = {
+			new Direction(1, 0),
+			new Direction(-1, 0),
+			new Direction(0, 1),
+			new Direction(0, -1)
+	};
+	
+	@Override
+	public List<Direction> getNormalMovements() {
+		return Arrays.asList(Rook.NORMAL_MOVEMENT);
+	}
+	
+	@Override
+	public List<Direction> getStrikingMovements() {
+		return Arrays.asList(Rook.NORMAL_MOVEMENT);
+	}
 	
 	public boolean wasMotion = false;
 	protected static final Image imageWhite = ThemeImageLoader.loadThemeImage("Rook-W.png");

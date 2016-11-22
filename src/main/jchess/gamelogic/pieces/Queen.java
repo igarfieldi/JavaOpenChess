@@ -21,11 +21,14 @@
 package jchess.gamelogic.pieces;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
 import jchess.gamelogic.field.Field;
 import jchess.gui.ThemeImageLoader;
+import jchess.util.Direction;
 
 import java.awt.Image;
 
@@ -44,6 +47,26 @@ import java.awt.Image;
  */
 public class Queen extends Piece
 {
+	private static final Direction[] NORMAL_MOVEMENT = {
+			new Direction(1, 0),
+			new Direction(-1, 0),
+			new Direction(0, 1),
+			new Direction(0, -1),
+			new Direction(1, 1),
+			new Direction(-1, 1),
+			new Direction(1, -1),
+			new Direction(-1, -1)
+	};
+	
+	@Override
+	public List<Direction> getNormalMovements() {
+		return Arrays.asList(Queen.NORMAL_MOVEMENT);
+	}
+	
+	@Override
+	public List<Direction> getStrikingMovements() {
+		return Arrays.asList(Queen.NORMAL_MOVEMENT);
+	}
 	
 	public static short value = 9;
 	protected static final Image imageWhite = ThemeImageLoader.loadThemeImage("Queen-W.png");

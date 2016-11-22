@@ -25,10 +25,13 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Chessboard;
 import jchess.gamelogic.field.Field;
+import jchess.util.Direction;
+
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -50,6 +53,9 @@ public abstract class Piece
 	protected static Image imageWhite;// = null;
 	protected Image orgImage;
 	protected Image image;
+	
+	public abstract List<Direction> getNormalMovements();
+	public abstract List<Direction> getStrikingMovements();
 	
 	Piece(Chessboard chessboard, Player player)
 	{
