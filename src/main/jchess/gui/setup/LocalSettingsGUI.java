@@ -19,15 +19,30 @@
  */
 package jchess.gui.setup;
 
-import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import java.awt.event.ActionListener;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.TextListener;
+import java.awt.event.ActionListener;
 import java.awt.event.TextEvent;
-import java.awt.*;
+import java.awt.event.TextListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSlider;
+import javax.swing.JTextField;
+import javax.swing.text.BadLocationException;
 
 import jchess.JChessApp;
 import jchess.Localization;

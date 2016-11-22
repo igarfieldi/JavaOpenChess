@@ -251,7 +251,7 @@ public class ChessboardController
 		boolean wasEnPassant = false;
 		if(end.getPiece() != null)
 		{
-			end.getPiece().square = null;
+			end.getPiece().setSquare(null);
 		}
 		
 		Field tempBegin = new Field(begin);// 4 moves history
@@ -259,7 +259,7 @@ public class ChessboardController
 		// for undo
 		// ---
 		
-		begin.getPiece().square = end;// set square of piece to ending
+		begin.getPiece().setSquare(end);// set square of piece to ending
 		end.setPiece(begin.getPiece());// for ending square set piece from
 		                               // beginin square
 		begin.setPiece(null);// make null piece for begining square
@@ -297,7 +297,7 @@ public class ChessboardController
 		} else if(end.getPiece().getName().equals("Pawn"))
 		{
 			if(this.twoSquareMovedPawn != null
-			        && board.getField(end.getPosX(), begin.getPosY()) == this.twoSquareMovedPawn.square) // en passant
+			        && board.getField(end.getPosX(), begin.getPosY()) == this.twoSquareMovedPawn.getSquare()) // en passant
 			{
 				// Ugly hack - put taken pawn in en passant plasty do end square
 				tempEnd.setPiece(board.getPiece(board.getField(end.getPosX(), begin.getPosY())));
@@ -316,13 +316,13 @@ public class ChessboardController
 				                                // passant)
 			}
 			
-			if(end.getPiece().square.getPosY() == 0 || end.getPiece().square.getPosY() == 7) // promote
+			if(end.getPiece().getSquare().getPosY() == 0 || end.getPiece().getSquare().getPosY() == 7) // promote
 			                                                                                 // Pawn
 			{
 				if(clearForwardHistory)
 				{
 					String color;
-					if(end.getPiece().player.getColor() == Player.Color.WHITE)
+					if(end.getPiece().getPlayer().getColor() == Player.Color.WHITE)
 					{
 						color = "W"; // promotionWindow was show with pieces in
 						             // this color
@@ -339,32 +339,24 @@ public class ChessboardController
 					
 					if(newPiece.equals("Queen")) // transform pawn to queen
 					{
-						Queen queen = new Queen(this, end.getPiece().player);
-						queen.chessboard = end.getPiece().chessboard;
-						queen.player = end.getPiece().player;
-						queen.square = end.getPiece().square;
+						Queen queen = new Queen(this, end.getPiece().getPlayer());
+						queen.setSquare(end.getPiece().getSquare());
 						end.setPiece(queen);
 					} else if(newPiece.equals("Rook")) // transform pawn to rook
 					{
-						Rook rook = new Rook(this, end.getPiece().player);
-						rook.chessboard = end.getPiece().chessboard;
-						rook.player = end.getPiece().player;
-						rook.square = end.getPiece().square;
+						Rook rook = new Rook(this, end.getPiece().getPlayer());
+						rook.setSquare(end.getPiece().getSquare());
 						end.setPiece(rook);
 					} else if(newPiece.equals("Bishop")) // transform pawn to
 					                                     // bishop
 					{
-						Bishop bishop = new Bishop(this, end.getPiece().player);
-						bishop.chessboard = end.getPiece().chessboard;
-						bishop.player = end.getPiece().player;
-						bishop.square = end.getPiece().square;
+						Bishop bishop = new Bishop(this, end.getPiece().getPlayer());
+						bishop.setSquare(end.getPiece().getSquare());
 						end.setPiece(bishop);
 					} else // transform pawn to knight
 					{
-						Knight knight = new Knight(this, end.getPiece().player);
-						knight.chessboard = end.getPiece().chessboard;
-						knight.player = end.getPiece().player;
-						knight.square = end.getPiece().square;
+						Knight knight = new Knight(this, end.getPiece().getPlayer());
+						knight.setSquare(end.getPiece().getSquare());
 						end.setPiece(knight);
 					}
 					promotedPiece = end.getPiece();
@@ -418,11 +410,11 @@ public class ChessboardController
 				if(first.getPromotedPiece() != null)
 				{
 					Pawn pawn = (Pawn) board.getField(to.getPosX(), to.getPosY()).getPiece();
-					pawn.square = null;
+					pawn.setSquare(null);
 					
 					board.getField(to.getPosX(), to.getPosY()).setPiece(first.getPromotedPiece());
 					Piece promoted = board.getField(to.getPosX(), to.getPosY()).getPiece();
-					promoted.square = board.getField(to.getPosX(), to.getPosY());
+					promoted.setSquare(board.getField(to.getPosX(), to.getPosY()));
 				}
 				return true;
 			}
@@ -449,7 +441,7 @@ public class ChessboardController
 				Piece moved = last.getMovedPiece();
 				board.getField(begin.getPosX(), begin.getPosY()).setPiece(moved);
 				
-				moved.square = board.getField(begin.getPosX(), begin.getPosY());
+				moved.setSquare(board.getField(begin.getPosX(), begin.getPosY()));
 				
 				Piece taken = last.getTakenPiece();
 				if(last.getCastlingMove() != CastlingType.NONE)
@@ -459,13 +451,13 @@ public class ChessboardController
 					{
 						rook = board.getField(end.getPosX() - 1, end.getPosY()).getPiece();
 						board.getField(7, begin.getPosY()).setPiece(rook);
-						rook.square = board.getField(7, begin.getPosY());
+						rook.setSquare(board.getField(7, begin.getPosY()));
 						board.getField(end.getPosX() - 1, end.getPosY()).setPiece(null);
 					} else
 					{
 						rook = board.getField(end.getPosX() + 1, end.getPosY()).getPiece();
 						board.getField(0, begin.getPosY()).setPiece(rook);
-						rook.square = board.getField(0, begin.getPosY());
+						rook.setSquare(board.getField(0, begin.getPosY()));
 						board.getField(end.getPosX() + 1, end.getPosY()).setPiece(null);
 					}
 					((King) moved).wasMotion = false;
@@ -477,12 +469,12 @@ public class ChessboardController
 				{
 					Pawn pawn = (Pawn) last.getTakenPiece();
 					board.getField(end.getPosX(), begin.getPosY()).setPiece(pawn);
-					pawn.square = board.getField(end.getPosX(), begin.getPosY());
+					pawn.setSquare(board.getField(end.getPosX(), begin.getPosY()));
 					
 				} else if(moved.getName().equals("Pawn") && last.getPromotedPiece() != null)
 				{
 					Piece promoted = board.getField(end.getPosX(), end.getPosY()).getPiece();
-					promoted.square = null;
+					promoted.setSquare(null);
 					board.getField(end.getPosX(), end.getPosY()).setPiece(null);
 				}
 				
@@ -500,7 +492,7 @@ public class ChessboardController
 				if(taken != null && !last.wasEnPassant())
 				{
 					board.getField(end.getPosX(), end.getPosY()).setPiece(taken);
-					taken.square = board.getField(end.getPosX(), end.getPosY());
+					taken.setSquare(board.getField(end.getPosX(), end.getPosY()));
 				} else
 				{
 					board.getField(end.getPosX(), end.getPosY()).setPiece(null);

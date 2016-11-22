@@ -20,8 +20,13 @@
  */
 package jchess.gui.setup;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.EventQueue;
+
+import javax.swing.GroupLayout;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
+import javax.swing.WindowConstants;
 
 import jchess.Localization;
 

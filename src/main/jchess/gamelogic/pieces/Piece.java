@@ -20,11 +20,8 @@
  */
 package jchess.gamelogic.pieces;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import jchess.gamelogic.Player;
@@ -33,10 +30,6 @@ import jchess.gamelogic.field.Field;
 import jchess.gui.ThemeImageLoader;
 import jchess.util.Direction;
 
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-
 /**
  * Class to represent a piece (any kind) - this class should be extended to
  * represent pawn, bishop etc.
@@ -44,60 +37,38 @@ import java.awt.image.BufferedImage;
 public abstract class Piece
 {
 	
-	public ChessboardController chessboard; // <-- this relation isn't in class diagram,
-	                              // but it's necessary :/
-	public Field square;
-	public Player player;
-	protected String symbol;
+	protected ChessboardController chessboard;
+	private Field square;
+	private Player player;
 	
-	public abstract List<Direction> getNormalMovements();
-	public abstract List<Direction> getStrikingMovements();
-	
-	public Image getImage() {
-		return ThemeImageLoader.loadThemedPieceImage(this);
-	}
-	
-	public String getName() {
-		return this.getClass().getSimpleName();
-	}
-	
-	Piece(ChessboardController chessboard, Player player)
+	public Piece(ChessboardController chessboard, Player player)
 	{
 		this.chessboard = chessboard;
 		this.player = player;
-		
 	}
-	/*
-	 * Method to draw piece on chessboard
-	 * 
-	 * @graph : where to draw
-	 */
 	
-	void clean()
-	{
-	}
+	public abstract List<Direction> getNormalMovements();
+	public abstract List<Direction> getStrikingMovements();
+	public abstract String getSymbol();
 	
 	/**
 	 * method check if Piece can move to given square
 	 * 
-	 * @param square
+	 * @param target
 	 *            square where piece want to move (Square object)
 	 * @param possibleMoves
 	 *            all moves which can piece do
 	 */
-	boolean canMove(Field square, ArrayList<?> allmoves)
+	boolean canMove(Field target, ArrayList<Field> allMoves)
 	{
-		// throw new UnsupportedOperationException("Not supported yet.");
-		ArrayList<?> moves = allmoves;
-		for(Iterator<?> it = moves.iterator(); it.hasNext();)
+		for(Field field : allMoves)
 		{
-			Field sq = (Field) it.next();// get next from iterator
-			if(sq == square)
-			{// if address is the same
-				return true; // piece canMove
+			if(target.equals(field))
+			{
+				return true;
 			}
 		}
-		return false;// if not, piece cannot move
+		return false;
 	}
 	// void setImages(String white, String black) {
 	/*
@@ -145,17 +116,17 @@ public abstract class Piece
 	 */
 	protected boolean checkPiece(int x, int y)
 	{
-		if(chessboard.getBoard().getField(x, y).getPiece() != null && chessboard.getBoard().getField(x, y).getPiece().getName().equals("King"))
+		Piece piece = chessboard.getBoard().getField(x, y).getPiece();
+		if((piece != null) && (piece instanceof King))
+		{
+			return false;
+		} else if((piece == null) || (piece.player != this.player))
+		{
+			return true;
+		} else
 		{
 			return false;
 		}
-		Piece piece = chessboard.getBoard().getField(x, y).getPiece();
-		if(piece == null || // if this square is empty
-		        piece.player != this.player) // or piece is another player
-		{
-			return true;
-		}
-		return false;
 	}
 	
 	/**
@@ -181,8 +152,26 @@ public abstract class Piece
 		return false;
 	}
 	
-	public String getSymbol()
+	public Image getImage()
 	{
-		return this.symbol;
+		return ThemeImageLoader.loadThemedPieceImage(this);
+	}
+	
+	public String getName()
+	{
+		return this.getClass().getSimpleName();
+	}
+
+	public Player getPlayer()
+	{
+		return player;
+	}
+	public Field getSquare()
+	{
+		return square;
+	}
+	public void setSquare(Field square)
+	{
+		this.square = square;
 	}
 }

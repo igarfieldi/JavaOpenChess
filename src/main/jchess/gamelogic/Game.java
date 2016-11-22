@@ -20,32 +20,35 @@
  */
 package jchess.gamelogic;
 
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import jchess.JChessApp;
 import jchess.Localization;
 import jchess.gamelogic.clock.GameClock;
 import jchess.gamelogic.field.ChessboardController;
 import jchess.gamelogic.field.ChessboardView;
-import jchess.gamelogic.field.Moves;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.Moves;
 import jchess.gamelogic.pieces.King;
 import jchess.gui.secondary.Chat;
 import jchess.network.Client;
-
-import java.awt.*;
-import java.io.File;
-import java.io.BufferedReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.FileReader;
-import java.util.Calendar;
-import java.awt.event.ComponentListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Class responsible for the starts of new games, loading games, saving it, and
@@ -527,12 +530,12 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 					Field sq = chessboard.getView().getSquare(x, y);
 					if((sq == null && chessboard.getView().getActiveSquare() == null)
 					        || (this.chessboard.getView().getActiveSquare() == null && sq.getPiece() != null
-					                && sq.getPiece().player != this.activePlayer))
+					                && sq.getPiece().getPlayer() != this.activePlayer))
 					{
 						return;
 					}
 					
-					if(sq.getPiece() != null && sq.getPiece().player == this.activePlayer
+					if(sq.getPiece() != null && sq.getPiece().getPlayer() == this.activePlayer
 					        && sq != chessboard.getView().getActiveSquare())
 					{
 						chessboard.getView().unselect();
@@ -571,7 +574,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 						switch(king.isCheckmatedOrStalemated())
 						{
 							case 1:
-								this.endGame("Checkmate! " + king.player.getColor().toString() + " player lose!");
+								this.endGame("Checkmate! " + king.getPlayer().getColor().toString() + " player lose!");
 								break;
 							case 2:
 								this.endGame("Stalemate! Draw!");

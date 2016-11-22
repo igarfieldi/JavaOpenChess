@@ -52,8 +52,8 @@ public class PawnTest
 		Pawn blackPawn = new Pawn(board, p2);
 		board.getBoard().getField(4, 4).setPiece(whitePawn);
 		board.getBoard().getField(3, 3).setPiece(blackPawn);
-		assertTrue(canMakeMoves(whitePawn, board.getBoard().getField(4, 3), blackPawn.square));
-		assertTrue(canMakeMoves(blackPawn, board.getBoard().getField(3, 4), whitePawn.square));
+		assertTrue(canMakeMoves(whitePawn, board.getBoard().getField(4, 3), blackPawn.getSquare()));
+		assertTrue(canMakeMoves(blackPawn, board.getBoard().getField(3, 4), whitePawn.getSquare()));
 	}
 
 	@Test
@@ -63,8 +63,8 @@ public class PawnTest
 		Pawn blackPawn = new Pawn(board, p2);
 		board.getBoard().getField(3, 4).setPiece(whitePawn);
 		board.getBoard().getField(4, 3).setPiece(blackPawn);
-		assertTrue(canMakeMoves(whitePawn, board.getBoard().getField(3, 3), blackPawn.square));
-		assertTrue(canMakeMoves(blackPawn, board.getBoard().getField(4, 4), whitePawn.square));
+		assertTrue(canMakeMoves(whitePawn, board.getBoard().getField(3, 3), blackPawn.getSquare()));
+		assertTrue(canMakeMoves(blackPawn, board.getBoard().getField(4, 4), whitePawn.getSquare()));
 	}
 
 	@Test

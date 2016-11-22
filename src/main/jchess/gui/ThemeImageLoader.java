@@ -52,7 +52,7 @@ public class ThemeImageLoader
 	public static Image loadThemedPieceImage(Piece piece) {
 		// TODO: cache images!
 		String imageName = piece.getName() + "-";
-		if(piece.player.getColor() == Player.Color.WHITE) {
+		if(piece.getPlayer().getColor() == Player.Color.WHITE) {
 			imageName += "W";
 		} else {
 			imageName += "B";

@@ -85,7 +85,7 @@ public class KingTest
 	}
 	
 	private void movePiece(Field field, Piece piece) {
-		piece.square.setPiece(null);
+		piece.getSquare().setPiece(null);
 		field.setPiece(piece);
 	}
 	

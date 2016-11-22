@@ -623,7 +623,7 @@ public class Moves extends AbstractTableModel
 				                                                          // ASCII
 				
 				for(Field field : game.getChessboard().getBoard().getFields()) {
-					if(field.getPiece() == null || this.game.getActivePlayer().getColor() != field.getPiece().player.getColor()) {
+					if(field.getPiece() == null || this.game.getActivePlayer().getColor() != field.getPiece().getPlayer().getColor()) {
 						continue;
 					}
 					ArrayList<Field> pieceMoves = field.getPiece().possibleMoves();
@@ -631,8 +631,8 @@ public class Moves extends AbstractTableModel
 					{
 						if(possibleMove.getPosX() == xTo && possibleMove.getPosY() == yTo)
 						{
-							xFrom = field.getPiece().square.getPosX();
-							yFrom = field.getPiece().square.getPosY();
+							xFrom = field.getPiece().getSquare().getPosX();
+							yFrom = field.getPiece().getSquare().getPosY();
 							pieceFound = true;
 						}
 					}
