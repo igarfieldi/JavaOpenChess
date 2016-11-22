@@ -21,7 +21,6 @@
 package jchess.gui.setup;
 
 import javax.swing.*;
-import java.awt.*;
 
 import jchess.Localization;
 
@@ -88,20 +87,5 @@ public class NewGameWindow extends JDialog
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		this.windowPane.addTab(Localization.getMessage("local_game"), new LocalSettingsGUI(this));
 		this.windowPane.addTab(Localization.getMessage("network_game"), new DrawNetworkSettings(this));
-	}
-	
-	/**
-	 * @param args
-	 *            the command line arguments
-	 */
-	public static void main(String args[])
-	{
-		EventQueue.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				new NewGameWindow().setVisible(true);
-			}
-		});
 	}
 }

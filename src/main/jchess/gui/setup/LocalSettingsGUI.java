@@ -229,7 +229,7 @@ public class LocalSettingsGUI extends JPanel implements ActionListener, TextList
 		{
 			shortenLongPlayerNames();
 		
-			Game gameWindow = JChessApp.jcv.addNewTab(this.firstPlayerNameTextField.getText() + " vs " + this.secondPlayerNameTextField.getText());
+			Game gameWindow = JChessApp.view.addNewTab(this.firstPlayerNameTextField.getText() + " vs " + this.secondPlayerNameTextField.getText());
 			applySettings(gameWindow);
 			drawGameWindow(gameWindow);
 		}

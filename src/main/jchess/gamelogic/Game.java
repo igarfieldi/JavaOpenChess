@@ -215,7 +215,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 			log.log(Level.SEVERE, "Error reading game file!", err);
 			return;
 		}
-		Game newGUI = JChessApp.jcv.addNewTab(whiteName + " vs. " + blackName);
+		Game newGUI = JChessApp.view.addNewTab(whiteName + " vs. " + blackName);
 		Settings locSetts = newGUI.settings;
 		locSetts.getBlackPlayer().setName(blackName);
 		locSetts.getWhitePlayer().setName(whiteName);
@@ -305,8 +305,8 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 		}
 		// dirty hacks starts over here :)
 		// to fix rendering artefacts on first run
-		Game activeGame = JChessApp.jcv.getActiveTabGame();
-        if(activeGame != null && JChessApp.jcv.getNumberOfOpenedTabs() == 1)
+		Game activeGame = JChessApp.view.getActiveTabGame();
+        if(activeGame != null && JChessApp.view.getNumberOfOpenedTabs() == 1)
 		{
 			activeGame.chessboard.resizeChessboard(activeGame.chessboard.get_height(false));
 			activeGame.chessboard.repaint();
