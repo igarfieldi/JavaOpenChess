@@ -331,7 +331,7 @@ public class ChessboardController
 						color = "B";
 					}
 					
-					String newPiece = JChessApp.jcv.showPawnPromotionBox(color); // return
+					String newPiece = JChessApp.view.showPawnPromotionBox(color); // return
 					                                                             // name
 					                                                             // of
 					                                                             // new
