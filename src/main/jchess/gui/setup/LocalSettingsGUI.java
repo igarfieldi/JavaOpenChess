@@ -358,7 +358,7 @@ public class LocalSettingsGUI extends JPanel implements ActionListener, TextList
 	{
 		gameWindow.newGame();
 		this.localSettingsWindow.setVisible(false);
-		gameWindow.getChessboard().repaint();
-		gameWindow.getChessboard().draw();
+		gameWindow.getChessboard().getView().repaint();
+		gameWindow.getChessboard().getView().draw();
 	}
 }

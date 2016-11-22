@@ -653,7 +653,7 @@ public class Moves extends AbstractTableModel
 			if(!canMove) // if move is illegal
 			{
 				JOptionPane.showMessageDialog(this.game, Localization.getMessage("illegal_move_on") + locMove);
-				this.game.getChessboard().setActiveSquare(null);
+				this.game.getChessboard().getView().setActiveSquare(null);
 				return;// finish reading game and show message
 			}
 		}

@@ -169,7 +169,7 @@ public class Client implements Runnable
                     game.setClient(this);
                     game.getChat().setClient(this);
                     game.newGame();//start new Game
-                    game.getChessboard().draw();
+                    game.getChessboard().getView().draw();
                 }
                 else if (in.equals("#errorConnection"))
                 {

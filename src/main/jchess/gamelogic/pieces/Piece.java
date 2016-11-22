@@ -83,8 +83,8 @@ public abstract class Piece
 		{
 			Graphics2D g2d = (Graphics2D) g;
 			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			Point topLeft = this.chessboard.getTopLeftPoint();
-			int height = this.chessboard.get_square_height();
+			Point topLeft = this.chessboard.getView().getTopLeftPoint();
+			int height = this.chessboard.getView().get_square_height();
 			int x = (this.square.getPosX() * height) + topLeft.x;
 			int y = (this.square.getPosY() * height) + topLeft.y;
 			float addX = (height - image.getWidth(null)) / 2;
