@@ -111,7 +111,6 @@ public class Pawn extends Piece
 	@Override
 	public ArrayList<Field> possibleMoves()
 	{
-		// System.out.println(this.player.goDown);//4test
 		ArrayList<Field> list = new ArrayList<Field>();
 		Field sq;
 		Field sq1;

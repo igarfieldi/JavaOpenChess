@@ -29,10 +29,10 @@ import jchess.network.MD5;
 
 public class Console
 {
-
+	private static Logger log = Logger.getLogger(Console.class.getName());
     public static void main(String[] args)
     {
-        System.out.println("JChess Server Start!");
+        log.log(Level.INFO, "JChess Server Start!");
 
         Server server = new Server(); //create server
         server.isPrintEnable = false;
@@ -40,11 +40,11 @@ public class Console
         boolean isOK = true;
         while (isOK)
         {
-            System.out.println("--------------------");
-            System.out.println("[1] Nowy stół");
-            System.out.println("[2] Lista aktywnych stołów");
-            System.out.println("[3] Włącz/wyłącz komunikaty serwera");
-            System.out.println("[4] Wyłącz serwer");
+            log.log(Level.INFO, "--------------------");
+            log.log(Level.INFO, "[1] Nowy stół");
+            log.log(Level.INFO, "[2] Lista aktywnych stołów");
+            log.log(Level.INFO, "[3] Włącz/wyłącz komunikaty serwera");
+            log.log(Level.INFO, "[4] Wyłącz serwer");
             System.out.print("-> ");
             String str = readString();
 
@@ -95,7 +95,7 @@ public class Console
                         p2 = table.clientPlayer2.nick;
                     }
 
-                    System.out.println("\t" + id + ": " + p1 + " vs " + p2);
+                    log.log(Level.INFO, "\t" + id + ": " + p1 + " vs " + p2);
                 }
             }
             else if (str.equals("3")) //on/off server's communicats
@@ -103,12 +103,12 @@ public class Console
                 if (server.isPrintEnable == false)
                 {
                     server.isPrintEnable = true;
-                    System.out.println("Komunikaty serwera zostały włączone");
+                    log.log(Level.INFO, "Komunikaty serwera zostały włączone");
                 }
                 else
                 {
                     server.isPrintEnable = false;
-                    System.out.println("Komunikaty serwera zostały wyłączone");
+                    log.log(Level.INFO, "Komunikaty serwera zostały wyłączone");
                 }
             }
             else if (str.equals("4")) //exit
@@ -117,7 +117,7 @@ public class Console
             }
             else //bad commant
             {
-                System.out.println("Nierozpoznane polecenie");
+                log.log(Level.INFO, "Nierozpoznane polecenie");
             }
         }
         System.exit(0);
