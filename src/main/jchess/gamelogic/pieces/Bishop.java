@@ -21,13 +21,13 @@
 package jchess.gamelogic.pieces;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.field.Chessboard;
+import jchess.gamelogic.field.ChessboardController;
 import jchess.gamelogic.field.Field;
-import jchess.gui.ThemeImageLoader;
-
-import java.awt.Image;
+import jchess.util.Direction;
 
 /**
  * Class to represent a chess pawn bishop Bishop can move across the chessboard
@@ -44,30 +44,35 @@ import java.awt.Image;
  */
 public class Bishop extends Piece
 {
+	private static final String SYMBOL = "B";
+	private static final Direction[] NORMAL_MOVEMENT = {
+			new Direction(1, 1),
+			new Direction(-1, 1),
+			new Direction(1, -1),
+			new Direction(-1, -1)
+	};
 	
-	public static short value = 3;
-	protected static final Image imageWhite = ThemeImageLoader.loadThemeImage("Bishop-W.png");
-	protected static final Image imageBlack = ThemeImageLoader.loadThemeImage("Bishop-B.png");
-	
-	public Bishop(Chessboard chessboard, Player player)
-	{
-		super(chessboard, player); // call initialiser of super type: Piece
-		// this.setImages("Bishop-W.png", "Bishop-B.png");
-		this.symbol = "B";
-		this.setImage();
+	@Override
+	public List<Direction> getNormalMovements() {
+		return Arrays.asList(Bishop.NORMAL_MOVEMENT);
 	}
 	
 	@Override
-	void setImage()
+	public List<Direction> getStrikingMovements() {
+		return Arrays.asList(Bishop.NORMAL_MOVEMENT);
+	}
+	
+	@Override
+	public String getSymbol() {
+		return Bishop.SYMBOL;
+	}
+	
+	public static short value = 3;
+	
+	public Bishop(ChessboardController chessboard, Player player)
 	{
-		if(this.player.getColor() == Player.Color.BLACK)
-		{
-			image = imageBlack;
-		} else
-		{
-			image = imageWhite;
-		}
-		orgImage = image;
+		super(chessboard, player); // call initialiser of super type: Piece
+		// this.setImages("Bishop-W.png", "Bishop-B.png");
 	}
 	
 	/**
@@ -80,20 +85,20 @@ public class Bishop extends Piece
 	{
 		ArrayList<Field> list = new ArrayList<Field>();
 		
-		for(int h = this.square.getPosX() - 1, i = this.square.getPosY() + 1; !isout(h, i); --h, ++i) // left-up
+		for(int h = this.getSquare().getPosX() - 1, i = this.getSquare().getPosY() + 1; !isout(h, i); --h, ++i) // left-up
 		{
 			if(this.checkPiece(h, i))// if there isn't a piece on this square
 			{
-				if(this.player.getColor() == Player.Color.WHITE) // white
+				if(this.getPlayer().getColor() == Player.Color.WHITE) // white
 				{
-					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
+					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
 					        chessboard.getBoard().getField(h, i)))
 					{
 						list.add(chessboard.getBoard().getField(h, i));
 					}
 				} else // or black
 				{
-					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
+					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
 					        chessboard.getBoard().getField(h, i)))
 					{
 						list.add(chessboard.getBoard().getField(h, i));
@@ -111,20 +116,20 @@ public class Bishop extends Piece
 			}
 		}
 		
-		for(int h = this.square.getPosX() - 1, i = this.square.getPosY() - 1; !isout(h, i); --h, --i) // left-down
+		for(int h = this.getSquare().getPosX() - 1, i = this.getSquare().getPosY() - 1; !isout(h, i); --h, --i) // left-down
 		{
 			if(this.checkPiece(h, i)) // if there isn't a piece on this square
 			{
-				if(this.player.getColor() == Player.Color.WHITE) // white
+				if(this.getPlayer().getColor() == Player.Color.WHITE) // white
 				{
-					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
+					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
 					        chessboard.getBoard().getField(h, i)))
 					{
 						list.add(chessboard.getBoard().getField(h, i));
 					}
 				} else // or black
 				{
-					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
+					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
 					        chessboard.getBoard().getField(h, i)))
 					{
 						list.add(chessboard.getBoard().getField(h, i));
@@ -142,20 +147,20 @@ public class Bishop extends Piece
 			}
 		}
 		
-		for(int h = this.square.getPosX() + 1, i = this.square.getPosY() + 1; !isout(h, i); ++h, ++i) // right-up
+		for(int h = this.getSquare().getPosX() + 1, i = this.getSquare().getPosY() + 1; !isout(h, i); ++h, ++i) // right-up
 		{
 			if(this.checkPiece(h, i))// if there isn't a piece on this square
 			{
-				if(this.player.getColor() == Player.Color.WHITE) // white
+				if(this.getPlayer().getColor() == Player.Color.WHITE) // white
 				{
-					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
+					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
 					        chessboard.getBoard().getField(h, i)))
 					{
 						list.add(chessboard.getBoard().getField(h, i));
 					}
 				} else // or black
 				{
-					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
+					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
 					        chessboard.getBoard().getField(h, i)))
 					{
 						list.add(chessboard.getBoard().getField(h, i));
@@ -173,20 +178,20 @@ public class Bishop extends Piece
 			}
 		}
 		
-		for(int h = this.square.getPosX() + 1, i = this.square.getPosY() - 1; !isout(h, i); ++h, --i) // right-down
+		for(int h = this.getSquare().getPosX() + 1, i = this.getSquare().getPosY() - 1; !isout(h, i); ++h, --i) // right-down
 		{
 			if(this.checkPiece(h, i))// if there isn't a piece on this square
 			{
-				if(this.player.getColor() == Player.Color.WHITE) // white
+				if(this.getPlayer().getColor() == Player.Color.WHITE) // white
 				{
-					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
+					if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
 					        chessboard.getBoard().getField(h, i)))
 					{
 						list.add(chessboard.getBoard().getField(h, i));
 					}
 				} else // or black
 				{
-					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
+					if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
 					        chessboard.getBoard().getField(h, i)))
 					{
 						list.add(chessboard.getBoard().getField(h, i));

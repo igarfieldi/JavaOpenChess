@@ -37,6 +37,7 @@ import jchess.gamelogic.Settings;
 
 public class Server implements Runnable
 {
+	private static Logger log = Logger.getLogger(Server.class.getName());
     public static boolean isPrintEnable = true; //print all messages (print function)
 
     private static Map<Integer, Table> tables;
@@ -246,8 +247,9 @@ public class Server implements Runnable
      */
     private static void print(String str)
     {
-        if(isPrintEnable)
-            System.out.println("Server: "+str);
+        if(isPrintEnable) {
+        	log.log(Level.INFO, "Server: " + str);
+        }
     }
 
     /*

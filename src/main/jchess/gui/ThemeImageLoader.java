@@ -7,6 +7,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jchess.JChessApp;
+import jchess.gamelogic.Player;
+import jchess.gamelogic.pieces.Piece;
 
 public class ThemeImageLoader
 {
@@ -45,5 +47,18 @@ public class ThemeImageLoader
 			exception.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static Image loadThemedPieceImage(Piece piece) {
+		// TODO: cache images!
+		String imageName = piece.getName() + "-";
+		if(piece.getPlayer().getColor() == Player.Color.WHITE) {
+			imageName += "W";
+		} else {
+			imageName += "B";
+		}
+		imageName += ".png";
+		
+		return ThemeImageLoader.loadThemeImage(imageName);
 	}
 }

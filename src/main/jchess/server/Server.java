@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 
 public class Server implements Runnable
 {
-
+	private static Logger log = Logger.getLogger(Server.class.getName());
     public static boolean isPrintEnable = true; //print all messages (print function)
     public static Map<Integer, Table> tables;
     public static int port = 4449;
@@ -195,7 +195,7 @@ public class Server implements Runnable
     {
         if (isPrintEnable)
         {
-            System.out.println("Server: " + str);
+        	log.log(Level.INFO, "Server: " + str);
         }
     }
 

@@ -28,6 +28,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.JOptionPane;
 
 import jchess.Localization;
@@ -41,7 +42,7 @@ import jchess.server.Connection_info;
  */
 public class Client implements Runnable
 {
-
+	private static Logger log = Logger.getLogger(Client.class.getName());
     public static boolean isPrintEnable = true; //print all messages (print function)
     Socket s;
     ObjectOutputStream output;
@@ -169,7 +170,7 @@ public class Client implements Runnable
                     game.setClient(this);
                     game.getChat().setClient(this);
                     game.newGame();//start new Game
-                    game.getChessboard().draw();
+                    game.getChessboard().getView().draw();
                 }
                 else if (in.equals("#errorConnection"))
                 {
@@ -222,7 +223,7 @@ public class Client implements Runnable
     {
         if (isPrintEnable)
         {
-            System.out.println("Client: " + str);
+            log.log(Level.INFO, "Client: " + str);
         }
     }
     

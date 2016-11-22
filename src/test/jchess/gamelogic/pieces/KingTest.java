@@ -9,12 +9,12 @@ import org.junit.Test;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
-import jchess.gamelogic.field.Chessboard;
+import jchess.gamelogic.field.ChessboardController;
 import jchess.gamelogic.field.Field;
 
 public class KingTest
 {
-	Chessboard board;
+	ChessboardController board;
 	Player p1;
 	Player p2;
 	King whiteKing;
@@ -27,7 +27,7 @@ public class KingTest
 		p1 = new Player("p1", "WHITE");
 		p2 = new Player("p2", "BLACK");
 		p2.setBoardSide(true);
-		board = new Chessboard(new Settings(), null);
+		board = new ChessboardController(new Settings(), null);
 		whiteKing = new King(board, p1);
 		blackKing = new King(board, p2);
 		board.getBoard().getField(4, 7).setPiece(whiteKing);
@@ -85,7 +85,7 @@ public class KingTest
 	}
 	
 	private void movePiece(Field field, Piece piece) {
-		piece.square.setPiece(null);
+		piece.getSquare().setPiece(null);
 		field.setPiece(piece);
 	}
 	

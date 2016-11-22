@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -277,7 +278,7 @@ public class DrawNetworkSettings extends JPanel implements ActionListener
 		Game newGUI = JChessApp.view.addNewTab("Network game, table: " + gameIdTextField.getText());
 		client.game = newGUI;
 		newGUI.add(newGUI.getChat());
-		newGUI.getChessboard().draw();
+		newGUI.getChessboard().getView().draw();
 		
 		Thread thread = new Thread(client);
 		thread.start(); // client listening

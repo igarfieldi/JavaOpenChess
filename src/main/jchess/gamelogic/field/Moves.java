@@ -196,7 +196,7 @@ public class Moves extends AbstractTableModel
 		
 		if(game.getSettings().isUpsideDown())
 		{
-			locMove += Character.toString((char) ((Chessboard.BOTTOM - begin.getPosX()) + 97));// add
+			locMove += Character.toString((char) ((ChessboardController.BOTTOM - begin.getPosX()) + 97));// add
 			                                                                                   // letter
 			                                                                                   // of
 			                                                                                   // Square
@@ -236,7 +236,7 @@ public class Moves extends AbstractTableModel
 		
 		if(game.getSettings().isUpsideDown())
 		{
-			locMove += Character.toString((char) ((Chessboard.BOTTOM - end.getPosX()) + 97));// add
+			locMove += Character.toString((char) ((ChessboardController.BOTTOM - end.getPosX()) + 97));// add
 			                                                                                 // letter
 			                                                                                 // of
 			                                                                                 // Square
@@ -619,11 +619,11 @@ public class Moves extends AbstractTableModel
 			if(locMove.length() <= 3)
 			{
 				xTo = locMove.charAt(from) - 97;// from ASCII
-				yTo = Chessboard.BOTTOM - (locMove.charAt(from + 1) - 49);// from
+				yTo = ChessboardController.BOTTOM - (locMove.charAt(from + 1) - 49);// from
 				                                                          // ASCII
 				
 				for(Field field : game.getChessboard().getBoard().getFields()) {
-					if(field.getPiece() == null || this.game.getActivePlayer().getColor() != field.getPiece().player.getColor()) {
+					if(field.getPiece() == null || this.game.getActivePlayer().getColor() != field.getPiece().getPlayer().getColor()) {
 						continue;
 					}
 					ArrayList<Field> pieceMoves = field.getPiece().possibleMoves();
@@ -631,8 +631,8 @@ public class Moves extends AbstractTableModel
 					{
 						if(possibleMove.getPosX() == xTo && possibleMove.getPosY() == yTo)
 						{
-							xFrom = field.getPiece().square.getPosX();
-							yFrom = field.getPiece().square.getPosY();
+							xFrom = field.getPiece().getSquare().getPosX();
+							yFrom = field.getPiece().getSquare().getPosY();
 							pieceFound = true;
 						}
 					}
@@ -643,17 +643,17 @@ public class Moves extends AbstractTableModel
 			} else
 			{
 				xFrom = locMove.charAt(from) - 97;// from ASCII
-				yFrom = Chessboard.BOTTOM - (locMove.charAt(from + 1) - 49);// from
+				yFrom = ChessboardController.BOTTOM - (locMove.charAt(from + 1) - 49);// from
 				                                                            // ASCII
 				xTo = locMove.charAt(from + 3) - 97;// from ASCII
-				yTo = Chessboard.BOTTOM - (locMove.charAt(from + 4) - 49);// from
+				yTo = ChessboardController.BOTTOM - (locMove.charAt(from + 4) - 49);// from
 				                                                          // ASCII
 			}
 			canMove = this.game.simulateMove(xFrom, yFrom, xTo, yTo);
 			if(!canMove) // if move is illegal
 			{
 				JOptionPane.showMessageDialog(this.game, Localization.getMessage("illegal_move_on") + locMove);
-				this.game.getChessboard().setActiveSquare(null);
+				this.game.getChessboard().getView().setActiveSquare(null);
 				return;// finish reading game and show message
 			}
 		}

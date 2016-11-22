@@ -20,18 +20,15 @@
  */
 package jchess.gamelogic.pieces;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.field.Chessboard;
+import jchess.gamelogic.field.ChessboardController;
 import jchess.gamelogic.field.Field;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
+import jchess.gui.ThemeImageLoader;
+import jchess.util.Direction;
 
 /**
  * Class to represent a piece (any kind) - this class should be extended to
@@ -40,106 +37,38 @@ import java.awt.image.BufferedImage;
 public abstract class Piece
 {
 	
-	public Chessboard chessboard; // <-- this relation isn't in class diagram,
-	                              // but it's necessary :/
-	public Field square;
-	public Player player;
-	public String name;
-	protected String symbol;
-	protected static Image imageBlack;// = null;
-	protected static Image imageWhite;// = null;
-	protected Image orgImage;
-	protected Image image;
+	protected ChessboardController chessboard;
+	private Field square;
+	private Player player;
 	
-	Piece(Chessboard chessboard, Player player)
+	public Piece(ChessboardController chessboard, Player player)
 	{
 		this.chessboard = chessboard;
 		this.player = player;
-		if(player.getColor() == Player.Color.BLACK)
-		{
-			image = imageBlack;
-		} else
-		{
-			image = imageWhite;
-		}
-		this.name = this.getClass().getSimpleName();
-		
-	}
-	/*
-	 * Method to draw piece on chessboard
-	 * 
-	 * @graph : where to draw
-	 */
-	
-	public final void draw(Graphics g)
-	{
-		try
-		{
-			Graphics2D g2d = (Graphics2D) g;
-			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			Point topLeft = this.chessboard.getTopLeftPoint();
-			int height = this.chessboard.get_square_height();
-			int x = (this.square.getPosX() * height) + topLeft.x;
-			int y = (this.square.getPosY() * height) + topLeft.y;
-			float addX = (height - image.getWidth(null)) / 2;
-			float addY = (height - image.getHeight(null)) / 2;
-			if(image != null && g != null)
-			{
-				Image tempImage = orgImage;
-				BufferedImage resized = new BufferedImage(height, height, BufferedImage.TYPE_INT_ARGB_PRE);
-				Graphics2D imageGr = (Graphics2D) resized.createGraphics();
-				imageGr.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				imageGr.drawImage(tempImage, 0, 0, height, height, null);
-				imageGr.dispose();
-				image = resized.getScaledInstance(height, height, 0);
-				g2d.drawImage(image, x, y, null);
-			} else
-			{
-				System.out.println("image is null!");
-			}
-			
-		} catch(java.lang.NullPointerException exc)
-		{
-			System.out.println("Something wrong when painting piece: " + exc.getMessage());
-		}
 	}
 	
-	void clean()
-	{
-	}
+	public abstract List<Direction> getNormalMovements();
+	public abstract List<Direction> getStrikingMovements();
+	public abstract String getSymbol();
 	
 	/**
 	 * method check if Piece can move to given square
 	 * 
-	 * @param square
+	 * @param target
 	 *            square where piece want to move (Square object)
 	 * @param possibleMoves
 	 *            all moves which can piece do
 	 */
-	boolean canMove(Field square, ArrayList<?> allmoves)
+	boolean canMove(Field target, ArrayList<Field> allMoves)
 	{
-		// throw new UnsupportedOperationException("Not supported yet.");
-		ArrayList<?> moves = allmoves;
-		for(Iterator<?> it = moves.iterator(); it.hasNext();)
+		for(Field field : allMoves)
 		{
-			Field sq = (Field) it.next();// get next from iterator
-			if(sq == square)
-			{// if address is the same
-				return true; // piece canMove
+			if(target.equals(field))
+			{
+				return true;
 			}
 		}
-		return false;// if not, piece cannot move
-	}
-	
-	void setImage()
-	{
-		if(this.player.getColor() == Player.Color.BLACK)
-		{
-			image = imageBlack;
-		} else
-		{
-			image = imageWhite;
-		}
+		return false;
 	}
 	// void setImages(String white, String black) {
 	/*
@@ -187,17 +116,17 @@ public abstract class Piece
 	 */
 	protected boolean checkPiece(int x, int y)
 	{
-		if(chessboard.getBoard().getField(x, y).getPiece() != null && chessboard.getBoard().getField(x, y).getPiece().name.equals("King"))
+		Piece piece = chessboard.getBoard().getField(x, y).getPiece();
+		if((piece != null) && (piece instanceof King))
+		{
+			return false;
+		} else if((piece == null) || (piece.player != this.player))
+		{
+			return true;
+		} else
 		{
 			return false;
 		}
-		Piece piece = chessboard.getBoard().getField(x, y).getPiece();
-		if(piece == null || // if this square is empty
-		        piece.player != this.player) // or piece is another player
-		{
-			return true;
-		}
-		return false;
 	}
 	
 	/**
@@ -223,8 +152,26 @@ public abstract class Piece
 		return false;
 	}
 	
-	public String getSymbol()
+	public Image getImage()
 	{
-		return this.symbol;
+		return ThemeImageLoader.loadThemedPieceImage(this);
+	}
+	
+	public String getName()
+	{
+		return this.getClass().getSimpleName();
+	}
+
+	public Player getPlayer()
+	{
+		return player;
+	}
+	public Field getSquare()
+	{
+		return square;
+	}
+	public void setSquare(Field square)
+	{
+		this.square = square;
 	}
 }

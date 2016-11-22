@@ -44,11 +44,11 @@ public class Move
 		this.castlingMove = castlingMove;
 		this.wasEnPassant = wasEnPassant;
 		
-		if(movedPiece.name.equals("Pawn") && Math.abs(to.getPosY() - from.getPosY()) == 2)
+		if(movedPiece.getName().equals("Pawn") && Math.abs(to.getPosY() - from.getPosY()) == 2)
 		{
 			this.wasPawnTwoFieldsMove = true;
-		} else if(movedPiece.name.equals("Pawn") && to.getPosY() == Chessboard.BOTTOM
-		        || to.getPosY() == Chessboard.TOP && promotedPiece != null)
+		} else if(movedPiece.getName().equals("Pawn") && to.getPosY() == ChessboardController.BOTTOM
+		        || to.getPosY() == ChessboardController.TOP && promotedPiece != null)
 		{
 			// TODO: simplify condition (shouldn't promotedPiece always be null expect when promoted?)
 			this.promotedTo = promotedPiece;

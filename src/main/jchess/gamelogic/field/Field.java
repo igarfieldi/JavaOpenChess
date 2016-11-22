@@ -70,7 +70,7 @@ public class Field
 	{
 		this.piece = piece;
 		if(this.piece != null)
-			this.piece.square = this;
+			this.piece.setSquare(this);
 	}
 	
 	@Override
