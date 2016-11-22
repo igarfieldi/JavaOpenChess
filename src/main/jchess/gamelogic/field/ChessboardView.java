@@ -21,7 +21,6 @@
 package jchess.gamelogic.field;
 
 import java.awt.*;
-import java.awt.Graphics;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;
@@ -91,6 +90,26 @@ public class ChessboardView extends JPanel
 		this.active_y_square = 0;
 		this.setDoubleBuffered(true);
 		this.drawLabels((int) this.square_height);
+	}
+	
+	private void renderPiece(Field field, Piece piece, Graphics g) {
+		if(g == null) {
+			throw new IllegalArgumentException("Graphics object must not be null!");
+		} else if(piece == null) {
+			throw new IllegalArgumentException("Piece object must not be null!");
+		}
+		
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		
+		// Get field coordinates
+		Point topLeft = this.getTopLeftPoint();
+		int height = this.getSquareHeight();
+		int x = (field.getPosX() * height) + topLeft.x;
+		int y = (field.getPosY() * height) + topLeft.y;
+		
+		// Render resized image (to fit current square size)
+		g2d.drawImage(piece.getImage(), x, y, height, height, null);
 	}
 	
 	/**
@@ -196,7 +215,7 @@ public class ChessboardView extends JPanel
 		return ChessboardView.image.getHeight(null);
 	}/*--endOf-get_height--*/
 	
-	public int get_square_height()
+	public int getSquareHeight()
 	{
 		int result = (int) this.square_height;
 		return result;
@@ -263,7 +282,7 @@ public class ChessboardView extends JPanel
 		for(Field field : board.getFields()) {
 			Piece piece = field.getPiece();//board.getPiece(field);
 			if(piece != null) {
-				piece.draw(g);
+				this.renderPiece(field, piece, g);
 			}
 		}
 		

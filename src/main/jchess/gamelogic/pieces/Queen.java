@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.field.Chessboard;
+import jchess.gamelogic.field.ChessboardController;
 import jchess.gamelogic.field.Field;
 import jchess.gui.ThemeImageLoader;
 import jchess.util.Direction;
@@ -69,28 +69,12 @@ public class Queen extends Piece
 	}
 	
 	public static short value = 9;
-	protected static final Image imageWhite = ThemeImageLoader.loadThemeImage("Queen-W.png");
-	protected static final Image imageBlack = ThemeImageLoader.loadThemeImage("Queen-B.png");
 	
-	public Queen(Chessboard chessboard, Player player)
+	public Queen(ChessboardController chessboard, Player player)
 	{
 		super(chessboard, player);// call initialiser of super type: Piece
 		// this.setImages("Queen-W.png", "Queen-B.png");
 		this.symbol = "Q";
-		this.setImage();
-	}
-	
-	@Override
-	void setImage()
-	{
-		if(this.player.getColor() == Player.Color.BLACK)
-		{
-			image = imageBlack;
-		} else
-		{
-			image = imageWhite;
-		}
-		orgImage = image;
 	}
 	
 	/**

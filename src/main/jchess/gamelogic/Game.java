@@ -28,7 +28,7 @@ import javax.swing.*;
 import jchess.JChessApp;
 import jchess.Localization;
 import jchess.gamelogic.clock.GameClock;
-import jchess.gamelogic.field.Chessboard;
+import jchess.gamelogic.field.ChessboardController;
 import jchess.gamelogic.field.ChessboardView;
 import jchess.gamelogic.field.Moves;
 import jchess.gamelogic.field.Field;
@@ -59,7 +59,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 	
 	private Settings settings;
 	private boolean blockedChessboard;
-	private Chessboard chessboard;
+	private ChessboardController chessboard;
 	private Player activePlayer;
 	private GameClock gameClock;
 	private Client client;
@@ -71,7 +71,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 		this.setLayout(null);
 		this.moves = new Moves(this);
 		settings = new Settings();
-		chessboard = new Chessboard(this.settings, this.moves);
+		chessboard = new ChessboardController(this.settings, this.moves);
 		chessboard.getView().setVisible(true);
 		chessboard.getView().setSize(ChessboardView.IMG_HEIGHT, ChessboardView.IMG_WIDTH);
 		chessboard.getView().addMouseListener(this);
@@ -104,7 +104,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 		return settings;
 	}
 	
-	public Chessboard getChessboard()
+	public ChessboardController getChessboard()
 	{
 		return chessboard;
 	}

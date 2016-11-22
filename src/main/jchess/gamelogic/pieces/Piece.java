@@ -28,8 +28,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.field.Chessboard;
+import jchess.gamelogic.field.ChessboardController;
 import jchess.gamelogic.field.Field;
+import jchess.gui.ThemeImageLoader;
 import jchess.util.Direction;
 
 import java.awt.Point;
@@ -43,32 +44,27 @@ import java.awt.image.BufferedImage;
 public abstract class Piece
 {
 	
-	public Chessboard chessboard; // <-- this relation isn't in class diagram,
+	public ChessboardController chessboard; // <-- this relation isn't in class diagram,
 	                              // but it's necessary :/
 	public Field square;
 	public Player player;
-	public String name;
 	protected String symbol;
-	protected static Image imageBlack;// = null;
-	protected static Image imageWhite;// = null;
-	protected Image orgImage;
-	protected Image image;
 	
 	public abstract List<Direction> getNormalMovements();
 	public abstract List<Direction> getStrikingMovements();
 	
-	Piece(Chessboard chessboard, Player player)
+	public Image getImage() {
+		return ThemeImageLoader.loadThemedPieceImage(this);
+	}
+	
+	public String getName() {
+		return this.getClass().getSimpleName();
+	}
+	
+	Piece(ChessboardController chessboard, Player player)
 	{
 		this.chessboard = chessboard;
 		this.player = player;
-		if(player.getColor() == Player.Color.BLACK)
-		{
-			image = imageBlack;
-		} else
-		{
-			image = imageWhite;
-		}
-		this.name = this.getClass().getSimpleName();
 		
 	}
 	/*
@@ -76,39 +72,6 @@ public abstract class Piece
 	 * 
 	 * @graph : where to draw
 	 */
-	
-	public final void draw(Graphics g)
-	{
-		try
-		{
-			Graphics2D g2d = (Graphics2D) g;
-			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			Point topLeft = this.chessboard.getView().getTopLeftPoint();
-			int height = this.chessboard.getView().get_square_height();
-			int x = (this.square.getPosX() * height) + topLeft.x;
-			int y = (this.square.getPosY() * height) + topLeft.y;
-			float addX = (height - image.getWidth(null)) / 2;
-			float addY = (height - image.getHeight(null)) / 2;
-			if(image != null && g != null)
-			{
-				Image tempImage = orgImage;
-				BufferedImage resized = new BufferedImage(height, height, BufferedImage.TYPE_INT_ARGB_PRE);
-				Graphics2D imageGr = (Graphics2D) resized.createGraphics();
-				imageGr.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				imageGr.drawImage(tempImage, 0, 0, height, height, null);
-				imageGr.dispose();
-				image = resized.getScaledInstance(height, height, 0);
-				g2d.drawImage(image, x, y, null);
-			} else
-			{
-				System.out.println("image is null!");
-			}
-			
-		} catch(java.lang.NullPointerException exc)
-		{
-			System.out.println("Something wrong when painting piece: " + exc.getMessage());
-		}
-	}
 	
 	void clean()
 	{
@@ -135,17 +98,6 @@ public abstract class Piece
 			}
 		}
 		return false;// if not, piece cannot move
-	}
-	
-	void setImage()
-	{
-		if(this.player.getColor() == Player.Color.BLACK)
-		{
-			image = imageBlack;
-		} else
-		{
-			image = imageWhite;
-		}
 	}
 	// void setImages(String white, String black) {
 	/*
@@ -193,7 +145,7 @@ public abstract class Piece
 	 */
 	protected boolean checkPiece(int x, int y)
 	{
-		if(chessboard.getBoard().getField(x, y).getPiece() != null && chessboard.getBoard().getField(x, y).getPiece().name.equals("King"))
+		if(chessboard.getBoard().getField(x, y).getPiece() != null && chessboard.getBoard().getField(x, y).getPiece().getName().equals("King"))
 		{
 			return false;
 		}

@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.field.Chessboard;
+import jchess.gamelogic.field.ChessboardController;
 import jchess.gamelogic.field.Field;
 import jchess.gui.ThemeImageLoader;
 import jchess.util.Direction;
@@ -94,29 +94,13 @@ public class Pawn extends Piece
 	}
 	
 	boolean down;
-	protected static final Image imageWhite = ThemeImageLoader.loadThemeImage("Pawn-W.png");
-	protected static final Image imageBlack = ThemeImageLoader.loadThemeImage("Pawn-B.png");
 	public static short value = 1;
 	
-	public Pawn(Chessboard chessboard, Player player)
+	public Pawn(ChessboardController chessboard, Player player)
 	{
 		super(chessboard, player);
 		// this.setImages("Pawn-W.png", "Pawn-B.png");
 		this.symbol = "";
-		this.setImage();
-	}
-	
-	@Override
-	void setImage()
-	{
-		if(this.player.getColor() == Player.Color.BLACK)
-		{
-			image = imageBlack;
-		} else
-		{
-			image = imageWhite;
-		}
-		orgImage = image;
 	}
 	
 	/**
@@ -207,7 +191,7 @@ public class Pawn extends Piece
 			sq = chessboard.getBoard().getField(this.square.getPosX() - 1, first);
 			if(sq.getPiece() != null)
 			{// check if can hit left
-				if(this.player != sq.getPiece().player && !sq.getPiece().name.equals("King"))
+				if(this.player != sq.getPiece().player && !sq.getPiece().getName().equals("King"))
 				{
 					// list.add(sq);
 					if(this.player.getColor() == Player.Color.WHITE)
@@ -235,7 +219,7 @@ public class Pawn extends Piece
 			if(sq.getPiece() != null && this.chessboard.getTwoSquareMovedPawn() != null
 			        && sq == this.chessboard.getTwoSquareMovedPawn().square)
 			{// check if can hit left
-				if(this.player != sq.getPiece().player && !sq.getPiece().name.equals("King"))
+				if(this.player != sq.getPiece().player && !sq.getPiece().getName().equals("King"))
 				{// unnecessary
 					
 					// list.add(sq);
@@ -266,7 +250,7 @@ public class Pawn extends Piece
 			sq = chessboard.getBoard().getField(this.square.getPosX() + 1, first);
 			if(sq.getPiece() != null)
 			{// check if can hit right
-				if(this.player != sq.getPiece().player && !sq.getPiece().name.equals("King"))
+				if(this.player != sq.getPiece().player && !sq.getPiece().getName().equals("King"))
 				{
 					// list.add(sq);
 					if(this.player.getColor() == Player.Color.WHITE)
@@ -294,7 +278,7 @@ public class Pawn extends Piece
 			if(sq.getPiece() != null && this.chessboard.getTwoSquareMovedPawn() != null
 			        && sq == this.chessboard.getTwoSquareMovedPawn().square)
 			{// check if can hit left
-				if(this.player != sq.getPiece().player && !sq.getPiece().name.equals("King"))
+				if(this.player != sq.getPiece().player && !sq.getPiece().getName().equals("King"))
 				{// unnecessary
 					
 					// list.add(sq);

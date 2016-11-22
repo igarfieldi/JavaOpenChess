@@ -9,12 +9,12 @@ import org.junit.Test;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
-import jchess.gamelogic.field.Chessboard;
+import jchess.gamelogic.field.ChessboardController;
 import jchess.gamelogic.field.Field;
 
 public class PawnTest
 {
-	Chessboard board;
+	ChessboardController board;
 	Player p1;
 	Player p2;
 	
@@ -25,7 +25,7 @@ public class PawnTest
 		p1 = new Player("p1", "WHITE");
 		p2 = new Player("p2", "BLACK");
 		p2.setBoardSide(true);
-		board = new Chessboard(new Settings(), null);
+		board = new ChessboardController(new Settings(), null);
 		King whiteKing = new King(board, p1);
 		King blackKing = new King(board, p2);
 		board.getBoard().getField(4, 7).setPiece(whiteKing);

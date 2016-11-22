@@ -20,7 +20,6 @@
  */
 package jchess.gamelogic.field;
 
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,17 +40,15 @@ import jchess.gamelogic.pieces.Rook;
  * the squers of chessboard and sets the pieces(pawns) witch the owner is
  * current player on it.
  */
-public class Chessboard
+public class ChessboardController
 {
-	private static Logger log = Logger.getLogger(Chessboard.class.getName());
+	private static Logger log = Logger.getLogger(ChessboardController.class.getName());
 	
 	private ChessboardModel board = new ChessboardModel();
 	private ChessboardView view;
 	
-	private static final long serialVersionUID = 1971410121780567341L;
 	public static final int TOP = 0;
 	public static final int BOTTOM = 7;
-	private ArrayList<Field> moves;
 	private Settings settings;
 	private King kingWhite;
 	private King kingBlack;
@@ -70,7 +67,7 @@ public class Chessboard
 	 * @param moves_history
 	 *            reference to Moves class object for this chessboard
 	 */
-	public Chessboard(Settings settings, Moves moves_history)
+	public ChessboardController(Settings settings, Moves moves_history)
 	{
 		this.view = new ChessboardView(settings, board);
 		this.settings = settings;
@@ -267,7 +264,7 @@ public class Chessboard
 		                               // beginin square
 		begin.setPiece(null);// make null piece for begining square
 		
-		if(end.getPiece().name.equals("King"))
+		if(end.getPiece().getName().equals("King"))
 		{
 			if(!((King) end.getPiece()).wasMotion)
 			{
@@ -291,13 +288,13 @@ public class Chessboard
 				// return;
 			}
 			// endOf Castling
-		} else if(end.getPiece().name.equals("Rook"))
+		} else if(end.getPiece().getName().equals("Rook"))
 		{
 			if(!((Rook) end.getPiece()).wasMotion)
 			{
 				((Rook) end.getPiece()).wasMotion = true;
 			}
-		} else if(end.getPiece().name.equals("Pawn"))
+		} else if(end.getPiece().getName().equals("Pawn"))
 		{
 			if(this.twoSquareMovedPawn != null
 			        && board.getField(end.getPosX(), begin.getPosY()) == this.twoSquareMovedPawn.square) // en passant
@@ -373,7 +370,7 @@ public class Chessboard
 					promotedPiece = end.getPiece();
 				}
 			}
-		} else if(!end.getPiece().name.equals("Pawn"))
+		} else if(!end.getPiece().getName().equals("Pawn"))
 		{
 			this.twoSquareMovedPawn = null; // erase last saved move (for En
 			                                // passant)
@@ -473,16 +470,16 @@ public class Chessboard
 					}
 					((King) moved).wasMotion = false;
 					((Rook) rook).wasMotion = false;
-				} else if(moved.name.equals("Rook"))
+				} else if(moved.getName().equals("Rook"))
 				{
 					((Rook) moved).wasMotion = false;
-				} else if(moved.name.equals("Pawn") && last.wasEnPassant())
+				} else if(moved.getName().equals("Pawn") && last.wasEnPassant())
 				{
 					Pawn pawn = (Pawn) last.getTakenPiece();
 					board.getField(end.getPosX(), begin.getPosY()).setPiece(pawn);
 					pawn.square = board.getField(end.getPosX(), begin.getPosY());
 					
-				} else if(moved.name.equals("Pawn") && last.getPromotedPiece() != null)
+				} else if(moved.getName().equals("Pawn") && last.getPromotedPiece() != null)
 				{
 					Piece promoted = board.getField(end.getPosX(), end.getPosY()).getPiece();
 					promoted.square = null;
@@ -494,7 +491,7 @@ public class Chessboard
 				if(oneMoveEarlier != null && oneMoveEarlier.wasPawnTwoFieldsMove())
 				{
 					Piece canBeTakenEnPassant = board.getField(oneMoveEarlier.getTo().getPosX(), oneMoveEarlier.getTo().getPosY()).getPiece();
-					if(canBeTakenEnPassant.name.equals("Pawn"))
+					if(canBeTakenEnPassant.getName().equals("Pawn"))
 					{
 						this.twoSquareMovedPawn = (Pawn) canBeTakenEnPassant;
 					}

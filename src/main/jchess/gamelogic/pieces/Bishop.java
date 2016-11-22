@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.field.Chessboard;
+import jchess.gamelogic.field.ChessboardController;
 import jchess.gamelogic.field.Field;
 import jchess.gui.ThemeImageLoader;
 import jchess.util.Direction;
@@ -65,28 +65,12 @@ public class Bishop extends Piece
 	}
 	
 	public static short value = 3;
-	protected static final Image imageWhite = ThemeImageLoader.loadThemeImage("Bishop-W.png");
-	protected static final Image imageBlack = ThemeImageLoader.loadThemeImage("Bishop-B.png");
 	
-	public Bishop(Chessboard chessboard, Player player)
+	public Bishop(ChessboardController chessboard, Player player)
 	{
 		super(chessboard, player); // call initialiser of super type: Piece
 		// this.setImages("Bishop-W.png", "Bishop-B.png");
 		this.symbol = "B";
-		this.setImage();
-	}
-	
-	@Override
-	void setImage()
-	{
-		if(this.player.getColor() == Player.Color.BLACK)
-		{
-			image = imageBlack;
-		} else
-		{
-			image = imageWhite;
-		}
-		orgImage = image;
 	}
 	
 	/**

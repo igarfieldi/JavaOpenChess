@@ -196,7 +196,7 @@ public class Moves extends AbstractTableModel
 		
 		if(game.getSettings().isUpsideDown())
 		{
-			locMove += Character.toString((char) ((Chessboard.BOTTOM - begin.getPosX()) + 97));// add
+			locMove += Character.toString((char) ((ChessboardController.BOTTOM - begin.getPosX()) + 97));// add
 			                                                                                   // letter
 			                                                                                   // of
 			                                                                                   // Square
@@ -236,7 +236,7 @@ public class Moves extends AbstractTableModel
 		
 		if(game.getSettings().isUpsideDown())
 		{
-			locMove += Character.toString((char) ((Chessboard.BOTTOM - end.getPosX()) + 97));// add
+			locMove += Character.toString((char) ((ChessboardController.BOTTOM - end.getPosX()) + 97));// add
 			                                                                                 // letter
 			                                                                                 // of
 			                                                                                 // Square
@@ -619,7 +619,7 @@ public class Moves extends AbstractTableModel
 			if(locMove.length() <= 3)
 			{
 				xTo = locMove.charAt(from) - 97;// from ASCII
-				yTo = Chessboard.BOTTOM - (locMove.charAt(from + 1) - 49);// from
+				yTo = ChessboardController.BOTTOM - (locMove.charAt(from + 1) - 49);// from
 				                                                          // ASCII
 				
 				for(Field field : game.getChessboard().getBoard().getFields()) {
@@ -643,10 +643,10 @@ public class Moves extends AbstractTableModel
 			} else
 			{
 				xFrom = locMove.charAt(from) - 97;// from ASCII
-				yFrom = Chessboard.BOTTOM - (locMove.charAt(from + 1) - 49);// from
+				yFrom = ChessboardController.BOTTOM - (locMove.charAt(from + 1) - 49);// from
 				                                                            // ASCII
 				xTo = locMove.charAt(from + 3) - 97;// from ASCII
-				yTo = Chessboard.BOTTOM - (locMove.charAt(from + 4) - 49);// from
+				yTo = ChessboardController.BOTTOM - (locMove.charAt(from + 4) - 49);// from
 				                                                          // ASCII
 			}
 			canMove = this.game.simulateMove(xFrom, yFrom, xTo, yTo);
