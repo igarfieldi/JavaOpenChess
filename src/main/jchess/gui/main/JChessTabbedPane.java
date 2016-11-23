@@ -43,7 +43,7 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 	public JChessTabbedPane()
 	{
 		super();
-		this.addIcon = ThemeImageLoader.loadThemeImage("add-tab-icon.png");;
+		this.addIcon = ThemeImageLoader.loadThemeImage("add-tab-icon.png");
 		
 		this.setDoubleBuffered(true);
 		super.addMouseListener(this);
@@ -147,15 +147,13 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 	{
 		private int xPosition;
 		private int yPosition;
-		private int width;
-		private int height;
+		
+		private Image iconImage = ThemeImageLoader.loadThemeImage("close-tab-icon.png");
 		private Icon fileIcon;
 		
 		public CloseIcon(Icon fileIcon)
 		{
-			this.fileIcon = fileIcon;
-			this.width = 16;
-			this.height = 16;
+			this.fileIcon = new ImageIcon(iconImage);
 		}
 		
 		@Override
@@ -164,39 +162,23 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 			this.xPosition = x;
 			this.yPosition = y;
 			
-			graphics.setColor(Color.black);
-			
-			int yOffset = y + 2;
-			drawIcon(graphics, x, yOffset);
-			
 			if(fileIcon != null)
-				fileIcon.paintIcon(component, graphics, x + width, yOffset);
-		}
-
-		private void drawIcon(Graphics graphics, int x, int line_y)
-		{
-			graphics.drawLine(x + 3, line_y + 3, x + 10, line_y + 10);
-			graphics.drawLine(x + 3, line_y + 4, x + 9, line_y + 10);
-			graphics.drawLine(x + 4, line_y + 3, x + 10, line_y + 9);
-			
-			graphics.drawLine(x + 10, line_y + 3, x + 3, line_y + 10);
-			graphics.drawLine(x + 10, line_y + 4, x + 4, line_y + 10);
-			graphics.drawLine(x + 9, line_y + 3, x + 3, line_y + 9);
+				fileIcon.paintIcon(component, graphics, x, y);
 		}
 		
 		public int getIconWidth()
 		{
-			return width + (fileIcon != null ? fileIcon.getIconWidth() : 0);
+			return fileIcon.getIconWidth();
 		}
 		
 		public int getIconHeight()
 		{
-			return height;
+			return fileIcon.getIconHeight();
 		}
 		
 		public Rectangle getBounds()
 		{
-			return new Rectangle(xPosition, yPosition, width, height);
+			return new Rectangle(xPosition, yPosition, fileIcon.getIconWidth(), fileIcon.getIconHeight());
 		}
 	}
 }
