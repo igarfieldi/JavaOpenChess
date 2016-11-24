@@ -31,7 +31,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import jchess.gui.setup.LocalSettingsGUI;
+import jchess.gui.setup.LocalSettingsPanel;
 
 /**
  * Class representing the game interface which is seen by a player and where are
@@ -40,7 +40,7 @@ import jchess.gui.setup.LocalSettingsGUI;
  */
 public class ThemeConfigurator
 {
-	private static Logger log = Logger.getLogger(LocalSettingsGUI.class.getName());
+	private static Logger log = Logger.getLogger(LocalSettingsPanel.class.getName());
 	
 	public static Properties getConfigFile()
 	{
