@@ -48,7 +48,6 @@ import jchess.util.Direction;
 
 public class King extends Piece
 {
-	private static final String SYMBOL = "K";
 	private static final Direction[] NORMAL_MOVEMENT = {
 			new Direction(1, 0),
 			new Direction(-1, 0),
@@ -66,13 +65,8 @@ public class King extends Piece
 	}
 	
 	@Override
-	public List<Direction> getStrikingMovements() {
+	public List<Direction> getCapturingMovements() {
 		return Arrays.asList(King.NORMAL_MOVEMENT);
-	}
-	
-	@Override
-	public String getSymbol() {
-		return King.SYMBOL;
 	}
 	
 	public boolean wasMotion = false; // true if the King has moved once
@@ -81,7 +75,7 @@ public class King extends Piece
 	
 	public King(ChessboardController chessboard, Player player)
 	{
-		super(chessboard, player);
+		super(chessboard, player, "K", false);
 	}
 	
 	/**

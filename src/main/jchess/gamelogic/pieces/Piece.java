@@ -36,40 +36,92 @@ import jchess.util.Direction;
  */
 public abstract class Piece
 {
-	
+	// TODO: add possibility to ignore 'unit collision' ie. skip occupied fields?
 	protected ChessboardController chessboard;
 	private Field square;
 	private Player player;
+	private final String SYMBOL;
+	private final boolean CAN_MOVE_MULTIPLE_STEPS;
 	
-	public Piece(ChessboardController chessboard, Player player)
+	public Piece(ChessboardController chessboard, Player player, String symbol)
+	{
+		this(chessboard, player, symbol, true);
+	}
+
+	public Piece(ChessboardController chessboard, Player player, String symbol, boolean multiMovePiece)
 	{
 		this.chessboard = chessboard;
 		this.player = player;
+		this.SYMBOL = symbol;
+		this.CAN_MOVE_MULTIPLE_STEPS = multiMovePiece;
 	}
 	
 	public abstract List<Direction> getNormalMovements();
-	public abstract List<Direction> getStrikingMovements();
-	public abstract String getSymbol();
+	public abstract List<Direction> getCapturingMovements();
+	
+	public final String getSymbol() {
+		return SYMBOL;
+	}
+	
+	public boolean canMoveMultipleSteps() {
+		return CAN_MOVE_MULTIPLE_STEPS;
+	}
 	
 	/**
-	 * method check if Piece can move to given square
-	 * 
-	 * @param target
-	 *            square where piece want to move (Square object)
-	 * @param possibleMoves
-	 *            all moves which can piece do
+	 * Checks whether this piece currently threatens a field or not.
+	 * @param target Field to check
+	 * @return field threatened or not
 	 */
-	boolean canMove(Field target, ArrayList<Field> allMoves)
-	{
-		for(Field field : allMoves)
-		{
-			if(target.equals(field))
-			{
+	public boolean threatens(Field target) {
+		// Iterate all threatened fields and check if ours is in there
+		for(Field threatenedField : this.getThreatenedFields()) {
+			if(threatenedField.equals(target)) {
 				return true;
 			}
 		}
 		return false;
 	}
+	
+	/**
+	 * Returns a list of all board fields which are currently threatened by this piece.
+	 * @return list of threatened fields
+	 */
+	private List<Field> getThreatenedFields() {
+		List<Field> capturableFields = new ArrayList<Field>();
+		
+		// Iterate all capturing directions for this piece
+		for(Direction dir : this.getCapturingMovements()) {
+			List<Field> fieldsInDir = new ArrayList<Field>();
+			if(this.CAN_MOVE_MULTIPLE_STEPS) {
+				// Multiple possible fields to check for direction
+				fieldsInDir.addAll(chessboard.getBoard().getFieldsInDirection(this.square, dir));
+			} else {
+				// Only one possible field for given direction
+				fieldsInDir.add(chessboard.getBoard().getFieldInDirection(this.square, dir));
+			}
+			
+			// Since multiple fields are possible, check if some are 'hidden' behind pieces
+			for(Field fieldInDir : fieldsInDir) {
+				Piece piece = chessboard.getBoard().getPiece(fieldInDir);
+				
+				if(piece != null) {
+					// Piece blocks. Question: ours or not?
+					if(piece.player != this.player) {
+						capturableFields.add(fieldInDir);
+					}
+					// Break necessary anyway; in chess, pieces cannot "skip"
+					// fields with pieces on it
+					break;
+				} else {
+					// No piece? Capturable
+					capturableFields.add(fieldInDir);
+				}
+			}
+		}
+		
+		return capturableFields;
+	}
+	
 	// void setImages(String white, String black) {
 	/*
 	 * method set image to black or white (depends on player colour)
@@ -98,7 +150,7 @@ public abstract class Piece
 	 *            y position on chessboard
 	 * @return true if parameters are out of bounds (array)
 	 */
-	protected boolean isout(int x, int y)
+	protected static boolean isout(int x, int y)
 	{
 		if(x < 0 || x > 7 || y < 0 || y > 7)
 		{

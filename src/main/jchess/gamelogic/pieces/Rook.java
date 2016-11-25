@@ -46,7 +46,6 @@ import jchess.util.Direction;
  */
 public class Rook extends Piece
 {
-	private static final String SYMBOL = "R";
 	private static final Direction[] NORMAL_MOVEMENT = {
 			new Direction(1, 0),
 			new Direction(-1, 0),
@@ -60,13 +59,8 @@ public class Rook extends Piece
 	}
 	
 	@Override
-	public List<Direction> getStrikingMovements() {
+	public List<Direction> getCapturingMovements() {
 		return Arrays.asList(Rook.NORMAL_MOVEMENT);
-	}
-	
-	@Override
-	public String getSymbol() {
-		return Rook.SYMBOL;
 	}
 	
 	public boolean wasMotion = false;
@@ -74,7 +68,7 @@ public class Rook extends Piece
 	
 	public Rook(ChessboardController chessboard, Player player)
 	{
-		super(chessboard, player);// call initialiser of super type: Piece
+		super(chessboard, player, "R");// call initialiser of super type: Piece
 	}
 	
 	/**

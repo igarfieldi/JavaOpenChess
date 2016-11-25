@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import jchess.gamelogic.pieces.Piece;
+import jchess.util.Direction;
 
 public class ChessboardModel
 {
@@ -37,6 +38,30 @@ public class ChessboardModel
 		return allFields;
 	}
 	
+	public Field getFieldInDirection(Field origin, Direction dir) {
+		ChessboardModel.checkArgumentsForNull(origin, dir);
+		
+		try {
+			return this.getField(origin.getPosX() + dir.getX(), origin.getPosY() + dir.getY());
+		} catch(ArrayIndexOutOfBoundsException exc) {
+			return null;
+		}
+	}
+	
+	public List<Field> getFieldsInDirection(Field start, Direction dir) {
+		ChessboardModel.checkArgumentsForNull(start, dir);
+		
+		List<Field> directionFields = new ArrayList<Field>();
+		// Iterate through all fields in the given direction (untill we hit null
+		// which means we're off the board)
+		Field currField = start;
+		while((currField = this.getFieldInDirection(currField, dir)) != null) {
+			directionFields.add(currField);
+		}
+		
+		return directionFields;
+	}
+	
 	public Piece getPiece(Field field) {
 		return pieces.get(field);
 	}
@@ -47,5 +72,13 @@ public class ChessboardModel
 	
 	public Piece removePiece(Field field) {
 		return pieces.remove(field);
+	}
+	
+	private static final void checkArgumentsForNull(Object ...args) {
+		for(Object obj : args) {
+			if(obj == null) {
+				throw new IllegalArgumentException("Argument " + obj + "must not be null!");
+			}
+		}
 	}
 }

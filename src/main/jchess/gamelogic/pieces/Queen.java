@@ -44,7 +44,6 @@ import jchess.util.Direction;
  */
 public class Queen extends Piece
 {
-	private static final String SYMBOL = "Q";
 	private static final Direction[] NORMAL_MOVEMENT = {
 			new Direction(1, 0),
 			new Direction(-1, 0),
@@ -62,20 +61,15 @@ public class Queen extends Piece
 	}
 	
 	@Override
-	public List<Direction> getStrikingMovements() {
+	public List<Direction> getCapturingMovements() {
 		return Arrays.asList(Queen.NORMAL_MOVEMENT);
-	}
-	
-	@Override
-	public String getSymbol() {
-		return Queen.SYMBOL;
 	}
 	
 	public static short value = 9;
 	
 	public Queen(ChessboardController chessboard, Player player)
 	{
-		super(chessboard, player);// call initialiser of super type: Piece
+		super(chessboard, player, "Q");// call initialiser of super type: Piece
 	}
 	
 	/**

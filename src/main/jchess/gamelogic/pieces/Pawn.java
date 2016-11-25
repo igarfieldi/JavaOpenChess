@@ -71,7 +71,6 @@ import jchess.util.Direction;
  */
 public class Pawn extends Piece
 {
-	private static final String SYMBOL = "P";
 	private static final Direction[] NORMAL_MOVEMENT = {
 			new Direction(0, 1)
 	};
@@ -87,13 +86,8 @@ public class Pawn extends Piece
 	}
 	
 	@Override
-	public List<Direction> getStrikingMovements() {
+	public List<Direction> getCapturingMovements() {
 		return Arrays.asList(Pawn.STRIKING_MOVEMENT);
-	}
-	
-	@Override
-	public String getSymbol() {
-		return Pawn.SYMBOL;
 	}
 	
 	boolean down;
@@ -101,7 +95,7 @@ public class Pawn extends Piece
 	
 	public Pawn(ChessboardController chessboard, Player player)
 	{
-		super(chessboard, player);
+		super(chessboard, player, "P", false);
 	}
 	
 	/**

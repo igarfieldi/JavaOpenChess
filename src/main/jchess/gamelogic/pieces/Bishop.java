@@ -44,7 +44,6 @@ import jchess.util.Direction;
  */
 public class Bishop extends Piece
 {
-	private static final String SYMBOL = "B";
 	private static final Direction[] NORMAL_MOVEMENT = {
 			new Direction(1, 1),
 			new Direction(-1, 1),
@@ -58,21 +57,15 @@ public class Bishop extends Piece
 	}
 	
 	@Override
-	public List<Direction> getStrikingMovements() {
+	public List<Direction> getCapturingMovements() {
 		return Arrays.asList(Bishop.NORMAL_MOVEMENT);
-	}
-	
-	@Override
-	public String getSymbol() {
-		return Bishop.SYMBOL;
 	}
 	
 	public static short value = 3;
 	
 	public Bishop(ChessboardController chessboard, Player player)
 	{
-		super(chessboard, player); // call initialiser of super type: Piece
-		// this.setImages("Bishop-W.png", "Bishop-B.png");
+		super(chessboard, player, "B"); // call initialiser of super type: Piece
 	}
 	
 	/**
