@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="jchess.gamelogic.clock.ClockTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2016-11-21T13:32:17" hostname="DESKTOP-GCG1IHL" time="0.007">
+<testsuite name="jchess.gamelogic.clock.ClockTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2016-11-25T14:20:24" hostname="DESKTOP-GCG1IHL" time="0.003">
   <properties/>
-  <testcase name="testDecrementByOne" classname="jchess.gamelogic.clock.ClockTest" time="0.004"/>
-  <testcase name="testDecrementWithZero" classname="jchess.gamelogic.clock.ClockTest" time="0.002"/>
+  <testcase name="testDecrementByOne" classname="jchess.gamelogic.clock.ClockTest" time="0.002"/>
+  <testcase name="testDecrementWithZero" classname="jchess.gamelogic.clock.ClockTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
