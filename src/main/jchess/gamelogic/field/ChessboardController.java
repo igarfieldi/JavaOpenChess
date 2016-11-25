@@ -53,15 +53,13 @@ public class ChessboardController
 	private ChessboardModel board;
 	private ChessboardView view;
 	
-	private Player white;
-	private Player black;
+	private Player whitePlayer;
+	private Player blackPlayer;
 	private Player activePlayer;
 	
 	private Settings settings;
 	private King kingWhite;
 	private King kingBlack;
-	// -------- for undo ----------
-	// ----------------------------
 	// For En passant:
 	// |-> Pawn whose in last turn moved two square
 	private Pawn twoSquareMovedPawn = null;
@@ -92,10 +90,10 @@ public class ChessboardController
 	}
 	
 	public void switchToNextPlayer() {
-		if(this.activePlayer == this.white) {
-			this.activePlayer = this.black;
+		if(this.activePlayer == this.whitePlayer) {
+			this.activePlayer = this.blackPlayer;
 		} else {
-			this.activePlayer = this.white;
+			this.activePlayer = this.whitePlayer;
 		}
 	}
 	
@@ -166,9 +164,9 @@ public class ChessboardController
 	 */
 	public void initialize() {
 		this.initializePlayers();
-		this.initializePieces(this.white.isTopSide());
+		this.initializePieces(this.whitePlayer.isTopSide());
 		
-		this.activePlayer = white;
+		this.activePlayer = whitePlayer;
 	}
 	
 	/**
@@ -176,13 +174,13 @@ public class ChessboardController
 	 * Currently, we simply grab the players stored in the settings.
 	 */
 	private void initializePlayers() {
-		this.white = settings.getWhitePlayer();
-		this.black = settings.getBlackPlayer();
+		this.whitePlayer = settings.getWhitePlayer();
+		this.blackPlayer = settings.getBlackPlayer();
 		
 		if(settings.isUpsideDown()) {
-			this.white.setBoardSide(true);
+			this.whitePlayer.setBoardSide(true);
 		} else {
-			this.black.setBoardSide(true);
+			this.blackPlayer.setBoardSide(true);
 		}
 	}
 	
@@ -192,11 +190,11 @@ public class ChessboardController
 	 * @param whiteIsTop is white playing from top-side
 	 */
 	private void initializePieces(boolean whiteIsTop) {
-		Player topSide = this.black;
-		Player bottomSide = this.white;
+		Player topSide = this.blackPlayer;
+		Player bottomSide = this.whitePlayer;
 		if(whiteIsTop) {
-			topSide = this.white;
-			bottomSide = this.black;
+			topSide = this.whitePlayer;
+			bottomSide = this.blackPlayer;
 		}
 		
 		System.out.println(topSide);
@@ -583,8 +581,11 @@ public class ChessboardController
 		return kingBlack;
 	}
 	
-	public Pawn getTwoSquareMovedPawn()
-	{
-		return twoSquareMovedPawn;
+	public boolean isEnPassantApplicable(Field field) {
+		if((twoSquareMovedPawn != null) && (field.equals(twoSquareMovedPawn.getSquare()))) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

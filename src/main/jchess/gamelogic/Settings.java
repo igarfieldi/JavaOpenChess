@@ -36,7 +36,7 @@ public class Settings implements Serializable
 	
 	public enum GameType
 	{
-		LOCAL, NETWORK
+		LOCAL
 	}
 	
 	private int timeForGame;

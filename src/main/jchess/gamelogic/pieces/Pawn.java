@@ -123,7 +123,7 @@ public class Pawn extends Piece
 			first = this.getSquare().getPosY() - 1;// same, for bottom side
 			second = this.getSquare().getPosY() - 2;// same, for bottom side
 		}
-		if(this.isout(first, first))
+		if(Piece.isout(first, first))
 		{// out of bounds protection
 			return list;// return empty list
 		}
@@ -176,7 +176,7 @@ public class Pawn extends Piece
 				}
 			}
 		}
-		if(!this.isout(this.getSquare().getPosX() - 1, this.getSquare().getPosY())) // out
+		if(!Piece.isout(this.getSquare().getPosX() - 1, this.getSquare().getPosY())) // out
 		                                                                  // of
 		                                                                  // bounds
 		                                                                  // protection
@@ -210,8 +210,7 @@ public class Pawn extends Piece
 			
 			// En passant
 			sq = chessboard.getBoard().getField(this.getSquare().getPosX() - 1, this.getSquare().getPosY());
-			if(sq.getPiece() != null && this.chessboard.getTwoSquareMovedPawn() != null
-			        && sq == this.chessboard.getTwoSquareMovedPawn().getSquare())
+			if(sq.getPiece() != null && this.chessboard.isEnPassantApplicable(sq))
 			{// check if can hit left
 				if(this.getPlayer() != sq.getPiece().getPlayer() && !sq.getPiece().getName().equals("King"))
 				{// unnecessary
@@ -237,7 +236,7 @@ public class Pawn extends Piece
 				}
 			}
 		}
-		if(!this.isout(this.getSquare().getPosX() + 1, this.getSquare().getPosY()))
+		if(!Piece.isout(this.getSquare().getPosX() + 1, this.getSquare().getPosY()))
 		{// out of bounds protection
 			
 			// capture
@@ -269,8 +268,7 @@ public class Pawn extends Piece
 			
 			// En passant
 			sq = chessboard.getBoard().getField(this.getSquare().getPosX() + 1, this.getSquare().getPosY());
-			if(sq.getPiece() != null && this.chessboard.getTwoSquareMovedPawn() != null
-			        && sq == this.chessboard.getTwoSquareMovedPawn().getSquare())
+			if(sq.getPiece() != null && this.chessboard.isEnPassantApplicable(sq))
 			{// check if can hit left
 				if(this.getPlayer() != sq.getPiece().getPlayer() && !sq.getPiece().getName().equals("King"))
 				{// unnecessary

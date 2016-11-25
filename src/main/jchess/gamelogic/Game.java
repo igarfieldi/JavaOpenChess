@@ -47,8 +47,6 @@ import jchess.gamelogic.field.ChessboardView;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Moves;
 import jchess.gamelogic.pieces.King;
-import jchess.gui.secondary.Chat;
-import jchess.network.Client;
 
 /**
  * Class responsible for the starts of new games, loading games, saving it, and
@@ -64,9 +62,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 	private boolean blockedChessboard;
 	private ChessboardController chessboard;
 	private GameClock gameClock;
-	private Client client;
 	private Moves moves;
-	private Chat chat;
 	
 	public Game()
 	{
@@ -90,11 +86,6 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 		movesHistory.setLocation(new Point(500, 121));
 		this.add(movesHistory);
 		
-		this.chat = new Chat();
-		this.chat.setSize(new Dimension(380, 100));
-		this.chat.setLocation(new Point(0, 500));
-		this.chat.setMinimumSize(new Dimension(400, 100));
-		
 		this.blockedChessboard = false;
 		this.setLayout(null);
 		this.addComponentListener(this);
@@ -116,11 +107,6 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 		return gameClock;
 	}
 	
-	public Chat getChat()
-	{
-		return chat;
-	}
-	
 	public Moves getMoves()
 	{
 		return moves;
@@ -129,11 +115,6 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 	public void setSettings(Settings settings)
 	{
 		this.settings = settings;
-	}
-	
-	public void setClient(Client client)
-	{
-		this.client = client;
 	}
 	
 	/**
@@ -437,10 +418,6 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 			{
 				chessboard.getView().repaint();// repaint for sure
 			}
-		} else if(this.settings.getGameType() == Settings.GameType.NETWORK)
-		{
-			this.client.sendUndoAsk();
-			status = true;
 		}
 		return status;
 	}
@@ -540,11 +517,6 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 						if(settings.getGameType() == Settings.GameType.LOCAL)
 						{
 							chessboard.move(chessboard.getView().getActiveSquare(), sq);
-						} else if(settings.getGameType() == Settings.GameType.NETWORK)
-						{
-							client.sendMove(chessboard.getView().getActiveSquare().getPosX(),
-							        chessboard.getView().getActiveSquare().getPosY(), sq.getPosX(), sq.getPosY());
-							chessboard.move(chessboard.getView().getActiveSquare(), sq);
 						}
 						
 						chessboard.getView().unselect();
@@ -565,7 +537,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 						switch(king.isCheckmatedOrStalemated())
 						{
 							case 1:
-								this.endGame("Checkmate! " + king.getPlayer().getColor().toString() + " player lose!");
+								this.endGame("Checkmate! " + this.chessboard.getActivePlayer().getColor().toString() + " player lose!");
 								break;
 							case 2:
 								this.endGame("Stalemate! Draw!");
@@ -610,11 +582,6 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 		this.moves.getScrollPane().setLocation(new Point(chess_height + 5, 100));
 		this.moves.getScrollPane().setSize(this.moves.getScrollPane().getWidth(), chess_height - 100);
 		this.gameClock.setLocation(new Point(chess_height + 5, 0));
-		if(this.chat != null)
-		{
-			this.chat.setLocation(new Point(0, chess_height + 5));
-			this.chat.setSize(new Dimension(chess_height, this.getHeight() - (chess_height + 5)));
-		}
 	}
 	
 	public void componentMoved(ComponentEvent e)

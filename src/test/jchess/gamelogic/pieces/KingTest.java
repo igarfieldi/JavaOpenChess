@@ -40,7 +40,7 @@ public class KingTest
 	public void testPossibleMovesRegular()
 	{
 		movePiece(board.getBoard().getField(4, 4), whiteKing);
-		ArrayList<Field> moves = board.getWhiteKing().possibleMoves();
+		ArrayList<Field> moves = whiteKing.possibleMoves();
 		assertTrue(moves.contains(board.getBoard().getField(3, 3)));
 		assertTrue(moves.contains(board.getBoard().getField(4, 3)));
 		assertTrue(moves.contains(board.getBoard().getField(5, 3)));

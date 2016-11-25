@@ -93,7 +93,7 @@ public class King extends Piece
 		{
 			for(int y = this.getSquare().getPosY() - 1; y <= this.getSquare().getPosY() + 1; y++)
 			{
-				if(!this.isout(i, y))
+				if(!Piece.isout(i, y))
 				{// out of bounds protection
 					sq = this.chessboard.getBoard().getField(i, y);
 					if(this.getSquare() == sq)

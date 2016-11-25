@@ -90,6 +90,5 @@ public class NewGameWindow extends JDialog
 		this.setSize(400, 700);
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		this.windowPane.addTab(Localization.getMessage("local_game"), new LocalSettingsPanel(this));
-		this.windowPane.addTab(Localization.getMessage("network_game"), new DrawNetworkSettings(this));
 	}
 }
