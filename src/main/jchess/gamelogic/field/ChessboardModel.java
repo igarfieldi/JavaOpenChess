@@ -7,22 +7,31 @@ import java.util.List;
 import java.util.Map;
 
 import jchess.gamelogic.pieces.Piece;
+import jchess.util.ArgumentChecker;
 import jchess.util.Direction;
 
 public class ChessboardModel
 {
-	private static final int WIDTH = 8;
-	private static final int HEIGHT = 8;
+	private final int WIDTH;
+	private final int HEIGHT;
+	private Field[][] fields;
+	private Map<Field, Piece> pieces;
 	
-	private Field[][] fields = new Field[WIDTH][HEIGHT];
-	private Map<Field, Piece> pieces = new Hashtable<Field, Piece>();
-	
-	public ChessboardModel() {
+	public void initialize() {
+		fields = new Field[WIDTH][HEIGHT];
+		pieces = new Hashtable<Field, Piece>();
+		
 		for(int x = 0; x < WIDTH; x++) {
 			for(int y = 0; y < HEIGHT; y++) {
 				fields[x][y] = new Field(x, y, null);
 			}
 		}
+	}
+	
+	public ChessboardModel(int width, int height) {
+		this.WIDTH = width;
+		this.HEIGHT = height;
+		this.initialize();
 	}
 	
 	public Field getField(int x, int y) {
@@ -39,7 +48,7 @@ public class ChessboardModel
 	}
 	
 	public Field getFieldInDirection(Field origin, Direction dir) {
-		ChessboardModel.checkArgumentsForNull(origin, dir);
+		ArgumentChecker.checkForNull(origin, dir);
 		
 		try {
 			return this.getField(origin.getPosX() + dir.getX(), origin.getPosY() + dir.getY());
@@ -49,7 +58,7 @@ public class ChessboardModel
 	}
 	
 	public List<Field> getFieldsInDirection(Field start, Direction dir) {
-		ChessboardModel.checkArgumentsForNull(start, dir);
+		ArgumentChecker.checkForNull(start, dir);
 		
 		List<Field> directionFields = new ArrayList<Field>();
 		// Iterate through all fields in the given direction (untill we hit null
@@ -67,18 +76,11 @@ public class ChessboardModel
 	}
 	
 	public void setPiece(Field field, Piece piece) {
+		ArgumentChecker.checkForNull(field);
 		pieces.put(field, piece);
 	}
 	
 	public Piece removePiece(Field field) {
 		return pieces.remove(field);
-	}
-	
-	private static final void checkArgumentsForNull(Object ...args) {
-		for(Object obj : args) {
-			if(obj == null) {
-				throw new IllegalArgumentException("Argument " + obj + "must not be null!");
-			}
-		}
 	}
 }

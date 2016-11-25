@@ -56,6 +56,12 @@ public class Player implements Serializable
 		this.topSide = false;
 	}
 	
+	public Player(String name, Color color) {
+		this.name = name;
+		this.color = color;
+		this.topSide = false;
+	}
+	
 	/**
 	 * Method getting the players name
 	 * 
@@ -103,8 +109,8 @@ public class Player implements Serializable
 		this.playerType = type;
 	}
 	
-	public void setBoardSide(boolean top)
+	public void setBoardSide(boolean isTop)
 	{
-		this.topSide = top;
+		this.topSide = isTop;
 	}
 }

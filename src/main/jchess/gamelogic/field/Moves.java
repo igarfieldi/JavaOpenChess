@@ -194,37 +194,8 @@ public class Moves extends AbstractTableModel
 	{
 		String locMove = new String(begin.getPiece().getSymbol());
 		
-		if(game.getSettings().isUpsideDown())
-		{
-			locMove += Character.toString((char) ((ChessboardController.BOTTOM - begin.getPosX()) + 97));// add
-			                                                                                   // letter
-			                                                                                   // of
-			                                                                                   // Square
-			                                                                                   // from
-			                                                                                   // which
-			                                                                                   // move
-			                                                                                   // was
-			                                                                                   // made
-			locMove += Integer.toString(begin.getPosY() + 1);// add number of
-			                                                 // Square from
-			                                                 // which move was
-			                                                 // made
-		} else
-		{
-			locMove += Character.toString((char) (begin.getPosX() + 97));// add
-			                                                             // letter
-			                                                             // of
-			                                                             // Square
-			                                                             // from
-			                                                             // which
-			                                                             // move
-			                                                             // was
-			                                                             // made
-			locMove += Integer.toString(8 - begin.getPosY());// add number of
-			                                                 // Square from
-			                                                 // which move was
-			                                                 // made
-		}
+		// Get field designation of 'from' field
+		locMove += game.getChessboard().getFieldDesignation(begin);
 		
 		if(end.getPiece() != null)
 		{
@@ -234,35 +205,8 @@ public class Moves extends AbstractTableModel
 			locMove += "-";// normal move
 		}
 		
-		if(game.getSettings().isUpsideDown())
-		{
-			locMove += Character.toString((char) ((ChessboardController.BOTTOM - end.getPosX()) + 97));// add
-			                                                                                 // letter
-			                                                                                 // of
-			                                                                                 // Square
-			                                                                                 // to
-			                                                                                 // which
-			                                                                                 // move
-			                                                                                 // was
-			                                                                                 // made
-			locMove += Integer.toString(end.getPosY() + 1);// add number of
-			                                               // Square to which
-			                                               // move was made
-		} else
-		{
-			locMove += Character.toString((char) (end.getPosX() + 97));// add
-			                                                           // letter
-			                                                           // of
-			                                                           // Square
-			                                                           // to
-			                                                           // which
-			                                                           // move
-			                                                           // was
-			                                                           // made
-			locMove += Integer.toString(8 - end.getPosY());// add number of
-			                                               // Square to which
-			                                               // move was made
-		}
+		// Get field designation of 'from' field
+		locMove += game.getChessboard().getFieldDesignation(end);
 		
 		if(begin.getPiece().getSymbol().equals("") && begin.getPosX() - end.getPosX() != 0 && end.getPiece() == null)
 		{
@@ -618,9 +562,9 @@ public class Moves extends AbstractTableModel
 			boolean pieceFound = false;
 			if(locMove.length() <= 3)
 			{
-				xTo = locMove.charAt(from) - 97;// from ASCII
-				yTo = ChessboardController.BOTTOM - (locMove.charAt(from + 1) - 49);// from
-				                                                          // ASCII
+				Field tempTo = game.getChessboard().getFieldFromDesignation(locMove.substring(from, from + 1));
+				xTo = tempTo.getPosX();
+				yTo = tempTo.getPosY();
 				
 				for(Field field : game.getChessboard().getBoard().getFields()) {
 					if(field.getPiece() == null || this.game.getActivePlayer().getColor() != field.getPiece().getPlayer().getColor()) {
@@ -642,12 +586,13 @@ public class Moves extends AbstractTableModel
 				}
 			} else
 			{
-				xFrom = locMove.charAt(from) - 97;// from ASCII
-				yFrom = ChessboardController.BOTTOM - (locMove.charAt(from + 1) - 49);// from
-				                                                            // ASCII
-				xTo = locMove.charAt(from + 3) - 97;// from ASCII
-				yTo = ChessboardController.BOTTOM - (locMove.charAt(from + 4) - 49);// from
-				                                                          // ASCII
+				Field tempFrom = game.getChessboard().getFieldFromDesignation(locMove.substring(from, from + 1));
+				Field tempTo = game.getChessboard().getFieldFromDesignation(locMove.substring(from+3, from + 4));
+				
+				xFrom = tempFrom.getPosX();
+				yFrom = tempFrom.getPosY();
+				xTo = tempTo.getPosX();
+				yTo = tempTo.getPosY();
 			}
 			canMove = this.game.simulateMove(xFrom, yFrom, xTo, yTo);
 			if(!canMove) // if move is illegal

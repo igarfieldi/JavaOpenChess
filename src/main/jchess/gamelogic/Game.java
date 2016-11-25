@@ -63,7 +63,6 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 	private Settings settings;
 	private boolean blockedChessboard;
 	private ChessboardController chessboard;
-	private Player activePlayer;
 	private GameClock gameClock;
 	private Client client;
 	private Moves moves;
@@ -298,12 +297,11 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 	 */
 	public void newGame()
 	{
-		chessboard.setPieces("", settings.getWhitePlayer(), settings.getBlackPlayer());
+		chessboard.initialize();
 		
 		log.info("Starting new game of type " + settings.getGameType().name());
 		
-		activePlayer = settings.getWhitePlayer();
-		if(activePlayer.getType() != Player.Type.LOCAL)
+		if(chessboard.getActivePlayer().getType() != Player.Type.LOCAL)
 		{
 			this.blockedChessboard = true;
 		}
@@ -340,14 +338,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 	 */
 	public void switchActive()
 	{
-		if(activePlayer == settings.getWhitePlayer())
-		{
-			activePlayer = settings.getBlackPlayer();
-		} else
-		{
-			activePlayer = settings.getWhitePlayer();
-		}
-		
+		chessboard.switchToNextPlayer();
 		this.gameClock.switchClocks();
 	}
 	
@@ -358,7 +349,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 	 */
 	public Player getActivePlayer()
 	{
-		return this.activePlayer;
+		return chessboard.getActivePlayer();
 	}
 	
 	/**
@@ -368,15 +359,15 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 	{
 		switchActive();
 		
-		log.log(Level.FINE, "Next move: active player: " + activePlayer.getName() + " | color: "
-		        + activePlayer.getColor().name() + " | type: " + activePlayer.getType().name());
-		if(activePlayer.getType() == Player.Type.LOCAL)
+		log.log(Level.FINE, "Next move: active player: " + chessboard.getActivePlayer().getName() + " | color: "
+		        + chessboard.getActivePlayer().getColor().name() + " | type: " + chessboard.getActivePlayer().getType().name());
+		if(chessboard.getActivePlayer().getType() == Player.Type.LOCAL)
 		{
 			this.blockedChessboard = false;
-		} else if(activePlayer.getType() == Player.Type.NETWORK)
+		} else if(chessboard.getActivePlayer().getType() == Player.Type.NETWORK)
 		{
 			this.blockedChessboard = true;
-		} else if(activePlayer.getType() == Player.Type.COMPUTER)
+		} else if(chessboard.getActivePlayer().getType() == Player.Type.COMPUTER)
 		{
 		}
 	}
@@ -530,12 +521,12 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 					Field sq = chessboard.getView().getSquare(x, y);
 					if((sq == null && chessboard.getView().getActiveSquare() == null)
 					        || (this.chessboard.getView().getActiveSquare() == null && sq.getPiece() != null
-					                && sq.getPiece().getPlayer() != this.activePlayer))
+					                && sq.getPiece().getPlayer() != this.chessboard.getActivePlayer()))
 					{
 						return;
 					}
 					
-					if(sq.getPiece() != null && sq.getPiece().getPlayer() == this.activePlayer
+					if(sq.getPiece() != null && sq.getPiece().getPlayer() == this.chessboard.getActivePlayer()
 					        && sq != chessboard.getView().getActiveSquare())
 					{
 						chessboard.getView().unselect();
@@ -563,7 +554,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 						
 						// checkmate or stalemate
 						King king;
-						if(this.activePlayer == settings.getWhitePlayer())
+						if(this.chessboard.getActivePlayer() == settings.getWhitePlayer())
 						{
 							king = chessboard.getWhiteKing();
 						} else

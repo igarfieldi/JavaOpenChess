@@ -47,10 +47,8 @@ public class Move
 		if(movedPiece.getName().equals("Pawn") && Math.abs(to.getPosY() - from.getPosY()) == 2)
 		{
 			this.wasPawnTwoFieldsMove = true;
-		} else if(movedPiece.getName().equals("Pawn") && to.getPosY() == ChessboardController.BOTTOM
-		        || to.getPosY() == ChessboardController.TOP && promotedPiece != null)
+		} else if(movedPiece.getName().equals("Pawn") && promotedPiece != null)
 		{
-			// TODO: simplify condition (shouldn't promotedPiece always be null expect when promoted?)
 			this.promotedTo = promotedPiece;
 		}
 	}

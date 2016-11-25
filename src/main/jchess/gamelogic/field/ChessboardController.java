@@ -20,6 +20,7 @@
  */
 package jchess.gamelogic.field;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,6 +35,7 @@ import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.pieces.Queen;
 import jchess.gamelogic.pieces.Rook;
+import jchess.util.ArgumentChecker;
 
 /**
  * Class to represent chessboard. Chessboard is made from squares. It is setting
@@ -43,12 +45,18 @@ import jchess.gamelogic.pieces.Rook;
 public class ChessboardController
 {
 	private static Logger log = Logger.getLogger(ChessboardController.class.getName());
+	private static final int WIDTH = 8;
+	private static final int HEIGHT = 8;
+	private static final String[] FIELD_LETTERS = {"a", "b", "c", "d", "e", "f", "g", "h"};
+	private static final String[] FIELD_NUMBERS = {"1", "2", "3", "4", "5", "6", "7", "8"};
 	
-	private ChessboardModel board = new ChessboardModel();
+	private ChessboardModel board;
 	private ChessboardView view;
 	
-	public static final int TOP = 0;
-	public static final int BOTTOM = 7;
+	private Player white;
+	private Player black;
+	private Player activePlayer;
+	
 	private Settings settings;
 	private King kingWhite;
 	private King kingBlack;
@@ -69,6 +77,7 @@ public class ChessboardController
 	 */
 	public ChessboardController(Settings settings, Moves moves_history)
 	{
+		this.board = new ChessboardModel(WIDTH, HEIGHT);
 		this.view = new ChessboardView(settings, board);
 		this.settings = settings;
 		this.moves_history = moves_history;
@@ -78,124 +87,153 @@ public class ChessboardController
 		return view;
 	}
 	
-	/**
-	 * Method setPieces on begin of new game or loaded game
-	 * 
-	 * @param places
-	 *            string with pieces to set on chessboard
-	 * @param plWhite
-	 *            reference to white player
-	 * @param plBlack
-	 *            reference to black player
-	 */
-	public void setPieces(String places, Player plWhite, Player plBlack)
-	{
-		
-		if(places.equals("")) // if newGame
-		{
-			if(this.settings.isUpsideDown())
-			{
-				this.setPieces4NewGame(true, plWhite, plBlack);
-			} else
-			{
-				this.setPieces4NewGame(false, plWhite, plBlack);
-			}
-			
-		} else // if loadedGame
-		{
-			return;
-		}
-	}/*--endOf-setPieces--*/
+	public Player getActivePlayer() {
+		return this.activePlayer;
+	}
 	
-	/**
-	 *
-	 */
-	private void setPieces4NewGame(boolean upsideDown, Player plWhite, Player plBlack)
-	{
-		
-		/* WHITE PIECES */
-		Player player = plBlack;
-		Player player1 = plWhite;
-		if(upsideDown) // if white on Top
-		{
-			player = plWhite;
-			player1 = plBlack;
+	public void switchToNextPlayer() {
+		if(this.activePlayer == this.white) {
+			this.activePlayer = this.black;
+		} else {
+			this.activePlayer = this.white;
 		}
-		this.setFigures4NewGame(0, player, upsideDown);
-		this.setPawns4NewGame(1, player);
-		this.setFigures4NewGame(7, player1, upsideDown);
-		this.setPawns4NewGame(6, player1);
-	}/*--endOf-setPieces(boolean upsideDown)--*/
+	}
 	
-	/**
-	 * method set Figures in row (and set Queen and King to right position)
-	 * 
-	 * @param i
-	 *            row where to set figures (Rook, Knight etc.)
-	 * @param player
-	 *            which is owner of pawns
-	 * @param upsideDown
-	 *            if true white pieces will be on top of chessboard
-	 */
-	private void setFigures4NewGame(int i, Player player, boolean upsideDown)
-	{
+	public void switchToPreviousPlayer() {
+		// Since we only have two players, this is equal to switchToNextPlayer
+		this.switchToNextPlayer();
+	}
+	
+	public boolean isOnAPlayersBaseline(Field field) {
+		ArgumentChecker.checkForNull(field);
 		
-		if(i != 0 && i != 7)
-		{
-			log.log(Level.SEVERE, "Error setting up Rook/Knight/Bishop/Queen/King!");
-			return;
-		} else if(i == 0)
-		{
-			player.setBoardSide(true);
-		}
-
-		board.getField(0, i).setPiece(new Rook(this, player));
-		board.getField(7, i).setPiece(new Rook(this, player));
-		board.getField(1, i).setPiece(new Knight(this, player));
-		board.getField(6, i).setPiece(new Knight(this, player));
-		board.getField(2, i).setPiece(new Bishop(this, player));
-		board.getField(5, i).setPiece(new Bishop(this, player));
-		if(upsideDown)
-		{
-			board.getField(4, i).setPiece(new Queen(this, player));
-			if(player.getColor() == Player.Color.WHITE)
-			{
-				board.getField(3, i).setPiece(setWhiteKing(new King(this, player)));
-			} else
-			{
-				board.getField(3, i).setPiece(setBlackKing(new King(this, player)));
-			}
-		} else
-		{
-			board.getField(3, i).setPiece(new Queen(this, player));
-			if(player.getColor() == Player.Color.WHITE)
-			{
-				board.getField(4, i).setPiece(setWhiteKing(new King(this, player)));
-			} else
-			{
-				board.getField(4, i).setPiece(setBlackKing(new King(this, player)));
-			}
+		if(field.getPosY() == 0) {
+			// Lower player's baseline
+			return true;
+		} else if(field.getPosY() + 1 == HEIGHT) {
+			// Upper player's baseline
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
 	/**
-	 * method set Pawns in row
-	 * 
-	 * @param i
-	 *            row where to set pawns
-	 * @param player
-	 *            player which is owner of pawns
+	 * Returns the string representation of the given field.
+	 * @param field
+	 * @return
 	 */
-	private void setPawns4NewGame(int i, Player player)
-	{
-		if(i != 1 && i != 6)
-		{
-			log.log(Level.SEVERE, "Error setting up pawn!");
-			return;
+	public String getFieldDesignation(Field field) {
+		ArgumentChecker.checkForNull(field);
+		
+		if(settings.isUpsideDown()) {
+			// In upside-down case, field (0|0) is equivalent to h1
+			return FIELD_LETTERS[field.getPosX()] + FIELD_NUMBERS[HEIGHT - field.getPosY() - 1];
+		} else {
+			// If not upside down, field (0|0) is equivalent to a8
+			return FIELD_LETTERS[WIDTH - field.getPosX() - 1] + FIELD_NUMBERS[field.getPosY()];
 		}
-		for(int x = 0; x < 8; x++)
-		{
-			board.getField(x, i).setPiece(new Pawn(this, player));
+	}
+	
+	/**
+	 * Returns the field specified by the given string, if applicable.
+	 * @param designation Designation of desired field
+	 * @return field denoted by given string (or null if non-existent)
+	 */
+	public Field getFieldFromDesignation(String designation) {
+		ArgumentChecker.checkForNull(designation);
+		
+		if(designation.length() != 2) {
+			return null;
+		}
+		
+		// Check the arrays of letters and numbers for the given strings
+		int x = Arrays.asList(FIELD_LETTERS).indexOf(""+designation.charAt(0));
+		int y = Arrays.asList(FIELD_NUMBERS).indexOf(""+designation.charAt(1));
+		
+		// Account for the oddities of the chosen field coordinate system (0|0 = a8 or h1)
+		if(settings.isUpsideDown()) {
+			y = HEIGHT - y - 1;
+		} else {
+			x = WIDTH - x - 1;
+		}
+		
+		return board.getField(x, y);
+	}
+	
+	/**
+	 * Brings the controller (and the associated board) into a clean state.
+	 */
+	public void initialize() {
+		this.initializePlayers();
+		this.initializePieces(this.white.isTopSide());
+		
+		this.activePlayer = white;
+	}
+	
+	/**
+	 * Initializes the participating chess players.
+	 * Currently, we simply grab the players stored in the settings.
+	 */
+	private void initializePlayers() {
+		this.white = settings.getWhitePlayer();
+		this.black = settings.getBlackPlayer();
+		
+		if(settings.isUpsideDown()) {
+			this.white.setBoardSide(true);
+		} else {
+			this.black.setBoardSide(true);
+		}
+	}
+	
+	/**
+	 * Initializes the chessboard's pieces.
+	 * This includes checking which player is on top etc.
+	 * @param whiteIsTop is white playing from top-side
+	 */
+	private void initializePieces(boolean whiteIsTop) {
+		Player topSide = this.black;
+		Player bottomSide = this.white;
+		if(whiteIsTop) {
+			topSide = this.white;
+			bottomSide = this.black;
+		}
+		
+		System.out.println(topSide);
+		
+		board.initialize();
+		// Set rooks, bishops, knights
+		board.getField(0, 7).setPiece(new Rook(this, bottomSide));
+		board.getField(7, 7).setPiece(new Rook(this, bottomSide));
+		board.getField(1, 7).setPiece(new Bishop(this, bottomSide));
+		board.getField(6, 7).setPiece(new Bishop(this, bottomSide));
+		board.getField(2, 7).setPiece(new Knight(this, bottomSide));
+		board.getField(5, 7).setPiece(new Knight(this, bottomSide));
+		board.getField(0, 0).setPiece(new Rook(this, topSide));
+		board.getField(7, 0).setPiece(new Rook(this, topSide));
+		board.getField(1, 0).setPiece(new Bishop(this, topSide));
+		board.getField(6, 0).setPiece(new Bishop(this, topSide));
+		board.getField(2, 0).setPiece(new Knight(this, topSide));
+		board.getField(5, 0).setPiece(new Knight(this, topSide));
+		
+		// Since the queen is always placed on the field of her own color, we need
+		// to check on which side white is playing
+		if(whiteIsTop) {
+			board.getField(4, 7).setPiece(new Queen(this, bottomSide));
+			board.getField(3, 7).setPiece(setBlackKing(new King(this, bottomSide)));
+			board.getField(4, 0).setPiece(new Queen(this, topSide));
+			board.getField(3, 0).setPiece(setWhiteKing(new King(this, topSide)));
+		} else {
+			board.getField(3, 7).setPiece(new Queen(this, bottomSide));
+			board.getField(4, 7).setPiece(setWhiteKing(new King(this, bottomSide)));
+			board.getField(3, 0).setPiece(new Queen(this, topSide));
+			board.getField(4, 0).setPiece(setBlackKing(new King(this, topSide)));
+		}
+		
+		// Initialize pawns: no special distinctions necessary
+		for(int x = 0; x < WIDTH; x++) {
+			board.getField(x, 6).setPiece(new Pawn(this, bottomSide));
+			board.getField(x, 1).setPiece(new Pawn(this, topSide));
 		}
 	}
 	
