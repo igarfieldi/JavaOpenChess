@@ -211,10 +211,10 @@ public class ChessboardController
 		board.getField(5, 7).setPiece(new Bishop(this, bottomSide));
 		board.getField(0, 0).setPiece(new Rook(this, topSide));
 		board.getField(7, 0).setPiece(new Rook(this, topSide));
-		board.getField(1, 0).setPiece(new Bishop(this, topSide));
-		board.getField(6, 0).setPiece(new Bishop(this, topSide));
-		board.getField(2, 0).setPiece(new Knight(this, topSide));
-		board.getField(5, 0).setPiece(new Knight(this, topSide));
+		board.getField(1, 0).setPiece(new Knight(this, topSide));
+		board.getField(6, 0).setPiece(new Knight(this, topSide));
+		board.getField(2, 0).setPiece(new Bishop(this, topSide));
+		board.getField(5, 0).setPiece(new Bishop(this, topSide));
 		
 		// Since the queen is always placed on the field of her own color, we need
 		// to check on which side white is playing
