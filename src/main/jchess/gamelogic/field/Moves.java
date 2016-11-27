@@ -502,7 +502,7 @@ public class Moves extends AbstractTableModel
 		{
 			if(!Moves.isMoveCorrect(locMove.trim())) // if not
 			{
-				JOptionPane.showMessageDialog(this.game, Localization.getMessage("invalid_file_to_load") + move);
+				JOptionPane.showMessageDialog(this.game.getView(), Localization.getMessage("invalid_file_to_load") + move);
 				return;// show message and finish reading game
 			}
 		}
@@ -543,7 +543,7 @@ public class Moves extends AbstractTableModel
 				
 				if(!canMove) // if move is illegal
 				{
-					JOptionPane.showMessageDialog(this.game, Localization.getMessage("illegal_move_on") + locMove);
+					JOptionPane.showMessageDialog(this.game.getView(), Localization.getMessage("illegal_move_on") + locMove);
 					return;// finish reading game and show message
 				}
 				continue;
@@ -597,7 +597,7 @@ public class Moves extends AbstractTableModel
 			canMove = this.game.simulateMove(xFrom, yFrom, xTo, yTo);
 			if(!canMove) // if move is illegal
 			{
-				JOptionPane.showMessageDialog(this.game, Localization.getMessage("illegal_move_on") + locMove);
+				JOptionPane.showMessageDialog(this.game.getView(), Localization.getMessage("illegal_move_on") + locMove);
 				this.game.getChessboard().getView().setActiveSquare(null);
 				return;// finish reading game and show message
 			}

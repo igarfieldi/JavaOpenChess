@@ -35,6 +35,8 @@ import java.beans.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,7 +49,8 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	private static final TypedResourceBundle VIEW_PROPERTIES = new TypedResourceBundle("jchess.resources.JChessView");
 	
 	private static ThemeConfigurator themeConfigurator = null;
-	private Game game;
+	private List<Game> gameList = new ArrayList<Game>(1);
+	private Game activeGame;
 	
 	private JMenu gameMenu;
 	private JTabbedPane gamesPane;
@@ -80,7 +83,8 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	public JChessView(SingleFrameApplication app)
 	{
 		super(app);
-		this.game = new Game();
+		this.gameList.add(new Game());
+		activeGame = gameList.get(0);
 		
 		initializeComponents();
 		
@@ -225,8 +229,8 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 
 	private void moveBackItemActionPerformed(ActionEvent event)
 	{
-		if(themeConfigurator != null && game != null)
-			game.undo();
+		if(themeConfigurator != null && activeGame != null)
+			activeGame.undo();
 		else
 			try
 			{
@@ -261,8 +265,8 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 
 	private void moveForwardItemActionPerformed(ActionEvent event)
 	{
-		if(themeConfigurator != null && game != null)
-			game.redo();
+		if(themeConfigurator != null && activeGame != null)
+			activeGame.redo();
 		else
 		{
 			try
@@ -532,7 +536,8 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	public Game addNewTab(String title)
 	{
 		Game newGameTab = new Game();
-		this.gamesPane.addTab(title, newGameTab);
+		this.gameList.add(newGameTab);
+		this.gamesPane.addTab(title, newGameTab.getView());
 		return newGameTab;
 	}
 	
@@ -558,12 +563,12 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 				if(retVal == JFileChooser.APPROVE_OPTION)
 				{
 					File selectedFile = fileChooser.getSelectedFile();
-					Game tempGUI = (Game) this.gamesPane.getComponentAt(this.gamesPane.getSelectedIndex());
+					Game tempGUI = this.getActiveTabGame();
 					if(!selectedFile.exists())
 						createSaveFile(selectedFile);
 					else if(selectedFile.exists())
 					{
-						int opt = JOptionPane.showConfirmDialog(tempGUI, Localization.getMessage("file_exists"),
+						int opt = JOptionPane.showConfirmDialog(tempGUI.getView(), Localization.getMessage("file_exists"),
 						        Localization.getMessage("file_exists"), JOptionPane.YES_NO_OPTION);
 						if(opt == JOptionPane.NO_OPTION) // if user choose to now overwrite
 							continue; // go back to file choose
@@ -665,8 +670,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	
 	public Game getActiveTabGame() throws ArrayIndexOutOfBoundsException
 	{
-		Game activeGame = (Game) this.gamesPane.getComponentAt(this.gamesPane.getSelectedIndex());
-		return activeGame;
+		return this.gameList.get(this.gamesPane.getSelectedIndex());
 	}
 	
 	public int getNumberOfOpenedTabs()

@@ -20,44 +20,35 @@
  */
 package jchess.gamelogic.clock;
 
-import java.awt.*;
-import java.awt.image.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.JPanel;
 
 import jchess.gamelogic.Game;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
+import jchess.gamelogic.views.GameClockView;
 
 /**
  * Class to representing the full game time.
  * @param game the current game
  */
-public class GameClock extends JPanel implements Runnable
+public class GameClock implements Runnable
 {
-	private static final long serialVersionUID = -5791210552595733310L;
 	private static Logger log = Logger.getLogger(GameClock.class.getName());
-	
-	private Clock clock1;
-	private Clock clock2;
+
+	private GameClockModel clocks;
+	private GameClockView clockView;
 	private Clock runningClock;
 	private Settings settings;
 	private Thread thread;
 	private Game game;
-	private Font clockFont;
-	private final BufferedImage background;
 	
 	public GameClock(Game game)
 	{
-		this.clock1 = new Clock();// white player clock
-		this.clock2 = new Clock();// black player clock
-		this.runningClock = this.clock1;// running/active clock
+		clocks = new GameClockModel(2);
+		this.runningClock = this.clocks.getClock(0); // running/active clock
 		this.game = game;
 		this.settings = game.getSettings();
-		this.background = new BufferedImage(600, 600, BufferedImage.TYPE_INT_ARGB);
-		this.clockFont = new Font("Sarif", Font.ITALIC, 14);
 		
 		this.setTimes(settings.getTimeForGame());
 		this.setPlayers(this.settings.getBlackPlayer(), this.settings.getWhitePlayer());
@@ -68,12 +59,11 @@ public class GameClock extends JPanel implements Runnable
 			thread.start();
 		}
 		
-		this.setDoubleBuffered(true);
-		
-		// Pre-render the static background image
-		Graphics2D g2d = (Graphics2D) this.background.getGraphics();
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		this.drawBackground(g2d);
+		this.clockView = new GameClockView(settings, clocks);
+	}
+	
+	public GameClockView getView() {
+		return clockView;
 	}
 	
 	/**
@@ -85,80 +75,12 @@ public class GameClock extends JPanel implements Runnable
 	}
 	
 	/**
-	 * Draws the clock background.
-	 * @param g2d graphics context
-	 */
-	private void drawBackground(Graphics2D g2d)
-	{
-		g2d.setColor(Color.WHITE);
-		g2d.fillRect(5, 30, 80, 30);
-		g2d.setColor(Color.BLACK);
-		g2d.fillRect(85, 30, 90, 30);
-		g2d.drawRect(5, 30, 170, 30);
-		g2d.drawRect(5, 60, 170, 30);
-		g2d.drawLine(85, 30, 85, 90);
-	}
-	
-	/**
-	 * Draws the current time of both clocks.
-	 * @param g2d graphics context
-	 */
-	private void drawTime(Graphics2D g2d)
-	{
-		g2d.setFont(clockFont);
-		g2d.setColor(Color.BLACK);
-		g2d.drawString(clock1.toString(), 10, 80);
-		g2d.drawString(clock2.toString(), 90, 80);
-	}
-	
-	/**
-	 * Draws the current player names.
-	 * @param g2d graphics context
-	 */
-	private void drawPlayerNames(Graphics2D g2d)
-	{
-		g2d.setFont(clockFont);
-		g2d.setColor(Color.BLACK);
-		g2d.drawString(settings.getWhitePlayer().getName(), 10, 50);
-		g2d.setColor(Color.WHITE);
-		g2d.drawString(settings.getBlackPlayer().getName(), 100, 50);
-	}
-	
-	/**
-	 * Annotation to superclass Graphics drawing the clock graphics
-	 * 
-	 * @param g
-	 *            Graphics2D Capt object to paint
-	 */
-	@Override
-	public void paint(Graphics g)
-	{
-		super.paint(g);
-		
-		Graphics2D g2d = (Graphics2D) g;
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2d.drawImage(background, 0, 0, this);
-		this.drawPlayerNames(g2d);
-		this.drawTime(g2d);
-	}
-	
-	/**
-	 * Annotation to superclass Graphics updateing clock graphisc
-	 * @param g graphics context
-	 */
-	@Override
-	public void update(Graphics g)
-	{
-		paint(g);
-	}
-	
-	/**
 	 * Method of swiching the players clocks.
 	 */
 	public void switchClocks()
 	{
 		// Change the running clock to the one not currently running
-		runningClock = (clock1 == runningClock) ? clock2 : clock1;
+		runningClock = (runningClock == clocks.getClock(0)) ? clocks.getClock(1) : clocks.getClock(0);
 	}
 	
 	/**
@@ -168,8 +90,8 @@ public class GameClock extends JPanel implements Runnable
 	 */
 	public void setTimes(int t1, int t2)
 	{
-		this.clock1.resetClock(t1);
-		this.clock2.resetClock(t2);
+		clocks.getClock(0).resetClock(t1);
+		clocks.getClock(1).resetClock(t2);
 	}
 	
 	/**
@@ -190,12 +112,12 @@ public class GameClock extends JPanel implements Runnable
 	{
 		if(p1.getColor() == Player.Color.WHITE)
 		{
-			this.clock1.setPlayer(p1);
-			this.clock2.setPlayer(p2);
+			clocks.getClock(0).setPlayer(p1);
+			clocks.getClock(0).setPlayer(p2);
 		} else
 		{
-			this.clock1.setPlayer(p2);
-			this.clock2.setPlayer(p1);
+			clocks.getClock(0).setPlayer(p2);
+			clocks.getClock(0).setPlayer(p1);
 		}
 	}
 	
@@ -208,7 +130,7 @@ public class GameClock extends JPanel implements Runnable
 		{
 			if(this.runningClock.decrement())
 			{
-				repaint();
+				clockView.repaint();
 				try
 				{
 					Thread.sleep(1000);

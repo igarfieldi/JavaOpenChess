@@ -36,25 +36,13 @@ public class Player implements Serializable
 	
 	public enum Type
 	{
-		LOCAL, NETWORK, COMPUTER
+		LOCAL, COMPUTER
 	}
 	
 	private String name;
 	private Color color;
 	private Type playerType;
 	private boolean topSide;
-	
-	public Player()
-	{
-		// TODO: default values?
-	}
-	
-	public Player(String name, String color)
-	{
-		this.name = name;
-		this.color = Player.Color.valueOf(color);
-		this.topSide = false;
-	}
 	
 	public Player(String name, Color color) {
 		this.name = name;

@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jchess.JChessApp;
+import jchess.gamelogic.Game;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
 import jchess.gamelogic.field.Moves.CastlingType;
@@ -35,6 +36,7 @@ import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.pieces.Queen;
 import jchess.gamelogic.pieces.Rook;
+import jchess.gamelogic.views.ChessboardView;
 import jchess.util.ArgumentChecker;
 
 /**
@@ -73,10 +75,10 @@ public class ChessboardController
 	 * @param moves_history
 	 *            reference to Moves class object for this chessboard
 	 */
-	public ChessboardController(Settings settings, Moves moves_history)
+	public ChessboardController(Settings settings, Moves moves_history, Game game)
 	{
 		this.board = new ChessboardModel(WIDTH, HEIGHT);
-		this.view = new ChessboardView(settings, board);
+		this.view = new ChessboardView(settings, board, game);
 		this.settings = settings;
 		this.moves_history = moves_history;
 	}
@@ -203,10 +205,10 @@ public class ChessboardController
 		// Set rooks, bishops, knights
 		board.getField(0, 7).setPiece(new Rook(this, bottomSide));
 		board.getField(7, 7).setPiece(new Rook(this, bottomSide));
-		board.getField(1, 7).setPiece(new Bishop(this, bottomSide));
-		board.getField(6, 7).setPiece(new Bishop(this, bottomSide));
-		board.getField(2, 7).setPiece(new Knight(this, bottomSide));
-		board.getField(5, 7).setPiece(new Knight(this, bottomSide));
+		board.getField(1, 7).setPiece(new Knight(this, bottomSide));
+		board.getField(6, 7).setPiece(new Knight(this, bottomSide));
+		board.getField(2, 7).setPiece(new Bishop(this, bottomSide));
+		board.getField(5, 7).setPiece(new Bishop(this, bottomSide));
 		board.getField(0, 0).setPiece(new Rook(this, topSide));
 		board.getField(7, 0).setPiece(new Rook(this, topSide));
 		board.getField(1, 0).setPiece(new Bishop(this, topSide));
