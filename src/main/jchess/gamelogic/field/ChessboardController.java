@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jchess.JChessApp;
+import jchess.gamelogic.Game;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
 import jchess.gamelogic.field.Moves.CastlingType;
@@ -74,10 +75,10 @@ public class ChessboardController
 	 * @param moves_history
 	 *            reference to Moves class object for this chessboard
 	 */
-	public ChessboardController(Settings settings, Moves moves_history)
+	public ChessboardController(Settings settings, Moves moves_history, Game game)
 	{
 		this.board = new ChessboardModel(WIDTH, HEIGHT);
-		this.view = new ChessboardView(settings, board);
+		this.view = new ChessboardView(settings, board, game);
 		this.settings = settings;
 		this.moves_history = moves_history;
 	}

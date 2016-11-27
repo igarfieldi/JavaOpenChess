@@ -21,13 +21,15 @@
 package jchess.gamelogic.views;
 
 import java.awt.*;
-import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
+import jchess.gamelogic.Game;
 import jchess.gamelogic.Settings;
 import jchess.gamelogic.field.ChessboardModel;
 import jchess.gamelogic.field.Field;
@@ -39,12 +41,13 @@ import jchess.gui.ThemeImageLoader;
  * the squers of chessboard and sets the pieces(pawns) witch the owner is
  * current player on it.
  */
-public class ChessboardView extends JPanel
+public class ChessboardView extends JPanel implements MouseListener
 {
 	private static Logger log = Logger.getLogger(ChessboardView.class.getName());
 	
 	private ChessboardModel board;
 	private Settings settings;
+	private Game game; // TODO: somehow remove this dependency!
 	
 	private static final long serialVersionUID = 1971410121780567341L;
 	public static final int TOP = 0;
@@ -81,8 +84,9 @@ public class ChessboardView extends JPanel
 	 * @param moves_history
 	 *            reference to Moves class object for this chessboard
 	 */
-	public ChessboardView(Settings settings, ChessboardModel board)
+	public ChessboardView(Settings settings, ChessboardModel board, Game game)
 	{
+		this.game = game;
 		this.board = board;
 		this.settings = settings;
 		this.setActiveSquare(null);
@@ -92,6 +96,7 @@ public class ChessboardView extends JPanel
 		this.active_y_square = 0;
 		this.setDoubleBuffered(true);
 		this.drawLabels((int) this.square_height);
+		this.addMouseListener(this);
 	}
 	
 	private void renderPiece(Field field, Piece piece, Graphics g) {
@@ -158,7 +163,7 @@ public class ChessboardView extends JPanel
 			return board.getField((int) square_x - 1, (int) square_y - 1);
 		} catch(java.lang.ArrayIndexOutOfBoundsException exc)
 		{
-			log.log(Level.SEVERE, "Accessed square outside of field!", exc);
+			log.log(Level.FINER, "Clicked field outside of chessboard: (" + x + "|" + y + ")");
 			return null;
 		}
 	}
@@ -395,21 +400,6 @@ public class ChessboardView extends JPanel
 		this.LeftRightLabel = uDL;
 	}
 	
-	public void componentMoved(ComponentEvent e)
-	{
-		// throw new UnsupportedOperationException("Not supported yet.");
-	}
-	
-	public void componentShown(ComponentEvent e)
-	{
-		// throw new UnsupportedOperationException("Not supported yet.");
-	}
-	
-	public void componentHidden(ComponentEvent e)
-	{
-		// throw new UnsupportedOperationException("Not supported yet.");
-	}
-	
 	public Field getActiveSquare()
 	{
 		return activeSquare;
@@ -418,5 +408,44 @@ public class ChessboardView extends JPanel
 	public void setActiveSquare(Field activeSquare)
 	{
 		this.activeSquare = activeSquare;
+	}
+	
+	@Override
+	public void mouseClicked(MouseEvent arg0)
+	{
+	}
+
+	@Override
+	public void mousePressed(MouseEvent event)
+	{
+		if(event.getButton() == MouseEvent.BUTTON3) // right button
+		{
+			log.log(Level.FINE, "Right button click for undo");
+			this.game.getChessboard().undo();
+		} else if(event.getButton() == MouseEvent.BUTTON2 && settings.getGameType() == Settings.GameType.LOCAL)
+		{
+			log.log(Level.FINE, "Middle button click for redo");
+			this.game.getChessboard().redo();
+		} else if(event.getButton() == MouseEvent.BUTTON1) // left button
+		{
+			log.log(Level.FINE, "Left button click for field selection");
+			this.game.handleFieldSelection(this.getSquare(event.getX(), event.getY()));
+		}
+		this.repaint();
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0)
+	{
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0)
+	{
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0)
+	{
 	}
 }
