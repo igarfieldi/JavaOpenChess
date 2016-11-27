@@ -35,6 +35,7 @@ import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.pieces.Queen;
 import jchess.gamelogic.pieces.Rook;
+import jchess.gamelogic.views.ChessboardView;
 import jchess.util.ArgumentChecker;
 
 /**

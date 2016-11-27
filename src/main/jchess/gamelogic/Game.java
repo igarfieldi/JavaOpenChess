@@ -43,10 +43,10 @@ import jchess.JChessApp;
 import jchess.Localization;
 import jchess.gamelogic.clock.GameClock;
 import jchess.gamelogic.field.ChessboardController;
-import jchess.gamelogic.field.ChessboardView;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Moves;
 import jchess.gamelogic.pieces.King;
+import jchess.gamelogic.views.ChessboardView;
 
 /**
  * Class responsible for the starts of new games, loading games, saving it, and
@@ -77,9 +77,9 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 		this.add(chessboard.getView());
 		// this.chessboard.
 		gameClock = new GameClock(this);
-		gameClock.setSize(new Dimension(200, 100));
-		gameClock.setLocation(new Point(500, 0));
-		this.add(gameClock);
+		gameClock.getView().setSize(new Dimension(200, 100));
+		gameClock.getView().setLocation(new Point(500, 0));
+		this.add(gameClock.getView());
 		
 		JScrollPane movesHistory = this.moves.getScrollPane();
 		movesHistory.setSize(new Dimension(180, 350));
@@ -345,9 +345,6 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 		if(chessboard.getActivePlayer().getType() == Player.Type.LOCAL)
 		{
 			this.blockedChessboard = false;
-		} else if(chessboard.getActivePlayer().getType() == Player.Type.NETWORK)
-		{
-			this.blockedChessboard = true;
 		} else if(chessboard.getActivePlayer().getType() == Player.Type.COMPUTER)
 		{
 		}
@@ -581,7 +578,7 @@ public class Game extends JPanel implements MouseListener, ComponentListener
 		chess_height = this.chessboard.getView().getHeight();
 		this.moves.getScrollPane().setLocation(new Point(chess_height + 5, 100));
 		this.moves.getScrollPane().setSize(this.moves.getScrollPane().getWidth(), chess_height - 100);
-		this.gameClock.setLocation(new Point(chess_height + 5, 0));
+		this.gameClock.getView().setLocation(new Point(chess_height + 5, 0));
 	}
 	
 	public void componentMoved(ComponentEvent e)

@@ -32,12 +32,12 @@ public class Clock
 	private int timeLeft;
 	private Player player;
 	
-	Clock()
+	public Clock()
 	{
 		this.resetClock(0);
 	}
 	
-	Clock(int time)
+	public Clock(int time)
 	{
 		this.resetClock(time);
 	}
@@ -66,11 +66,6 @@ public class Clock
 			return true;
 		}
 		return false;
-	}
-	
-	public void pause()
-	{
-		// ??
 	}
 	
 	/**

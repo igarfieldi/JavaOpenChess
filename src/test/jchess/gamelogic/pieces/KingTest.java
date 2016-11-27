@@ -24,8 +24,8 @@ public class KingTest
 	public void setUp() throws Exception
 	{
 		// TODO: test in reverse (white on top!)
-		p1 = new Player("p1", "WHITE");
-		p2 = new Player("p2", "BLACK");
+		p1 = new Player("p1", Player.Color.WHITE);
+		p2 = new Player("p2", Player.Color.BLACK);
 		p2.setBoardSide(true);
 		board = new ChessboardController(new Settings(), null);
 		whiteKing = new King(board, p1);
