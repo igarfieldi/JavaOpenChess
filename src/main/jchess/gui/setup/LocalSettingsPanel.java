@@ -45,22 +45,14 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 	private JRadioButton computerOpponentRadioButton;
 	private JRadioButton humanOpponentRadioButton;*/
 	
-	PlayerNameInputPanel playerNameInputPanel;
-	
-	private JCheckBox isWhiteOnTopOfBoardCheckBox;
-	
-	private JCheckBox hasTimeLimitCheckBox;
-	private JComboBox<String> timeLimitsComboBox;
-	private String timeLimits[] = { "1", "3", "5", "8", "10", "15", "20", "25", "30", "60", "120" };
-	
+	private PlayerNameInputPanel playerNameInputPanel;
+	private ChessboardPropertiesPanel chessBoardPropertiesPanel;
 	private JButton okButton;
 	
 	LocalSettingsPanel(JDialog localSettingsWindow)
 	{
 		super();
 		this.localSettingsWindow = localSettingsWindow;
-		
-		playerNameInputPanel = new PlayerNameInputPanel();
 		
 		//configurePlayerTypeChoiceGUI();
 		initializeGuiElements();
@@ -85,10 +77,8 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 	
 	private void initializeGuiElements()
 	{
-		this.isWhiteOnTopOfBoardCheckBox = new JCheckBox(Localization.getMessage("upside_down"));
-		
-		this.hasTimeLimitCheckBox = new JCheckBox(Localization.getMessage("time_game_min"));
-		this.timeLimitsComboBox = new JComboBox<String>(timeLimits);
+		playerNameInputPanel = new PlayerNameInputPanel();
+		chessBoardPropertiesPanel = new ChessboardPropertiesPanel();
 		
 		this.okButton = new JButton(Localization.getMessage("ok"));
 		this.okButton.addActionListener(this);
@@ -98,20 +88,12 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 	{
 		//setGridBagConstraints(computerOpponentRadioButton, 0, 0);
 		//setGridBagConstraints(humanOpponentRadioButton, 1, 0);
-		setGridBagConstraints(playerNameInputPanel, 0, 1);
 		
-		setGridBagConstraints(isWhiteOnTopOfBoardCheckBox, 0, 2);
-		setGridBagConstraints(hasTimeLimitCheckBox, 0, 3);
-		setGridBagConstraints(timeLimitsComboBox, 1, 3);
-		setGridBagConstraints(okButton, 1, 4);
+		setGridBagConstraints(playerNameInputPanel, 0, 1);
+		setGridBagConstraints(chessBoardPropertiesPanel, 0, 2);
+		setGridBagConstraints(okButton, 0, 3);
 	}
 	
-	/**
-	 * Method responsible for changing the options.
-	 * 
-	 * @param event
-	 *            where is saving data of performed action
-	 */
 	public void actionPerformed(ActionEvent event)
 	{
 		if(event.getSource() == this.okButton)
@@ -140,47 +122,23 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 		localSettings.setGameMode(Settings.GameMode.NEW_GAME);
 		localSettings.setGameType(Settings.GameType.LOCAL);
 		
-		playerNameInputPanel.assignPlayerNames(firstPlayer, secondPlayer);
-		setPlayerTypes(firstPlayer, secondPlayer);
+		setPlayerSettings(firstPlayer, secondPlayer);
 		
-		setFigureColorPlacementOnBoard(localSettings);
-		setTimeLimit(gameWindow, localSettings);
+		chessBoardPropertiesPanel.setFigureColorPlacementOnBoard(localSettings);
+		chessBoardPropertiesPanel.setTimeLimit(gameWindow, localSettings);
 		
-		logGameInfo(localSettings, firstPlayer, secondPlayer);
+		logSettings(localSettings, firstPlayer, secondPlayer);
 	}
 	
-	private void setPlayerTypes(Player firstPlayer, Player secondPlayer)
+	private void setPlayerSettings(Player firstPlayer, Player secondPlayer)
 	{
+		playerNameInputPanel.assignPlayerNames(firstPlayer, secondPlayer);
 		firstPlayer.setType(Player.Type.LOCAL);
 		secondPlayer.setType(Player.Type.LOCAL);
 	}
 	
-	private void setFigureColorPlacementOnBoard(Settings localSettings)
+	private void logSettings(Settings localSettings, Player firstPlayer, Player secondPlayer)
 	{
-		if(this.isWhiteOnTopOfBoardCheckBox.isSelected())
-			localSettings.setUpsideDown(true);
-		else
-			localSettings.setUpsideDown(false);
-	}
-	
-	private void setTimeLimit(Game gameWindow, Settings localSettings)
-	{
-		if(this.hasTimeLimitCheckBox.isSelected())
-		{
-			String selectedTimeLimit = this.timeLimits[this.timeLimitsComboBox.getSelectedIndex()];
-			Integer timeLimitValue = new Integer(selectedTimeLimit);
-			
-			localSettings.setTimeLimit(true);
-			localSettings.setTimeForGame((int) timeLimitValue * 60);
-			
-			gameWindow.getGameClock().setTimes(localSettings.getTimeForGame(), localSettings.getTimeForGame());
-			gameWindow.getGameClock().start();
-		}
-	}
-	
-	private void logGameInfo(Settings localSettings, Player firstPlayer, Player secondPlayer)
-	{
-		log.info(this.timeLimitsComboBox.getActionCommand());
 		log.info("****************\nStarting new game: " + firstPlayer.getName() + " vs. " + secondPlayer.getName()
 		        + "\ntime 4 game: " + localSettings.getTimeForGame() + "\ntime limit set: "
 		        + localSettings.isTimeLimitSet() + "\nwhite on top?: " + localSettings.isUpsideDown()
