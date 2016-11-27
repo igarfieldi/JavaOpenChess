@@ -205,10 +205,10 @@ public class ChessboardController
 		// Set rooks, bishops, knights
 		board.getField(0, 7).setPiece(new Rook(this, bottomSide));
 		board.getField(7, 7).setPiece(new Rook(this, bottomSide));
-		board.getField(1, 7).setPiece(new Bishop(this, bottomSide));
-		board.getField(6, 7).setPiece(new Bishop(this, bottomSide));
-		board.getField(2, 7).setPiece(new Knight(this, bottomSide));
-		board.getField(5, 7).setPiece(new Knight(this, bottomSide));
+		board.getField(1, 7).setPiece(new Knight(this, bottomSide));
+		board.getField(6, 7).setPiece(new Knight(this, bottomSide));
+		board.getField(2, 7).setPiece(new Bishop(this, bottomSide));
+		board.getField(5, 7).setPiece(new Bishop(this, bottomSide));
 		board.getField(0, 0).setPiece(new Rook(this, topSide));
 		board.getField(7, 0).setPiece(new Rook(this, topSide));
 		board.getField(1, 0).setPiece(new Bishop(this, topSide));
