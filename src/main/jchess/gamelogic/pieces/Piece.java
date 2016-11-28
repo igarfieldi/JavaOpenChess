@@ -20,18 +20,15 @@
  */
 package jchess.gamelogic.pieces;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.field.Chessboard;
-import jchess.gamelogic.field.Square;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
+import jchess.gamelogic.field.ChessboardController;
+import jchess.gamelogic.field.Field;
+import jchess.gui.ThemeImageLoader;
+import jchess.util.Direction;
 
 /**
  * Class to represent a piece (any kind) - this class should be extended to
@@ -39,109 +36,92 @@ import java.awt.image.BufferedImage;
  */
 public abstract class Piece
 {
+	// TODO: add possibility to ignore 'unit collision' ie. skip occupied fields?
+	protected ChessboardController chessboard;
+	private Field square;
+	private Player player;
+	private final String SYMBOL;
+	private final boolean CAN_MOVE_MULTIPLE_STEPS;
 	
-	public Chessboard chessboard; // <-- this relation isn't in class diagram,
-	                              // but it's necessary :/
-	public Square square;
-	public Player player;
-	public String name;
-	protected String symbol;
-	protected static Image imageBlack;// = null;
-	protected static Image imageWhite;// = null;
-	public Image orgImage;
-	public Image image;
-	public static short value = 0;
-	
-	Piece(Chessboard chessboard, Player player)
+	public Piece(ChessboardController chessboard, Player player, String symbol)
+	{
+		this(chessboard, player, symbol, true);
+	}
+
+	public Piece(ChessboardController chessboard, Player player, String symbol, boolean multiMovePiece)
 	{
 		this.chessboard = chessboard;
 		this.player = player;
-		if(player.getColor() == Player.Color.BLACK)
-		{
-			image = imageBlack;
-		} else
-		{
-			image = imageWhite;
-		}
-		this.name = this.getClass().getSimpleName();
-		
-	}
-	/*
-	 * Method to draw piece on chessboard
-	 * 
-	 * @graph : where to draw
-	 */
-	
-	public final void draw(Graphics g)
-	{
-		try
-		{
-			Graphics2D g2d = (Graphics2D) g;
-			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			Point topLeft = this.chessboard.getTopLeftPoint();
-			int height = this.chessboard.get_square_height();
-			int x = (this.square.getPosX() * height) + topLeft.x;
-			int y = (this.square.getPosY() * height) + topLeft.y;
-			float addX = (height - image.getWidth(null)) / 2;
-			float addY = (height - image.getHeight(null)) / 2;
-			if(image != null && g != null)
-			{
-				Image tempImage = orgImage;
-				BufferedImage resized = new BufferedImage(height, height, BufferedImage.TYPE_INT_ARGB_PRE);
-				Graphics2D imageGr = (Graphics2D) resized.createGraphics();
-				imageGr.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				imageGr.drawImage(tempImage, 0, 0, height, height, null);
-				imageGr.dispose();
-				image = resized.getScaledInstance(height, height, 0);
-				g2d.drawImage(image, x, y, null);
-			} else
-			{
-				System.out.println("image is null!");
-			}
-			
-		} catch(java.lang.NullPointerException exc)
-		{
-			System.out.println("Something wrong when painting piece: " + exc.getMessage());
-		}
+		this.SYMBOL = symbol;
+		this.CAN_MOVE_MULTIPLE_STEPS = multiMovePiece;
 	}
 	
-	void clean()
-	{
+	public abstract List<Direction> getNormalMovements();
+	public abstract List<Direction> getCapturingMovements();
+	
+	public final String getSymbol() {
+		return SYMBOL;
+	}
+	
+	public boolean canMoveMultipleSteps() {
+		return CAN_MOVE_MULTIPLE_STEPS;
 	}
 	
 	/**
-	 * method check if Piece can move to given square
-	 * 
-	 * @param square
-	 *            square where piece want to move (Square object)
-	 * @param possibleMoves
-	 *            all moves which can piece do
+	 * Checks whether this piece currently threatens a field or not.
+	 * @param target Field to check
+	 * @return field threatened or not
 	 */
-	boolean canMove(Square square, ArrayList<?> allmoves)
-	{
-		// throw new UnsupportedOperationException("Not supported yet.");
-		ArrayList<?> moves = allmoves;
-		for(Iterator<?> it = moves.iterator(); it.hasNext();)
-		{
-			Square sq = (Square) it.next();// get next from iterator
-			if(sq == square)
-			{// if address is the same
-				return true; // piece canMove
+	public boolean threatens(Field target) {
+		// Iterate all threatened fields and check if ours is in there
+		for(Field threatenedField : this.getThreatenedFields()) {
+			if(threatenedField.equals(target)) {
+				return true;
 			}
 		}
-		return false;// if not, piece cannot move
+		return false;
 	}
 	
-	void setImage()
-	{
-		if(this.player.getColor() == Player.Color.BLACK)
-		{
-			image = imageBlack;
-		} else
-		{
-			image = imageWhite;
+	/**
+	 * Returns a list of all board fields which are currently threatened by this piece.
+	 * @return list of threatened fields
+	 */
+	private List<Field> getThreatenedFields() {
+		List<Field> capturableFields = new ArrayList<Field>();
+		
+		// Iterate all capturing directions for this piece
+		for(Direction dir : this.getCapturingMovements()) {
+			List<Field> fieldsInDir = new ArrayList<Field>();
+			if(this.CAN_MOVE_MULTIPLE_STEPS) {
+				// Multiple possible fields to check for direction
+				fieldsInDir.addAll(chessboard.getBoard().getFieldsInDirection(this.square, dir));
+			} else {
+				// Only one possible field for given direction
+				fieldsInDir.add(chessboard.getBoard().getFieldInDirection(this.square, dir));
+			}
+			
+			// Since multiple fields are possible, check if some are 'hidden' behind pieces
+			for(Field fieldInDir : fieldsInDir) {
+				Piece piece = chessboard.getBoard().getPiece(fieldInDir);
+				
+				if(piece != null) {
+					// Piece blocks. Question: ours or not?
+					if(piece.player != this.player) {
+						capturableFields.add(fieldInDir);
+					}
+					// Break necessary anyway; in chess, pieces cannot "skip"
+					// fields with pieces on it
+					break;
+				} else {
+					// No piece? Capturable
+					capturableFields.add(fieldInDir);
+				}
+			}
 		}
+		
+		return capturableFields;
 	}
+	
 	// void setImages(String white, String black) {
 	/*
 	 * method set image to black or white (depends on player colour)
@@ -159,7 +139,7 @@ public abstract class Piece
 	// }
 	// }/*--endOf-setImages(String white, String black)--*/
 	
-	abstract public ArrayList<Square> possibleMoves();
+	abstract public ArrayList<Field> possibleMoves();
 	
 	/**
 	 * Method is useful for out of bounds protection
@@ -170,7 +150,7 @@ public abstract class Piece
 	 *            y position on chessboard
 	 * @return true if parameters are out of bounds (array)
 	 */
-	protected boolean isout(int x, int y)
+	protected static boolean isout(int x, int y)
 	{
 		if(x < 0 || x > 7 || y < 0 || y > 7)
 		{
@@ -188,17 +168,17 @@ public abstract class Piece
 	 */
 	protected boolean checkPiece(int x, int y)
 	{
-		if(chessboard.squares[x][y].getPiece() != null && chessboard.squares[x][y].getPiece().name.equals("King"))
+		Piece piece = chessboard.getBoard().getField(x, y).getPiece();
+		if((piece != null) && (piece instanceof King))
+		{
+			return false;
+		} else if((piece == null) || (piece.player != this.player))
+		{
+			return true;
+		} else
 		{
 			return false;
 		}
-		Piece piece = chessboard.squares[x][y].getPiece();
-		if(piece == null || // if this square is empty
-		        piece.player != this.player) // or piece is another player
-		{
-			return true;
-		}
-		return false;
 	}
 	
 	/**
@@ -212,7 +192,7 @@ public abstract class Piece
 	 */
 	protected boolean otherOwner(int x, int y)
 	{
-		Square sq = chessboard.squares[x][y];
+		Field sq = chessboard.getBoard().getField(x, y);
 		if(sq.getPiece() == null)
 		{
 			return false;
@@ -224,8 +204,26 @@ public abstract class Piece
 		return false;
 	}
 	
-	public String getSymbol()
+	public Image getImage()
 	{
-		return this.symbol;
+		return ThemeImageLoader.loadThemedPieceImage(this);
+	}
+	
+	public String getName()
+	{
+		return this.getClass().getSimpleName();
+	}
+
+	public Player getPlayer()
+	{
+		return player;
+	}
+	public Field getSquare()
+	{
+		return square;
+	}
+	public void setSquare(Field square)
+	{
+		this.square = square;
 	}
 }

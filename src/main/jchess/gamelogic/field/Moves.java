@@ -189,42 +189,13 @@ public class Moves extends AbstractTableModel
 		
 	}
 	
-	public void addMove(Square begin, Square end, boolean registerInHistory, CastlingType castlingMove,
+	public void addMove(Field begin, Field end, boolean registerInHistory, CastlingType castlingMove,
 	        boolean wasEnPassant, Piece promotedPiece)
 	{
 		String locMove = new String(begin.getPiece().getSymbol());
 		
-		if(game.getSettings().isUpsideDown())
-		{
-			locMove += Character.toString((char) ((Chessboard.BOTTOM - begin.getPosX()) + 97));// add
-			                                                                                   // letter
-			                                                                                   // of
-			                                                                                   // Square
-			                                                                                   // from
-			                                                                                   // which
-			                                                                                   // move
-			                                                                                   // was
-			                                                                                   // made
-			locMove += Integer.toString(begin.getPosY() + 1);// add number of
-			                                                 // Square from
-			                                                 // which move was
-			                                                 // made
-		} else
-		{
-			locMove += Character.toString((char) (begin.getPosX() + 97));// add
-			                                                             // letter
-			                                                             // of
-			                                                             // Square
-			                                                             // from
-			                                                             // which
-			                                                             // move
-			                                                             // was
-			                                                             // made
-			locMove += Integer.toString(8 - begin.getPosY());// add number of
-			                                                 // Square from
-			                                                 // which move was
-			                                                 // made
-		}
+		// Get field designation of 'from' field
+		locMove += game.getChessboard().getFieldDesignation(begin);
 		
 		if(end.getPiece() != null)
 		{
@@ -234,35 +205,8 @@ public class Moves extends AbstractTableModel
 			locMove += "-";// normal move
 		}
 		
-		if(game.getSettings().isUpsideDown())
-		{
-			locMove += Character.toString((char) ((Chessboard.BOTTOM - end.getPosX()) + 97));// add
-			                                                                                 // letter
-			                                                                                 // of
-			                                                                                 // Square
-			                                                                                 // to
-			                                                                                 // which
-			                                                                                 // move
-			                                                                                 // was
-			                                                                                 // made
-			locMove += Integer.toString(end.getPosY() + 1);// add number of
-			                                               // Square to which
-			                                               // move was made
-		} else
-		{
-			locMove += Character.toString((char) (end.getPosX() + 97));// add
-			                                                           // letter
-			                                                           // of
-			                                                           // Square
-			                                                           // to
-			                                                           // which
-			                                                           // move
-			                                                           // was
-			                                                           // made
-			locMove += Integer.toString(8 - end.getPosY());// add number of
-			                                               // Square to which
-			                                               // move was made
-		}
+		// Get field designation of 'from' field
+		locMove += game.getChessboard().getFieldDesignation(end);
 		
 		if(begin.getPiece().getSymbol().equals("") && begin.getPosX() - end.getPosX() != 0 && end.getPiece() == null)
 		{
@@ -297,7 +241,7 @@ public class Moves extends AbstractTableModel
 		
 		if(registerInHistory)
 		{
-			this.moveBackStack.add(new Move(new Square(begin), new Square(end), begin.getPiece(), end.getPiece(),
+			this.moveBackStack.add(new Move(new Field(begin), new Field(end), begin.getPiece(), end.getPiece(),
 			        castlingMove, wasEnPassant, promotedPiece));
 		}
 	}
@@ -558,7 +502,7 @@ public class Moves extends AbstractTableModel
 		{
 			if(!Moves.isMoveCorrect(locMove.trim())) // if not
 			{
-				JOptionPane.showMessageDialog(this.game, Localization.getMessage("invalid_file_to_load") + move);
+				JOptionPane.showMessageDialog(this.game.getView(), Localization.getMessage("invalid_file_to_load") + move);
 				return;// show message and finish reading game
 			}
 		}
@@ -599,7 +543,7 @@ public class Moves extends AbstractTableModel
 				
 				if(!canMove) // if move is illegal
 				{
-					JOptionPane.showMessageDialog(this.game, Localization.getMessage("illegal_move_on") + locMove);
+					JOptionPane.showMessageDialog(this.game.getView(), Localization.getMessage("illegal_move_on") + locMove);
 					return;// finish reading game and show message
 				}
 				continue;
@@ -618,46 +562,43 @@ public class Moves extends AbstractTableModel
 			boolean pieceFound = false;
 			if(locMove.length() <= 3)
 			{
-				Square[][] squares = this.game.getChessboard().squares;
-				xTo = locMove.charAt(from) - 97;// from ASCII
-				yTo = Chessboard.BOTTOM - (locMove.charAt(from + 1) - 49);// from
-				                                                          // ASCII
-				for(int i = 0; i < squares.length && !pieceFound; i++)
-				{
-					for(int j = 0; j < squares[i].length && !pieceFound; j++)
+				Field tempTo = game.getChessboard().getFieldFromDesignation(locMove.substring(from, from + 1));
+				xTo = tempTo.getPosX();
+				yTo = tempTo.getPosY();
+				
+				for(Field field : game.getChessboard().getBoard().getFields()) {
+					if(field.getPiece() == null || this.game.getActivePlayer().getColor() != field.getPiece().getPlayer().getColor()) {
+						continue;
+					}
+					ArrayList<Field> pieceMoves = field.getPiece().possibleMoves();
+					for(Field possibleMove : pieceMoves)
 					{
-						if(squares[i][j].getPiece() == null
-						        || this.game.getActivePlayer().getColor() != squares[i][j].getPiece().player.getColor())
+						if(possibleMove.getPosX() == xTo && possibleMove.getPosY() == yTo)
 						{
-							continue;
+							xFrom = field.getPiece().getSquare().getPosX();
+							yFrom = field.getPiece().getSquare().getPosY();
+							pieceFound = true;
 						}
-						ArrayList<Square> pieceMoves = squares[i][j].getPiece().possibleMoves();
-						for(Object square : pieceMoves)
-						{
-							Square currSquare = (Square) square;
-							if(currSquare.getPosX() == xTo && currSquare.getPosY() == yTo)
-							{
-								xFrom = squares[i][j].getPiece().square.getPosX();
-								yFrom = squares[i][j].getPiece().square.getPosY();
-								pieceFound = true;
-							}
-						}
+					}
+					if(pieceFound) {
+						break;
 					}
 				}
 			} else
 			{
-				xFrom = locMove.charAt(from) - 97;// from ASCII
-				yFrom = Chessboard.BOTTOM - (locMove.charAt(from + 1) - 49);// from
-				                                                            // ASCII
-				xTo = locMove.charAt(from + 3) - 97;// from ASCII
-				yTo = Chessboard.BOTTOM - (locMove.charAt(from + 4) - 49);// from
-				                                                          // ASCII
+				Field tempFrom = game.getChessboard().getFieldFromDesignation(locMove.substring(from, from + 1));
+				Field tempTo = game.getChessboard().getFieldFromDesignation(locMove.substring(from+3, from + 4));
+				
+				xFrom = tempFrom.getPosX();
+				yFrom = tempFrom.getPosY();
+				xTo = tempTo.getPosX();
+				yTo = tempTo.getPosY();
 			}
 			canMove = this.game.simulateMove(xFrom, yFrom, xTo, yTo);
 			if(!canMove) // if move is illegal
 			{
-				JOptionPane.showMessageDialog(this.game, Localization.getMessage("illegal_move_on") + locMove);
-				this.game.getChessboard().setActiveSquare(null);
+				JOptionPane.showMessageDialog(this.game.getView(), Localization.getMessage("illegal_move_on") + locMove);
+				this.game.getChessboard().getView().setActiveSquare(null);
 				return;// finish reading game and show message
 			}
 		}

@@ -9,36 +9,91 @@ import org.junit.Test;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
-import jchess.gamelogic.field.Chessboard;
-import jchess.gamelogic.field.Moves;
-import jchess.gamelogic.field.Square;
+import jchess.gamelogic.field.ChessboardController;
+import jchess.gamelogic.field.Field;
 
 public class KingTest
 {
-	Chessboard board;
+	ChessboardController board;
+	Player p1;
+	Player p2;
+	King whiteKing;
+	King blackKing;
 	
 	@Before
 	public void setUp() throws Exception
 	{
-		board = new Chessboard(new Settings(), null);
+		// TODO: test in reverse (white on top!)
+		p1 = new Player("p1", Player.Color.WHITE);
+		p2 = new Player("p2", Player.Color.BLACK);
+		p2.setBoardSide(true);
+		board = new ChessboardController(new Settings(), null, null);
+		whiteKing = new King(board, p1);
+		blackKing = new King(board, p2);
+		board.getBoard().getField(4, 7).setPiece(whiteKing);
+		board.getBoard().getField(4, 0).setPiece(blackKing);
+		board.setWhiteKing(whiteKing);
+		board.setBlackKing(blackKing);
 	}
 	
 	@Test
 	public void testPossibleMovesRegular()
 	{
-		King whiteKing = new King(board, new Player());
-		King blackKing = new King(board, new Player());
-		board.squares[2][2].setPiece(board.setWhiteKing(whiteKing));
-		board.squares[7][7].setPiece(board.setWhiteKing(blackKing));
-		ArrayList<Square> moves = whiteKing.possibleMoves();
-		assertTrue(moves.contains(board.squares[1][1]));
-		assertTrue(moves.contains(board.squares[2][1]));
-		assertTrue(moves.contains(board.squares[3][1]));
-		assertTrue(moves.contains(board.squares[1][2]));
-		assertTrue(moves.contains(board.squares[3][2]));
-		assertTrue(moves.contains(board.squares[1][3]));
-		assertTrue(moves.contains(board.squares[2][3]));
-		assertTrue(moves.contains(board.squares[3][3]));
+		movePiece(board.getBoard().getField(4, 4), whiteKing);
+		ArrayList<Field> moves = whiteKing.possibleMoves();
+		assertTrue(moves.contains(board.getBoard().getField(3, 3)));
+		assertTrue(moves.contains(board.getBoard().getField(4, 3)));
+		assertTrue(moves.contains(board.getBoard().getField(5, 3)));
+		assertTrue(moves.contains(board.getBoard().getField(3, 4)));
+		assertTrue(moves.contains(board.getBoard().getField(5, 4)));
+		assertTrue(moves.contains(board.getBoard().getField(3, 5)));
+		assertTrue(moves.contains(board.getBoard().getField(4, 5)));
+		assertTrue(moves.contains(board.getBoard().getField(5, 5)));
 	}
 	
+	@Test
+	public void testCheckFromPawn() {
+		Pawn pawn = new Pawn(board, p2);
+		board.getBoard().getField(3, 6).setPiece(pawn);
+		assertTrue(whiteKing.isChecked());
+		
+		movePiece(board.getBoard().getField(5, 6), pawn);
+		assertTrue(whiteKing.isChecked());
+		
+		movePiece(board.getBoard().getField(4, 6), pawn);
+		assertFalse(whiteKing.isChecked());
+	}
+	
+	@Test
+	public void testCheckFromBishop() {
+		checkForCheck(board.getBoard().getField(4, 4), new Bishop(board, p2));
+	}
+	
+	@Test
+	public void testCheckFromRook() {
+		checkForCheck(board.getBoard().getField(4, 4), new Rook(board, p2));
+	}
+	
+	@Test
+	public void testCheckFromQueen() {
+		checkForCheck(board.getBoard().getField(4, 4), new Queen(board, p2));
+	}
+	
+	@Test
+	public void testCheckFromKnight() {
+		checkForCheck(board.getBoard().getField(4, 4), new Knight(board, p2));
+	}
+	
+	private void movePiece(Field field, Piece piece) {
+		piece.getSquare().setPiece(null);
+		field.setPiece(piece);
+	}
+	
+	private void checkForCheck(Field field, Piece piece) {
+		field.setPiece(piece);
+		for(Field currField : piece.possibleMoves()) {
+			movePiece(currField, whiteKing);
+			assertTrue(whiteKing.isChecked());
+		}
+	}
 }

@@ -20,10 +20,8 @@
  */
 package jchess.gui.setup;
 
-import javax.swing.*;
-import java.awt.*;
-
-import jchess.Localization;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 
 /**
  *
@@ -32,76 +30,26 @@ import jchess.Localization;
 public class NewGameWindow extends JDialog
 {
 	private static final long serialVersionUID = -6260320901046879928L;
-	private JTabbedPane windowPane;
+	private LocalSettingsPanel localSettingsPanel;
 	
-	/** Creates new form NewGameWindow */
 	public NewGameWindow()
 	{
-		initializeComponents();
-		createWindow();
+		setDialogProperties();
+		initializeGuiElements();
 	}
 	
-	/** This method is called from within the constructor to */
-	private void initializeComponents()
+	private void initializeGuiElements()
 	{
-		initializeWindowPane();
-		initializeGroupLayout();
-		pack();
+		localSettingsPanel = new LocalSettingsPanel(this);
+		this.add(localSettingsPanel);
 	}
 	
-	private void initializeWindowPane()
+	private void setDialogProperties()
 	{
-		windowPane = new JTabbedPane();
-		
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		setAlwaysOnTop(true);
-		setName("Form"); // NOI18N
-		
-		windowPane.setName("jTabbedPane1"); // NOI18N
-	}
-	
-	private void initializeGroupLayout()
-	{
-		GroupLayout layout = new GroupLayout(getContentPane());
-		getContentPane().setLayout(layout);
-		setHorizontalLayoutGroup(layout);
-		setVerticalLayoutGroup(layout);
-	}
-	
-	private void setVerticalLayoutGroup(GroupLayout layout)
-	{
-		layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-		        .addGroup(layout.createSequentialGroup().addGap(20, 20, 20)
-		                .addComponent(windowPane, GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE).addContainerGap()));
-	}
-	
-	private void setHorizontalLayoutGroup(GroupLayout layout)
-	{
-		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-		        .addGroup(layout.createSequentialGroup().addContainerGap()
-		                .addComponent(windowPane, GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE).addContainerGap()));
-	}
-	
-	private void createWindow()
-	{
+		this.setTitle("New Game");
+		this.setAlwaysOnTop(true);
 		this.setSize(400, 700);
+		this.setResizable(false);
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		this.windowPane.addTab(Localization.getMessage("local_game"), new LocalSettingsGUI(this));
-		this.windowPane.addTab(Localization.getMessage("network_game"), new DrawNetworkSettings(this));
-	}
-	
-	/**
-	 * @param args
-	 *            the command line arguments
-	 */
-	public static void main(String args[])
-	{
-		EventQueue.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				new NewGameWindow().setVisible(true);
-			}
-		});
 	}
 }

@@ -26,23 +26,15 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 
 import jchess.JChessApp;
 import jchess.Localization;
-import jchess.gui.GUI;
+import jchess.gui.ThemeConfigurator;
+import jchess.gui.ThemeFileReader;
+import jchess.gui.ThemeImageLoader;
 
-import javax.swing.event.ListSelectionEvent;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import java.security.*;
-import java.net.*;
-import java.util.zip.*;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,66 +52,11 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 	{
 		super(parent);
 		
-		ArrayList<String> themeNames = new ArrayList<String>();
-		getThemeNames(themeNames);
-		
+		ArrayList<String> themeNames = ThemeFileReader.getThemes();
 		if(themeNames.size() > 0)
 			createGUI(themeNames);
 		else
 			throw new Exception(Localization.getMessage("error_when_creating_theme_config_window"));
-	}
-
-	private void getThemeNames(ArrayList<String> themeNames) throws IOException, Exception
-	{
-		CodeSource codeSource = JChessApp.class.getProtectionDomain().getCodeSource();
-		if(codeSource != null)
-		{
-			File jarPath = new File(codeSource.getLocation().toURI().getPath());
-			if(jarPath.isDirectory())
-				getThemesFromDirectory(themeNames, jarPath);
-			else
-				getThemesFromJAR(themeNames, codeSource);
-		}
-		else
-			throw new Exception(Localization.getMessage("error_when_creating_theme_config_window"));
-	}
-
-	private void getThemesFromDirectory(ArrayList<String> themeNames, File jarPath)
-	{
-		File themePath = new File(jarPath.getAbsolutePath() + File.separator + "jchess" + File.separator
-		        + "resources" + File.separator + "theme");
-		File[] themeFiles = themePath.listFiles();
-		for(int i = 0; i < themeFiles.length; i++)
-		{
-			if(themeFiles[i].isDirectory())
-				themeNames.add(themeFiles[i].getName());
-		}
-	}
-
-	private void getThemesFromJAR(ArrayList<String> themeNames, CodeSource codeSource) throws IOException
-	{
-		// General pattern to extract a theme's name
-		Pattern themePattern = Pattern.compile("/[^/]+/$");
-		
-		URL jar = codeSource.getLocation();
-		ZipInputStream zip = new ZipInputStream(jar.openStream());
-		ZipEntry entry;
-		
-		while((entry = zip.getNextEntry()) != null)
-		{
-			// Find the resources we're looking for (the themes)
-			// TODO: If the beginning of the path is not specified we
-			// get lots of double matches...
-			if(entry.getName().matches("jchess/resources/theme/[^/]+/$"))
-			{
-				Matcher themeMatcher = themePattern.matcher(entry.getName());
-				if(themeMatcher.find())
-				{
-					// Remove the '/' from the path
-					themeNames.add(themeMatcher.group(0).replace("/", ""));
-				}
-			}
-		}
 	}
 
 	private void createGUI(ArrayList<String> themeNames)
@@ -164,7 +101,7 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 	{
 		try
 		{
-			this.themePreviewImage = new ImageIcon(GUI.loadThemeImage("Preview.png"));
+			this.themePreviewImage = new ImageIcon(ThemeImageLoader.loadThemeImage("Preview.png"));
 		}
 		catch(NullPointerException exception)
 		{
@@ -188,32 +125,20 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 	public void valueChanged(ListSelectionEvent event)
 	{
 		String themeName = this.themesList.getModel().getElementAt(this.themesList.getSelectedIndex()).toString();
-		this.themePreviewImage = new ImageIcon(GUI.loadThemeImage("Preview.png", themeName));
+		this.themePreviewImage = new ImageIcon(ThemeImageLoader.loadThemeImage("Preview.png", themeName));
 		this.themePreviewButton.setIcon(this.themePreviewImage);
 	}
 
 	public void actionPerformed(ActionEvent event)
 	{
 		if(event.getSource() == this.okButton)
-			setTheme();
-	}
-
-	private void setTheme()
-	{
-		Properties properties = GUI.getConfigFile();
-		int selectedThemeIndex = this.themesList.getSelectedIndex();
-		String themeName = this.themesList.getModel().getElementAt(selectedThemeIndex).toString();
-		
-		if(GUI.themeIsValid(themeName))
 		{
-			properties.setProperty("THEME", themeName);
-			if(!GUI.storeConfigFile(properties))
-				log.log(Level.SEVERE, "Failed to save config with new theme!");
+			int selectedThemeIndex = this.themesList.getSelectedIndex();
+			String themeName = this.themesList.getModel().getElementAt(selectedThemeIndex).toString();
+			ThemeConfigurator.saveThemeConfiguration(themeName);
 			
 			JOptionPane.showMessageDialog(this, Localization.getMessage("changes_visible_after_restart"));
 			this.setVisible(false);
-			
 		}
-		log.info(properties.getProperty("THEME"));
 	}
 }

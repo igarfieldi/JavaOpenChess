@@ -36,7 +36,7 @@ public class Settings implements Serializable
 	
 	public enum GameType
 	{
-		LOCAL, NETWORK
+		LOCAL
 	}
 	
 	private int timeForGame;
@@ -54,11 +54,12 @@ public class Settings implements Serializable
 	public Settings()
 	{
 		// temporally
-		this.playerWhite = new Player("", "WHITE");
-		this.playerBlack = new Player("", "BLACK");
+		this.playerWhite = new Player("", Player.Color.WHITE);
+		this.playerBlack = new Player("", Player.Color.BLACK);
 		this.timeLimitSet = false;
 		
 		gameMode = GameMode.NEW_GAME;
+		gameType = GameType.LOCAL;
 	}
 	
 	/**

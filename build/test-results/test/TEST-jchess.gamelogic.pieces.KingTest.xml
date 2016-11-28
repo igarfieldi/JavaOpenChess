@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="jchess.gamelogic.pieces.KingTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2016-11-21T13:32:17" hostname="DESKTOP-GCG1IHL" time="0.259">
+<testsuite name="jchess.gamelogic.pieces.KingTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2016-11-25T14:20:24" hostname="DESKTOP-GCG1IHL" time="0.226">
   <properties/>
-  <testcase name="testPossibleMovesRegular" classname="jchess.gamelogic.pieces.KingTest" time="0.259"/>
+  <testcase name="testCheckFromBishop" classname="jchess.gamelogic.pieces.KingTest" time="0.206"/>
+  <testcase name="testCheckFromKnight" classname="jchess.gamelogic.pieces.KingTest" time="0.004"/>
+  <testcase name="testCheckFromPawn" classname="jchess.gamelogic.pieces.KingTest" time="0.003"/>
+  <testcase name="testCheckFromRook" classname="jchess.gamelogic.pieces.KingTest" time="0.003"/>
+  <testcase name="testCheckFromQueen" classname="jchess.gamelogic.pieces.KingTest" time="0.003"/>
+  <testcase name="testPossibleMovesRegular" classname="jchess.gamelogic.pieces.KingTest" time="0.003"/>
   <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[Nov 21, 2016 2:32:17 PM jchess.gui.GUI getConfigFile
+  <system-err><![CDATA[Nov 25, 2016 3:20:25 PM jchess.gui.ThemeConfigurator getConfigFile
 INFO: Configuration file: C:\Users\fbeth\git\jochess\build\classes\main\config.txt
-Nov 21, 2016 2:32:17 PM jchess.gui.GUI loadConfiguration
+Nov 25, 2016 3:20:25 PM jchess.gui.ThemeConfigurator loadThemeConfiguration
 INFO: Active theme: default
 ]]></system-err>
 </testsuite>

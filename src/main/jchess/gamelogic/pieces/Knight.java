@@ -21,13 +21,13 @@
 package jchess.gamelogic.pieces;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.field.Chessboard;
-import jchess.gamelogic.field.Square;
-import jchess.gui.GUI;
-
-import java.awt.Image;
+import jchess.gamelogic.field.ChessboardController;
+import jchess.gamelogic.field.Field;
+import jchess.util.Direction;
 
 /**
  * Class to represent a chess pawn knight Knight's movements:
@@ -44,30 +44,32 @@ import java.awt.Image;
  */
 public class Knight extends Piece
 {
+	private static final Direction[] NORMAL_MOVEMENT = {
+			new Direction(1, 2),
+			new Direction(-1, 2),
+			new Direction(1, -2),
+			new Direction(1, -2),
+			new Direction(2, 1),
+			new Direction(2, -1),
+			new Direction(-2, 1),
+			new Direction(-2, -1)
+	};
 	
-	public static short value = 3;
-	protected static final Image imageWhite = GUI.loadThemeImage("Knight-W.png");
-	protected static final Image imageBlack = GUI.loadThemeImage("Knight-B.png");
-	
-	public Knight(Chessboard chessboard, Player player)
-	{
-		super(chessboard, player);// call initialiser of super type: Piece
-		// this.setImages("Knight-W.png", "Knight-B.png");
-		this.symbol = "N";
-		this.setImage();
+	@Override
+	public List<Direction> getNormalMovements() {
+		return Arrays.asList(Knight.NORMAL_MOVEMENT);
 	}
 	
 	@Override
-	void setImage()
+	public List<Direction> getCapturingMovements() {
+		return Arrays.asList(Knight.NORMAL_MOVEMENT);
+	}
+	
+	public static short value = 3;
+	
+	public Knight(ChessboardController chessboard, Player player)
 	{
-		if(this.player.getColor() == Player.Color.BLACK)
-		{
-			image = imageBlack;
-		} else
-		{
-			image = imageWhite;
-		}
-		orgImage = image;
+		super(chessboard, player, "N", false);// call initialiser of super type: PieceW
 	}
 	
 	/**
@@ -76,190 +78,190 @@ public class Knight extends Piece
 	 * @return ArrayList with new position of pawn
 	 */
 	@Override
-	public ArrayList<Square> possibleMoves()
+	public ArrayList<Field> possibleMoves()
 	{
-		ArrayList<Square> list = new ArrayList<Square>();
+		ArrayList<Field> list = new ArrayList<Field>();
 		int newX, newY;
 		// 1st move from the grid
-		newX = this.square.getPosX() - 2;
-		newY = this.square.getPosY() + 1;
+		newX = this.getSquare().getPosX() - 2;
+		newY = this.getSquare().getPosY() + 1;
 		
 		if(!isout(newX, newY) && checkPiece(newX, newY))
 		{
-			if(this.player.getColor() == Player.Color.WHITE) // white
+			if(this.getPlayer().getColor() == Player.Color.WHITE) // white
 			{
-				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
-				        chessboard.squares[newX][newY]))
+				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
+				        chessboard.getBoard().getField(newX, newY)))
 				{
-					list.add(chessboard.squares[newX][newY]);
+					list.add(chessboard.getBoard().getField(newX, newY));
 				}
 			} else // or black
 			{
-				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
-				        chessboard.squares[newX][newY]))
+				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
+				        chessboard.getBoard().getField(newX, newY)))
 				{
-					list.add(chessboard.squares[newX][newY]);
+					list.add(chessboard.getBoard().getField(newX, newY));
 				}
 			}
 		}
 		
 		// 2nd move from the grid
-		newX = this.square.getPosX() - 1;
-		newY = this.square.getPosY() + 2;
+		newX = this.getSquare().getPosX() - 1;
+		newY = this.getSquare().getPosY() + 2;
 		
 		if(!isout(newX, newY) && checkPiece(newX, newY))
 		{
-			if(this.player.getColor() == Player.Color.WHITE) // white
+			if(this.getPlayer().getColor() == Player.Color.WHITE) // white
 			{
-				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
-				        chessboard.squares[newX][newY]))
+				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
+				        chessboard.getBoard().getField(newX, newY)))
 				{
-					list.add(chessboard.squares[newX][newY]);
+					list.add(chessboard.getBoard().getField(newX, newY));
 				}
 			} else // or black
 			{
-				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
-				        chessboard.squares[newX][newY]))
+				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
+				        chessboard.getBoard().getField(newX, newY)))
 				{
-					list.add(chessboard.squares[newX][newY]);
+					list.add(chessboard.getBoard().getField(newX, newY));
 				}
 			}
 		}
 		
 		// 3rd move from the grid
-		newX = this.square.getPosX() + 1;
-		newY = this.square.getPosY() + 2;
+		newX = this.getSquare().getPosX() + 1;
+		newY = this.getSquare().getPosY() + 2;
 		
 		if(!isout(newX, newY) && checkPiece(newX, newY))
 		{
-			if(this.player.getColor() == Player.Color.WHITE) // white
+			if(this.getPlayer().getColor() == Player.Color.WHITE) // white
 			{
-				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
-				        chessboard.squares[newX][newY]))
+				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
+				        chessboard.getBoard().getField(newX, newY)))
 				{
-					list.add(chessboard.squares[newX][newY]);
+					list.add(chessboard.getBoard().getField(newX, newY));
 				}
 			} else // or black
 			{
-				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
-				        chessboard.squares[newX][newY]))
+				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
+				        chessboard.getBoard().getField(newX, newY)))
 				{
-					list.add(chessboard.squares[newX][newY]);
+					list.add(chessboard.getBoard().getField(newX, newY));
 				}
 			}
 		}
 		
 		// 4th move from the grid
-		newX = this.square.getPosX() + 2;
-		newY = this.square.getPosY() + 1;
+		newX = this.getSquare().getPosX() + 2;
+		newY = this.getSquare().getPosY() + 1;
 		
 		if(!isout(newX, newY) && checkPiece(newX, newY))
 		{
-			if(this.player.getColor() == Player.Color.WHITE) // white
+			if(this.getPlayer().getColor() == Player.Color.WHITE) // white
 			{
-				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
-				        chessboard.squares[newX][newY]))
+				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
+				        chessboard.getBoard().getField(newX, newY)))
 				{
-					list.add(chessboard.squares[newX][newY]);
+					list.add(chessboard.getBoard().getField(newX, newY));
 				}
 			} else // or black
 			{
-				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
-				        chessboard.squares[newX][newY]))
+				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
+				        chessboard.getBoard().getField(newX, newY)))
 				{
-					list.add(chessboard.squares[newX][newY]);
+					list.add(chessboard.getBoard().getField(newX, newY));
 				}
 			}
 		}
 		
 		// 5th move from the grid
-		newX = this.square.getPosX() + 2;
-		newY = this.square.getPosY() - 1;
+		newX = this.getSquare().getPosX() + 2;
+		newY = this.getSquare().getPosY() - 1;
 		
 		if(!isout(newX, newY) && checkPiece(newX, newY))
 		{
-			if(this.player.getColor() == Player.Color.WHITE) // white
+			if(this.getPlayer().getColor() == Player.Color.WHITE) // white
 			{
-				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
-				        chessboard.squares[newX][newY]))
+				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
+				        chessboard.getBoard().getField(newX, newY)))
 				{
-					list.add(chessboard.squares[newX][newY]);
+					list.add(chessboard.getBoard().getField(newX, newY));
 				}
 			} else // or black
 			{
-				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
-				        chessboard.squares[newX][newY]))
+				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
+				        chessboard.getBoard().getField(newX, newY)))
 				{
-					list.add(chessboard.squares[newX][newY]);
+					list.add(chessboard.getBoard().getField(newX, newY));
 				}
 			}
 		}
 		
 		// 6th move from the grid
-		newX = this.square.getPosX() + 1;
-		newY = this.square.getPosY() - 2;
+		newX = this.getSquare().getPosX() + 1;
+		newY = this.getSquare().getPosY() - 2;
 		
 		if(!isout(newX, newY) && checkPiece(newX, newY))
 		{
-			if(this.player.getColor() == Player.Color.WHITE) // white
+			if(this.getPlayer().getColor() == Player.Color.WHITE) // white
 			{
-				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
-				        chessboard.squares[newX][newY]))
+				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
+				        chessboard.getBoard().getField(newX, newY)))
 				{
-					list.add(chessboard.squares[newX][newY]);
+					list.add(chessboard.getBoard().getField(newX, newY));
 				}
 			} else // or black
 			{
-				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
-				        chessboard.squares[newX][newY]))
+				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
+				        chessboard.getBoard().getField(newX, newY)))
 				{
-					list.add(chessboard.squares[newX][newY]);
+					list.add(chessboard.getBoard().getField(newX, newY));
 				}
 			}
 		}
 		
 		// 7th move from the grid
-		newX = this.square.getPosX() - 1;
-		newY = this.square.getPosY() - 2;
+		newX = this.getSquare().getPosX() - 1;
+		newY = this.getSquare().getPosY() - 2;
 		
 		if(!isout(newX, newY) && checkPiece(newX, newY))
 		{
-			if(this.player.getColor() == Player.Color.WHITE) // white
+			if(this.getPlayer().getColor() == Player.Color.WHITE) // white
 			{
-				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
-				        chessboard.squares[newX][newY]))
+				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
+				        chessboard.getBoard().getField(newX, newY)))
 				{
-					list.add(chessboard.squares[newX][newY]);
+					list.add(chessboard.getBoard().getField(newX, newY));
 				}
 			} else // or black
 			{
-				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
-				        chessboard.squares[newX][newY]))
+				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
+				        chessboard.getBoard().getField(newX, newY)))
 				{
-					list.add(chessboard.squares[newX][newY]);
+					list.add(chessboard.getBoard().getField(newX, newY));
 				}
 			}
 		}
 		
 		// 8th move from the grid
-		newX = this.square.getPosX() - 2;
-		newY = this.square.getPosY() - 1;
+		newX = this.getSquare().getPosX() - 2;
+		newY = this.getSquare().getPosY() - 1;
 		
 		if(!isout(newX, newY) && checkPiece(newX, newY))
 		{
-			if(this.player.getColor() == Player.Color.WHITE) // white
+			if(this.getPlayer().getColor() == Player.Color.WHITE) // white
 			{
-				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.square,
-				        chessboard.squares[newX][newY]))
+				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
+				        chessboard.getBoard().getField(newX, newY)))
 				{
-					list.add(chessboard.squares[newX][newY]);
+					list.add(chessboard.getBoard().getField(newX, newY));
 				}
 			} else // or black
 			{
-				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.square,
-				        chessboard.squares[newX][newY]))
+				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
+				        chessboard.getBoard().getField(newX, newY)))
 				{
-					list.add(chessboard.squares[newX][newY]);
+					list.add(chessboard.getBoard().getField(newX, newY));
 				}
 			}
 		}

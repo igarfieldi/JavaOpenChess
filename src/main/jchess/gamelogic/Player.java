@@ -36,7 +36,7 @@ public class Player implements Serializable
 	
 	public enum Type
 	{
-		LOCAL, NETWORK, COMPUTER
+		LOCAL, COMPUTER
 	}
 	
 	private String name;
@@ -44,15 +44,9 @@ public class Player implements Serializable
 	private Type playerType;
 	private boolean topSide;
 	
-	public Player()
-	{
-		// TODO: default values?
-	}
-	
-	public Player(String name, String color)
-	{
+	public Player(String name, Color color) {
 		this.name = name;
-		this.color = Player.Color.valueOf(color);
+		this.color = color;
 		this.topSide = false;
 	}
 	
@@ -103,8 +97,8 @@ public class Player implements Serializable
 		this.playerType = type;
 	}
 	
-	public void setBoardSide(boolean top)
+	public void setBoardSide(boolean isTop)
 	{
-		this.topSide = top;
+		this.topSide = isTop;
 	}
 }

@@ -25,7 +25,7 @@ import jchess.gui.main.JChessView;
  */
 public class JChessApp extends SingleFrameApplication
 {
-	public static JChessView jcv;
+	public static JChessView view;
 	
 	/**
 	 * At startup create and show the main frame of the application.
@@ -33,8 +33,8 @@ public class JChessApp extends SingleFrameApplication
 	@Override
 	protected void startup()
 	{
-		jcv = new JChessView(this);
-		show(jcv);
+		view = new JChessView(this);
+		show(view);
 	}
 	
 	/**
