@@ -12,7 +12,7 @@ public class GridBagPanel extends JPanel
 	private static final long serialVersionUID = 2558539019418926458L;
 	
 	private GridBagLayout gridBagLayout;
-	private GridBagConstraints gridBagConstraints;
+	protected GridBagConstraints gridBagConstraints;
 
 	public GridBagPanel()
 	{
