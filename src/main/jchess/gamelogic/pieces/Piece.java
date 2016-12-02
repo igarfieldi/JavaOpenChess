@@ -21,13 +21,10 @@
 package jchess.gamelogic.pieces;
 
 import java.awt.Image;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.ChessboardController;
-import jchess.gamelogic.field.Field;
 import jchess.gui.ThemeImageLoader;
 import jchess.util.Copyable;
 import jchess.util.Direction;

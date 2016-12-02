@@ -20,23 +20,28 @@
  */
 package jchess.gui.secondary;
 
-import java.awt.*;
-
-import javax.swing.*;
-import java.awt.event.ActionListener;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
-import javax.swing.event.ListSelectionListener;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import jchess.JChessApp;
 import jchess.Localization;
 import jchess.gui.ThemeConfigurator;
 import jchess.gui.ThemeFileReader;
 import jchess.gui.ThemeImageLoader;
-
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ThemeChooseWindow extends JDialog implements ActionListener, ListSelectionListener
 {

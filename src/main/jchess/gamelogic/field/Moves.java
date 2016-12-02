@@ -20,24 +20,24 @@
  */
 package jchess.gamelogic.field;
 
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.table.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 
 import jchess.Localization;
 import jchess.gamelogic.Game;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
 import jchess.gamelogic.pieces.Piece;
-
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import javax.swing.JOptionPane;
 
 /**
  * Class representing the players moves, it's also checking that the moves taken

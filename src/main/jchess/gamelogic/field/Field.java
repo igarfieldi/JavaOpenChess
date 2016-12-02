@@ -20,8 +20,6 @@
  */
 package jchess.gamelogic.field;
 
-import jchess.gamelogic.pieces.Piece;
-
 /**
  * Class to represent a chessboard square
  */
@@ -43,7 +41,8 @@ public class Field
 		this.posY = square.posY;
 	}
 	
-	public Field clone() {
+	public Field clone()
+	{
 		return new Field(posX, posY);
 	}
 	
@@ -58,23 +57,29 @@ public class Field
 	}
 	
 	@Override
-	public int hashCode() {
-		return 10000*posY + posX;
+	public int hashCode()
+	{
+		return 10000 * posY + posX;
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
-		if(obj == this) {
+	public boolean equals(Object obj)
+	{
+		if(obj == this)
+		{
 			return true;
-		} else if(obj == null || !(obj instanceof Field)) {
+		} else if(obj == null || !(obj instanceof Field))
+		{
 			return false;
-		} else {
+		} else
+		{
 			return this.posX == ((Field) obj).posX && this.posY == ((Field) obj).posY;
 		}
 	}
 	
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return "(" + posX + "|" + posY + ")";
 	}
 }

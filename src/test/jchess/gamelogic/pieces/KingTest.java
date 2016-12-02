@@ -1,8 +1,8 @@
 package jchess.gamelogic.pieces;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 import org.junit.Before;
@@ -32,7 +32,8 @@ public class KingTest
 		black.setTopSide(true);
 		board.initialize();
 		// Need to remove the pieces we don't want
-		for(Field field : board.getBoard().getFields()) {
+		for(Field field : board.getBoard().getFields())
+		{
 			board.getBoard().removePiece(field);
 		}
 		whiteKing = new King(board, white);
@@ -60,7 +61,8 @@ public class KingTest
 	}
 	
 	@Test
-	public void testCheckFromPawn() {
+	public void testCheckFromPawn()
+	{
 		Pawn pawn = new Pawn(board, black);
 		pawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(3, 6), pawn);
@@ -74,32 +76,39 @@ public class KingTest
 	}
 	
 	@Test
-	public void testCheckFromBishop() {
+	public void testCheckFromBishop()
+	{
 		checkForCheck(board.getBoard().getField(4, 4), new Bishop(board, black));
 	}
 	
 	@Test
-	public void testCheckFromRook() {
+	public void testCheckFromRook()
+	{
 		checkForCheck(board.getBoard().getField(4, 4), new Rook(board, black));
 	}
 	
 	@Test
-	public void testCheckFromQueen() {
+	public void testCheckFromQueen()
+	{
 		checkForCheck(board.getBoard().getField(4, 4), new Queen(board, black));
 	}
 	
 	@Test
-	public void testCheckFromKnight() {
+	public void testCheckFromKnight()
+	{
 		checkForCheck(board.getBoard().getField(4, 4), new Knight(board, black));
 	}
 	
-	private void movePiece(Field field, Piece piece) {
+	private void movePiece(Field field, Piece piece)
+	{
 		board.getBoard().movePiece(piece, field);
 	}
 	
-	private void checkForCheck(Field field, Piece piece) {
+	private void checkForCheck(Field field, Piece piece)
+	{
 		board.getBoard().setPiece(field, piece);
-		for(Field currField : board.getPossibleMoves(piece)) {
+		for(Field currField : board.getPossibleMoves(piece))
+		{
 			movePiece(currField, whiteKing);
 			assertTrue(board.isChecked(white));
 		}

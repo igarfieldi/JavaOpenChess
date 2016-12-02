@@ -20,13 +20,17 @@
  */
 package jchess.gui.secondary;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 
 import jchess.gui.ThemeImageLoader;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 /**
  * Class responsible for promotion of a pawn. When a pawn reaches the end of the

@@ -1,8 +1,7 @@
 package jchess.gamelogic.pieces;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 import org.junit.Before;
@@ -49,7 +48,7 @@ public class PawnTest
 		assertTrue(canMakeMoves(whitePawn, board.getBoard().getField(2, 4)));
 		assertTrue(canMakeMoves(blackPawn, board.getBoard().getField(6, 3)));
 	}
-
+	
 	@Test
 	public void testNormalStrikeToLeft()
 	{
@@ -62,7 +61,7 @@ public class PawnTest
 		assertTrue(canMakeMoves(whitePawn, board.getBoard().getField(4, 3), board.getBoard().getField(blackPawn)));
 		assertTrue(canMakeMoves(blackPawn, board.getBoard().getField(3, 4), board.getBoard().getField(whitePawn)));
 	}
-
+	
 	@Test
 	public void testNormalStrikeToRight()
 	{
@@ -75,7 +74,7 @@ public class PawnTest
 		assertTrue(canMakeMoves(whitePawn, board.getBoard().getField(3, 3), board.getBoard().getField(blackPawn)));
 		assertTrue(canMakeMoves(blackPawn, board.getBoard().getField(4, 4), board.getBoard().getField(whitePawn)));
 	}
-
+	
 	@Test
 	public void testTwoStepMove()
 	{
@@ -83,34 +82,33 @@ public class PawnTest
 		Pawn blackPawn = new Pawn(board, black);
 		board.getBoard().setPiece(board.getBoard().getField(3, 6), whitePawn);
 		board.getBoard().setPiece(board.getBoard().getField(3, 1), blackPawn);
-		assertTrue(canMakeMoves(whitePawn,
-				board.getBoard().getField(3, 5), board.getBoard().getField(3, 4)));
-		assertTrue(canMakeMoves(blackPawn,
-				board.getBoard().getField(3, 2), board.getBoard().getField(3, 3)));
+		assertTrue(canMakeMoves(whitePawn, board.getBoard().getField(3, 5), board.getBoard().getField(3, 4)));
+		assertTrue(canMakeMoves(blackPawn, board.getBoard().getField(3, 2), board.getBoard().getField(3, 3)));
 	}
-
-	/*
-		TODO: find a way to test this without direct access to twoSquaresMovedPawn and without
-			creating an entire game w/ GUI etc.!
-	@Test
-	public void testEnPassantLeft()
-	{
-		Pawn whitePawn = new Pawn(board, p1);
-		Pawn blackPawn = new Pawn(board, p2);
-		board.getBoard().getField(4, 3).setPiece(whitePawn);
-		board.getBoard().getField(3, 1).setPiece(blackPawn);
-		board.move(board.getBoard().getField(3, 1), board.getBoard().getField(3, 3));
-		assertTrue(canMakeMoves(whitePawn,
-				board.getBoard().getField(4, 2), board.getBoard().getField(3, 2)));
-	}*/
 	
-	private boolean canMakeMoves(Piece piece, Field... fields) {
+	/*
+	 * TODO: find a way to test this without direct access to
+	 * twoSquaresMovedPawn and without creating an entire game w/ GUI etc.!
+	 * 
+	 * @Test public void testEnPassantLeft() { Pawn whitePawn = new Pawn(board,
+	 * p1); Pawn blackPawn = new Pawn(board, p2); board.getBoard().getField(4,
+	 * 3).setPiece(whitePawn); board.getBoard().getField(3,
+	 * 1).setPiece(blackPawn); board.move(board.getBoard().getField(3, 1),
+	 * board.getBoard().getField(3, 3)); assertTrue(canMakeMoves(whitePawn,
+	 * board.getBoard().getField(4, 2), board.getBoard().getField(3, 2))); }
+	 */
+	
+	private boolean canMakeMoves(Piece piece, Field... fields)
+	{
 		Set<Field> possibleMoves = board.getPossibleMoves(piece);
-		if(possibleMoves.size() != fields.length) {
+		if(possibleMoves.size() != fields.length)
+		{
 			return false;
 		}
-		for(Field field : fields) {
-			if(!possibleMoves.contains(field)) {
+		for(Field field : fields)
+		{
+			if(!possibleMoves.contains(field))
+			{
 				return false;
 			}
 		}

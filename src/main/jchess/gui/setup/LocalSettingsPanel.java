@@ -23,7 +23,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.logging.Logger;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 
 import jchess.JChessApp;
 import jchess.Localization;

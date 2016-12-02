@@ -37,7 +37,6 @@ import jchess.gamelogic.clock.GameClock;
 import jchess.gamelogic.field.ChessboardController;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Moves;
-import jchess.gamelogic.pieces.King;
 import jchess.gamelogic.views.GameView;
 
 /**

@@ -20,17 +20,23 @@
  */
 package jchess.gui.main;
 
-import javax.swing.*;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.ImageObserver;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JTabbedPane;
 
 import jchess.JChessApp;
 import jchess.gui.ThemeImageLoader;
 import jchess.gui.setup.NewGameWindow;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.ImageObserver;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class JChessTabbedPane extends JTabbedPane implements MouseListener, ImageObserver
 {

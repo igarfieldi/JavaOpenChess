@@ -20,15 +20,12 @@
  */
 package jchess.gamelogic.pieces;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.ChessboardController;
-import jchess.gamelogic.field.Field;
 import jchess.util.Direction;
 
 /**
