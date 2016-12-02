@@ -24,7 +24,7 @@ import java.awt.Image;
 import java.util.Set;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.field.ChessboardController;
+import jchess.gamelogic.field.IChessboardController;
 import jchess.gui.ThemeImageLoader;
 import jchess.util.Copyable;
 import jchess.util.Direction;
@@ -36,18 +36,18 @@ import jchess.util.Direction;
 public abstract class Piece implements Copyable<Piece>
 {
 	// TODO: add possibility to ignore 'unit collision' ie. skip occupied fields?
-	protected ChessboardController chessboard;
+	protected IChessboardController chessboard;
 	protected Player player;
 	private final String SYMBOL;
 	private final boolean CAN_MOVE_MULTIPLE_STEPS;
 	private boolean moved;
 	
-	public Piece(ChessboardController chessboard, Player player, String symbol)
+	public Piece(IChessboardController chessboard, Player player, String symbol)
 	{
 		this(chessboard, player, symbol, true);
 	}
 
-	public Piece(ChessboardController chessboard, Player player, String symbol, boolean multiMovePiece)
+	public Piece(IChessboardController chessboard, Player player, String symbol, boolean multiMovePiece)
 	{
 		this.chessboard = chessboard;
 		this.player = player;

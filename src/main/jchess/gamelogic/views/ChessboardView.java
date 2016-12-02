@@ -37,9 +37,9 @@ import javax.swing.JPanel;
 
 import jchess.gamelogic.Game;
 import jchess.gamelogic.Settings;
-import jchess.gamelogic.field.ChessboardController;
 import jchess.gamelogic.field.ChessboardModel;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.IChessboardController;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gui.ThemeImageLoader;
 
@@ -52,7 +52,7 @@ public class ChessboardView extends JPanel implements MouseListener
 {
 	private static Logger log = Logger.getLogger(ChessboardView.class.getName());
 	
-	private ChessboardController controller;
+	private IChessboardController controller;
 	private ChessboardModel board;
 	private Settings settings;
 	private Game game; // TODO: somehow remove this dependency!
@@ -90,7 +90,7 @@ public class ChessboardView extends JPanel implements MouseListener
 	 * @param moves_history
 	 *            reference to Moves class object for this chessboard
 	 */
-	public ChessboardView(Settings settings, ChessboardModel board, ChessboardController controller, Game game)
+	public ChessboardView(Settings settings, ChessboardModel board, IChessboardController controller, Game game)
 	{
 		this.game = game;
 		this.controller = controller;
@@ -288,7 +288,7 @@ public class ChessboardView extends JPanel implements MouseListener
 			Piece tmpPiece = board.getPiece(tmpSquare);
 			if(tmpPiece != null)
 			{
-				for(Field field : controller.getPossibleMoves(board.getPiece(activeSquare))) {
+				for(Field field : controller.getPossibleMoves(board.getPiece(activeSquare), true)) {
 					g2d.drawImage(able_square, (field.getPosX() * (int) square_height) + topLeftPoint.x,
 					        (field.getPosY() * (int) square_height) + topLeftPoint.y, null);
 				}

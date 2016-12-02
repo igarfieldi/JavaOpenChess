@@ -106,21 +106,24 @@ public class Game
 			try
 			{
 				// TODO: clean up. Hand-full of scenarios:
-				//		1. Nothing selected yet and we select either no field, empty field or field with piece not ours
-				//		2. Field selected and we select field again -> unselect
-				//		3. Field selected and we select different piece belonging to us -> select new field
-				//		4. Field selected and we select possible move -> carry out move etc.
+				// 1. Nothing selected yet and we select either no field, empty
+				// field or field with piece not ours
+				// 2. Field selected and we select field again -> unselect
+				// 3. Field selected and we select different piece belonging to
+				// us -> select new field
+				// 4. Field selected and we select possible move -> carry out
+				// move etc.
 				if(gameView.getChessboardView().getActiveSquare() == null)
 				{
-					if(selectedField == null || (chessboard.getBoard().getPiece(selectedField) != null)
-					        && (chessboard.getBoard().getPiece(selectedField).getPlayer() != this.chessboard.getActivePlayer()))
+					if(selectedField == null || (chessboard.getBoard().getPiece(selectedField) != null) && (chessboard
+					        .getBoard().getPiece(selectedField).getPlayer() != this.chessboard.getActivePlayer()))
 					{
 						return;
 					}
 				}
 				
-				if(chessboard.getBoard().getPiece(selectedField) != null
-				        && chessboard.getBoard().getPiece(selectedField).getPlayer() == this.chessboard.getActivePlayer()
+				if(chessboard.getBoard().getPiece(selectedField) != null && chessboard.getBoard()
+				        .getPiece(selectedField).getPlayer() == this.chessboard.getActivePlayer()
 				        && selectedField != gameView.getChessboardView().getActiveSquare())
 				{
 					gameView.getChessboardView().unselect();
@@ -130,7 +133,9 @@ public class Game
 					gameView.getChessboardView().unselect();
 				} else if(gameView.getChessboardView().getActiveSquare() != null
 				        && chessboard.getBoard().getPiece(gameView.getChessboardView().getActiveSquare()) != null
-				        && chessboard.getPossibleMoves(chessboard.getBoard().getPiece(gameView.getChessboardView().getActiveSquare())).contains(selectedField))
+				        && chessboard.getPossibleMoves(
+				                chessboard.getBoard().getPiece(gameView.getChessboardView().getActiveSquare()), true)
+				                .contains(selectedField))
 				{
 					if(settings.getGameType() == Settings.GameType.LOCAL)
 					{
@@ -143,10 +148,12 @@ public class Game
 					this.nextMove();
 					
 					// checkmate or stalemate
-					if(chessboard.isCheckmated(chessboard.getActivePlayer())) {
+					if(chessboard.isCheckmated(chessboard.getActivePlayer()))
+					{
 						this.endGame("Checkmate! " + this.chessboard.getActivePlayer().getColor().toString()
 						        + " player lose!");
-					} else if(chessboard.isStalemate()) {
+					} else if(chessboard.isStalemate())
+					{
 						this.endGame("Stalemate! Draw!");
 					}
 				}
@@ -417,8 +424,8 @@ public class Game
 		try
 		{
 			chessboard.getView().select(chessboard.getBoard().getField(beginX, beginY));
-			if(chessboard.getPossibleMoves(chessboard.getBoard().getPiece(chessboard.getView().getActiveSquare()))
-					.contains(chessboard.getBoard().getField(endX, endY)))
+			if(chessboard.getPossibleMoves(chessboard.getBoard().getPiece(chessboard.getView().getActiveSquare()), true)
+			        .contains(chessboard.getBoard().getField(endX, endY)))
 			{
 				chessboard.move(chessboard.getBoard().getField(beginX, beginY),
 				        chessboard.getBoard().getField(endX, endY));

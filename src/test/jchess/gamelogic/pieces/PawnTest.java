@@ -11,10 +11,11 @@ import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
 import jchess.gamelogic.field.ChessboardController;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.IChessboardController;
 
 public class PawnTest
 {
-	ChessboardController board;
+	IChessboardController board;
 	Player white;
 	Player black;
 	
@@ -32,8 +33,6 @@ public class PawnTest
 		King blackKing = new King(board, black);
 		board.getBoard().setPiece(board.getBoard().getField(4, 7), whiteKing);
 		board.getBoard().setPiece(board.getBoard().getField(4, 0), blackKing);
-		board.setWhiteKing(whiteKing);
-		board.setBlackKing(blackKing);
 	}
 	
 	@Test
@@ -100,7 +99,7 @@ public class PawnTest
 	
 	private boolean canMakeMoves(Piece piece, Field... fields)
 	{
-		Set<Field> possibleMoves = board.getPossibleMoves(piece);
+		Set<Field> possibleMoves = board.getPossibleMoves(piece, true);
 		if(possibleMoves.size() != fields.length)
 		{
 			return false;

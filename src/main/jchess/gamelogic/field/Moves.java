@@ -563,7 +563,7 @@ public class Moves extends AbstractTableModel
 					if(piece == null || this.game.getActivePlayer().getColor() != piece.getPlayer().getColor()) {
 						continue;
 					}
-					for(Field possibleMove : game.getChessboard().getPossibleMoves(piece))
+					for(Field possibleMove : game.getChessboard().getPossibleMoves(piece, true))
 					{
 						if(possibleMove.getPosX() == xTo && possibleMove.getPosY() == yTo)
 						{

@@ -12,10 +12,11 @@ import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
 import jchess.gamelogic.field.ChessboardController;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.IChessboardController;
 
 public class KingTest
 {
-	ChessboardController board;
+	IChessboardController board;
 	Player white;
 	Player black;
 	King whiteKing;
@@ -40,8 +41,6 @@ public class KingTest
 		blackKing = new King(board, black);
 		board.getBoard().setPiece(board.getBoard().getField(4, 7), whiteKing);
 		board.getBoard().setPiece(board.getBoard().getField(4, 0), blackKing);
-		board.setWhiteKing(whiteKing);
-		board.setBlackKing(blackKing);
 	}
 	
 	@Test
@@ -49,7 +48,7 @@ public class KingTest
 	{
 		movePiece(board.getBoard().getField(4, 4), whiteKing);
 		whiteKing.markAsMoved();
-		Set<Field> moves = board.getPossibleMoves(whiteKing);
+		Set<Field> moves = board.getPossibleMoves(whiteKing, true);
 		assertTrue(moves.contains(board.getBoard().getField(3, 3)));
 		assertTrue(moves.contains(board.getBoard().getField(4, 3)));
 		assertTrue(moves.contains(board.getBoard().getField(5, 3)));
@@ -107,7 +106,7 @@ public class KingTest
 	private void checkForCheck(Field field, Piece piece)
 	{
 		board.getBoard().setPiece(field, piece);
-		for(Field currField : board.getPossibleMoves(piece))
+		for(Field currField : board.getPossibleMoves(piece, true))
 		{
 			movePiece(currField, whiteKing);
 			assertTrue(board.isChecked(white));

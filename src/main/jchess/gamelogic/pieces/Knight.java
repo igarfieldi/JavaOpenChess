@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.field.ChessboardController;
+import jchess.gamelogic.field.IChessboardController;
 import jchess.util.Direction;
 
 /**
@@ -69,7 +69,7 @@ public class Knight extends Piece
 		return new Knight(chessboard, player);
 	}
 	
-	public Knight(ChessboardController chessboard, Player player)
+	public Knight(IChessboardController chessboard, Player player)
 	{
 		super(chessboard, player, "N", false);// call initialiser of super type: PieceW
 	}
