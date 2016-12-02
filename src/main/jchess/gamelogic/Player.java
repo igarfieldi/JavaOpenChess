@@ -97,7 +97,7 @@ public class Player implements Serializable
 		this.playerType = type;
 	}
 	
-	public void setBoardSide(boolean isTop)
+	public void setTopSide(boolean isTop)
 	{
 		this.topSide = isTop;
 	}

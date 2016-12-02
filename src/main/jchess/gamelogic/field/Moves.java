@@ -189,15 +189,14 @@ public class Moves extends AbstractTableModel
 		
 	}
 	
-	public void addMove(Field begin, Field end, boolean registerInHistory, CastlingType castlingMove,
-	        boolean wasEnPassant, Piece promotedPiece)
+	public void addMove(Move move, boolean registerInHistory)
 	{
-		String locMove = new String(begin.getPiece().getSymbol());
+		String locMove = new String(move.getMovedPiece().getSymbol());
 		
 		// Get field designation of 'from' field
-		locMove += game.getChessboard().getFieldDesignation(begin);
+		locMove += game.getChessboard().getFieldDesignation(move.getFrom());
 		
-		if(end.getPiece() != null)
+		if(move.getTakenPiece() != null)
 		{
 			locMove += "x";// take down opponent piece
 		} else
@@ -206,19 +205,18 @@ public class Moves extends AbstractTableModel
 		}
 		
 		// Get field designation of 'from' field
-		locMove += game.getChessboard().getFieldDesignation(end);
+		locMove += game.getChessboard().getFieldDesignation(move.getTo());
 		
-		if(begin.getPiece().getSymbol().equals("") && begin.getPosX() - end.getPosX() != 0 && end.getPiece() == null)
+		if(move.wasEnPassant())
 		{
 			locMove += "(e.p)";// pawn take down opponent en passant
-			wasEnPassant = true;
 		}
-		if((!this.enterBlack && this.game.getChessboard().getBlackKing().isChecked())
-		        || (this.enterBlack && this.game.getChessboard().getWhiteKing().isChecked()))
+		if((!this.enterBlack && this.game.getChessboard().isChecked(game.getSettings().getBlackPlayer()))
+		        || (this.enterBlack && this.game.getChessboard().isChecked(game.getSettings().getWhitePlayer())))
 		{// if checked
 			
-			if((!this.enterBlack && this.game.getChessboard().getBlackKing().isCheckmatedOrStalemated() == 1)
-			        || (this.enterBlack && this.game.getChessboard().getWhiteKing().isCheckmatedOrStalemated() == 1))
+			if((!this.enterBlack && this.game.getChessboard().isCheckmated(game.getSettings().getBlackPlayer()))
+			        || (this.enterBlack && this.game.getChessboard().isCheckmated(game.getSettings().getWhitePlayer())))
 			{// check if checkmated
 				locMove += "#";// check mate
 			} else
@@ -226,10 +224,10 @@ public class Moves extends AbstractTableModel
 				locMove += "+";// check
 			}
 		}
-		if(castlingMove == CastlingType.SHORT_CASTLING)
+		if(move.getCastlingMove() == CastlingType.SHORT_CASTLING)
 		{
 			this.addCastling("0-0");
-		} else if(castlingMove == CastlingType.LONG_CASTLING)
+		} else if(move.getCastlingMove()  == CastlingType.LONG_CASTLING)
 		{
 			this.addCastling("0-0-0");
 		} else
@@ -241,8 +239,7 @@ public class Moves extends AbstractTableModel
 		
 		if(registerInHistory)
 		{
-			this.moveBackStack.add(new Move(new Field(begin), new Field(end), begin.getPiece(), end.getPiece(),
-			        castlingMove, wasEnPassant, promotedPiece));
+			this.moveBackStack.add(move);
 		}
 	}
 	
@@ -293,14 +290,8 @@ public class Moves extends AbstractTableModel
 			Move last = this.moveBackStack.pop();
 			if(last != null)
 			{
-				if(this.game.getSettings().getGameType() == Settings.GameType.LOCAL) // moveForward
-				                                                                     // /
-				                                                                     // redo
-				                                                                     // available
-				                                                                     // only
-				                                                                     // for
-				                                                                     // local
-				                                                                     // game
+				// moveForward / redo available only for local game
+				if(this.game.getSettings().getGameType() == Settings.GameType.LOCAL)
 				{
 					this.moveForwardStack.push(last);
 				}
@@ -566,17 +557,18 @@ public class Moves extends AbstractTableModel
 				xTo = tempTo.getPosX();
 				yTo = tempTo.getPosY();
 				
+				
 				for(Field field : game.getChessboard().getBoard().getFields()) {
-					if(field.getPiece() == null || this.game.getActivePlayer().getColor() != field.getPiece().getPlayer().getColor()) {
+					Piece piece = game.getChessboard().getBoard().getPiece(field);
+					if(piece == null || this.game.getActivePlayer().getColor() != piece.getPlayer().getColor()) {
 						continue;
 					}
-					ArrayList<Field> pieceMoves = field.getPiece().possibleMoves();
-					for(Field possibleMove : pieceMoves)
+					for(Field possibleMove : game.getChessboard().getPossibleMoves(piece))
 					{
 						if(possibleMove.getPosX() == xTo && possibleMove.getPosY() == yTo)
 						{
-							xFrom = field.getPiece().getSquare().getPosX();
-							yFrom = field.getPiece().getSquare().getPosY();
+							xFrom = field.getPosX();
+							yFrom = field.getPosY();
 							pieceFound = true;
 						}
 					}

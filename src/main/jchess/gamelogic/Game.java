@@ -113,15 +113,15 @@ public class Game
 				//		4. Field selected and we select possible move -> carry out move etc.
 				if(gameView.getChessboardView().getActiveSquare() == null)
 				{
-					if(selectedField == null || (selectedField.getPiece() != null)
-					        && (selectedField.getPiece().getPlayer() != this.chessboard.getActivePlayer()))
+					if(selectedField == null || (chessboard.getBoard().getPiece(selectedField) != null)
+					        && (chessboard.getBoard().getPiece(selectedField).getPlayer() != this.chessboard.getActivePlayer()))
 					{
 						return;
 					}
 				}
 				
-				if(selectedField.getPiece() != null
-				        && selectedField.getPiece().getPlayer() == this.chessboard.getActivePlayer()
+				if(chessboard.getBoard().getPiece(selectedField) != null
+				        && chessboard.getBoard().getPiece(selectedField).getPlayer() == this.chessboard.getActivePlayer()
 				        && selectedField != gameView.getChessboardView().getActiveSquare())
 				{
 					gameView.getChessboardView().unselect();
@@ -130,9 +130,8 @@ public class Game
 				{
 					gameView.getChessboardView().unselect();
 				} else if(gameView.getChessboardView().getActiveSquare() != null
-				        && gameView.getChessboardView().getActiveSquare().getPiece() != null
-				        && gameView.getChessboardView().getActiveSquare().getPiece().possibleMoves()
-				                .indexOf(selectedField) != -1) // move
+				        && chessboard.getBoard().getPiece(gameView.getChessboardView().getActiveSquare()) != null
+				        && chessboard.getPossibleMoves(chessboard.getBoard().getPiece(gameView.getChessboardView().getActiveSquare())).contains(selectedField))
 				{
 					if(settings.getGameType() == Settings.GameType.LOCAL)
 					{
@@ -145,24 +144,11 @@ public class Game
 					this.nextMove();
 					
 					// checkmate or stalemate
-					King king;
-					if(this.chessboard.getActivePlayer() == settings.getWhitePlayer())
-					{
-						king = chessboard.getWhiteKing();
-					} else
-					{
-						king = chessboard.getBlackKing();
-					}
-					
-					switch(king.isCheckmatedOrStalemated())
-					{
-						case 1:
-							this.endGame("Checkmate! " + this.chessboard.getActivePlayer().getColor().toString()
-							        + " player lose!");
-							break;
-						case 2:
-							this.endGame("Stalemate! Draw!");
-							break;
+					if(chessboard.isCheckmated(chessboard.getActivePlayer())) {
+						this.endGame("Checkmate! " + this.chessboard.getActivePlayer().getColor().toString()
+						        + " player lose!");
+					} else if(chessboard.isStalemate()) {
+						this.endGame("Stalemate! Draw!");
 					}
 				}
 				
@@ -432,8 +418,8 @@ public class Game
 		try
 		{
 			chessboard.getView().select(chessboard.getBoard().getField(beginX, beginY));
-			if(chessboard.getView().getActiveSquare().getPiece().possibleMoves()
-			        .indexOf(chessboard.getBoard().getField(endX, endY)) != -1) // move
+			if(chessboard.getPossibleMoves(chessboard.getBoard().getPiece(chessboard.getView().getActiveSquare()))
+					.contains(chessboard.getBoard().getField(endX, endY)))
 			{
 				chessboard.move(chessboard.getBoard().getField(beginX, beginY),
 				        chessboard.getBoard().getField(endX, endY));

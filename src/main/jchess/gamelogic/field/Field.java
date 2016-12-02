@@ -28,27 +28,23 @@ import jchess.gamelogic.pieces.Piece;
 public class Field
 {
 	
-	private int posX; // 0-7, becouse 8 squares for row/column
-	private int posY; // 0-7, becouse 8 squares for row/column
-	private Piece piece = null;// object Piece on square (and extending Piecie)
+	private int posX;
+	private int posY;
 	
-	Field(int pozX, int pozY, Piece piece)
+	Field(int posX, int posY)
 	{
-		this.posX = pozX;
-		this.posY = pozY;
-		this.piece = piece;
-	}/*--endOf-Square--*/
+		this.posX = posX;
+		this.posY = posY;
+	}
 	
 	Field(Field square)
 	{
 		this.posX = square.posX;
 		this.posY = square.posY;
-		this.piece = square.piece;
 	}
 	
-	public Field clone(Field square)
-	{
-		return new Field(square);
+	public Field clone() {
+		return new Field(posX, posY);
 	}
 	
 	public int getPosX()
@@ -61,20 +57,24 @@ public class Field
 		return posY;
 	}
 	
-	public Piece getPiece()
-	{
-		return piece;
+	@Override
+	public int hashCode() {
+		return 10000*posY + posX;
 	}
 	
-	public void setPiece(Piece piece)
-	{
-		this.piece = piece;
-		if(this.piece != null)
-			this.piece.setSquare(this);
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == this) {
+			return true;
+		} else if(obj == null || !(obj instanceof Field)) {
+			return false;
+		} else {
+			return this.posX == ((Field) obj).posX && this.posY == ((Field) obj).posY;
+		}
 	}
 	
 	@Override
 	public String toString() {
-		return "(" + posX + "|" + posY + ":" + piece + ")";
+		return "(" + posX + "|" + posY + ")";
 	}
 }

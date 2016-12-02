@@ -20,7 +20,12 @@
  */
 package jchess.gamelogic.field;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,6 +43,7 @@ import jchess.gamelogic.pieces.Queen;
 import jchess.gamelogic.pieces.Rook;
 import jchess.gamelogic.views.ChessboardView;
 import jchess.util.ArgumentChecker;
+import jchess.util.Direction;
 
 /**
  * Class to represent chessboard. Chessboard is made from squares. It is setting
@@ -49,8 +55,8 @@ public class ChessboardController
 	private static Logger log = Logger.getLogger(ChessboardController.class.getName());
 	private static final int WIDTH = 8;
 	private static final int HEIGHT = 8;
-	private static final String[] FIELD_LETTERS = {"a", "b", "c", "d", "e", "f", "g", "h"};
-	private static final String[] FIELD_NUMBERS = {"1", "2", "3", "4", "5", "6", "7", "8"};
+	private static final String[] FIELD_LETTERS = { "a", "b", "c", "d", "e", "f", "g", "h" };
+	private static final String[] FIELD_NUMBERS = { "1", "2", "3", "4", "5", "6", "7", "8" };
 	
 	private ChessboardModel board;
 	private ChessboardView view;
@@ -78,58 +84,72 @@ public class ChessboardController
 	public ChessboardController(Settings settings, Moves moves_history, Game game)
 	{
 		this.board = new ChessboardModel(WIDTH, HEIGHT);
-		this.view = new ChessboardView(settings, board, game);
+		this.view = new ChessboardView(settings, board, this, game);
 		this.settings = settings;
 		this.moves_history = moves_history;
 	}
 	
-	public ChessboardView getView() {
+	public ChessboardView getView()
+	{
 		return view;
 	}
 	
-	public Player getActivePlayer() {
+	public Player getActivePlayer()
+	{
 		return this.activePlayer;
 	}
 	
-	public void switchToNextPlayer() {
-		if(this.activePlayer == this.whitePlayer) {
+	public void switchToNextPlayer()
+	{
+		if(this.activePlayer == this.whitePlayer)
+		{
 			this.activePlayer = this.blackPlayer;
-		} else {
+		} else
+		{
 			this.activePlayer = this.whitePlayer;
 		}
 	}
 	
-	public void switchToPreviousPlayer() {
+	public void switchToPreviousPlayer()
+	{
 		// Since we only have two players, this is equal to switchToNextPlayer
 		this.switchToNextPlayer();
 	}
 	
-	public boolean isOnAPlayersBaseline(Field field) {
+	public boolean isOnAPlayersBaseline(Field field)
+	{
 		ArgumentChecker.checkForNull(field);
 		
-		if(field.getPosY() == 0) {
+		if(field.getPosY() == 0)
+		{
 			// Lower player's baseline
 			return true;
-		} else if(field.getPosY() + 1 == HEIGHT) {
+		} else if(field.getPosY() + 1 == HEIGHT)
+		{
 			// Upper player's baseline
 			return true;
-		} else {
+		} else
+		{
 			return false;
 		}
 	}
 	
 	/**
 	 * Returns the string representation of the given field.
+	 * 
 	 * @param field
 	 * @return
 	 */
-	public String getFieldDesignation(Field field) {
+	public String getFieldDesignation(Field field)
+	{
 		ArgumentChecker.checkForNull(field);
 		
-		if(settings.isUpsideDown()) {
+		if(settings.isUpsideDown())
+		{
 			// In upside-down case, field (0|0) is equivalent to h1
 			return FIELD_LETTERS[field.getPosX()] + FIELD_NUMBERS[HEIGHT - field.getPosY() - 1];
-		} else {
+		} else
+		{
 			// If not upside down, field (0|0) is equivalent to a8
 			return FIELD_LETTERS[WIDTH - field.getPosX() - 1] + FIELD_NUMBERS[field.getPosY()];
 		}
@@ -137,24 +157,31 @@ public class ChessboardController
 	
 	/**
 	 * Returns the field specified by the given string, if applicable.
-	 * @param designation Designation of desired field
+	 * 
+	 * @param designation
+	 *            Designation of desired field
 	 * @return field denoted by given string (or null if non-existent)
 	 */
-	public Field getFieldFromDesignation(String designation) {
+	public Field getFieldFromDesignation(String designation)
+	{
 		ArgumentChecker.checkForNull(designation);
 		
-		if(designation.length() != 2) {
+		if(designation.length() != 2)
+		{
 			return null;
 		}
 		
 		// Check the arrays of letters and numbers for the given strings
-		int x = Arrays.asList(FIELD_LETTERS).indexOf(""+designation.charAt(0));
-		int y = Arrays.asList(FIELD_NUMBERS).indexOf(""+designation.charAt(1));
+		int x = Arrays.asList(FIELD_LETTERS).indexOf("" + designation.charAt(0));
+		int y = Arrays.asList(FIELD_NUMBERS).indexOf("" + designation.charAt(1));
 		
-		// Account for the oddities of the chosen field coordinate system (0|0 = a8 or h1)
-		if(settings.isUpsideDown()) {
+		// Account for the oddities of the chosen field coordinate system (0|0 =
+		// a8 or h1)
+		if(settings.isUpsideDown())
+		{
 			y = HEIGHT - y - 1;
-		} else {
+		} else
+		{
 			x = WIDTH - x - 1;
 		}
 		
@@ -164,7 +191,8 @@ public class ChessboardController
 	/**
 	 * Brings the controller (and the associated board) into a clean state.
 	 */
-	public void initialize() {
+	public void initialize()
+	{
 		this.initializePlayers();
 		this.initializePieces(this.whitePlayer.isTopSide());
 		
@@ -172,69 +200,506 @@ public class ChessboardController
 	}
 	
 	/**
-	 * Initializes the participating chess players.
-	 * Currently, we simply grab the players stored in the settings.
+	 * Initializes the participating chess players. Currently, we simply grab
+	 * the players stored in the settings.
 	 */
-	private void initializePlayers() {
+	private void initializePlayers()
+	{
 		this.whitePlayer = settings.getWhitePlayer();
 		this.blackPlayer = settings.getBlackPlayer();
 		
-		if(settings.isUpsideDown()) {
-			this.whitePlayer.setBoardSide(true);
-		} else {
-			this.blackPlayer.setBoardSide(true);
+		if(settings.isUpsideDown())
+		{
+			this.whitePlayer.setTopSide(true);
+		} else
+		{
+			this.blackPlayer.setTopSide(true);
 		}
 	}
 	
 	/**
-	 * Initializes the chessboard's pieces.
-	 * This includes checking which player is on top etc.
-	 * @param whiteIsTop is white playing from top-side
+	 * Initializes the chessboard's pieces. This includes checking which player
+	 * is on top etc.
+	 * 
+	 * @param whiteIsTop
+	 *            is white playing from top-side
 	 */
-	private void initializePieces(boolean whiteIsTop) {
+	private void initializePieces(boolean whiteIsTop)
+	{
 		Player topSide = this.blackPlayer;
 		Player bottomSide = this.whitePlayer;
-		if(whiteIsTop) {
+		if(whiteIsTop)
+		{
 			topSide = this.whitePlayer;
 			bottomSide = this.blackPlayer;
 		}
 		
-		System.out.println(topSide);
-		
 		board.initialize();
 		// Set rooks, bishops, knights
-		board.getField(0, 7).setPiece(new Rook(this, bottomSide));
-		board.getField(7, 7).setPiece(new Rook(this, bottomSide));
-		board.getField(1, 7).setPiece(new Knight(this, bottomSide));
-		board.getField(6, 7).setPiece(new Knight(this, bottomSide));
-		board.getField(2, 7).setPiece(new Bishop(this, bottomSide));
-		board.getField(5, 7).setPiece(new Bishop(this, bottomSide));
-		board.getField(0, 0).setPiece(new Rook(this, topSide));
-		board.getField(7, 0).setPiece(new Rook(this, topSide));
-		board.getField(1, 0).setPiece(new Knight(this, topSide));
-		board.getField(6, 0).setPiece(new Knight(this, topSide));
-		board.getField(2, 0).setPiece(new Bishop(this, topSide));
-		board.getField(5, 0).setPiece(new Bishop(this, topSide));
+		board.setPiece(board.getField(0, 7), new Rook(this, bottomSide));
+		board.setPiece(board.getField(7, 7), new Rook(this, bottomSide));
+		board.setPiece(board.getField(1, 7), new Knight(this, bottomSide));
+		board.setPiece(board.getField(6, 7), new Knight(this, bottomSide));
+		board.setPiece(board.getField(2, 7), new Bishop(this, bottomSide));
+		board.setPiece(board.getField(5, 7), new Bishop(this, bottomSide));
+		board.setPiece(board.getField(0, 0), new Rook(this, topSide));
+		board.setPiece(board.getField(7, 0), new Rook(this, topSide));
+		board.setPiece(board.getField(1, 0), new Knight(this, topSide));
+		board.setPiece(board.getField(6, 0), new Knight(this, topSide));
+		board.setPiece(board.getField(2, 0), new Bishop(this, topSide));
+		board.setPiece(board.getField(5, 0), new Bishop(this, topSide));
 		
-		// Since the queen is always placed on the field of her own color, we need
+		// Since the queen is always placed on the field of her own color, we
+		// need
 		// to check on which side white is playing
-		if(whiteIsTop) {
-			board.getField(4, 7).setPiece(new Queen(this, bottomSide));
-			board.getField(3, 7).setPiece(setBlackKing(new King(this, bottomSide)));
-			board.getField(4, 0).setPiece(new Queen(this, topSide));
-			board.getField(3, 0).setPiece(setWhiteKing(new King(this, topSide)));
-		} else {
-			board.getField(3, 7).setPiece(new Queen(this, bottomSide));
-			board.getField(4, 7).setPiece(setWhiteKing(new King(this, bottomSide)));
-			board.getField(3, 0).setPiece(new Queen(this, topSide));
-			board.getField(4, 0).setPiece(setBlackKing(new King(this, topSide)));
+		if(whiteIsTop)
+		{
+			board.setPiece(board.getField(4, 7), new Queen(this, bottomSide));
+			board.setPiece(board.getField(3, 7), setBlackKing(new King(this, bottomSide)));
+			board.setPiece(board.getField(4, 0), new Queen(this, topSide));
+			board.setPiece(board.getField(3, 0), setWhiteKing(new King(this, topSide)));
+		} else
+		{
+			board.setPiece(board.getField(3, 7), new Queen(this, bottomSide));
+			board.setPiece(board.getField(4, 7), setWhiteKing(new King(this, bottomSide)));
+			board.setPiece(board.getField(3, 0), new Queen(this, topSide));
+			board.setPiece(board.getField(4, 0), setBlackKing(new King(this, topSide)));
 		}
 		
 		// Initialize pawns: no special distinctions necessary
-		for(int x = 0; x < WIDTH; x++) {
-			board.getField(x, 6).setPiece(new Pawn(this, bottomSide));
-			board.getField(x, 1).setPiece(new Pawn(this, topSide));
+		for(int x = 0; x < WIDTH; x++)
+		{
+			board.setPiece(board.getField(x, 6), new Pawn(this, bottomSide));
+			board.setPiece(board.getField(x, 1), new Pawn(this, topSide));
 		}
+	}
+	
+	public Set<Field> getPossibleMoves(Piece piece)
+	{
+		return this.getPossibleMoves(piece, true);
+	}
+	
+	/**
+	 * Returns the set of fields a piece can move to. This includes both
+	 * capturing and non-capturing moves as well as special cases (e.g. castling
+	 * or en passant capturing). If specified, the set will also be cleaned from
+	 * fields which would result in a check position (or don't resolve a
+	 * currently present one) if moved to by the piece.
+	 * 
+	 * @param piece
+	 *            Piece to get moves for
+	 * @param careForCheck
+	 *            if true, moves resulting in a check will be filtered out
+	 * @return Set of possible moves for the piece
+	 */
+	public Set<Field> getPossibleMoves(Piece piece, boolean careForCheck)
+	{
+		
+		Set<Field> reachableFields = new HashSet<Field>();
+		
+		// Capturing moves only
+		reachableFields.addAll(this.getCapturableFields(piece));
+		
+		// Non-capturing moves only
+		reachableFields.addAll(this.getMovableFields(piece));
+		
+		if(careForCheck)
+		{
+			// For each move we need to simuate the future board state and see
+			// if
+			// we're in check.
+			
+			// Store the part of the state that undo will not restore
+			Field activeField = this.getView().getActiveSquare();
+			Pawn twoMovedPawn = this.twoSquareMovedPawn;
+			
+			for(Iterator<Field> fieldIterator = reachableFields.iterator(); fieldIterator.hasNext();)
+			{
+				// We need to use the iterator instead of foreach to be able to
+				// use .remove()
+				Field currField = fieldIterator.next();
+				// Simulate the board state
+				ChessboardModel tempModel = board;
+				board = board.copy();
+				
+				this.move(tempModel.getField(piece), currField, false, false, false);
+				if(this.isChecked(piece.getPlayer()))
+				{
+					// Checked moves are not allowed, so remove it
+					fieldIterator.remove();
+				}
+				// Undo the move again
+				board = tempModel;
+				this.twoSquareMovedPawn = twoMovedPawn;
+			}
+			
+			this.getView().select(activeField);
+		}
+		
+		return reachableFields;
+	}
+	
+	/**
+	 * Returns the set of fields where a piece can move without capturing.
+	 * Pieces may not skip fields in a direction. Possibly occuring check
+	 * situations are not accounted for; if need be they have to be filtered
+	 * out.
+	 * 
+	 * @param piece
+	 *            Piece to get movable fields for
+	 * @return Set of fields the piece can move to without capturing
+	 */
+	private Set<Field> getMovableFields(Piece piece)
+	{
+		Set<Field> reachableFields = new HashSet<Field>();
+		reachableFields.addAll(this.getMovableFieldsInDirection(piece, piece.getNormalMovements()));
+		
+		// Special case handling
+		if(piece instanceof King)
+		{
+			// Castling
+			if(!piece.hasMoved())
+			{
+				Field kingsField = board.getField(piece);
+				
+				Piece leftRook = board.getPiece(board.getField(0, kingsField.getPosY()));
+				Piece rightRook = board.getPiece(board.getField(7, kingsField.getPosY()));
+				
+				if(leftRook != null && !leftRook.hasMoved())
+				{
+					// Neither left rook nor king have moved yet
+					Set<Field> reachable = this.getMovableFieldsInDirection(leftRook, leftRook.getNormalMovements());
+					if(reachable.contains(board.getField(kingsField.getPosX() - 1, kingsField.getPosY())))
+					{
+						// Left rook can move right next to the king -> fields
+						// in between both are free
+						Set<Field> involvedFields = new HashSet<Field>();
+						involvedFields.add(kingsField);
+						involvedFields.add(board.getField(kingsField.getPosX() - 1, kingsField.getPosY()));
+						involvedFields.add(board.getField(kingsField.getPosX() - 2, kingsField.getPosY()));
+						// None of the fields involved must be in check
+						
+						Player enemy = whitePlayer;
+						if(piece.getPlayer() == whitePlayer)
+						{
+							enemy = blackPlayer;
+						}
+						if(!this.isAnyThreatenedByPlayer(involvedFields, enemy))
+						{
+							reachableFields.add(board.getField(kingsField.getPosX() - 2, kingsField.getPosY()));
+						}
+					}
+				}
+				if(rightRook != null && !rightRook.hasMoved())
+				{
+					// Neither left rook nor king have moved yet
+					Set<Field> reachable = this.getMovableFieldsInDirection(rightRook, rightRook.getNormalMovements());
+					if(reachable.contains(board.getField(kingsField.getPosX() + 1, kingsField.getPosY())))
+					{
+						// Right rook can move right next to the king -> fields
+						// in between both are free
+						Set<Field> involvedFields = new HashSet<Field>();
+						involvedFields.add(kingsField);
+						involvedFields.add(board.getField(kingsField.getPosX() + 1, kingsField.getPosY()));
+						involvedFields.add(board.getField(kingsField.getPosX() + 2, kingsField.getPosY()));
+						// None of the fields involved must be in check
+						
+						Player enemy = whitePlayer;
+						if(piece.getPlayer() == whitePlayer)
+						{
+							enemy = blackPlayer;
+						}
+						if(!this.isAnyThreatenedByPlayer(involvedFields, enemy))
+						{
+							reachableFields.add(board.getField(kingsField.getPosX() + 2, kingsField.getPosY()));
+						}
+					}
+				}
+			}
+		}
+		
+		return reachableFields;
+	}
+	
+	/**
+	 * Returns the list of all fields in a direction a piece might consider moving to.
+	 * This does not include a check for blocking by pieces. The fields are
+	 * ordered; fields closer to the piece first.
+	 * @param piece
+	 * @param dir
+	 * @return List of fields in direction
+	 */
+	private List<Field> getFieldsInDirection(Piece piece, Direction dir)
+	{
+		List<Field> fieldsInDir = new ArrayList<Field>();
+		if(piece.canMoveMultipleSteps())
+		{
+			// Need to add all fields in direction
+			fieldsInDir.addAll(board.getFieldsInDirection(board.getField(piece), dir));
+		} else
+		{
+			// Only a single step possible
+			Field fieldInDir = board.getFieldInDirection(board.getField(piece), dir);
+			if(fieldInDir != null)
+			{
+				fieldsInDir.add(fieldInDir);
+			}
+		}
+		return fieldsInDir;
+	}
+	
+	/**
+	 * Returns the set of fields capturable by a piece. This only includes
+	 * currently occupied fields; those empty but theoretically reachable with a
+	 * capturing move are not included. This method ignores possibly invoked
+	 * check positions; if need be, they need to be filtered out.
+	 * 
+	 * @param piece
+	 *            Piece to get capturable fields for
+	 * @return Set of capturable fields
+	 */
+	private Set<Field> getCapturableFields(Piece piece)
+	{
+		Set<Field> capturableFields = new HashSet<Field>();
+		
+		capturableFields.addAll(this.getCapturableFieldsInDirection(piece, piece.getCapturingMovements()));
+		
+		// Special case handling
+		if(piece instanceof Pawn)
+		{
+			// En passant
+			if(this.twoSquareMovedPawn != null)
+			{
+				if(board.getField(piece).getPosY() == board.getField(twoSquareMovedPawn).getPosY())
+				{
+					// Our pawn is in the same row
+					if(Math.abs(board.getField(piece).getPosX() - board.getField(twoSquareMovedPawn).getPosX()) == 1)
+					{
+						// Our pawn is right next to the pawn which moved two
+						// squares. Now we need to check the direction in which
+						// the pawn has to go
+						if(piece.getPlayer().isTopSide())
+						{
+							capturableFields.add(board.getField(board.getField(twoSquareMovedPawn).getPosX(),
+							        board.getField(piece).getPosY() + 1));
+						} else
+						{
+							capturableFields.add(board.getField(board.getField(twoSquareMovedPawn).getPosX(),
+							        board.getField(piece).getPosY() - 1));
+						}
+					}
+				}
+			}
+		}
+		
+		return capturableFields;
+	}
+	
+	/**
+	 * Returns the set of fields a given piece can move to without capturing.
+	 * @param piece
+	 * @param directions Set of directions to consider
+	 * @return Set of fields piece can move to
+	 */
+	private Set<Field> getMovableFieldsInDirection(Piece piece, Set<Direction> directions)
+	{
+		Set<Field> movableFields = new HashSet<Field>();
+		
+		for(Direction dir : directions)
+		{
+			if(!piece.getPlayer().isTopSide())
+			{
+				dir = dir.multiply(-1);
+			}
+			
+			for(Field field : this.getFieldsInDirection(piece, dir))
+			{
+				Piece currPiece = board.getPiece(field);
+				if(currPiece != null)
+				{
+					// If we encountered a piece, we have to stop since we
+					// cannot jump over them
+					break;
+				} else
+				{
+					// Otherwise we can move to this field
+					movableFields.add(field);
+				}
+			}
+		}
+		
+		return movableFields;
+	}
+	
+	/**
+	 * Returns the set of fields which are under threat by the given piece. This
+	 * includes any capturable fields.
+	 * 
+	 * @param piece
+	 * @param directions
+	 *            Set of directions to check
+	 * @return Set of threatened fields
+	 */
+	private Set<Field> getThreatenedFieldsInDirection(Piece piece, Set<Direction> directions)
+	{
+		Set<Field> threatenedFields = new HashSet<Field>();
+		
+		for(Direction dir : directions)
+		{
+			if(!piece.getPlayer().isTopSide())
+			{
+				dir = dir.multiply(-1);
+			}
+			
+			for(Field field : this.getFieldsInDirection(piece, dir))
+			{
+				Piece currPiece = board.getPiece(field);
+				
+				if(currPiece != null)
+				{
+					if(currPiece.getPlayer() != piece.getPlayer())
+					{
+						threatenedFields.add(field);
+					}
+					break;
+				} else
+				{
+					threatenedFields.add(field);
+				}
+			}
+		}
+		
+		return threatenedFields;
+	}
+	
+	/**
+	 * Returns the set of capturable fields for a given piece.
+	 * 
+	 * @param piece
+	 * @param directions
+	 *            Set of directions to check for
+	 * @return Set of capturable fields
+	 */
+	private Set<Field> getCapturableFieldsInDirection(Piece piece, Set<Direction> directions)
+	{
+		Set<Field> capturableFields = new HashSet<Field>();
+		
+		for(Field field : this.getThreatenedFieldsInDirection(piece, directions))
+		{
+			if(board.getPiece(field) != null)
+			{
+				capturableFields.add(field);
+			}
+		}
+		
+		return capturableFields;
+	}
+	
+	/**
+	 * Checks if the player is currently in a check position.
+	 * 
+	 * @param player
+	 *            Player to be checked
+	 * @return true if in check
+	 */
+	public boolean isChecked(Player player)
+	{
+		Player enemy = whitePlayer;
+		if(whitePlayer == player)
+		{
+			enemy = blackPlayer;
+		}
+		
+		for(Piece piece : board.getPieces(player))
+		{
+			if(piece instanceof King)
+			{
+				return !this.isThreatenedByPlayer(board.getField(piece), enemy).isEmpty();
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Checks if the player is checkmated. This is equivalent to checking if the
+	 * player is checked and does not have any possible moves.
+	 * 
+	 * @param player
+	 *            Player to be checked for
+	 * @return true if checkmated
+	 */
+	public boolean isCheckmated(Player player)
+	{
+		for(Piece piece : board.getPieces(player))
+		{
+			if(!this.getPossibleMoves(piece).isEmpty())
+			{
+				return false;
+			}
+		}
+		
+		return this.isChecked(player);
+	}
+	
+	public boolean isStalemate()
+	{
+		for(Piece piece : board.getPieces(this.getActivePlayer()))
+		{
+			if(!this.getPossibleMoves(piece).isEmpty())
+			{
+				return false;
+			}
+		}
+		
+		return !this.isChecked(this.getActivePlayer());
+	}
+	
+	/**
+	 * Checks if the given field is currently under threat from the given
+	 * player.
+	 * 
+	 * @param target
+	 *            Target field
+	 * @param player
+	 *            Possibly threatening player
+	 * @return Set of pieces currently threatening the field
+	 */
+	private Set<Piece> isThreatenedByPlayer(Field target, Player player)
+	{
+		Set<Piece> threateningPieces = new HashSet<Piece>();
+		
+		for(Piece piece : board.getPieces(player))
+		{
+			if(this.getThreatenedFieldsInDirection(piece, piece.getCapturingMovements()).contains(target))
+			{
+				threateningPieces.add(piece);
+			}
+		}
+		
+		return threateningPieces;
+	}
+	
+	/**
+	 * Checks if any of the given fields are currently under threat from the
+	 * given player.
+	 * 
+	 * @param targets
+	 *            Set of fields to check
+	 * @param player
+	 *            Player who might be threatening
+	 * @return true if any of the fields is threatened
+	 */
+	private boolean isAnyThreatenedByPlayer(Set<Field> targets, Player player)
+	{
+		for(Field target : targets)
+		{
+			if(!this.isThreatenedByPlayer(target, player).isEmpty())
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void move(Field begin, Field end)
@@ -271,6 +736,11 @@ public class ChessboardController
 		this.move(begin, end, refresh, true);
 	}
 	
+	public void move(Field begin, Field end, boolean refresh, boolean clearForwardHistory)
+	{
+		this.move(begin, end, refresh, clearForwardHistory, true);
+	}
+	
 	/**
 	 * Method move piece from square to square
 	 * 
@@ -281,86 +751,52 @@ public class ChessboardController
 	 * @param refresh
 	 *            chessboard, default: true
 	 */
-	public void move(Field begin, Field end, boolean refresh, boolean clearForwardHistory)
+	public void move(Field begin, Field end, boolean refresh, boolean clearForwardHistory, boolean enterIntoHistory)
 	{
+		Move move;
 		
-		CastlingType wasCastling = Moves.CastlingType.NONE;
-		Piece promotedPiece = null;
-		boolean wasEnPassant = false;
-		if(end.getPiece() != null)
+		if(board.getPiece(begin) instanceof King)
 		{
-			end.getPiece().setSquare(null);
-		}
-		
-		Field tempBegin = new Field(begin);// 4 moves history
-		Field tempEnd = new Field(end); // 4 moves history
-		// for undo
-		// ---
-		
-		begin.getPiece().setSquare(end);// set square of piece to ending
-		end.setPiece(begin.getPiece());// for ending square set piece from
-		                               // beginin square
-		begin.setPiece(null);// make null piece for begining square
-		
-		if(end.getPiece().getName().equals("King"))
-		{
-			if(!((King) end.getPiece()).wasMotion)
-			{
-				((King) end.getPiece()).wasMotion = true;
-			}
-			
 			// Castling
 			if(begin.getPosX() + 2 == end.getPosX())
 			{
-				move(board.getField(7, begin.getPosY()), board.getField(end.getPosY() - 1, begin.getPosY()), false, false);
-				wasCastling = Moves.CastlingType.SHORT_CASTLING;
-				// this.moves_history.addMove(tempBegin, tempEnd,
-				// clearForwardHistory, wasCastling, wasEnPassant);
-				// return;
+				move = new Move(begin, end, board.getPiece(begin), board.getPiece(end), CastlingType.SHORT_CASTLING,
+				        false, null);
 			} else if(begin.getPosX() - 2 == end.getPosX())
 			{
-				move(board.getField(0, begin.getPosY()), board.getField(end.getPosY() + 1, begin.getPosY()), false, false);
-				wasCastling = Moves.CastlingType.LONG_CASTLING;
-				// this.moves_history.addMove(tempBegin, tempEnd,
-				// clearForwardHistory, wasCastling, wasEnPassant);
-				// return;
-			}
-			// endOf Castling
-		} else if(end.getPiece().getName().equals("Rook"))
-		{
-			if(!((Rook) end.getPiece()).wasMotion)
+				move = new Move(begin, end, board.getPiece(begin), board.getPiece(end), CastlingType.LONG_CASTLING,
+				        false, null);
+			} else
 			{
-				((Rook) end.getPiece()).wasMotion = true;
+				move = new Move(begin, end, board.getPiece(begin), board.getPiece(end), CastlingType.NONE, false, null);
 			}
-		} else if(end.getPiece().getName().equals("Pawn"))
+		} else if(board.getPiece(begin) instanceof Pawn)
 		{
+			// En passant
 			if(this.twoSquareMovedPawn != null
-			        && board.getField(end.getPosX(), begin.getPosY()) == this.twoSquareMovedPawn.getSquare()) // en passant
+			        && board.getField(end.getPosX(), begin.getPosY()).equals(board.getField(this.twoSquareMovedPawn)))
 			{
-				// Ugly hack - put taken pawn in en passant plasty do end square
-				tempEnd.setPiece(board.getPiece(board.getField(end.getPosX(), begin.getPosY())));
-				board.getField(end.getPosX(), begin.getPosY()).setPiece(null);
-				wasEnPassant = true;
+				move = new Move(begin, end, board.getPiece(begin),
+				        board.getPiece(board.getField(end.getPosX(), begin.getPosY())), CastlingType.NONE, true, null);
 			}
 			
-			if(begin.getPosY() - end.getPosY() == 2 || end.getPosY() - begin.getPosY() == 2) // moved
-			                                                                                 // two
-			                                                                                 // square
+			if(begin.getPosY() - end.getPosY() == 2 || end.getPosY() - begin.getPosY() == 2)
 			{
-				this.twoSquareMovedPawn = (Pawn) end.getPiece();
+				this.twoSquareMovedPawn = (Pawn) board.getPiece(begin);
 			} else
 			{
 				this.twoSquareMovedPawn = null; // erase last saved move (for En
 				                                // passant)
 			}
 			
-			if(end.getPiece().getSquare().getPosY() == 0 || end.getPiece().getSquare().getPosY() == 7) // promote
-			                                                                                 // Pawn
+			Piece promotedPiece = null;
+			if(end.getPosY() == 0 || end.getPosY() == 7) // promote
+			// Pawn
 			{
 				if(clearForwardHistory)
 				{
 					String color;
-					if(end.getPiece().getPlayer().getColor() == Player.Color.WHITE)
+					if(board.getPiece(begin).getPlayer().getColor() == Player.Color.WHITE)
 					{
 						color = "W"; // promotionWindow was show with pieces in
 						             // this color
@@ -369,43 +805,55 @@ public class ChessboardController
 						color = "B";
 					}
 					
-					String newPiece = JChessApp.view.showPawnPromotionBox(color); // return
-					                                                             // name
-					                                                             // of
-					                                                             // new
-					                                                             // piece
+					// return name of new piece
+					String newPiece = JChessApp.view.showPawnPromotionBox(color);
 					
 					if(newPiece.equals("Queen")) // transform pawn to queen
 					{
-						Queen queen = new Queen(this, end.getPiece().getPlayer());
-						queen.setSquare(end.getPiece().getSquare());
-						end.setPiece(queen);
+						Queen queen = new Queen(this, board.getPiece(begin).getPlayer());
+						board.setPiece(begin, queen);
 					} else if(newPiece.equals("Rook")) // transform pawn to rook
 					{
-						Rook rook = new Rook(this, end.getPiece().getPlayer());
-						rook.setSquare(end.getPiece().getSquare());
-						end.setPiece(rook);
+						Rook rook = new Rook(this, board.getPiece(begin).getPlayer());
+						board.setPiece(begin, rook);
 					} else if(newPiece.equals("Bishop")) // transform pawn to
 					                                     // bishop
 					{
-						Bishop bishop = new Bishop(this, end.getPiece().getPlayer());
-						bishop.setSquare(end.getPiece().getSquare());
-						end.setPiece(bishop);
+						Bishop bishop = new Bishop(this, board.getPiece(begin).getPlayer());
+						board.setPiece(begin, bishop);
 					} else // transform pawn to knight
 					{
-						Knight knight = new Knight(this, end.getPiece().getPlayer());
-						knight.setSquare(end.getPiece().getSquare());
-						end.setPiece(knight);
+						Knight knight = new Knight(this, board.getPiece(begin).getPlayer());
+						board.setPiece(begin, knight);
 					}
-					promotedPiece = end.getPiece();
+					promotedPiece = board.getPiece(begin);
 				}
 			}
-		} else if(!end.getPiece().getName().equals("Pawn"))
+			
+			move = new Move(begin, end, board.getPiece(begin), board.getPiece(end), CastlingType.NONE, false,
+			        promotedPiece);
+		} else
 		{
-			this.twoSquareMovedPawn = null; // erase last saved move (for En
-			                                // passant)
+			this.twoSquareMovedPawn = null; // erase last saved move
+			move = new Move(begin, end, board.getPiece(begin), board.getPiece(end), CastlingType.NONE, false, null);
 		}
-		// }
+		
+		board.movePiece(board.getPiece(begin), end);
+		board.getPiece(end).markAsMoved();
+		
+		if(move.getCastlingMove() != CastlingType.NONE)
+		{
+			// Move the rook
+			if(begin.getPosX() + 2 == end.getPosX())
+			{
+				move(board.getField(7, begin.getPosY()), board.getField(end.getPosX() - 1, begin.getPosY()), false,
+				        false);
+			} else
+			{
+				move(board.getField(0, begin.getPosY()), board.getField(end.getPosX() + 1, begin.getPosY()), false,
+				        false);
+			}
+		}
 		
 		if(refresh)
 		{
@@ -416,12 +864,13 @@ public class ChessboardController
 		if(clearForwardHistory)
 		{
 			this.moves_history.clearMoveForwardStack();
-			this.moves_history.addMove(tempBegin, tempEnd, true, wasCastling, wasEnPassant, promotedPiece);
-		} else
-		{
-			this.moves_history.addMove(tempBegin, tempEnd, false, wasCastling, wasEnPassant, promotedPiece);
 		}
-	}/* endOf-move()- */
+		
+		if(enterIntoHistory)
+		{
+			this.moves_history.addMove(move, clearForwardHistory);
+		}
+	}
 	
 	public boolean redo()
 	{
@@ -430,9 +879,8 @@ public class ChessboardController
 	
 	public boolean redo(boolean refresh)
 	{
-		if(this.settings.getGameType() == Settings.GameType.LOCAL) // redo only
-		                                                           // for local
-		                                                           // game
+		// redo only for local game
+		if(this.settings.getGameType() == Settings.GameType.LOCAL)
 		{
 			Move first = this.moves_history.redo();
 			
@@ -444,15 +892,11 @@ public class ChessboardController
 				from = first.getFrom();
 				to = first.getTo();
 				
-				this.move(board.getField(from.getPosX(), from.getPosY()), board.getField(to.getPosX(), to.getPosY()), true, false);
+				this.move(board.getField(from.getPosX(), from.getPosY()), board.getField(to.getPosX(), to.getPosY()),
+				        true, false, true);
 				if(first.getPromotedPiece() != null)
 				{
-					Pawn pawn = (Pawn) board.getField(to.getPosX(), to.getPosY()).getPiece();
-					pawn.setSquare(null);
-					
-					board.getField(to.getPosX(), to.getPosY()).setPiece(first.getPromotedPiece());
-					Piece promoted = board.getField(to.getPosX(), to.getPosY()).getPiece();
-					promoted.setSquare(board.getField(to.getPosX(), to.getPosY()));
+					board.setPiece(to, first.getPromotedPiece());
 				}
 				return true;
 			}
@@ -477,9 +921,7 @@ public class ChessboardController
 			try
 			{
 				Piece moved = last.getMovedPiece();
-				board.getField(begin.getPosX(), begin.getPosY()).setPiece(moved);
-				
-				moved.setSquare(board.getField(begin.getPosX(), begin.getPosY()));
+				board.setPiece(begin, moved);
 				
 				Piece taken = last.getTakenPiece();
 				if(last.getCastlingMove() != CastlingType.NONE)
@@ -487,40 +929,36 @@ public class ChessboardController
 					Piece rook = null;
 					if(last.getCastlingMove() == CastlingType.SHORT_CASTLING)
 					{
-						rook = board.getField(end.getPosX() - 1, end.getPosY()).getPiece();
-						board.getField(7, begin.getPosY()).setPiece(rook);
-						rook.setSquare(board.getField(7, begin.getPosY()));
-						board.getField(end.getPosX() - 1, end.getPosY()).setPiece(null);
+						rook = board.getPiece(board.getField(end.getPosX() - 1, end.getPosY()));
+						board.setPiece(board.getField(7, begin.getPosY()), rook);
+						board.setPiece(board.getField(end.getPosX() - 1, end.getPosY()), null);
 					} else
 					{
-						rook = board.getField(end.getPosX() + 1, end.getPosY()).getPiece();
-						board.getField(0, begin.getPosY()).setPiece(rook);
-						rook.setSquare(board.getField(0, begin.getPosY()));
-						board.getField(end.getPosX() + 1, end.getPosY()).setPiece(null);
+						rook = board.getPiece(board.getField(end.getPosX() + 1, end.getPosY()));
+						board.setPiece(board.getField(0, begin.getPosY()), rook);
+						board.setPiece(board.getField(end.getPosX() + 1, end.getPosY()), null);
 					}
-					((King) moved).wasMotion = false;
-					((Rook) rook).wasMotion = false;
+					moved.markAsUnmoved();
+					rook.markAsUnmoved();
 				} else if(moved.getName().equals("Rook"))
 				{
-					((Rook) moved).wasMotion = false;
+					moved.markAsUnmoved();
 				} else if(moved.getName().equals("Pawn") && last.wasEnPassant())
 				{
 					Pawn pawn = (Pawn) last.getTakenPiece();
-					board.getField(end.getPosX(), begin.getPosY()).setPiece(pawn);
-					pawn.setSquare(board.getField(end.getPosX(), begin.getPosY()));
+					board.setPiece(board.getField(end.getPosX(), begin.getPosY()), pawn);
 					
 				} else if(moved.getName().equals("Pawn") && last.getPromotedPiece() != null)
 				{
-					Piece promoted = board.getField(end.getPosX(), end.getPosY()).getPiece();
-					promoted.setSquare(null);
-					board.getField(end.getPosX(), end.getPosY()).setPiece(null);
+					// TODO: wtf does this accomplish?
+					board.removePiece(end);
 				}
 				
 				// check one more move back for en passant
 				Move oneMoveEarlier = this.moves_history.getLastMoveFromHistory();
 				if(oneMoveEarlier != null && oneMoveEarlier.wasPawnTwoFieldsMove())
 				{
-					Piece canBeTakenEnPassant = board.getField(oneMoveEarlier.getTo().getPosX(), oneMoveEarlier.getTo().getPosY()).getPiece();
+					Piece canBeTakenEnPassant = board.getPiece(oneMoveEarlier.getTo());
 					if(canBeTakenEnPassant.getName().equals("Pawn"))
 					{
 						this.twoSquareMovedPawn = (Pawn) canBeTakenEnPassant;
@@ -529,11 +967,10 @@ public class ChessboardController
 				
 				if(taken != null && !last.wasEnPassant())
 				{
-					board.getField(end.getPosX(), end.getPosY()).setPiece(taken);
-					taken.setSquare(board.getField(end.getPosX(), end.getPosY()));
+					board.setPiece(board.getField(end.getPosX(), end.getPosY()), taken);
 				} else
 				{
-					board.getField(end.getPosX(), end.getPosY()).setPiece(null);
+					board.setPiece(board.getField(end.getPosX(), end.getPosY()), null);
 				}
 				
 				if(refresh)
@@ -557,7 +994,8 @@ public class ChessboardController
 		}
 	}
 	
-	public ChessboardModel getBoard() {
+	public ChessboardModel getBoard()
+	{
 		return board;
 	}
 	
@@ -583,10 +1021,13 @@ public class ChessboardController
 		return kingBlack;
 	}
 	
-	public boolean isEnPassantApplicable(Field field) {
-		if((twoSquareMovedPawn != null) && (field.equals(twoSquareMovedPawn.getSquare()))) {
+	public boolean isEnPassantApplicable(Field field)
+	{
+		if((twoSquareMovedPawn != null) && (field.equals(board.getField(twoSquareMovedPawn))))
+		{
 			return true;
-		} else {
+		} else
+		{
 			return false;
 		}
 	}

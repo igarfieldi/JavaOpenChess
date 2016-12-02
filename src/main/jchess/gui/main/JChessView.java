@@ -83,8 +83,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	public JChessView(SingleFrameApplication app)
 	{
 		super(app);
-		this.gameList.add(new Game());
-		activeGame = gameList.get(0);
+		activeGame = null;
 		
 		initializeComponents();
 		

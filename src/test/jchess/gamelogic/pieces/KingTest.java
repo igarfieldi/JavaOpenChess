@@ -3,6 +3,7 @@ package jchess.gamelogic.pieces;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,8 +16,8 @@ import jchess.gamelogic.field.Field;
 public class KingTest
 {
 	ChessboardController board;
-	Player p1;
-	Player p2;
+	Player white;
+	Player black;
 	King whiteKing;
 	King blackKing;
 	
@@ -24,14 +25,20 @@ public class KingTest
 	public void setUp() throws Exception
 	{
 		// TODO: test in reverse (white on top!)
-		p1 = new Player("p1", Player.Color.WHITE);
-		p2 = new Player("p2", Player.Color.BLACK);
-		p2.setBoardSide(true);
-		board = new ChessboardController(new Settings(), null, null);
-		whiteKing = new King(board, p1);
-		blackKing = new King(board, p2);
-		board.getBoard().getField(4, 7).setPiece(whiteKing);
-		board.getBoard().getField(4, 0).setPiece(blackKing);
+		Settings settings = new Settings();
+		board = new ChessboardController(settings, null, null);
+		white = settings.getWhitePlayer();
+		black = settings.getBlackPlayer();
+		black.setTopSide(true);
+		board.initialize();
+		// Need to remove the pieces we don't want
+		for(Field field : board.getBoard().getFields()) {
+			board.getBoard().removePiece(field);
+		}
+		whiteKing = new King(board, white);
+		blackKing = new King(board, black);
+		board.getBoard().setPiece(board.getBoard().getField(4, 7), whiteKing);
+		board.getBoard().setPiece(board.getBoard().getField(4, 0), blackKing);
 		board.setWhiteKing(whiteKing);
 		board.setBlackKing(blackKing);
 	}
@@ -40,7 +47,8 @@ public class KingTest
 	public void testPossibleMovesRegular()
 	{
 		movePiece(board.getBoard().getField(4, 4), whiteKing);
-		ArrayList<Field> moves = whiteKing.possibleMoves();
+		whiteKing.markAsMoved();
+		Set<Field> moves = board.getPossibleMoves(whiteKing);
 		assertTrue(moves.contains(board.getBoard().getField(3, 3)));
 		assertTrue(moves.contains(board.getBoard().getField(4, 3)));
 		assertTrue(moves.contains(board.getBoard().getField(5, 3)));
@@ -53,47 +61,47 @@ public class KingTest
 	
 	@Test
 	public void testCheckFromPawn() {
-		Pawn pawn = new Pawn(board, p2);
-		board.getBoard().getField(3, 6).setPiece(pawn);
-		assertTrue(whiteKing.isChecked());
+		Pawn pawn = new Pawn(board, black);
+		pawn.markAsMoved();
+		board.getBoard().setPiece(board.getBoard().getField(3, 6), pawn);
+		assertTrue(board.isChecked(white));
 		
 		movePiece(board.getBoard().getField(5, 6), pawn);
-		assertTrue(whiteKing.isChecked());
+		assertTrue(board.isChecked(white));
 		
 		movePiece(board.getBoard().getField(4, 6), pawn);
-		assertFalse(whiteKing.isChecked());
+		assertFalse(board.isChecked(white));
 	}
 	
 	@Test
 	public void testCheckFromBishop() {
-		checkForCheck(board.getBoard().getField(4, 4), new Bishop(board, p2));
+		checkForCheck(board.getBoard().getField(4, 4), new Bishop(board, black));
 	}
 	
 	@Test
 	public void testCheckFromRook() {
-		checkForCheck(board.getBoard().getField(4, 4), new Rook(board, p2));
+		checkForCheck(board.getBoard().getField(4, 4), new Rook(board, black));
 	}
 	
 	@Test
 	public void testCheckFromQueen() {
-		checkForCheck(board.getBoard().getField(4, 4), new Queen(board, p2));
+		checkForCheck(board.getBoard().getField(4, 4), new Queen(board, black));
 	}
 	
 	@Test
 	public void testCheckFromKnight() {
-		checkForCheck(board.getBoard().getField(4, 4), new Knight(board, p2));
+		checkForCheck(board.getBoard().getField(4, 4), new Knight(board, black));
 	}
 	
 	private void movePiece(Field field, Piece piece) {
-		piece.getSquare().setPiece(null);
-		field.setPiece(piece);
+		board.getBoard().movePiece(piece, field);
 	}
 	
 	private void checkForCheck(Field field, Piece piece) {
-		field.setPiece(piece);
-		for(Field currField : piece.possibleMoves()) {
+		board.getBoard().setPiece(field, piece);
+		for(Field currField : board.getPossibleMoves(piece)) {
 			movePiece(currField, whiteKing);
-			assertTrue(whiteKing.isChecked());
+			assertTrue(board.isChecked(white));
 		}
 	}
 }
