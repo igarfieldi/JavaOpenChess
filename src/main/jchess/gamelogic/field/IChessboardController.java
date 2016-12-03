@@ -4,18 +4,19 @@ import java.util.Set;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.pieces.Piece;
-import jchess.gamelogic.views.ChessboardView;
+import jchess.gamelogic.views.IChessboardView;
 
 public interface IChessboardController
 {
 	
-	ChessboardView getView();
+	public IChessboardView getView();
+	public void setView(IChessboardView view);
 	
-	Player getActivePlayer();
+	public Player getActivePlayer();
 	
-	void switchToNextPlayer();
+	public void switchToNextPlayer();
 	
-	void switchToPreviousPlayer();
+	public void switchToPreviousPlayer();
 	
 	/**
 	 * Returns the string representation of the given field.
@@ -23,7 +24,7 @@ public interface IChessboardController
 	 * @param field
 	 * @return
 	 */
-	String getFieldDesignation(Field field);
+	public String getFieldDesignation(Field field);
 	
 	/**
 	 * Returns the field specified by the given string, if applicable.
@@ -32,12 +33,12 @@ public interface IChessboardController
 	 *            Designation of desired field
 	 * @return field denoted by given string (or null if non-existent)
 	 */
-	Field getFieldFromDesignation(String designation);
+	public Field getFieldFromDesignation(String designation);
 	
 	/**
 	 * Brings the controller (and the associated board) into a clean state.
 	 */
-	void initialize();
+	public void initialize();
 	
 	/**
 	 * Returns the set of fields a piece can move to. This includes both
@@ -52,7 +53,7 @@ public interface IChessboardController
 	 *            if true, moves resulting in a check will be filtered out
 	 * @return Set of possible moves for the piece
 	 */
-	Set<Field> getPossibleMoves(Piece piece, boolean careForCheck);
+	public Set<Field> getPossibleMoves(Piece piece, boolean careForCheck);
 	
 	/**
 	 * Checks if the player is currently in a check position.
@@ -61,7 +62,7 @@ public interface IChessboardController
 	 *            Player to be checked
 	 * @return true if in check
 	 */
-	boolean isChecked(Player player);
+	public boolean isChecked(Player player);
 	
 	/**
 	 * Checks if the player is checkmated. This is equivalent to checking if the
@@ -71,9 +72,9 @@ public interface IChessboardController
 	 *            Player to be checked for
 	 * @return true if checkmated
 	 */
-	boolean isCheckmated(Player player);
+	public boolean isCheckmated(Player player);
 	
-	boolean isStalemate();
+	public boolean isStalemate();
 	
 	/**
 	 * Method move piece from square to square
@@ -85,12 +86,12 @@ public interface IChessboardController
 	 * @param refresh
 	 *            chessboard, default: true
 	 */
-	void move(Field begin, Field end, boolean refresh, boolean clearForwardHistory, boolean enterIntoHistory);
+	public void move(Field begin, Field end, boolean refresh, boolean clearForwardHistory, boolean enterIntoHistory);
 	
-	boolean redo();
+	public boolean redo();
 	
-	boolean undo();
+	public boolean undo();
 	
-	ChessboardModel getBoard();
+	public IChessboardModel getBoard();
 	
 }

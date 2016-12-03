@@ -35,11 +35,11 @@ import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
-import jchess.gamelogic.Game;
 import jchess.gamelogic.Settings;
-import jchess.gamelogic.field.ChessboardModel;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.IBoardActionHandler;
 import jchess.gamelogic.field.IChessboardController;
+import jchess.gamelogic.field.IChessboardModel;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gui.ThemeImageLoader;
 
@@ -48,14 +48,14 @@ import jchess.gui.ThemeImageLoader;
  * the squers of chessboard and sets the pieces(pawns) witch the owner is
  * current player on it.
  */
-public class ChessboardView extends JPanel implements MouseListener
+public class ChessboardView extends JPanel implements MouseListener, IChessboardView
 {
 	private static Logger log = Logger.getLogger(ChessboardView.class.getName());
 	
 	private IChessboardController controller;
-	private ChessboardModel board;
+	private IChessboardModel board;
 	private Settings settings;
-	private Game game; // TODO: somehow remove this dependency!
+	private IBoardActionHandler boardActionHandler;
 	
 	private static final long serialVersionUID = 1971410121780567341L;
 	public static final int TOP = 0;
@@ -73,14 +73,14 @@ public class ChessboardView extends JPanel implements MouseListener
 	// TODO: replace the final static images with the construction-time call to
 	// the GUI class?
 	private static Image image = ChessboardView.ORG_IMAGE;// image of chessboard
-	private static Image sel_square = ORG_SEL_IMAGE;// image of highlited square
-	private static Image able_square = ORG_ARLE_IMAGE;// image of square where
+	private static Image selectedSquare = ORG_SEL_IMAGE;// image of highlited square
+	private static Image ableSquare = ORG_ARLE_IMAGE;// image of square where
 	                                                  // piece can go
 	private Field activeSquare;
 	private Image upDownLabel = null;
 	private Image LeftRightLabel = null;
 	private Point topLeft = new Point(0, 0);
-	private float square_height;// height of square
+	private float squareHeight;// height of square
 	
 	/**
 	 * Chessboard class constructor
@@ -90,38 +90,109 @@ public class ChessboardView extends JPanel implements MouseListener
 	 * @param moves_history
 	 *            reference to Moves class object for this chessboard
 	 */
-	public ChessboardView(Settings settings, ChessboardModel board, IChessboardController controller, Game game)
+	public ChessboardView(Settings settings, IChessboardController controller)
 	{
-		this.game = game;
 		this.controller = controller;
-		this.board = board;
 		this.settings = settings;
-		this.setActiveSquare(null);
-		this.square_height = IMG_HEIGHT / 8;// we need to devide to know height
+		this.activeSquare = null;
+		this.squareHeight = IMG_HEIGHT / 8;// we need to devide to know height
 		                                    // of field
 		this.setDoubleBuffered(true);
-		this.drawLabels((int) this.square_height);
+		this.drawLabels((int) this.squareHeight);
 		this.addMouseListener(this);
 	}
+
+	@Override
+	public void render()
+	{
+		this.repaint();
+	}
+
+	@Override
+	public void initialize(IChessboardModel board, IBoardActionHandler handler)
+	{
+		this.board = board;
+		this.boardActionHandler = handler;
+	}
 	
-	private void renderPiece(Field field, Piece piece, Graphics g) {
-		if(g == null) {
+	/**
+	 * Renders the background of the board.
+	 * This includes the board itself and, if applicable, its labeling.
+	 * @param g2d Graphics object
+	 */
+	private void renderBackground(Graphics2D g2d) {
+		Point topLeftPoint = this.getTopLeftPoint();
+		if(this.settings.isLabelRenderingEnabled())
+		{
+			if(topLeftPoint.x <= 0 && topLeftPoint.y <= 0) // if renderLabels
+			                                               // and (0,0), than
+			                                               // draw it! (for
+			                                               // first run)
+			{
+				this.drawLabels();
+			}
+			g2d.drawImage(this.upDownLabel, 0, 0, null);
+			g2d.drawImage(this.upDownLabel, 0, ChessboardView.image.getHeight(null) + topLeftPoint.y, null);
+			g2d.drawImage(this.LeftRightLabel, 0, 0, null);
+			g2d.drawImage(this.LeftRightLabel, ChessboardView.image.getHeight(null) + topLeftPoint.x, 0, null);
+		}
+		g2d.drawImage(image, topLeftPoint.x, topLeftPoint.y, null);
+	}
+	
+	/**
+	 * Renders the given piece to the board.
+	 * @param piece Piece to render
+	 * @param g2d Graphics object
+	 */
+	private void renderPiece(Piece piece, Graphics2D g2d) {
+		if(g2d == null) {
 			throw new IllegalArgumentException("Graphics object must not be null!");
 		} else if(piece == null) {
 			throw new IllegalArgumentException("Piece object must not be null!");
 		}
 		
-		Graphics2D g2d = (Graphics2D) g;
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		
 		// Get field coordinates
 		Point topLeft = this.getTopLeftPoint();
 		int height = this.getSquareHeight();
+		Field field = board.getField(piece);
 		int x = (field.getPosX() * height) + topLeft.x;
 		int y = (field.getPosY() * height) + topLeft.y;
 		
 		// Render resized image (to fit current square size)
 		g2d.drawImage(piece.getImage(), x, y, height, height, null);
+	}
+	
+	/**
+	 * Renders the currently selected field.
+	 * @param g2d Graphics object
+	 */
+	private void renderSelectedField(Graphics2D g2d) {
+		if(activeSquare != null) // if some square is active
+		{
+			Point topLeftPoint = this.getTopLeftPoint();
+			g2d.drawImage(selectedSquare, (activeSquare.getPosX() * (int) squareHeight) + topLeftPoint.x,
+			        (activeSquare.getPosY() * (int) squareHeight) + topLeftPoint.y, null);
+			
+			this.renderPossibleMoves(g2d);
+		}
+	}
+	
+	/**
+	 * Renders all fields the currently selected piece can move to.
+	 * @param g2d Graphics object
+	 */
+	private void renderPossibleMoves(Graphics2D g2d) {
+		if(activeSquare != null) {
+			Piece piece = board.getPiece(activeSquare);
+			
+			if(piece != null) {
+				Point topLeftPoint = this.getTopLeftPoint();
+				for(Field field : controller.getPossibleMoves(board.getPiece(activeSquare), true)) {
+					g2d.drawImage(ableSquare, (field.getPosX() * (int) squareHeight) + topLeftPoint.x,
+					        (field.getPosY() * (int) squareHeight) + topLeftPoint.y, null);
+				}
+			}
+		}
 	}
 	
 	/**
@@ -133,9 +204,9 @@ public class ChessboardView extends JPanel implements MouseListener
 	 *            y position on chessboard
 	 * @return reference to searched square
 	 */
-	public Field getSquare(int x, int y)
+	private Field getSquare(int x, int y)
 	{
-		if((x > this.get_height()) || (y > this.get_widht())) // test if click
+		if((x > this.getHeight()) || (y > this.getWidth())) // test if click
 		                                                      // is out of
 		                                                      // chessboard
 		{
@@ -147,9 +218,9 @@ public class ChessboardView extends JPanel implements MouseListener
 			x -= this.upDownLabel.getHeight(null);
 			y -= this.upDownLabel.getHeight(null);
 		}
-		double square_x = x / square_height;// count which field in X was
+		double square_x = x / squareHeight;// count which field in X was
 		                                    // clicked
-		double square_y = y / square_height;// count which field in Y was
+		double square_y = y / squareHeight;// count which field in Y was
 		                                    // clicked
 		
 		if(square_x > (int) square_x) // if X is more than X parsed to Integer
@@ -160,8 +231,7 @@ public class ChessboardView extends JPanel implements MouseListener
 		{
 			square_y = (int) square_y + 1;// parse to integer and increment
 		}
-		// Square newActiveSquare =
-		// board.getField((int)square_x-1, (int)square_y-1);//4test
+		
 		log.log(Level.FINE, "Square X: " + square_x + " | Square Y: " + square_y);
 		try
 		{
@@ -179,14 +249,14 @@ public class ChessboardView extends JPanel implements MouseListener
 	 * @param sq
 	 *            square to select (when clicked))
 	 */
-	public void select(Field sq)
+	public void select(Field field)
 	{
-		this.setActiveSquare(sq);
+		this.activeSquare = field;
 		
-		if(sq != null) {
-			log.log(Level.FINE, "Active X: " + (sq.getPosX() + 1) + " | Active Y: " + (sq.getPosY() + 1));
+		if(field != null) {
+			log.log(Level.FINE, "Active X: " + (field.getPosX() + 1) + " | Active Y: " + (field.getPosY() + 1));
 		}
-		repaint();
+		this.render();
 		
 	}
 	
@@ -195,48 +265,38 @@ public class ChessboardView extends JPanel implements MouseListener
 	 */
 	public void unselect()
 	{
-		this.setActiveSquare(null);
-		// this.draw();//redraw
-		repaint();
-	}/*--endOf-unselect--*/
-	
-	public int get_widht()
-	{
-		return this.get_widht(false);
+		this.activeSquare = null;
+		this.render();
 	}
 	
-	public int get_height()
+	public int getWidth()
 	{
-		return this.get_height(false);
+		return this.getWidth(false);
 	}
 	
-	public int get_widht(boolean includeLables)
+	public int getHeight()
+	{
+		return this.getHeight(false);
+	}
+	
+	public int getWidth(boolean includeLables)
 	{
 		return this.getHeight();
 	}/*--endOf-get_widht--*/
 	
-	public int get_height(boolean includeLabels)
+	public int getHeight(boolean includeLabels)
 	{
 		if(this.settings.isLabelRenderingEnabled())
 		{
 			return ChessboardView.image.getHeight(null) + upDownLabel.getHeight(null);
 		}
 		return ChessboardView.image.getHeight(null);
-	}/*--endOf-get_height--*/
+	}
 	
 	public int getSquareHeight()
 	{
-		int result = (int) this.square_height;
+		int result = (int) this.squareHeight;
 		return result;
-	}
-	
-	/**
-	 * Annotations to superclass Game updateing and painting the crossboard
-	 */
-	@Override
-	public void update(Graphics g)
-	{
-		repaint();
 	}
 	
 	public Point getTopLeftPoint()
@@ -252,49 +312,20 @@ public class ChessboardView extends JPanel implements MouseListener
 	@Override
 	public void paintComponent(Graphics g)
 	{
+		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		Point topLeftPoint = this.getTopLeftPoint();
-		if(this.settings.isLabelRenderingEnabled())
-		{
-			if(topLeftPoint.x <= 0 && topLeftPoint.y <= 0) // if renderLabels
-			                                               // and (0,0), than
-			                                               // draw it! (for
-			                                               // first run)
-			{
-				this.drawLabels();
-			}
-			g2d.drawImage(this.upDownLabel, 0, 0, null);
-			g2d.drawImage(this.upDownLabel, 0, ChessboardView.image.getHeight(null) + topLeftPoint.y, null);
-			g2d.drawImage(this.LeftRightLabel, 0, 0, null);
-			g2d.drawImage(this.LeftRightLabel, ChessboardView.image.getHeight(null) + topLeftPoint.x, 0, null);
-		}
-		g2d.drawImage(image, topLeftPoint.x, topLeftPoint.y, null);// draw an
-		                                                           // Image of
-		                                                           // chessboard
-		for(Piece piece : board.getPieces()) {
-			this.renderPiece(board.getField(piece), piece, g);
-		}
 		
-		if(activeSquare != null) // if some square is active
-		{
-			g2d.drawImage(sel_square, (activeSquare.getPosX() * (int) square_height) + topLeftPoint.x,
-			        (activeSquare.getPosY() * (int) square_height) + topLeftPoint.y, null);// draw
-			                                                                                   // image
-			                                                                                   // of
-			                                                                                   // selected
-			                                                                                   // square
-			Field tmpSquare = board.getField(activeSquare.getPosX(), activeSquare.getPosY());
-			Piece tmpPiece = board.getPiece(tmpSquare);
-			if(tmpPiece != null)
-			{
-				for(Field field : controller.getPossibleMoves(board.getPiece(activeSquare), true)) {
-					g2d.drawImage(able_square, (field.getPosX() * (int) square_height) + topLeftPoint.x,
-					        (field.getPosY() * (int) square_height) + topLeftPoint.y, null);
-				}
+		this.renderBackground(g2d);
+		
+		if(board != null) {
+			for(Piece piece : board.getPieces()) {
+				this.renderPiece(piece, g2d);
 			}
+			
+			this.renderSelectedField(g2d);
 		}
-	}/*--endOf-paint--*/
+	}
 	
 	public void resizeChessboard(int height)
 	{
@@ -303,36 +334,35 @@ public class ChessboardView extends JPanel implements MouseListener
 		g.drawImage(ChessboardView.ORG_IMAGE, 0, 0, height, height, null);
 		g.dispose();
 		ChessboardView.image = resized.getScaledInstance(height, height, 0);
-		this.square_height = (float) (height / 8);
+		this.squareHeight = (float) (height / 8);
 		if(this.settings.isLabelRenderingEnabled())
 		{
 			height += 2 * (this.upDownLabel.getHeight(null));
 		}
 		this.setSize(height, height);
 		
-		resized = new BufferedImage((int) square_height, (int) square_height, BufferedImage.TYPE_INT_ARGB_PRE);
+		resized = new BufferedImage((int) squareHeight, (int) squareHeight, BufferedImage.TYPE_INT_ARGB_PRE);
 		g = resized.createGraphics();
-		g.drawImage(ChessboardView.ORG_ARLE_IMAGE, 0, 0, (int) square_height, (int) square_height, null);
+		g.drawImage(ChessboardView.ORG_ARLE_IMAGE, 0, 0, (int) squareHeight, (int) squareHeight, null);
 		g.dispose();
-		ChessboardView.able_square = resized.getScaledInstance((int) square_height, (int) square_height, 0);
+		ChessboardView.ableSquare = resized.getScaledInstance((int) squareHeight, (int) squareHeight, 0);
 		
-		resized = new BufferedImage((int) square_height, (int) square_height, BufferedImage.TYPE_INT_ARGB_PRE);
+		resized = new BufferedImage((int) squareHeight, (int) squareHeight, BufferedImage.TYPE_INT_ARGB_PRE);
 		g = resized.createGraphics();
-		g.drawImage(ChessboardView.ORG_SEL_IMAGE, 0, 0, (int) square_height, (int) square_height, null);
+		g.drawImage(ChessboardView.ORG_SEL_IMAGE, 0, 0, (int) squareHeight, (int) squareHeight, null);
 		g.dispose();
-		ChessboardView.sel_square = resized.getScaledInstance((int) square_height, (int) square_height, 0);
+		ChessboardView.selectedSquare = resized.getScaledInstance((int) squareHeight, (int) squareHeight, 0);
 		this.drawLabels();
 	}
 	
 	protected void drawLabels()
 	{
-		this.drawLabels((int) this.square_height);
+		this.drawLabels((int) this.squareHeight);
 	}
 	
 	protected final void drawLabels(int square_height)
 	{
-		// BufferedImage uDL = new BufferedImage(800, 800,
-		// BufferedImage.TYPE_3BYTE_BGR);
+		// TODO: clean up
 		int min_label_height = 20;
 		int labelHeight = (int) Math.ceil(square_height / 4);
 		labelHeight = (labelHeight < min_label_height) ? min_label_height : labelHeight;
@@ -401,11 +431,6 @@ public class ChessboardView extends JPanel implements MouseListener
 		return activeSquare;
 	}
 	
-	public void setActiveSquare(Field activeSquare)
-	{
-		this.activeSquare = activeSquare;
-	}
-	
 	@Override
 	public void mouseClicked(MouseEvent arg0)
 	{
@@ -417,17 +442,17 @@ public class ChessboardView extends JPanel implements MouseListener
 		if(event.getButton() == MouseEvent.BUTTON3) // right button
 		{
 			log.log(Level.FINE, "Right button click for undo");
-			this.game.getChessboard().undo();
+			this.boardActionHandler.onUndoRequested();
 		} else if(event.getButton() == MouseEvent.BUTTON2 && settings.getGameType() == Settings.GameType.LOCAL)
 		{
 			log.log(Level.FINE, "Middle button click for redo");
-			this.game.getChessboard().redo();
+			this.boardActionHandler.onRedoRequested();
 		} else if(event.getButton() == MouseEvent.BUTTON1) // left button
 		{
 			log.log(Level.FINE, "Left button click for field selection");
-			this.game.handleFieldSelection(this.getSquare(event.getX(), event.getY()));
+			this.boardActionHandler.onFieldSelection(this.getSquare(event.getX(), event.getY()));
 		}
-		this.repaint();
+		this.render();
 	}
 
 	@Override

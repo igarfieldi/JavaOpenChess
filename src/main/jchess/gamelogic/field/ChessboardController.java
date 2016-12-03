@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Set;
 
 import jchess.JChessApp;
-import jchess.gamelogic.Game;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
 import jchess.gamelogic.field.Moves.CastlingType;
@@ -39,7 +38,7 @@ import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.pieces.Queen;
 import jchess.gamelogic.pieces.Rook;
-import jchess.gamelogic.views.ChessboardView;
+import jchess.gamelogic.views.IChessboardView;
 import jchess.util.ArgumentChecker;
 import jchess.util.Direction;
 
@@ -55,8 +54,8 @@ public class ChessboardController implements IChessboardController
 	private static final String[] FIELD_LETTERS = { "a", "b", "c", "d", "e", "f", "g", "h" };
 	private static final String[] FIELD_NUMBERS = { "1", "2", "3", "4", "5", "6", "7", "8" };
 	
-	private ChessboardModel board;
-	private ChessboardView view;
+	private IChessboardModel board;
+	private IChessboardView view;
 	
 	private Player whitePlayer;
 	private Player blackPlayer;
@@ -76,19 +75,22 @@ public class ChessboardController implements IChessboardController
 	 * @param moves_history
 	 *            reference to Moves class object for this chessboard
 	 */
-	public ChessboardController(Settings settings, Moves moves_history, Game game)
+	public ChessboardController(Settings settings, Moves moves_history)
 	{
 		this.board = new ChessboardModel(WIDTH, HEIGHT);
-		this.view = new ChessboardView(settings, board, this, game);
 		this.settings = settings;
 		this.movesHistory = moves_history;
+	}
+	
+	public void setView(IChessboardView view) {
+		this.view = view;
 	}
 	
 	/* (non-Javadoc)
 	 * @see jchess.gamelogic.field.IChessboardController#getView()
 	 */
 	@Override
-	public ChessboardView getView()
+	public IChessboardView getView()
 	{
 		return view;
 	}
@@ -294,7 +296,7 @@ public class ChessboardController implements IChessboardController
 				// use .remove()
 				Field currField = fieldIterator.next();
 				// Simulate the board state
-				ChessboardModel tempModel = board;
+				IChessboardModel tempModel = board;
 				board = board.copy();
 				
 				this.move(tempModel.getField(piece), currField, false, false, false);
@@ -797,7 +799,7 @@ public class ChessboardController implements IChessboardController
 		if(refresh)
 		{
 			view.unselect();// unselect square
-			view.repaint();
+			view.render();
 		}
 		
 		if(clearForwardHistory)
@@ -912,7 +914,7 @@ public class ChessboardController implements IChessboardController
 				
 				
 				view.unselect();// unselect square
-				view.repaint();
+				view.render();
 				
 			} catch(java.lang.ArrayIndexOutOfBoundsException exc)
 			{
@@ -933,7 +935,7 @@ public class ChessboardController implements IChessboardController
 	 * @see jchess.gamelogic.field.IChessboardController#getBoard()
 	 */
 	@Override
-	public ChessboardModel getBoard()
+	public IChessboardModel getBoard()
 	{
 		return board;
 	}

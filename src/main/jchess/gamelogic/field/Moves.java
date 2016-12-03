@@ -27,7 +27,6 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
@@ -493,7 +492,7 @@ public class Moves extends AbstractTableModel
 		{
 			if(!Moves.isMoveCorrect(locMove.trim())) // if not
 			{
-				JOptionPane.showMessageDialog(this.game.getView(), Localization.getMessage("invalid_file_to_load") + move);
+				this.game.getView().showMessage("invalid_file_to_load", move.toString());
 				return;// show message and finish reading game
 			}
 		}
@@ -534,7 +533,7 @@ public class Moves extends AbstractTableModel
 				
 				if(!canMove) // if move is illegal
 				{
-					JOptionPane.showMessageDialog(this.game.getView(), Localization.getMessage("illegal_move_on") + locMove);
+					this.game.getView().showMessage("illegal_move_on", locMove);
 					return;// finish reading game and show message
 				}
 				continue;
@@ -589,8 +588,8 @@ public class Moves extends AbstractTableModel
 			canMove = this.game.simulateMove(xFrom, yFrom, xTo, yTo);
 			if(!canMove) // if move is illegal
 			{
-				JOptionPane.showMessageDialog(this.game.getView(), Localization.getMessage("illegal_move_on") + locMove);
-				this.game.getChessboard().getView().setActiveSquare(null);
+				this.game.getView().showMessage("illegal_move_on", locMove);
+				this.game.getChessboard().getView().unselect();
 				return;// finish reading game and show message
 			}
 		}

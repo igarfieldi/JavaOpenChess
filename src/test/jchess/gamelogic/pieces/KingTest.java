@@ -27,7 +27,7 @@ public class KingTest
 	{
 		// TODO: test in reverse (white on top!)
 		Settings settings = new Settings();
-		board = new ChessboardController(settings, null, null);
+		board = new ChessboardController(settings, null);
 		white = settings.getWhitePlayer();
 		black = settings.getBlackPlayer();
 		black.setTopSide(true);

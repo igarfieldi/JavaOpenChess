@@ -60,6 +60,7 @@ import org.jdesktop.application.TaskMonitor;
 import jchess.JChessApp;
 import jchess.Localization;
 import jchess.gamelogic.Game;
+import jchess.gamelogic.views.GameView;
 import jchess.gui.ThemeConfigurator;
 import jchess.gui.secondary.JChessAboutBox;
 import jchess.gui.secondary.PawnPromotionWindow;
@@ -563,7 +564,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	{
 		Game newGameTab = new Game();
 		this.gameList.add(newGameTab);
-		this.gamesPane.addTab(title, newGameTab.getView());
+		this.gamesPane.addTab(title, (GameView)newGameTab.getView());
 		return newGameTab;
 	}
 	
@@ -594,10 +595,9 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 						createSaveFile(selectedFile);
 					else if(selectedFile.exists())
 					{
-						int opt = JOptionPane.showConfirmDialog(tempGUI.getView(), Localization.getMessage("file_exists"),
-						        Localization.getMessage("file_exists"), JOptionPane.YES_NO_OPTION);
-						if(opt == JOptionPane.NO_OPTION) // if user choose to now overwrite
-							continue; // go back to file choose
+						if(!tempGUI.getView().showYesNoDialog("file_exists")) {
+							continue;
+						}
 					}
 					if(selectedFile.canWrite())
 						tempGUI.saveGame(selectedFile);

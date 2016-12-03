@@ -129,6 +129,6 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 	{
 		gameWindow.newGame();
 		this.newGameWindow.setVisible(false);
-		gameWindow.getChessboard().getView().repaint();
+		gameWindow.getChessboard().getView().render();
 	}
 }

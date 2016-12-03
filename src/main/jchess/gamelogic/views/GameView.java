@@ -5,10 +5,13 @@ import java.awt.Point;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-public class GameView extends JPanel implements ComponentListener
+import jchess.Localization;
+
+public class GameView extends JPanel implements ComponentListener, IGameView
 {
 	private static final long serialVersionUID = -5137905954028032336L;
 	
@@ -43,7 +46,7 @@ public class GameView extends JPanel implements ComponentListener
 		this.setDoubleBuffered(true);
 	}
 	
-	public ChessboardView getChessboardView() {
+	public IChessboardView getChessboardView() {
 		return boardView;
 	}
 
@@ -60,6 +63,23 @@ public class GameView extends JPanel implements ComponentListener
 		this.historyView.setLocation(new Point(chess_height + 5, 100));
 		this.historyView.setSize(this.historyView.getWidth(), chess_height - 100);
 		this.clockView.setLocation(new Point(chess_height + 5, 0));
+	}
+
+	public void render() {
+		this.repaint();
+	}
+	
+	public void showMessage(String key) {
+		JOptionPane.showMessageDialog(this, Localization.getMessage(key));
+	}
+	
+	public void showMessage(String key, String args) {
+		JOptionPane.showMessageDialog(this, Localization.getMessage(key) + ": " + args);
+	}
+	
+	public boolean showYesNoDialog(String key) {
+		return JOptionPane.showConfirmDialog(this, Localization.getMessage(key),
+				Localization.getMessage(key), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
 	}
 
 	@Override

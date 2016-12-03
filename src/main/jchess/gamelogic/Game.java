@@ -36,19 +36,22 @@ import jchess.Localization;
 import jchess.gamelogic.clock.GameClock;
 import jchess.gamelogic.field.ChessboardController;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.IBoardActionHandler;
 import jchess.gamelogic.field.Moves;
+import jchess.gamelogic.views.ChessboardView;
 import jchess.gamelogic.views.GameView;
+import jchess.gamelogic.views.IGameView;
 
 /**
  * Class responsible for the starts of new games, loading games, saving it, and
  * for ending it. This class is also responsible for appoing player with have a
  * move at the moment
  */
-public class Game
+public class Game implements IBoardActionHandler
 {
 	private static Logger log = Logger.getLogger(Game.class.getName());
 	
-	private GameView gameView;
+	private IGameView gameView;
 	private Settings settings;
 	private boolean blockedChessboard;
 	private ChessboardController chessboard;
@@ -59,15 +62,18 @@ public class Game
 	{
 		this.moves = new Moves(this);
 		settings = new Settings();
-		chessboard = new ChessboardController(this.settings, this.moves, this);
+		chessboard = new ChessboardController(this.settings, this.moves);
+		ChessboardView view = new ChessboardView(settings, chessboard);
+		view.initialize(chessboard.getBoard(), this);
+		chessboard.setView(view);
 		gameClock = new GameClock(this);
 		
 		this.blockedChessboard = false;
 		
-		gameView = new GameView(chessboard.getView(), gameClock.getView(), this.moves.getScrollPane());
+		gameView = new GameView(view, gameClock.getView(), this.moves.getScrollPane());
 	}
 	
-	public GameView getView()
+	public IGameView getView()
 	{
 		return gameView;
 	}
@@ -97,7 +103,18 @@ public class Game
 		this.settings = settings;
 	}
 	
-	public void handleFieldSelection(Field selectedField)
+	@Override
+	public void onUndoRequested() {
+		this.undo();
+	}
+	
+	@Override
+	public void onRedoRequested() {
+		this.redo();
+	};
+	
+	@Override
+	public void onFieldSelection(Field selectedField)
 	{
 		log.log(Level.FINE, "Selected field: " + selectedField);
 		
@@ -162,7 +179,7 @@ public class Game
 			{
 				// TODO: how could there be a NullPointerException here?
 				log.log(Level.SEVERE, "Encountered exception while determining click position!", exc);
-				gameView.repaint();
+				gameView.render();
 				return;
 			}
 		} else
@@ -187,7 +204,7 @@ public class Game
 		} catch(java.io.IOException exc)
 		{
 			log.log(Level.SEVERE, "Error creating FileWriter!", exc);
-			JOptionPane.showMessageDialog(gameView, Localization.getMessage("error_writing_to_file") + ": " + exc);
+			gameView.showMessage("error_writing_to_file", exc.toString());
 			return;
 		}
 		Calendar cal = Calendar.getInstance();
@@ -206,10 +223,10 @@ public class Game
 		} catch(java.io.IOException exc)
 		{
 			log.log(Level.SEVERE, "Error saving game file!", exc);
-			JOptionPane.showMessageDialog(gameView, Localization.getMessage("error_writing_to_file") + ": " + exc);
+			gameView.showMessage("error_writing_to_file", exc.toString());
 			return;
 		}
-		JOptionPane.showMessageDialog(gameView, Localization.getMessage("game_saved_properly"));
+		gameView.showMessage("game_saved_properly");
 	}
 	
 	/**
@@ -266,7 +283,7 @@ public class Game
 		newGUI.blockedChessboard = true;
 		newGUI.moves.setMoves(tempStr);
 		newGUI.blockedChessboard = false;
-		newGUI.chessboard.getView().repaint();
+		newGUI.chessboard.getView().render();
 		// newGUI.chessboard.draw();
 	}
 	
@@ -345,12 +362,14 @@ public class Game
 		Game activeGame = JChessApp.view.getActiveTabGame();
 		if(activeGame != null && JChessApp.view.getNumberOfOpenedTabs() == 1)
 		{
-			activeGame.chessboard.getView().resizeChessboard(activeGame.chessboard.getView().get_height(false));
-			activeGame.chessboard.getView().repaint();
-			activeGame.getView().repaint();
+			// TODO: ugly af
+			activeGame.chessboard.getView().resizeChessboard(((ChessboardView)activeGame.chessboard.getView()).getHeight(false));
+			
+			activeGame.chessboard.getView().render();
+			activeGame.getView().render();
 		}
-		chessboard.getView().repaint();
-		this.getView().repaint();
+		chessboard.getView().render();
+		this.getView().render();
 		// dirty hacks ends over here :)
 	}
 	
@@ -466,7 +485,7 @@ public class Game
 				this.switchActive();
 			} else
 			{
-				chessboard.getView().repaint();// repaint for sure
+				chessboard.getView().render();// repaint for sure
 			}
 		}
 		return status;
@@ -518,7 +537,7 @@ public class Game
 				this.nextMove();
 			} else
 			{
-				chessboard.getView().repaint();// repaint for sure
+				chessboard.getView().render();// repaint for sure
 			}
 		} else
 		{

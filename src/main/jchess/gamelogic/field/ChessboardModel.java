@@ -11,10 +11,9 @@ import jchess.gamelogic.Player;
 import jchess.gamelogic.pieces.Piece;
 import jchess.util.ArgumentChecker;
 import jchess.util.BiMap;
-import jchess.util.Copyable;
 import jchess.util.Direction;
 
-public class ChessboardModel implements Copyable<ChessboardModel>
+public class ChessboardModel implements IChessboardModel
 {
 	private final int WIDTH;
 	private final int HEIGHT;
