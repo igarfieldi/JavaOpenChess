@@ -24,21 +24,20 @@ public class GameView extends JPanel implements ComponentListener, IGameView
 		this.clockView = clockView;
 		this.historyView = historyView;
 
-		this.boardView.setSize(ChessboardView.IMG_HEIGHT, ChessboardView.IMG_WIDTH);
+		this.add(this.boardView);
 		this.boardView.setLocation(new Point(0, 0));
 		this.boardView.setVisible(true); // TODO: necessary?
-		this.add(this.boardView);
-		
+
+		this.add(this.clockView);
 		this.clockView.setSize(new Dimension(200, 100));
 		this.clockView.setLocation(new Point(500, 0));
 		this.clockView.setVisible(true); // TODO: necessary?
-		this.add(this.clockView);
-		
+
 		// TODO: replace with HistoryView class/interface
+		this.add(this.historyView);
 		this.historyView.setSize(new Dimension(180, 350));
 		this.historyView.setLocation(new Point(500, 121));
 		this.historyView.setVisible(true); // TODO: necessary?
-		this.add(this.historyView);
 
 		// General layout stuff
 		this.setLayout(null);

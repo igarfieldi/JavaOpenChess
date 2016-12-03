@@ -33,7 +33,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -106,7 +105,7 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 	{
 		try
 		{
-			this.themePreviewImage = new ImageIcon(ThemeImageLoader.loadThemeImage("Preview.png"));
+			this.themePreviewImage = new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Preview.png"));
 		}
 		catch(NullPointerException exception)
 		{
@@ -130,7 +129,7 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 	public void valueChanged(ListSelectionEvent event)
 	{
 		String themeName = this.themesList.getModel().getElementAt(this.themesList.getSelectedIndex()).toString();
-		this.themePreviewImage = new ImageIcon(ThemeImageLoader.loadThemeImage("Preview.png", themeName));
+		this.themePreviewImage = new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Preview.png", themeName));
 		this.themePreviewButton.setIcon(this.themePreviewImage);
 	}
 
@@ -142,8 +141,8 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 			String themeName = this.themesList.getModel().getElementAt(selectedThemeIndex).toString();
 			ThemeConfigurator.saveThemeConfiguration(themeName);
 			
-			JOptionPane.showMessageDialog(this, Localization.getMessage("changes_visible_after_restart"));
 			this.setVisible(false);
+			this.getParent().repaint();
 		}
 	}
 }

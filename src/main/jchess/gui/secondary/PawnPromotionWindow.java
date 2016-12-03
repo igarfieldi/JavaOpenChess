@@ -80,10 +80,10 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 
 	private void createPieceButtons(String color)
 	{
-		this.knightButton = new JButton(new ImageIcon(ThemeImageLoader.loadThemeImage("Knight-" + color + ".png")));
-        this.bishopButton = new JButton(new ImageIcon(ThemeImageLoader.loadThemeImage("Bishop-" + color + ".png")));
-        this.rookButton = new JButton(new ImageIcon(ThemeImageLoader.loadThemeImage("Rook-" + color + ".png")));
-        this.queenButton = new JButton(new ImageIcon(ThemeImageLoader.loadThemeImage("Queen-" + color + ".png")));
+		this.knightButton = new JButton(new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Knight-" + color + ".png")));
+        this.bishopButton = new JButton(new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Bishop-" + color + ".png")));
+        this.rookButton = new JButton(new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Rook-" + color + ".png")));
+        this.queenButton = new JButton(new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Queen-" + color + ".png")));
 	}
 	
 	private void initializePieceButtons()
@@ -108,10 +108,10 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 	 */
 	public void setColor(String color)
 	{
-		this.knightButton.setIcon(new ImageIcon(ThemeImageLoader.loadThemeImage("Knight-" + color + ".png")));
-		this.bishopButton.setIcon(new ImageIcon(ThemeImageLoader.loadThemeImage("Bishop-" + color + ".png")));
-		this.rookButton.setIcon(new ImageIcon(ThemeImageLoader.loadThemeImage("Rook-" + color + ".png")));
-		this.queenButton.setIcon(new ImageIcon(ThemeImageLoader.loadThemeImage("Queen-" + color + ".png")));
+		this.knightButton.setIcon(new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Knight-" + color + ".png")));
+		this.bishopButton.setIcon(new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Bishop-" + color + ".png")));
+		this.rookButton.setIcon(new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Rook-" + color + ".png")));
+		this.queenButton.setIcon(new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Queen-" + color + ".png")));
 	}
 	
 	/**

@@ -42,19 +42,23 @@ public class ThemeConfigurator
 {
 	private static Logger log = Logger.getLogger(LocalSettingsPanel.class.getName());
 	
+	private static Properties configuration;
+	
 	public static Properties getConfigFile()
 	{
-		Properties configuration = new Properties();
-		// Configuration files cannot be part of the JAR, so it's just a file in
-		// the same directory
-		File configFile = new File(ThemeConfigurator.getJarPath() + File.separator + "config.txt");
-		log.info("Configuration file: " + configFile);
-		
-		if(!configFile.exists())
-			ThemeConfigurator.storeConfigFile(configuration);
-		
-		loadThemeConfiguration(configuration, configFile);
-		
+		if(configuration == null) {
+			configuration = new Properties();
+    		// Configuration files cannot be part of the JAR, so it's just a file in
+    		// the same directory
+    		File configFile = new File(ThemeConfigurator.getJarPath() + File.separator + "config.txt");
+    		log.info("Configuration file: " + configFile);
+    		
+    		if(!configFile.exists())
+    			ThemeConfigurator.storeConfigFile(configuration);
+    		
+    		loadThemeConfiguration(configuration, configFile);
+		}
+    		
 		return configuration;
 	}
 

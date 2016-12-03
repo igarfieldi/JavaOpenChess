@@ -49,7 +49,7 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 	public JChessTabbedPane()
 	{
 		super();
-		this.addIcon = ThemeImageLoader.loadThemeImage("add-tab-icon.png");
+		this.addIcon = ThemeImageLoader.getInstance().loadThemeImage("add-tab-icon.png");
 		
 		this.setDoubleBuffered(true);
 		super.addMouseListener(this);
@@ -106,7 +106,7 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 	private void showNewGameWindow()
 	{
 		if(JChessApp.view.newGameFrame == null)
-			JChessApp.view.newGameFrame = new NewGameWindow();
+			JChessApp.view.newGameFrame = new NewGameWindow(JChessApp.view.getFrame());
 		
 		JChessApp.getApplication().show(JChessApp.view.newGameFrame);
 	}
@@ -154,7 +154,7 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 		private int xPosition;
 		private int yPosition;
 		
-		private Image iconImage = ThemeImageLoader.loadThemeImage("close-tab-icon.png");
+		private Image iconImage = ThemeImageLoader.getInstance().loadThemeImage("close-tab-icon.png");
 		private Icon fileIcon;
 		
 		public CloseIcon(Icon fileIcon)

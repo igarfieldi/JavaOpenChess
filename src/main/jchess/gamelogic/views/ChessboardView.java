@@ -30,6 +30,8 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,36 +53,26 @@ import jchess.gui.ThemeImageLoader;
 public class ChessboardView extends JPanel implements MouseListener, IChessboardView
 {
 	private static Logger log = Logger.getLogger(ChessboardView.class.getName());
+	private static final long serialVersionUID = 1971410121780567341L;
+	
+	private static final int INITIAL_HEIGHT = 480;
+	private static final String[] FIELD_LETTERS = { "a", "b", "c", "d", "e", "f", "g", "h" };
+	private static final String[] FIELD_NUMBERS = { "1", "2", "3", "4", "5", "6", "7", "8" };
 	
 	private IChessboardController controller;
 	private IChessboardModel board;
 	private Settings settings;
 	private IBoardActionHandler boardActionHandler;
+
+	private final ThemeImageLoader themeLoader;
+	private final int MIN_LABEL_HEIGHT = 20;
 	
-	private static final long serialVersionUID = 1971410121780567341L;
-	public static final int TOP = 0;
-	public static final int BOTTOM = 7;
-	public static final int IMG_X = 5;// image x position (used in JChessView
-	                                  // class!)
-	public static final int IMG_Y = IMG_X;// image y position (used in
-	                                      // JChessView class!)
-	public static final int IMG_WIDTH = 480;// image width
-	public static final int IMG_HEIGHT = IMG_WIDTH;// image height
-	private static final Image ORG_IMAGE = ThemeImageLoader.loadThemeImage("chessboard.png");
-	private static final Image ORG_SEL_IMAGE = ThemeImageLoader.loadThemeImage("sel_square.png");
-	private static final Image ORG_ARLE_IMAGE = ThemeImageLoader.loadThemeImage("able_square.png");
-	
-	// TODO: replace the final static images with the construction-time call to
-	// the GUI class?
-	private static Image image = ChessboardView.ORG_IMAGE;// image of chessboard
-	private static Image selectedSquare = ORG_SEL_IMAGE;// image of highlited square
-	private static Image ableSquare = ORG_ARLE_IMAGE;// image of square where
-	                                                  // piece can go
-	private Field activeSquare;
+	private Field activeField;
 	private Image upDownLabel = null;
-	private Image LeftRightLabel = null;
-	private Point topLeft = new Point(0, 0);
-	private float squareHeight;// height of square
+	private Image leftRightLabel = null;
+	private int squareHeight;
+	private int chessboardHeight;
+	private int labelHeight;
 	
 	/**
 	 * Chessboard class constructor
@@ -94,11 +86,13 @@ public class ChessboardView extends JPanel implements MouseListener, IChessboard
 	{
 		this.controller = controller;
 		this.settings = settings;
-		this.activeSquare = null;
-		this.squareHeight = IMG_HEIGHT / 8;// we need to devide to know height
-		                                    // of field
+		this.activeField = null;
+		this.resizeChessboard(INITIAL_HEIGHT);
+		this.drawLabels();
+		
+		themeLoader = ThemeImageLoader.getInstance();
+		
 		this.setDoubleBuffered(true);
-		this.drawLabels((int) this.squareHeight);
 		this.addMouseListener(this);
 	}
 
@@ -121,22 +115,20 @@ public class ChessboardView extends JPanel implements MouseListener, IChessboard
 	 * @param g2d Graphics object
 	 */
 	private void renderBackground(Graphics2D g2d) {
-		Point topLeftPoint = this.getTopLeftPoint();
+		Point topLeftPoint = this.getChessboardLocation();
 		if(this.settings.isLabelRenderingEnabled())
 		{
-			if(topLeftPoint.x <= 0 && topLeftPoint.y <= 0) // if renderLabels
-			                                               // and (0,0), than
-			                                               // draw it! (for
-			                                               // first run)
+			if(upDownLabel == null || leftRightLabel == null)
 			{
 				this.drawLabels();
 			}
 			g2d.drawImage(this.upDownLabel, 0, 0, null);
-			g2d.drawImage(this.upDownLabel, 0, ChessboardView.image.getHeight(null) + topLeftPoint.y, null);
-			g2d.drawImage(this.LeftRightLabel, 0, 0, null);
-			g2d.drawImage(this.LeftRightLabel, ChessboardView.image.getHeight(null) + topLeftPoint.x, 0, null);
+			g2d.drawImage(this.upDownLabel, 0, this.getHeight() - this.labelHeight, null);
+			g2d.drawImage(this.leftRightLabel, 0, 0, null);
+			g2d.drawImage(this.leftRightLabel, this.getHeight() - this.labelHeight, 0, null);
 		}
-		g2d.drawImage(image, topLeftPoint.x, topLeftPoint.y, null);
+		g2d.drawImage(themeLoader.loadThemeImage("chessboard.png"),
+				topLeftPoint.x, topLeftPoint.y, chessboardHeight, chessboardHeight, this);
 	}
 	
 	/**
@@ -152,14 +144,14 @@ public class ChessboardView extends JPanel implements MouseListener, IChessboard
 		}
 		
 		// Get field coordinates
-		Point topLeft = this.getTopLeftPoint();
-		int height = this.getSquareHeight();
+		Point topLeft = this.getChessboardLocation();
+		int height = this.squareHeight;
 		Field field = board.getField(piece);
 		int x = (field.getPosX() * height) + topLeft.x;
 		int y = (field.getPosY() * height) + topLeft.y;
 		
 		// Render resized image (to fit current square size)
-		g2d.drawImage(piece.getImage(), x, y, height, height, null);
+		g2d.drawImage(piece.getImage(), x, y, height, height, this);
 	}
 	
 	/**
@@ -167,11 +159,13 @@ public class ChessboardView extends JPanel implements MouseListener, IChessboard
 	 * @param g2d Graphics object
 	 */
 	private void renderSelectedField(Graphics2D g2d) {
-		if(activeSquare != null) // if some square is active
+		if(activeField != null) // if some square is active
 		{
-			Point topLeftPoint = this.getTopLeftPoint();
-			g2d.drawImage(selectedSquare, (activeSquare.getPosX() * (int) squareHeight) + topLeftPoint.x,
-			        (activeSquare.getPosY() * (int) squareHeight) + topLeftPoint.y, null);
+			Point topLeftPoint = this.getChessboardLocation();
+			g2d.drawImage(themeLoader.loadThemeImage("sel_square.png"),
+					(activeField.getPosX() * squareHeight) + topLeftPoint.x,
+			        (activeField.getPosY() * squareHeight) + topLeftPoint.y, 
+			        squareHeight, squareHeight, null);
 			
 			this.renderPossibleMoves(g2d);
 		}
@@ -182,14 +176,16 @@ public class ChessboardView extends JPanel implements MouseListener, IChessboard
 	 * @param g2d Graphics object
 	 */
 	private void renderPossibleMoves(Graphics2D g2d) {
-		if(activeSquare != null) {
-			Piece piece = board.getPiece(activeSquare);
+		if(activeField != null) {
+			Piece piece = board.getPiece(activeField);
 			
 			if(piece != null) {
-				Point topLeftPoint = this.getTopLeftPoint();
-				for(Field field : controller.getPossibleMoves(board.getPiece(activeSquare), true)) {
-					g2d.drawImage(ableSquare, (field.getPosX() * (int) squareHeight) + topLeftPoint.x,
-					        (field.getPosY() * (int) squareHeight) + topLeftPoint.y, null);
+				Point topLeftPoint = this.getChessboardLocation();
+				for(Field field : controller.getPossibleMoves(board.getPiece(activeField), true)) {
+					g2d.drawImage(themeLoader.loadThemeImage("able_square.png"),
+							(field.getPosX() * squareHeight) + topLeftPoint.x,
+					        (field.getPosY() * squareHeight) + topLeftPoint.y,
+					        squareHeight, squareHeight, null);
 				}
 			}
 		}
@@ -206,39 +202,30 @@ public class ChessboardView extends JPanel implements MouseListener, IChessboard
 	 */
 	private Field getSquare(int x, int y)
 	{
-		if((x > this.getHeight()) || (y > this.getWidth())) // test if click
-		                                                      // is out of
-		                                                      // chessboard
+		// Test if click is outside of chessboard
+		if((x > labelHeight + chessboardHeight) || (y > labelHeight + chessboardHeight))
 		{
 			log.log(Level.FINE, "Clicked outside of the chessboard");
 			return null;
 		}
 		if(this.settings.isLabelRenderingEnabled())
 		{
-			x -= this.upDownLabel.getHeight(null);
-			y -= this.upDownLabel.getHeight(null);
-		}
-		double square_x = x / squareHeight;// count which field in X was
-		                                    // clicked
-		double square_y = y / squareHeight;// count which field in Y was
-		                                    // clicked
-		
-		if(square_x > (int) square_x) // if X is more than X parsed to Integer
-		{
-			square_x = (int) square_x + 1;// parse to integer and increment
-		}
-		if(square_y > (int) square_y) // if X is more than X parsed to Integer
-		{
-			square_y = (int) square_y + 1;// parse to integer and increment
+			// If labels have been rendered, we need to deduct their size
+			x -= this.labelHeight;
+			y -= this.labelHeight;
 		}
 		
-		log.log(Level.FINE, "Square X: " + square_x + " | Square Y: " + square_y);
-		try
-		{
-			return board.getField((int) square_x - 1, (int) square_y - 1);
-		} catch(java.lang.ArrayIndexOutOfBoundsException exc)
-		{
-			log.log(Level.FINER, "Clicked field outside of chessboard: (" + x + "|" + y + ")");
+		// Every squareHeight a new square starts (who knew)
+		int squareX = x / squareHeight;
+		int squareY = y / squareHeight;
+		
+		log.log(Level.FINE, "Square X: " + squareX + " | Square Y: " + squareY);
+		
+		try {
+			return board.getField(squareX, squareY);
+		} catch(ArrayIndexOutOfBoundsException exc) {
+			// Realistically should only happen when something with the board is f'ed up
+			log.log(Level.SEVERE, "Failed to retrieve chessboard field!", exc);
 			return null;
 		}
 	}
@@ -251,13 +238,12 @@ public class ChessboardView extends JPanel implements MouseListener, IChessboard
 	 */
 	public void select(Field field)
 	{
-		this.activeSquare = field;
+		this.activeField = field;
 		
 		if(field != null) {
 			log.log(Level.FINE, "Active X: " + (field.getPosX() + 1) + " | Active Y: " + (field.getPosY() + 1));
 		}
 		this.render();
-		
 	}
 	
 	/**
@@ -265,48 +251,17 @@ public class ChessboardView extends JPanel implements MouseListener, IChessboard
 	 */
 	public void unselect()
 	{
-		this.activeSquare = null;
+		this.activeField = null;
 		this.render();
 	}
 	
-	public int getWidth()
-	{
-		return this.getWidth(false);
-	}
-	
-	public int getHeight()
-	{
-		return this.getHeight(false);
-	}
-	
-	public int getWidth(boolean includeLables)
-	{
-		return this.getHeight();
-	}/*--endOf-get_widht--*/
-	
-	public int getHeight(boolean includeLabels)
+	public Point getChessboardLocation()
 	{
 		if(this.settings.isLabelRenderingEnabled())
 		{
-			return ChessboardView.image.getHeight(null) + upDownLabel.getHeight(null);
+			return new Point(this.labelHeight, this.labelHeight);
 		}
-		return ChessboardView.image.getHeight(null);
-	}
-	
-	public int getSquareHeight()
-	{
-		int result = (int) this.squareHeight;
-		return result;
-	}
-	
-	public Point getTopLeftPoint()
-	{
-		if(this.settings.isLabelRenderingEnabled())
-		{
-			return new Point(this.topLeft.x + this.upDownLabel.getHeight(null),
-			        this.topLeft.y + this.upDownLabel.getHeight(null));
-		}
-		return this.topLeft;
+		return new Point(0, 0);
 	}
 	
 	@Override
@@ -329,106 +284,81 @@ public class ChessboardView extends JPanel implements MouseListener, IChessboard
 	
 	public void resizeChessboard(int height)
 	{
-		BufferedImage resized = new BufferedImage(height, height, BufferedImage.TYPE_INT_ARGB_PRE);
-		Graphics g = resized.createGraphics();
-		g.drawImage(ChessboardView.ORG_IMAGE, 0, 0, height, height, null);
-		g.dispose();
-		ChessboardView.image = resized.getScaledInstance(height, height, 0);
-		this.squareHeight = (float) (height / 8);
+		this.chessboardHeight = height;
+		this.squareHeight = height / 8;
+		this.labelHeight = Math.max(MIN_LABEL_HEIGHT, squareHeight / 4);
+		
 		if(this.settings.isLabelRenderingEnabled())
 		{
-			height += 2 * (this.upDownLabel.getHeight(null));
+			height += 2 * labelHeight;
 		}
+		
 		this.setSize(height, height);
-		
-		resized = new BufferedImage((int) squareHeight, (int) squareHeight, BufferedImage.TYPE_INT_ARGB_PRE);
-		g = resized.createGraphics();
-		g.drawImage(ChessboardView.ORG_ARLE_IMAGE, 0, 0, (int) squareHeight, (int) squareHeight, null);
-		g.dispose();
-		ChessboardView.ableSquare = resized.getScaledInstance((int) squareHeight, (int) squareHeight, 0);
-		
-		resized = new BufferedImage((int) squareHeight, (int) squareHeight, BufferedImage.TYPE_INT_ARGB_PRE);
-		g = resized.createGraphics();
-		g.drawImage(ChessboardView.ORG_SEL_IMAGE, 0, 0, (int) squareHeight, (int) squareHeight, null);
-		g.dispose();
-		ChessboardView.selectedSquare = resized.getScaledInstance((int) squareHeight, (int) squareHeight, 0);
 		this.drawLabels();
+		this.render();
 	}
 	
-	protected void drawLabels()
+	protected final void drawLabels()
 	{
-		this.drawLabels((int) this.squareHeight);
+		// Width for entire label and offset for letters / numbers
+		int labelWidth = chessboardHeight + 2 * labelHeight;
+		int addX = squareHeight / 2 + labelHeight;
+		
+		this.upDownLabel = new BufferedImage(labelWidth, labelHeight, BufferedImage.TYPE_3BYTE_BGR);
+		this.leftRightLabel = new BufferedImage(labelHeight, labelWidth, BufferedImage.TYPE_3BYTE_BGR);
+		
+		// Clear the label
+		Graphics2D g2d = (Graphics2D) this.upDownLabel.getGraphics();
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setColor(Color.white);
+		g2d.fillRect(0, 0, labelWidth, labelHeight);
+		g2d.setColor(Color.black);
+		g2d.setFont(new Font("Arial", Font.BOLD, 12));
+
+		// Render the letter strings
+		this.renderStrings(g2d, Arrays.asList(FIELD_LETTERS),
+				addX, 10 + labelHeight / 3,
+				squareHeight, 0,
+				this.settings.isUpsideDown());
+		g2d.dispose();
+
+		// Clear the label
+		g2d = (Graphics2D) this.leftRightLabel.getGraphics();
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setColor(Color.white);
+		g2d.fillRect(0, 0, labelHeight, labelWidth);
+		g2d.setColor(Color.black);
+		g2d.setFont(new Font("Arial", Font.BOLD, 12));
+
+		// Render the letter number strings
+		this.renderStrings(g2d, Arrays.asList(FIELD_NUMBERS),
+				3 + labelHeight / 3, addX,
+				0, squareHeight,
+				!this.settings.isUpsideDown());
+		g2d.dispose();
 	}
 	
-	protected final void drawLabels(int square_height)
-	{
-		// TODO: clean up
-		int min_label_height = 20;
-		int labelHeight = (int) Math.ceil(square_height / 4);
-		labelHeight = (labelHeight < min_label_height) ? min_label_height : labelHeight;
-		int labelWidth = (int) Math.ceil(square_height * 8 + (2 * labelHeight));
-		BufferedImage uDL = new BufferedImage(labelWidth + min_label_height, labelHeight, BufferedImage.TYPE_3BYTE_BGR);
-		Graphics2D uDL2D = (Graphics2D) uDL.createGraphics();
-		uDL2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		uDL2D.setColor(Color.white);
-		
-		uDL2D.fillRect(0, 0, labelWidth + min_label_height, labelHeight);
-		uDL2D.setColor(Color.black);
-		uDL2D.setFont(new Font("Arial", Font.BOLD, 12));
-		int addX = (square_height / 2);
-		if(this.settings.isLabelRenderingEnabled())
-		{
-			addX += labelHeight;
+	private void renderStrings(Graphics2D g2d, List<String> strings,
+			int startX, int startY, int stepX, int stepY, boolean inverse) {
+		if(inverse) {
+			// When reversed, start at the end instead
+			startX += stepX * (strings.size() - 1);
+			stepX *= -1;
+			startY += stepY * (strings.size() - 1);
+			stepY *= -1;
 		}
 		
-		String[] letters = { "a", "b", "c", "d", "e", "f", "g", "h" };
-		if(!this.settings.isUpsideDown())
-		{
-			for(int i = 1; i <= letters.length; i++)
-			{
-				uDL2D.drawString(letters[i - 1], (square_height * (i - 1)) + addX, 10 + (labelHeight / 3));
-			}
-		} else
-		{
-			int j = 1;
-			for(int i = letters.length; i > 0; i--, j++)
-			{
-				uDL2D.drawString(letters[i - 1], (square_height * (j - 1)) + addX, 10 + (labelHeight / 3));
-			}
+		// Render each string at the current position
+		for(String str : strings) {
+			g2d.drawString(str, startX, startY);
+			startX += stepX;
+			startY += stepY;
 		}
-		uDL2D.dispose();
-		this.upDownLabel = uDL;
-		
-		uDL = new BufferedImage(labelHeight, labelWidth + min_label_height, BufferedImage.TYPE_3BYTE_BGR);
-		uDL2D = (Graphics2D) uDL.createGraphics();
-		uDL2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		uDL2D.setColor(Color.white);
-		// uDL2D.fillRect(0, 0, 800, 800);
-		uDL2D.fillRect(0, 0, labelHeight, labelWidth + min_label_height);
-		uDL2D.setColor(Color.black);
-		uDL2D.setFont(new Font("Arial", Font.BOLD, 12));
-		
-		if(this.settings.isUpsideDown())
-		{
-			for(int i = 1; i <= 8; i++)
-			{
-				uDL2D.drawString(new Integer(i).toString(), 3 + (labelHeight / 3), (square_height * (i - 1)) + addX);
-			}
-		} else
-		{
-			int j = 1;
-			for(int i = 8; i > 0; i--, j++)
-			{
-				uDL2D.drawString(new Integer(i).toString(), 3 + (labelHeight / 3), (square_height * (j - 1)) + addX);
-			}
-		}
-		uDL2D.dispose();
-		this.LeftRightLabel = uDL;
 	}
 	
 	public Field getActiveSquare()
 	{
-		return activeSquare;
+		return activeField;
 	}
 	
 	@Override

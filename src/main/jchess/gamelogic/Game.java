@@ -362,9 +362,6 @@ public class Game implements IBoardActionHandler
 		Game activeGame = JChessApp.view.getActiveTabGame();
 		if(activeGame != null && JChessApp.view.getNumberOfOpenedTabs() == 1)
 		{
-			// TODO: ugly af
-			activeGame.chessboard.getView().resizeChessboard(((ChessboardView)activeGame.chessboard.getView()).getHeight(false));
-			
 			activeGame.chessboard.getView().render();
 			activeGame.getView().render();
 		}

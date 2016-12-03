@@ -81,7 +81,7 @@ public abstract class Piece implements Copyable<Piece>
 	
 	public Image getImage()
 	{
-		return ThemeImageLoader.loadThemedPieceImage(this);
+		return ThemeImageLoader.getInstance().loadThemedPieceImage(this);
 	}
 	
 	public String getName()
