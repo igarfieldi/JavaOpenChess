@@ -84,8 +84,13 @@ public class ThemeImageLoader
 		Image img = imageCache.get(path);
 		if(img == null) {
 			// If the image is not yet in the cache, load it
-			img = toolkit.getImage(JChessApp.class.getResource(path));
-			imageCache.put(path, img);
+			try {
+				img = toolkit.getImage(JChessApp.class.getResource(path));
+				imageCache.put(path, img);
+			} catch(NullPointerException exc) {
+				log.log(Level.SEVERE, "Failed to load image: " + path + "!", exc);
+				return null;
+			}
 		}
 		return img;
 	}

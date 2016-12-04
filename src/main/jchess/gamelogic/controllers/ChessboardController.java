@@ -18,7 +18,7 @@
  * Mateusz Sławomir Lach ( matlak, msl )
  * Damian Marciniak
  */
-package jchess.gamelogic.field;
+package jchess.gamelogic.controllers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +30,12 @@ import java.util.Set;
 import jchess.JChessApp;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
-import jchess.gamelogic.field.Moves.CastlingType;
+import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.Move;
+import jchess.gamelogic.field.Move.CastlingType;
+import jchess.gamelogic.field.Moves;
+import jchess.gamelogic.models.ChessboardModel;
+import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.pieces.Bishop;
 import jchess.gamelogic.pieces.King;
 import jchess.gamelogic.pieces.Knight;
@@ -75,11 +80,11 @@ public class ChessboardController implements IChessboardController
 	 * @param moves_history
 	 *            reference to Moves class object for this chessboard
 	 */
-	public ChessboardController(Settings settings, Moves moves_history)
+	public ChessboardController(Settings settings, Moves movesHistory)
 	{
 		this.board = new ChessboardModel(WIDTH, HEIGHT);
 		this.settings = settings;
-		this.movesHistory = moves_history;
+		this.movesHistory = movesHistory;
 	}
 	
 	public void setView(IChessboardView view) {
@@ -824,29 +829,25 @@ public class ChessboardController implements IChessboardController
 	@Override
 	public boolean redo()
 	{
-		// redo only for local game
-		if(this.settings.getGameType() == Settings.GameType.LOCAL)
+		Move first = this.movesHistory.redo();
+		
+		Field from = null;
+		Field to = null;
+		
+		if(first != null)
 		{
-			Move first = this.movesHistory.redo();
+			from = first.getFrom();
+			to = first.getTo();
 			
-			Field from = null;
-			Field to = null;
-			
-			if(first != null)
+			this.move(board.getField(from.getPosX(), from.getPosY()), board.getField(to.getPosX(), to.getPosY()),
+			        true, false, true);
+			if(first.getPromotedPiece() != null)
 			{
-				from = first.getFrom();
-				to = first.getTo();
-				
-				this.move(board.getField(from.getPosX(), from.getPosY()), board.getField(to.getPosX(), to.getPosY()),
-				        true, false, true);
-				if(first.getPromotedPiece() != null)
-				{
-					board.setPiece(to, first.getPromotedPiece());
-				}
-				return true;
+				board.setPiece(to, first.getPromotedPiece());
 			}
-			
+			return true;
 		}
+			
 		return false;
 	}
 	

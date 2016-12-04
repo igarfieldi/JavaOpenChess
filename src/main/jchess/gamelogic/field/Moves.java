@@ -35,7 +35,7 @@ import javax.swing.table.DefaultTableModel;
 import jchess.Localization;
 import jchess.gamelogic.Game;
 import jchess.gamelogic.Player;
-import jchess.gamelogic.Settings;
+import jchess.gamelogic.field.Move.CastlingType;
 import jchess.gamelogic.pieces.Piece;
 
 /**
@@ -62,11 +62,6 @@ public class Moves extends AbstractTableModel
 	private Game game;
 	private Stack<Move> moveBackStack = new Stack<Move>();
 	private Stack<Move> moveForwardStack = new Stack<Move>();
-	
-	enum CastlingType
-	{
-		NONE, SHORT_CASTLING, LONG_CASTLING
-	}
 	
 	public Moves(Game game)
 	{
@@ -289,11 +284,8 @@ public class Moves extends AbstractTableModel
 			Move last = this.moveBackStack.pop();
 			if(last != null)
 			{
-				// moveForward / redo available only for local game
-				if(this.game.getSettings().getGameType() == Settings.GameType.LOCAL)
-				{
-					this.moveForwardStack.push(last);
-				}
+				this.moveForwardStack.push(last);
+				
 				if(this.enterBlack)
 				{
 					this.tableModel.setValueAt("", this.tableModel.getRowCount() - 1, 0);
@@ -328,14 +320,10 @@ public class Moves extends AbstractTableModel
 	{
 		try
 		{
-			if(this.game.getSettings().getGameType() == Settings.GameType.LOCAL)
-			{
-				Move first = this.moveForwardStack.pop();
-				this.moveBackStack.push(first);
-				
-				return first;
-			}
-			return null;
+			Move first = this.moveForwardStack.pop();
+			this.moveBackStack.push(first);
+			
+			return first;
 		} catch(java.util.EmptyStackException exc)
 		{
 			return null;

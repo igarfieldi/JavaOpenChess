@@ -29,13 +29,13 @@ public class Field
 	private int posX;
 	private int posY;
 	
-	Field(int posX, int posY)
+	public Field(int posX, int posY)
 	{
 		this.posX = posX;
 		this.posY = posY;
 	}
 	
-	Field(Field square)
+	public Field(Field square)
 	{
 		this.posX = square.posX;
 		this.posY = square.posY;

@@ -26,7 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.field.IChessboardController;
+import jchess.gamelogic.controllers.IChessboardController;
 import jchess.util.Direction;
 
 /**

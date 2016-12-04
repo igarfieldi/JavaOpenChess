@@ -1,8 +1,10 @@
-package jchess.gamelogic.field;
+package jchess.gamelogic.controllers;
 
 import java.util.Set;
 
 import jchess.gamelogic.Player;
+import jchess.gamelogic.field.Field;
+import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.views.IChessboardView;
 

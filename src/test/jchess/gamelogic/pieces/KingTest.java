@@ -10,9 +10,9 @@ import org.junit.Test;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
-import jchess.gamelogic.field.ChessboardController;
+import jchess.gamelogic.controllers.ChessboardController;
+import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.field.Field;
-import jchess.gamelogic.field.IChessboardController;
 
 public class KingTest
 {

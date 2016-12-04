@@ -1,9 +1,10 @@
-package jchess.gamelogic.field;
+package jchess.gamelogic.models;
 
 import java.util.List;
 import java.util.Set;
 
 import jchess.gamelogic.Player;
+import jchess.gamelogic.field.Field;
 import jchess.gamelogic.pieces.Piece;
 import jchess.util.Copyable;
 import jchess.util.Direction;

@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 import jchess.gamelogic.Settings;
-import jchess.gamelogic.clock.GameClockModel;
+import jchess.gamelogic.models.GameClockModel;
 
 public class GameClockView extends JPanel
 {

@@ -1,4 +1,4 @@
-package jchess.gamelogic.views;
+package jchess.gamelogic.views.gameviews;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -10,16 +10,20 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import jchess.Localization;
+import jchess.gamelogic.views.GameClockView;
+import jchess.gamelogic.views.IChessboardView;
+import jchess.gamelogic.views.IGameView;
+import jchess.gamelogic.views.chessboardviews.SquareChessboardView;
 
-public class GameView extends JPanel implements ComponentListener, IGameView
+public class SwingGameView extends JPanel implements ComponentListener, IGameView
 {
 	private static final long serialVersionUID = -5137905954028032336L;
 	
-	private ChessboardView boardView;
+	private SquareChessboardView boardView;
 	private GameClockView clockView;
 	private JScrollPane historyView;
 	
-	public GameView(ChessboardView boardView, GameClockView clockView, JScrollPane historyView) {
+	public SwingGameView(SquareChessboardView boardView, GameClockView clockView, JScrollPane historyView) {
 		this.boardView = boardView;
 		this.clockView = clockView;
 		this.historyView = historyView;

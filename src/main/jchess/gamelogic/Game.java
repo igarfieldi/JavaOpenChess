@@ -32,15 +32,15 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 import jchess.JChessApp;
-import jchess.Localization;
-import jchess.gamelogic.clock.GameClock;
-import jchess.gamelogic.field.ChessboardController;
+import jchess.gamelogic.controllers.ChessboardController;
+import jchess.gamelogic.controllers.GameClockController;
+import jchess.gamelogic.controllers.IBoardActionHandler;
 import jchess.gamelogic.field.Field;
-import jchess.gamelogic.field.IBoardActionHandler;
 import jchess.gamelogic.field.Moves;
-import jchess.gamelogic.views.ChessboardView;
-import jchess.gamelogic.views.GameView;
 import jchess.gamelogic.views.IGameView;
+import jchess.gamelogic.views.chessboardviews.SquareChessboardView;
+import jchess.gamelogic.views.chessboardviews.TwoPlayerChessboardView;
+import jchess.gamelogic.views.gameviews.SwingGameView;
 
 /**
  * Class responsible for the starts of new games, loading games, saving it, and
@@ -55,7 +55,7 @@ public class Game implements IBoardActionHandler
 	private Settings settings;
 	private boolean blockedChessboard;
 	private ChessboardController chessboard;
-	private GameClock gameClock;
+	private GameClockController gameClock;
 	private Moves moves;
 	
 	public Game()
@@ -63,14 +63,14 @@ public class Game implements IBoardActionHandler
 		this.moves = new Moves(this);
 		settings = new Settings();
 		chessboard = new ChessboardController(this.settings, this.moves);
-		ChessboardView view = new ChessboardView(settings, chessboard);
+		SquareChessboardView view = new TwoPlayerChessboardView(settings, chessboard);
 		view.initialize(chessboard.getBoard(), this);
 		chessboard.setView(view);
-		gameClock = new GameClock(this);
+		gameClock = new GameClockController(this);
 		
 		this.blockedChessboard = false;
 		
-		gameView = new GameView(view, gameClock.getView(), this.moves.getScrollPane());
+		gameView = new SwingGameView(view, gameClock.getView(), this.moves.getScrollPane());
 	}
 	
 	public IGameView getView()
@@ -88,7 +88,7 @@ public class Game implements IBoardActionHandler
 		return chessboard;
 	}
 	
-	public GameClock getGameClock()
+	public GameClockController getGameClock()
 	{
 		return gameClock;
 	}
@@ -154,10 +154,7 @@ public class Game implements IBoardActionHandler
 				                chessboard.getBoard().getPiece(gameView.getChessboardView().getActiveSquare()), true)
 				                .contains(selectedField))
 				{
-					if(settings.getGameType() == Settings.GameType.LOCAL)
-					{
-						chessboard.move(gameView.getChessboardView().getActiveSquare(), selectedField);
-					}
+					chessboard.move(gameView.getChessboardView().getActiveSquare(), selectedField);
 					
 					gameView.getChessboardView().unselect();
 					
@@ -270,14 +267,13 @@ public class Game implements IBoardActionHandler
 			log.log(Level.SEVERE, "Error reading game file!", err);
 			return;
 		}
-		Game newGUI = JChessApp.view.addNewTab(whiteName + " vs. " + blackName);
+		Game newGUI = JChessApp.view.addNewGameTab(whiteName + " vs. " + blackName);
 		Settings locSetts = newGUI.settings;
 		locSetts.getBlackPlayer().setName(blackName);
 		locSetts.getWhitePlayer().setName(whiteName);
 		locSetts.getBlackPlayer().setType(Player.Type.LOCAL);
 		locSetts.getWhitePlayer().setType(Player.Type.LOCAL);
 		locSetts.setGameMode(Settings.GameMode.LOAD_GAME);
-		locSetts.setGameType(Settings.GameType.LOCAL);
 		
 		newGUI.newGame();
 		newGUI.blockedChessboard = true;
@@ -351,7 +347,7 @@ public class Game implements IBoardActionHandler
 	{
 		chessboard.initialize();
 		
-		log.info("Starting new game of type " + settings.getGameType().name());
+		log.info("Starting new local game");
 		
 		if(chessboard.getActivePlayer().getType() != Player.Type.LOCAL)
 		{
@@ -474,16 +470,13 @@ public class Game implements IBoardActionHandler
 	{
 		boolean status = false;
 		
-		if(this.settings.getGameType() == Settings.GameType.LOCAL)
+		status = chessboard.undo();
+		if(status)
 		{
-			status = chessboard.undo();
-			if(status)
-			{
-				this.switchActive();
-			} else
-			{
-				chessboard.getView().render();// repaint for sure
-			}
+			this.switchActive();
+		} else
+		{
+			chessboard.getView().render();// repaint for sure
 		}
 		return status;
 	}
@@ -492,15 +485,9 @@ public class Game implements IBoardActionHandler
 	{
 		boolean result = false;
 		
-		if(this.settings.getGameType() == Settings.GameType.LOCAL)
+		while(chessboard.undo())
 		{
-			while(chessboard.undo())
-			{
-				result = true;
-			}
-		} else
-		{
-			throw new UnsupportedOperationException(Localization.getMessage("operation_supported_only_in_local_game"));
+			result = true;
 		}
 		
 		return result;
@@ -510,15 +497,9 @@ public class Game implements IBoardActionHandler
 	{
 		boolean result = false;
 		
-		if(this.settings.getGameType() == Settings.GameType.LOCAL)
+		while(chessboard.redo())
 		{
-			while(chessboard.redo())
-			{
-				result = true;
-			}
-		} else
-		{
-			throw new UnsupportedOperationException(Localization.getMessage("operation_supported_only_in_local_game"));
+			result = true;
 		}
 		
 		return result;
@@ -527,18 +508,12 @@ public class Game implements IBoardActionHandler
 	public boolean redo()
 	{
 		boolean status = chessboard.redo();
-		if(this.settings.getGameType() == Settings.GameType.LOCAL)
+		if(status)
 		{
-			if(status)
-			{
-				this.nextMove();
-			} else
-			{
-				chessboard.getView().render();// repaint for sure
-			}
+			this.nextMove();
 		} else
 		{
-			throw new UnsupportedOperationException(Localization.getMessage("operation_supported_only_in_local_game"));
+			chessboard.getView().render();// repaint for sure
 		}
 		return status;
 	}

@@ -18,23 +18,25 @@
  * Mateusz Sławomir Lach ( matlak, msl )
  * Damian Marciniak
  */
-package jchess.gamelogic.clock;
+package jchess.gamelogic.controllers;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jchess.gamelogic.Clock;
 import jchess.gamelogic.Game;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
+import jchess.gamelogic.models.GameClockModel;
 import jchess.gamelogic.views.GameClockView;
 
 /**
  * Class to representing the full game time.
  * @param game the current game
  */
-public class GameClock implements Runnable
+public class GameClockController implements Runnable
 {
-	private static Logger log = Logger.getLogger(GameClock.class.getName());
+	private static Logger log = Logger.getLogger(GameClockController.class.getName());
 
 	private GameClockModel clocks;
 	private GameClockView clockView;
@@ -43,7 +45,7 @@ public class GameClock implements Runnable
 	private Thread thread;
 	private Game game;
 	
-	public GameClock(Game game)
+	public GameClockController(Game game)
 	{
 		clocks = new GameClockModel(2);
 		this.runningClock = this.clocks.getClock(0); // running/active clock

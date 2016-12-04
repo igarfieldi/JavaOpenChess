@@ -1,4 +1,6 @@
-package jchess.gamelogic.field;
+package jchess.gamelogic.controllers;
+
+import jchess.gamelogic.field.Field;
 
 public interface IBoardActionHandler
 {

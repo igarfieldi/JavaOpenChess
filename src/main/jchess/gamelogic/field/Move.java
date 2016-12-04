@@ -18,7 +18,6 @@
  */
 package jchess.gamelogic.field;
 
-import jchess.gamelogic.field.Moves.CastlingType;
 import jchess.gamelogic.pieces.Piece;
 
 public class Move
@@ -32,7 +31,12 @@ public class Move
 	private CastlingType castlingMove = CastlingType.NONE;
 	private boolean wasPawnTwoFieldsMove = false;
 	
-	Move(Field from, Field to, Piece movedPiece, Piece takenPiece, CastlingType castlingMove, boolean wasEnPassant,
+	public enum CastlingType
+	{
+		NONE, SHORT_CASTLING, LONG_CASTLING
+	}
+	
+	public Move(Field from, Field to, Piece movedPiece, Piece takenPiece, CastlingType castlingMove, boolean wasEnPassant,
 	        Piece promotedPiece)
 	{
 		this.from = from;

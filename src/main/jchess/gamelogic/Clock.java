@@ -18,9 +18,7 @@
  * Mateusz Sławomir Lach ( matlak, msl )
  * Damian Marciniak
  */
-package jchess.gamelogic.clock;
-
-import jchess.gamelogic.Player;
+package jchess.gamelogic;
 
 /**
  * Class to represent seperate wall-clock for one player. Full ChessClock is

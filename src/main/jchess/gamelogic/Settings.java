@@ -34,32 +34,23 @@ public class Settings implements Serializable
 		NEW_GAME, LOAD_GAME
 	}
 	
-	public enum GameType
-	{
-		LOCAL
-	}
-	
 	private int timeForGame;
-	private boolean runningChat;
 	private boolean runningGameClock;
-	private boolean timeLimitSet; // tel us if player choose time 4 game
-	                              // or it's infinity
+	private boolean timeLimitSet;
 	private boolean upsideDown;
 	private GameMode gameMode;
-	private GameType gameType;
 	private Player playerWhite;
 	private Player playerBlack;
 	private boolean renderLabels = true;
 	
 	public Settings()
 	{
-		// temporally
+		// temporarily
 		this.playerWhite = new Player("", Player.Color.WHITE);
 		this.playerBlack = new Player("", Player.Color.BLACK);
 		this.timeLimitSet = false;
 		
 		gameMode = GameMode.NEW_GAME;
-		gameType = GameType.LOCAL;
 	}
 	
 	/**
@@ -75,11 +66,6 @@ public class Settings implements Serializable
 	public boolean isGameClockRunning()
 	{
 		return runningGameClock;
-	}
-	
-	public boolean isChatRunning()
-	{
-		return runningChat;
 	}
 	
 	public boolean isTimeLimitSet()
@@ -107,11 +93,6 @@ public class Settings implements Serializable
 		return playerBlack;
 	}
 	
-	public GameType getGameType()
-	{
-		return gameType;
-	}
-	
 	public boolean isLabelRenderingEnabled()
 	{
 		return renderLabels;
@@ -135,10 +116,5 @@ public class Settings implements Serializable
 	public void setGameMode(GameMode mode)
 	{
 		this.gameMode = mode;
-	}
-	
-	public void setGameType(GameType type)
-	{
-		this.gameType = type;
 	}
 }

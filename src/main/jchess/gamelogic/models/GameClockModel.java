@@ -1,7 +1,9 @@
-package jchess.gamelogic.clock;
+package jchess.gamelogic.models;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import jchess.gamelogic.Clock;
 
 public class GameClockModel
 {

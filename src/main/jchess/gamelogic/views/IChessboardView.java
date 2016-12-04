@@ -1,8 +1,8 @@
 package jchess.gamelogic.views;
 
+import jchess.gamelogic.controllers.IBoardActionHandler;
 import jchess.gamelogic.field.Field;
-import jchess.gamelogic.field.IBoardActionHandler;
-import jchess.gamelogic.field.IChessboardModel;
+import jchess.gamelogic.models.IChessboardModel;
 
 public interface IChessboardView extends Renderable
 {

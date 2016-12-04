@@ -86,7 +86,7 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 		{
 			playerNameInputPanel.shortenPlayerNames();
 			
-			Game gameWindow = JChessApp.view.addNewTab(
+			Game gameWindow = JChessApp.view.addNewGameTab(
 			        playerNameInputPanel.getPlayerName(1) + " vs " + playerNameInputPanel.getPlayerName(2));
 			applySettings(gameWindow);
 			drawGameWindow(gameWindow);
@@ -100,7 +100,6 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 		Player secondPlayer = localSettings.getBlackPlayer();
 		
 		localSettings.setGameMode(Settings.GameMode.NEW_GAME);
-		localSettings.setGameType(Settings.GameType.LOCAL);
 		
 		setPlayerSettings(firstPlayer, secondPlayer);
 		

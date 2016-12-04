@@ -24,7 +24,7 @@ import java.awt.Image;
 import java.util.Set;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.field.IChessboardController;
+import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gui.ThemeImageLoader;
 import jchess.util.Copyable;
 import jchess.util.Direction;

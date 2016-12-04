@@ -60,7 +60,7 @@ import org.jdesktop.application.TaskMonitor;
 import jchess.JChessApp;
 import jchess.Localization;
 import jchess.gamelogic.Game;
-import jchess.gamelogic.views.GameView;
+import jchess.gamelogic.views.gameviews.SwingGameView;
 import jchess.gui.ThemeConfigurator;
 import jchess.gui.secondary.JChessAboutBox;
 import jchess.gui.secondary.PawnPromotionWindow;
@@ -560,11 +560,11 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		});
 	}
 
-	public Game addNewTab(String title)
+	public Game addNewGameTab(String title)
 	{
 		Game newGameTab = new Game();
 		this.gameList.add(newGameTab);
-		this.gamesPane.addTab(title, (GameView)newGameTab.getView());
+		this.gamesPane.addTab(title, (SwingGameView)newGameTab.getView());
 		return newGameTab;
 	}
 	
