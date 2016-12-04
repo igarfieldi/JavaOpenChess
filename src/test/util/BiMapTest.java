@@ -42,8 +42,8 @@ public class BiMapTest
 	public void testPutInverse()
 	{
 		map.inverse().put("a", "1");
-		assertTrue(map.get("a").equals("1"));
-		assertTrue(map.inverse().get("1").equals("a"));
+		assertTrue(map.get("1").equals("a"));
+		assertTrue(map.inverse().get("a").equals("1"));
 	}
 	
 	/**
