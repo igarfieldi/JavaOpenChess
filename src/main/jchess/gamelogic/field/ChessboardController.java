@@ -287,7 +287,10 @@ public class ChessboardController implements IChessboardController
 			// we're in check.
 			
 			// Store the part of the state that undo will not restore
-			Field activeField = this.getView().getActiveSquare();
+			Field activeField = null;
+			if(this.getView() != null) {
+				activeField = this.getView().getActiveSquare();
+			}
 			Pawn twoMovedPawn = this.twoSquareMovedPawn;
 			
 			for(Iterator<Field> fieldIterator = reachableFields.iterator(); fieldIterator.hasNext();)
@@ -309,8 +312,10 @@ public class ChessboardController implements IChessboardController
 				board = tempModel;
 				this.twoSquareMovedPawn = twoMovedPawn;
 			}
-			
-			this.getView().select(activeField);
+
+			if(this.getView() != null) {
+				this.getView().select(activeField);
+			}
 		}
 		
 		return reachableFields;

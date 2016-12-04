@@ -106,6 +106,7 @@ public class KingTest
 	private void checkForCheck(Field field, Piece piece)
 	{
 		board.getBoard().setPiece(field, piece);
+		
 		for(Field currField : board.getPossibleMoves(piece, true))
 		{
 			movePiece(currField, whiteKing);
