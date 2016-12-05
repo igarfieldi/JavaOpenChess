@@ -44,7 +44,7 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 	
 	private PlayerNumberChoicePanel playerNumberChoicePanel;
 	private PlayerNameInputPanel playerNameInputPanel;
-	private ChessboardPropertiesPanel chessBoardPropertiesPanel;
+	private TimerSetterPanel timerSetterPanel;
 	private JButton okButton;
 	
 	LocalSettingsPanel(JDialog newGameWindow)
@@ -60,7 +60,7 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 	{
 		playerNameInputPanel = new PlayerNameInputPanel();
 		playerNumberChoicePanel = new PlayerNumberChoicePanel(playerNameInputPanel);
-		chessBoardPropertiesPanel = new ChessboardPropertiesPanel();
+		timerSetterPanel = new TimerSetterPanel();
 		
 		this.okButton = new JButton(Localization.getMessage("ok"));
 		this.okButton.addActionListener(this);
@@ -70,7 +70,7 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 	{
 		setGridBagConstraints(playerNumberChoicePanel, 0, 0);
 		setGridBagConstraints(playerNameInputPanel, 0, 1);
-		setGridBagConstraints(chessBoardPropertiesPanel, 0, 2);
+		setGridBagConstraints(timerSetterPanel, 0, 2);
 		setGridBagConstraints(okButton, 0, 3);
 	}
 	
@@ -100,11 +100,8 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 		Player secondPlayer = localSettings.getBlackPlayer();
 		
 		localSettings.setGameMode(Settings.GameMode.NEW_GAME);
-		
 		setPlayerSettings(firstPlayer, secondPlayer);
-		
-		chessBoardPropertiesPanel.setFigureColorPlacementOnBoard(localSettings);
-		chessBoardPropertiesPanel.setTimeLimit(gameWindow, localSettings);
+		timerSetterPanel.setTimeLimit(gameWindow, localSettings);
 		
 		logSettings(localSettings, firstPlayer, secondPlayer);
 	}
