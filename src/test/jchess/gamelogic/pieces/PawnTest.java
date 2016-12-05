@@ -9,8 +9,8 @@ import org.junit.Test;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
-import jchess.gamelogic.controllers.ChessboardController;
 import jchess.gamelogic.controllers.IChessboardController;
+import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.models.chessboardmodels.TwoPlayerChessboardModel;
@@ -28,7 +28,7 @@ public class PawnTest
 	{
 		Settings settings = new Settings();
 		model = new TwoPlayerChessboardModel();
-		board = new ChessboardController(settings, null, model);
+		board = new TwoPlayerChessboardController(settings, null, model);
 		white = settings.getWhitePlayer();
 		black = settings.getBlackPlayer();
 		board.initialize();

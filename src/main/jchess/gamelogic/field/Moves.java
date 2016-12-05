@@ -188,7 +188,7 @@ public class Moves extends AbstractTableModel
 		String locMove = new String(move.getMovedPiece().getSymbol());
 		
 		// Get field designation of 'from' field
-		locMove += chessboard.getFieldDesignation(move.getFrom());
+		locMove += move.getFrom().toString();
 		
 		if(move.getTakenPiece() != null)
 		{
@@ -199,7 +199,7 @@ public class Moves extends AbstractTableModel
 		}
 		
 		// Get field designation of 'from' field
-		locMove += chessboard.getFieldDesignation(move.getTo());
+		locMove += move.getTo().toString();
 		
 		if(move.wasEnPassant())
 		{
@@ -541,7 +541,7 @@ public class Moves extends AbstractTableModel
 			boolean pieceFound = false;
 			if(locMove.length() <= 3)
 			{
-				Field tempTo = chessboard.getFieldFromDesignation(locMove.substring(from, from + 1));
+				Field tempTo = Field.getFieldFromDesignation(locMove.substring(from, from + 1));
 				xTo = tempTo.getPosX();
 				yTo = tempTo.getPosY();
 				
@@ -568,8 +568,8 @@ public class Moves extends AbstractTableModel
 				}
 			} else
 			{
-				Field tempFrom = chessboard.getFieldFromDesignation(locMove.substring(from, from + 1));
-				Field tempTo = chessboard.getFieldFromDesignation(locMove.substring(from + 3, from + 4));
+				Field tempFrom = Field.getFieldFromDesignation(locMove.substring(from, from + 1));
+				Field tempTo = Field.getFieldFromDesignation(locMove.substring(from + 3, from + 4));
 				
 				xFrom = tempFrom.getPosX();
 				yFrom = tempFrom.getPosY();

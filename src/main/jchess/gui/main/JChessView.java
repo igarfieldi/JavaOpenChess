@@ -61,8 +61,8 @@ import jchess.JChessApp;
 import jchess.Localization;
 import jchess.gamelogic.Game;
 import jchess.gamelogic.Settings;
-import jchess.gamelogic.controllers.ChessboardController;
 import jchess.gamelogic.controllers.IChessboardController;
+import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
 import jchess.gamelogic.models.chessboardmodels.FourPlayerChessboardModel;
 import jchess.gamelogic.models.chessboardmodels.TwoPlayerChessboardModel;
 import jchess.gamelogic.views.IChessboardView;
@@ -573,7 +573,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	{
 		Settings settings = new Settings();
 		IChessboardView view = new TwoPlayerChessboardView(true, false);
-		IChessboardController chessboard = new ChessboardController(settings,
+		IChessboardController chessboard = new TwoPlayerChessboardController(settings,
 				view, new TwoPlayerChessboardModel());
 		Game newGameTab = new Game(settings, chessboard, view);
 		this.gameList.add(newGameTab);
@@ -585,7 +585,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	{
 		Settings settings = new Settings();
 		IChessboardView view = new FourPlayerChessboardView(true, false);
-		IChessboardController chessboard = new ChessboardController(settings,
+		IChessboardController chessboard = new TwoPlayerChessboardController(settings,
 				view, new FourPlayerChessboardModel());
 		Game newGameTab = new Game(settings, chessboard, view);
 		this.gameList.add(newGameTab);

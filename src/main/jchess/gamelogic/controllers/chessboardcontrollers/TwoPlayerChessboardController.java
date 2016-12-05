@@ -18,10 +18,9 @@
  * Mateusz Sławomir Lach ( matlak, msl )
  * Damian Marciniak
  */
-package jchess.gamelogic.controllers;
+package jchess.gamelogic.controllers.chessboardcontrollers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +29,7 @@ import java.util.Set;
 import jchess.JChessApp;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
+import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Move;
 import jchess.gamelogic.field.Move.CastlingType;
@@ -43,7 +43,6 @@ import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.pieces.Queen;
 import jchess.gamelogic.pieces.Rook;
 import jchess.gamelogic.views.IChessboardView;
-import jchess.util.ArgumentChecker;
 import jchess.util.Direction;
 
 /**
@@ -51,11 +50,9 @@ import jchess.util.Direction;
  * the squers of chessboard and sets the pieces(pawns) witch the owner is
  * current player on it.
  */
-public class ChessboardController implements IChessboardController
+public class TwoPlayerChessboardController implements IChessboardController
 {
 	private static final int WIDTH = 8;
-	private static final String[] FIELD_LETTERS = { "a", "b", "c", "d", "e", "f", "g", "h" };
-	private static final String[] FIELD_NUMBERS = { "1", "2", "3", "4", "5", "6", "7", "8" };
 	
 	private IChessboardModel board;
 	private IChessboardView view;
@@ -70,7 +67,7 @@ public class ChessboardController implements IChessboardController
 	private Pawn twoSquareMovedPawn = null;
 	private Moves movesHistory;
 	
-	public ChessboardController(Settings settings, IChessboardView view, IChessboardModel board)
+	public TwoPlayerChessboardController(Settings settings, IChessboardView view, IChessboardModel board)
 	{
 		this.board = board;
 		this.view = view;
@@ -134,48 +131,6 @@ public class ChessboardController implements IChessboardController
 	{
 		// Since we only have two players, this is equal to switchToNextPlayer
 		this.switchToNextPlayer();
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * jchess.gamelogic.field.IChessboardController#getFieldDesignation(jchess.
-	 * gamelogic.field.Field)
-	 */
-	@Override
-	public String getFieldDesignation(Field field)
-	{
-		ArgumentChecker.checkForNull(field);
-		
-		return FIELD_LETTERS[WIDTH - field.getPosX() - 1] + FIELD_NUMBERS[field.getPosY()];
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * jchess.gamelogic.field.IChessboardController#getFieldFromDesignation(java
-	 * .lang.String)
-	 */
-	@Override
-	public Field getFieldFromDesignation(String designation)
-	{
-		ArgumentChecker.checkForNull(designation);
-		
-		if(designation.length() != 2)
-		{
-			return null;
-		}
-		
-		// Check the arrays of letters and numbers for the given strings
-		int x = WIDTH + 1 - Arrays.asList(FIELD_LETTERS).indexOf("" + designation.charAt(0));
-		int y = Arrays.asList(FIELD_NUMBERS).indexOf("" + designation.charAt(1));
-		
-		// Account for the oddities of the chosen field coordinate system (0|0 =
-		// a8 or h1)
-		
-		return board.getField(x, y);
 	}
 	
 	/*

@@ -23,24 +23,6 @@ public interface IChessboardController
 	public void switchToPreviousPlayer();
 	
 	/**
-	 * Returns the string representation of the given field.
-	 * 
-	 * @param field
-	 *            Field to get designation for
-	 * @return Designation of field
-	 */
-	public String getFieldDesignation(Field field);
-	
-	/**
-	 * Returns the field specified by the given string, if applicable.
-	 * 
-	 * @param designation
-	 *            Designation of desired field
-	 * @return field denoted by given string (or null if non-existent)
-	 */
-	public Field getFieldFromDesignation(String designation);
-	
-	/**
 	 * Brings the controller (and the associated board) into a clean state.
 	 */
 	public void initialize();
