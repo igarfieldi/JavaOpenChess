@@ -4,6 +4,7 @@ import java.util.Set;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.Moves;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.views.IChessboardView;
@@ -12,7 +13,7 @@ public interface IChessboardController
 {
 	
 	public IChessboardView getView();
-	public void setView(IChessboardView view);
+	public Moves getHistory();
 	
 	public Player getActivePlayer();
 	
@@ -88,7 +89,7 @@ public interface IChessboardController
 	 * @param refresh
 	 *            chessboard, default: true
 	 */
-	public void move(Field begin, Field end, boolean refresh, boolean clearForwardHistory, boolean enterIntoHistory);
+	public void move(Field begin, Field end);
 	
 	public boolean redo();
 	

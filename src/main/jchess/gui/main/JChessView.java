@@ -60,6 +60,15 @@ import org.jdesktop.application.TaskMonitor;
 import jchess.JChessApp;
 import jchess.Localization;
 import jchess.gamelogic.Game;
+import jchess.gamelogic.Settings;
+import jchess.gamelogic.controllers.ChessboardController;
+import jchess.gamelogic.controllers.IChessboardController;
+import jchess.gamelogic.models.chessboardmodels.FourPlayerChessboardModel;
+import jchess.gamelogic.models.chessboardmodels.TwoPlayerChessboardModel;
+import jchess.gamelogic.views.IChessboardView;
+import jchess.gamelogic.views.IMessageDisplay.Option;
+import jchess.gamelogic.views.chessboardviews.FourPlayerChessboardView;
+import jchess.gamelogic.views.chessboardviews.TwoPlayerChessboardView;
 import jchess.gamelogic.views.gameviews.SwingGameView;
 import jchess.gui.ThemeConfigurator;
 import jchess.gui.secondary.JChessAboutBox;
@@ -560,9 +569,25 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		});
 	}
 
-	public Game addNewGameTab(String title)
+	public Game addNewTwoPlayerTab(String title)
 	{
-		Game newGameTab = new Game();
+		Settings settings = new Settings();
+		IChessboardView view = new TwoPlayerChessboardView(true, false);
+		IChessboardController chessboard = new ChessboardController(settings,
+				view, new TwoPlayerChessboardModel());
+		Game newGameTab = new Game(settings, chessboard, view);
+		this.gameList.add(newGameTab);
+		this.gamesPane.addTab(title, (SwingGameView)newGameTab.getView());
+		return newGameTab;
+	}
+
+	public Game addNewFourPlayerTab(String title)
+	{
+		Settings settings = new Settings();
+		IChessboardView view = new FourPlayerChessboardView(true, false);
+		IChessboardController chessboard = new ChessboardController(settings,
+				view, new FourPlayerChessboardModel());
+		Game newGameTab = new Game(settings, chessboard, view);
 		this.gameList.add(newGameTab);
 		this.gamesPane.addTab(title, (SwingGameView)newGameTab.getView());
 		return newGameTab;
@@ -595,7 +620,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 						createSaveFile(selectedFile);
 					else if(selectedFile.exists())
 					{
-						if(!tempGUI.getView().showYesNoDialog("file_exists")) {
+						if(tempGUI.getView().showConfirmMessage("file_exists", "") != Option.YES) {
 							continue;
 						}
 					}

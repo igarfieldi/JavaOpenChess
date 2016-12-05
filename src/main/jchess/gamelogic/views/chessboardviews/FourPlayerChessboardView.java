@@ -4,8 +4,6 @@ import java.awt.Image;
 import java.util.Arrays;
 import java.util.List;
 
-import jchess.gamelogic.Settings;
-import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gui.ThemeImageLoader;
 
 public class FourPlayerChessboardView extends SquareChessboardView
@@ -22,9 +20,9 @@ public class FourPlayerChessboardView extends SquareChessboardView
 	private final int CHESSBOARD_SQUARES = 14;
 	private final ThemeImageLoader themeLoader;
 	
-	public FourPlayerChessboardView(Settings settings, IChessboardController controller)
+	public FourPlayerChessboardView(boolean renderLabels, boolean invertedBoard)
 	{
-		super(settings, controller);
+		super(renderLabels, invertedBoard);
 		themeLoader = ThemeImageLoader.getInstance();
 	}
 	

@@ -12,9 +12,13 @@ import jchess.gamelogic.Settings;
 import jchess.gamelogic.controllers.ChessboardController;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.models.IChessboardModel;
+import jchess.gamelogic.models.chessboardmodels.TwoPlayerChessboardModel;
+import jchess.util.Direction;
 
 public class PawnTest
 {
+	IChessboardModel model;
 	IChessboardController board;
 	Player white;
 	Player black;
@@ -24,7 +28,8 @@ public class PawnTest
 	{
 		// TODO: test in reverse (white on top)!
 		Settings settings = new Settings();
-		board = new ChessboardController(settings, null);
+		model = new TwoPlayerChessboardModel();
+		board = new ChessboardController(settings, null, model);
 		white = settings.getWhitePlayer();
 		black = settings.getBlackPlayer();
 		black.setTopSide(true);
@@ -38,8 +43,8 @@ public class PawnTest
 	@Test
 	public void testRegularMove()
 	{
-		Pawn whitePawn = new Pawn(board, white);
-		Pawn blackPawn = new Pawn(board, black);
+		Pawn whitePawn = new Pawn(board, white, new Direction(0, -1));
+		Pawn blackPawn = new Pawn(board, black, new Direction(0, 1));
 		whitePawn.markAsMoved();
 		blackPawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(2, 5), whitePawn);
@@ -51,8 +56,8 @@ public class PawnTest
 	@Test
 	public void testNormalStrikeToLeft()
 	{
-		Pawn whitePawn = new Pawn(board, white);
-		Pawn blackPawn = new Pawn(board, black);
+		Pawn whitePawn = new Pawn(board, white, new Direction(0, -1));
+		Pawn blackPawn = new Pawn(board, black, new Direction(0, 1));
 		whitePawn.markAsMoved();
 		blackPawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(4, 4), whitePawn);
@@ -64,8 +69,8 @@ public class PawnTest
 	@Test
 	public void testNormalStrikeToRight()
 	{
-		Pawn whitePawn = new Pawn(board, white);
-		Pawn blackPawn = new Pawn(board, black);
+		Pawn whitePawn = new Pawn(board, white, new Direction(0, -1));
+		Pawn blackPawn = new Pawn(board, black, new Direction(0, 1));
 		whitePawn.markAsMoved();
 		blackPawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whitePawn);
@@ -77,8 +82,8 @@ public class PawnTest
 	@Test
 	public void testTwoStepMove()
 	{
-		Pawn whitePawn = new Pawn(board, white);
-		Pawn blackPawn = new Pawn(board, black);
+		Pawn whitePawn = new Pawn(board, white, new Direction(0, -1));
+		Pawn blackPawn = new Pawn(board, black, new Direction(0, 1));
 		board.getBoard().setPiece(board.getBoard().getField(3, 6), whitePawn);
 		board.getBoard().setPiece(board.getBoard().getField(3, 1), blackPawn);
 		assertTrue(canMakeMoves(whitePawn, board.getBoard().getField(3, 5), board.getBoard().getField(3, 4)));

@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import jchess.gamelogic.Settings;
+import jchess.Localization;
 import jchess.gamelogic.controllers.IBoardActionHandler;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.field.Field;
-import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.views.IChessboardView;
 
@@ -32,14 +32,14 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 	// TODO: this seems unnecessary...
 	private static final int INITIAL_HEIGHT = 480;
 	
-	private IChessboardController controller;
-	private IChessboardModel board;
-	private Settings settings;
+	private IChessboardController chessboard;
 	private IBoardActionHandler boardActionHandler;
 	
 	private final int MIN_LABEL_HEIGHT = 20;
 	
 	private Field activeField;
+	private boolean renderLabels;
+	private boolean invertedBoard;
 	private Image upDownLabel = null;
 	private Image leftRightLabel = null;
 	
@@ -55,11 +55,11 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 	 * @param moves_history
 	 *            reference to Moves class object for this chessboard
 	 */
-	public SquareChessboardView(Settings settings, IChessboardController controller)
+	public SquareChessboardView(boolean renderLabels, boolean invertedBoard)
 	{
-		this.controller = controller;
-		this.settings = settings;
 		this.activeField = null;
+		this.renderLabels = renderLabels;
+		this.invertedBoard = invertedBoard;
 		this.resizeChessboard(INITIAL_HEIGHT);
 		this.drawLabels();
 		
@@ -82,9 +82,9 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 	}
 
 	@Override
-	public void initialize(IChessboardModel board, IBoardActionHandler handler)
+	public void initialize(IChessboardController chessboard, IBoardActionHandler handler)
 	{
-		this.board = board;
+		this.chessboard = chessboard;
 		this.boardActionHandler = handler;
 	}
 	
@@ -95,7 +95,7 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 	 */
 	private void renderBackground(Graphics2D g2d) {
 		Point topLeftPoint = this.getChessboardLocation();
-		if(this.settings.isLabelRenderingEnabled())
+		if(renderLabels)
 		{
 			if(upDownLabel == null || leftRightLabel == null)
 			{
@@ -124,7 +124,7 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 		
 		// Get field coordinates
 		Point topLeft = this.getChessboardLocation();
-		Field field = board.getField(piece);
+		Field field = chessboard.getBoard().getField(piece);
 		int x = (int)(field.getPosX() * this.squareHeight) + topLeft.x;
 		int y = (int)(field.getPosY() * this.squareHeight) + topLeft.y;
 		
@@ -155,12 +155,12 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 	 * @param g2d Graphics object
 	 */
 	private void renderPossibleMoves(Graphics2D g2d) {
-		if(activeField != null) {
-			Piece piece = board.getPiece(activeField);
+		if(activeField != null && chessboard != null) {
+			Piece piece = chessboard.getBoard().getPiece(activeField);
 			
 			if(piece != null) {
 				Point topLeftPoint = this.getChessboardLocation();
-				for(Field field : controller.getPossibleMoves(board.getPiece(activeField), true)) {
+				for(Field field : chessboard.getPossibleMoves(chessboard.getBoard().getPiece(activeField), true)) {
 					g2d.drawImage(this.getPossibleFieldImage(),
 							(int)(field.getPosX() * squareHeight) + topLeftPoint.x,
 							(int)(field.getPosY() * squareHeight) + topLeftPoint.y,
@@ -184,7 +184,7 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 		int x = event.getX();
 		int y = event.getY();
 		
-		if(this.settings.isLabelRenderingEnabled())
+		if(renderLabels)
 		{
 			// If labels have been rendered, we need to deduct their size
 			x -= this.labelHeight;
@@ -204,8 +204,12 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 		
 		log.log(Level.FINE, "Square X: " + squareX + " | Square Y: " + squareY);
 		
+		if(chessboard == null) {
+			return null;
+		}
+		
 		try {
-			return board.getField(squareX, squareY);
+			return chessboard.getBoard().getField(squareX, squareY);
 		} catch(ArrayIndexOutOfBoundsException exc) {
 			// Realistically should only happen when something with the board is f'ed up
 			log.log(Level.SEVERE, "Failed to retrieve chessboard field!", exc);
@@ -240,7 +244,7 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 	
 	public Point getChessboardLocation()
 	{
-		if(this.settings.isLabelRenderingEnabled())
+		if(renderLabels)
 		{
 			return new Point(this.labelHeight, this.labelHeight);
 		}
@@ -256,8 +260,8 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 		
 		this.renderBackground(g2d);
 		
-		if(board != null) {
-			for(Piece piece : board.getPieces()) {
+		if(chessboard != null) {
+			for(Piece piece : chessboard.getBoard().getPieces()) {
 				this.renderPiece(piece, g2d);
 			}
 			
@@ -271,7 +275,7 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 		this.squareHeight = height / (double)(this.getSquareCount());
 		this.labelHeight = Math.max(MIN_LABEL_HEIGHT, (int)(squareHeight / 4.0));
 		
-		if(this.settings.isLabelRenderingEnabled())
+		if(renderLabels)
 		{
 			height += 2 * labelHeight;
 		}
@@ -302,7 +306,7 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 		this.renderStrings(g2d, this.getLabelLetters(),
 				addX, 10 + labelHeight / 3.0,
 				squareHeight, 0,
-				this.settings.isUpsideDown());
+				invertedBoard);
 		g2d.dispose();
 
 		// Clear the label
@@ -317,7 +321,7 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 		this.renderStrings(g2d, this.getLabelNumbers(),
 				3 + labelHeight / 3.0, addX,
 				0, squareHeight,
-				!this.settings.isUpsideDown());
+				!invertedBoard);
 		g2d.dispose();
 	}
 	
@@ -381,5 +385,40 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 	@Override
 	public void mouseExited(MouseEvent arg0)
 	{
+	}
+	
+	@Override
+	public void showMessage(String key, String arg) {
+		String message = Localization.getMessage(key);
+		if(!arg.isEmpty()) {
+			message += " : " + arg;
+		}
+		JOptionPane.showMessageDialog(this, message);
+	}
+	
+	@Override
+	public Option showConfirmMessage(String key, String arg) {
+		String message = Localization.getMessage(key);
+		if(!arg.isEmpty()) {
+			message += " : " + arg;
+		}
+		int selectedOption = JOptionPane.showConfirmDialog(this, message, "", JOptionPane.YES_NO_CANCEL_OPTION);
+		
+		if(selectedOption == JOptionPane.YES_OPTION) {
+			return Option.YES;
+		} else if(selectedOption == JOptionPane.NO_OPTION) {
+			return Option.NO;
+		} else {
+			return Option.CANCEL;
+		}
+	}
+
+	@Override
+	public String showInputMessage(String key, String arg, String initialValue) {
+		String message = Localization.getMessage(key);
+		if(!arg.isEmpty()) {
+			message += " : " + arg;
+		}
+		return JOptionPane.showInputDialog(this, message, initialValue);
 	}
 }

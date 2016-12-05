@@ -70,39 +70,47 @@ import jchess.util.Direction;
  */
 public class Pawn extends Piece
 {
-	private static final Direction[] NORMAL_MOVEMENT = {
-			new Direction(0, 1)
-	};
-	
-	private static final Direction[] CAPTURING_MOVEMENT = {
-			new Direction(1, 1),
-			new Direction(-1, 1)
-	};
+	private Direction normalMovement;
+	private Direction twoStepMovement;
+	private Direction[] capturingMovement;
 	
 	@Override
 	public Set<Direction> getNormalMovements() {
-		Set<Direction> movements = new HashSet<Direction>(Arrays.asList(Pawn.NORMAL_MOVEMENT));
+		Set<Direction> movements = new HashSet<Direction>();
+		movements.add(normalMovement);
 		
 		// If the pawn has not moved yet it may move two fields at once
 		if(!this.hasMoved()) {
-			movements.add(new Direction(0, 2));
+			movements.add(twoStepMovement);
 		}
 		return movements;
 	}
 	
 	@Override
 	public Set<Direction> getCapturingMovements() {
-		return new HashSet<Direction>(Arrays.asList(Pawn.CAPTURING_MOVEMENT));
+		return new HashSet<Direction>(Arrays.asList(this.capturingMovement));
 	}
 	
-	public Pawn(IChessboardController chessboard, Player player)
+	public Pawn(IChessboardController chessboard, Player player, Direction forward)
 	{
 		super(chessboard, player, "P", false);
+		this.normalMovement = forward;
+		this.twoStepMovement = forward.multiply(2);
+		this.capturingMovement = new Direction[2];
+		
+		// TODO: find a more independent way to determine this!
+		if(forward.getX() != 0) {
+			capturingMovement[0] = new Direction(forward.getX(), -1);
+			capturingMovement[1] = new Direction(forward.getX(), 1);
+		} else {
+			capturingMovement[0] = new Direction(-1, forward.getY());
+			capturingMovement[1] = new Direction(1, forward.getY());
+		}
 	}
 	
 	@Override
 	public Pawn copy() {
-		return new Pawn(chessboard, player);
+		return new Pawn(chessboard, player, normalMovement);
 	}
 	
 	void promote(Piece newPiece)

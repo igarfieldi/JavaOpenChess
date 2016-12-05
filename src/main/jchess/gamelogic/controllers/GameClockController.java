@@ -132,7 +132,7 @@ public class GameClockController implements Runnable
 		{
 			if(this.runningClock.decrement())
 			{
-				clockView.repaint();
+				clockView.render();
 				try
 				{
 					Thread.sleep(1000);

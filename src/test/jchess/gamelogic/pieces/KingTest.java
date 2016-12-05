@@ -13,9 +13,13 @@ import jchess.gamelogic.Settings;
 import jchess.gamelogic.controllers.ChessboardController;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.models.IChessboardModel;
+import jchess.gamelogic.models.chessboardmodels.TwoPlayerChessboardModel;
+import jchess.util.Direction;
 
 public class KingTest
 {
+	IChessboardModel model;
 	IChessboardController board;
 	Player white;
 	Player black;
@@ -27,7 +31,8 @@ public class KingTest
 	{
 		// TODO: test in reverse (white on top!)
 		Settings settings = new Settings();
-		board = new ChessboardController(settings, null);
+		model = new TwoPlayerChessboardModel();
+		board = new ChessboardController(settings, null, model);
 		white = settings.getWhitePlayer();
 		black = settings.getBlackPlayer();
 		black.setTopSide(true);
@@ -62,7 +67,7 @@ public class KingTest
 	@Test
 	public void testCheckFromPawn()
 	{
-		Pawn pawn = new Pawn(board, black);
+		Pawn pawn = new Pawn(board, black, new Direction(0, 1));
 		pawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(3, 6), pawn);
 		assertTrue(board.isChecked(white));

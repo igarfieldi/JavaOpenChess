@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 import jchess.gamelogic.Settings;
 import jchess.gamelogic.models.GameClockModel;
 
-public class GameClockView extends JPanel
+public class GameClockView extends JPanel implements IRenderable
 {
 	private static final long serialVersionUID = -5110241622282357707L;
 	private static final Font clockFont = new Font("Sarif", Font.ITALIC, 14);
@@ -31,6 +31,11 @@ public class GameClockView extends JPanel
 		Graphics2D g2d = (Graphics2D) this.background.getGraphics();
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		this.drawBackground(g2d);
+	}
+	
+	@Override
+	public void render() {
+		this.repaint();
 	}
 	
 	/**

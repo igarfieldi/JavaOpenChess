@@ -26,6 +26,14 @@ public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListe
 		initializeGuiElements();
 		placeGuiElements();
 	}
+	
+	public int getPlayerCount() {
+		if(twoPlayersRadioButton.isSelected()) {
+			return 2;
+		} else {
+			return 4;
+		}
+	}
 
 	private void initializeGuiElements()
 	{

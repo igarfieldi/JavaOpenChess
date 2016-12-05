@@ -41,11 +41,6 @@ public class Field
 		this.posY = square.posY;
 	}
 	
-	public Field clone()
-	{
-		return new Field(posX, posY);
-	}
-	
 	public int getPosX()
 	{
 		return posX;
