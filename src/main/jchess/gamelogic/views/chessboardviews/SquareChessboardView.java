@@ -364,12 +364,7 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 	}
 	
 	@Override
-	public void mouseClicked(MouseEvent arg0)
-	{
-	}
-	
-	@Override
-	public void mousePressed(MouseEvent event)
+	public void mouseClicked(MouseEvent event)
 	{
 		if(event.getButton() == MouseEvent.BUTTON3) // right button
 		{
@@ -385,6 +380,11 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 			this.boardActionHandler.onFieldSelection(this.getFieldFromMousePosition(event));
 		}
 		this.render();
+	}
+	
+	@Override
+	public void mousePressed(MouseEvent event)
+	{
 	}
 	
 	@Override

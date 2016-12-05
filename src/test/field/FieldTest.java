@@ -1,6 +1,7 @@
 package field;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,20 +17,27 @@ public class FieldTest
 	}
 	
 	@Test
-	public void testConstruction() {
+	public void testConstruction()
+	{
 		Field normal = null;
 		Field negative = null;
 		
-		try {
+		try
+		{
 			normal = new Field(5, 3);
-		} catch(Exception e) {}
-
+		} catch(Exception e)
+		{
+		}
+		
 		assertTrue(normal.getPosX() == 5);
 		assertTrue(normal.getPosY() == 3);
-
-		try {
+		
+		try
+		{
 			negative = new Field(-5, 2);
-		} catch(Exception e) {}
+		} catch(Exception e)
+		{
+		}
 		assertTrue(negative == null);
 	}
 	

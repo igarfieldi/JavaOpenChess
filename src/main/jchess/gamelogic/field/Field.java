@@ -20,8 +20,6 @@
  */
 package jchess.gamelogic.field;
 
-import java.util.Arrays;
-
 /**
  * Class to represent a chessboard field.
  */

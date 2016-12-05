@@ -2,8 +2,6 @@ package jchess.gamelogic.pieces;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,7 +14,7 @@ import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.models.chessboardmodels.TwoPlayerChessboardModel;
 import jchess.util.Direction;
 
-public class PawnTest
+public class TwoPlayerPawnTest
 {
 	IChessboardModel model;
 	IChessboardController board;
@@ -32,6 +30,11 @@ public class PawnTest
 		white = settings.getWhitePlayer();
 		black = settings.getBlackPlayer();
 		board.initialize();
+		// Need to remove the pieces we don't want
+		for(Field field : board.getBoard().getFields())
+		{
+			board.getBoard().removePiece(field);
+		}
 		King whiteKing = new King(board, white);
 		King blackKing = new King(board, black);
 		board.getBoard().setPiece(board.getBoard().getField(4, 7), whiteKing);
@@ -47,8 +50,8 @@ public class PawnTest
 		blackPawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(2, 5), whitePawn);
 		board.getBoard().setPiece(board.getBoard().getField(6, 2), blackPawn);
-		assertTrue(canMakeMoves(whitePawn, board.getBoard().getField(2, 4)));
-		assertTrue(canMakeMoves(blackPawn, board.getBoard().getField(6, 3)));
+		assertTrue(PieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(2, 4)));
+		assertTrue(PieceTest.canMakeMoves(board, blackPawn, board.getBoard().getField(6, 3)));
 	}
 	
 	@Test
@@ -60,8 +63,10 @@ public class PawnTest
 		blackPawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(4, 4), whitePawn);
 		board.getBoard().setPiece(board.getBoard().getField(3, 3), blackPawn);
-		assertTrue(canMakeMoves(whitePawn, board.getBoard().getField(4, 3), board.getBoard().getField(blackPawn)));
-		assertTrue(canMakeMoves(blackPawn, board.getBoard().getField(3, 4), board.getBoard().getField(whitePawn)));
+		assertTrue(PieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(4, 3),
+		        board.getBoard().getField(blackPawn)));
+		assertTrue(PieceTest.canMakeMoves(board, blackPawn, board.getBoard().getField(3, 4),
+		        board.getBoard().getField(whitePawn)));
 	}
 	
 	@Test
@@ -73,8 +78,10 @@ public class PawnTest
 		blackPawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whitePawn);
 		board.getBoard().setPiece(board.getBoard().getField(4, 3), blackPawn);
-		assertTrue(canMakeMoves(whitePawn, board.getBoard().getField(3, 3), board.getBoard().getField(blackPawn)));
-		assertTrue(canMakeMoves(blackPawn, board.getBoard().getField(4, 4), board.getBoard().getField(whitePawn)));
+		assertTrue(PieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(3, 3),
+		        board.getBoard().getField(blackPawn)));
+		assertTrue(PieceTest.canMakeMoves(board, blackPawn, board.getBoard().getField(4, 4),
+		        board.getBoard().getField(whitePawn)));
 	}
 	
 	@Test
@@ -84,36 +91,22 @@ public class PawnTest
 		Pawn blackPawn = new Pawn(board, black, new Direction(0, 1));
 		board.getBoard().setPiece(board.getBoard().getField(3, 6), whitePawn);
 		board.getBoard().setPiece(board.getBoard().getField(3, 1), blackPawn);
-		assertTrue(canMakeMoves(whitePawn, board.getBoard().getField(3, 5), board.getBoard().getField(3, 4)));
-		assertTrue(canMakeMoves(blackPawn, board.getBoard().getField(3, 2), board.getBoard().getField(3, 3)));
+		assertTrue(PieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(3, 5),
+		        board.getBoard().getField(3, 4)));
+		assertTrue(PieceTest.canMakeMoves(board, blackPawn, board.getBoard().getField(3, 2),
+		        board.getBoard().getField(3, 3)));
 	}
 	
-	/*
-	 * TODO: find a way to test this without direct access to
-	 * twoSquaresMovedPawn and without creating an entire game w/ GUI etc.!
-	 * 
-	 * @Test public void testEnPassantLeft() { Pawn whitePawn = new Pawn(board,
-	 * p1); Pawn blackPawn = new Pawn(board, p2); board.getBoard().getField(4,
-	 * 3).setPiece(whitePawn); board.getBoard().getField(3,
-	 * 1).setPiece(blackPawn); board.move(board.getBoard().getField(3, 1),
-	 * board.getBoard().getField(3, 3)); assertTrue(canMakeMoves(whitePawn,
-	 * board.getBoard().getField(4, 2), board.getBoard().getField(3, 2))); }
-	 */
-	
-	private boolean canMakeMoves(Piece piece, Field... fields)
+	@Test
+	public void testEnPassant()
 	{
-		Set<Field> possibleMoves = board.getPossibleMoves(piece, true);
-		if(possibleMoves.size() != fields.length)
-		{
-			return false;
-		}
-		for(Field field : fields)
-		{
-			if(!possibleMoves.contains(field))
-			{
-				return false;
-			}
-		}
-		return true;
+		Pawn whitePawn = new Pawn(board, white, new Direction(0, -1));
+		Pawn blackPawn = new Pawn(board, black, new Direction(0, 1));
+		board.getBoard().setPiece(board.getBoard().getField(3, 4), whitePawn);
+		board.getBoard().setPiece(board.getBoard().getField(2, 1), blackPawn);
+		board.move(board.getBoard().getField(whitePawn), board.getBoard().getField(3, 3));
+		board.move(board.getBoard().getField(blackPawn), board.getBoard().getField(2, 3));
+		assertTrue(PieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(3, 2),
+		        board.getBoard().getField(2, 2)));
 	}
 }

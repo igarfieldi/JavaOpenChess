@@ -736,7 +736,7 @@ public class TwoPlayerChessboardController implements IChessboardController
 			}
 		}
 		
-		if(refresh)
+		if(refresh && view != null)
 		{
 			view.unselect();// unselect square
 			view.render();
