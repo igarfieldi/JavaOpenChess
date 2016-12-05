@@ -47,14 +47,6 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 	private int chessboardHeight;
 	private int labelHeight;
 	
-	/**
-	 * Chessboard class constructor
-	 * 
-	 * @param settings
-	 *            reference to Settings class object for this chessboard
-	 * @param moves_history
-	 *            reference to Moves class object for this chessboard
-	 */
 	public SquareChessboardView(boolean renderLabels, boolean invertedBoard)
 	{
 		this.activeField = null;
@@ -68,19 +60,23 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 	}
 	
 	protected abstract Image getChessboardImage();
+	
 	protected abstract Image getSelectedFieldImage();
+	
 	protected abstract Image getPossibleFieldImage();
+	
 	protected abstract int getSquareCount();
 	
 	protected abstract List<String> getLabelLetters();
+	
 	protected abstract List<String> getLabelNumbers();
-
+	
 	@Override
 	public void render()
 	{
 		this.repaint();
 	}
-
+	
 	@Override
 	public void initialize(IChessboardController chessboard, IBoardActionHandler handler)
 	{
@@ -89,11 +85,14 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 	}
 	
 	/**
-	 * Renders the background of the board.
-	 * This includes the board itself and, if applicable, its labeling.
-	 * @param g2d Graphics object
+	 * Renders the background of the board. This includes the board itself and,
+	 * if applicable, its labeling.
+	 * 
+	 * @param g2d
+	 *            Graphics object
 	 */
-	private void renderBackground(Graphics2D g2d) {
+	private void renderBackground(Graphics2D g2d)
+	{
 		Point topLeftPoint = this.getChessboardLocation();
 		if(renderLabels)
 		{
@@ -106,45 +105,52 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 			g2d.drawImage(this.leftRightLabel, 0, 0, null);
 			g2d.drawImage(this.leftRightLabel, this.getHeight() - this.labelHeight, 0, null);
 		}
-		g2d.drawImage(this.getChessboardImage(),
-				topLeftPoint.x, topLeftPoint.y, chessboardHeight, chessboardHeight, this);
+		g2d.drawImage(this.getChessboardImage(), topLeftPoint.x, topLeftPoint.y, chessboardHeight, chessboardHeight,
+		        this);
 	}
 	
 	/**
 	 * Renders the given piece to the board.
-	 * @param piece Piece to render
-	 * @param g2d Graphics object
+	 * 
+	 * @param piece
+	 *            Piece to render
+	 * @param g2d
+	 *            Graphics object
 	 */
-	private void renderPiece(Piece piece, Graphics2D g2d) {
-		if(g2d == null) {
+	private void renderPiece(Piece piece, Graphics2D g2d)
+	{
+		if(g2d == null)
+		{
 			throw new IllegalArgumentException("Graphics object must not be null!");
-		} else if(piece == null) {
+		} else if(piece == null)
+		{
 			throw new IllegalArgumentException("Piece object must not be null!");
 		}
 		
 		// Get field coordinates
 		Point topLeft = this.getChessboardLocation();
 		Field field = chessboard.getBoard().getField(piece);
-		int x = (int)(field.getPosX() * this.squareHeight) + topLeft.x;
-		int y = (int)(field.getPosY() * this.squareHeight) + topLeft.y;
+		int x = (int) (field.getPosX() * this.squareHeight) + topLeft.x;
+		int y = (int) (field.getPosY() * this.squareHeight) + topLeft.y;
 		
 		// Render resized image (to fit current square size)
-		g2d.drawImage(piece.getImage(), x, y,
-				(int) squareHeight, (int) squareHeight, this);
+		g2d.drawImage(piece.getImage(), x, y, (int) squareHeight, (int) squareHeight, this);
 	}
 	
 	/**
 	 * Renders the currently selected field.
-	 * @param g2d Graphics object
+	 * 
+	 * @param g2d
+	 *            Graphics object
 	 */
-	private void renderSelectedField(Graphics2D g2d) {
+	private void renderSelectedField(Graphics2D g2d)
+	{
 		if(activeField != null) // if some square is active
 		{
 			Point topLeftPoint = this.getChessboardLocation();
-			g2d.drawImage(this.getSelectedFieldImage(),
-					(int)(activeField.getPosX() * squareHeight) + topLeftPoint.x,
-					(int)(activeField.getPosY() * squareHeight) + topLeftPoint.y, 
-					(int) squareHeight, (int) squareHeight, null);
+			g2d.drawImage(this.getSelectedFieldImage(), (int) (activeField.getPosX() * squareHeight) + topLeftPoint.x,
+			        (int) (activeField.getPosY() * squareHeight) + topLeftPoint.y, (int) squareHeight,
+			        (int) squareHeight, null);
 			
 			this.renderPossibleMoves(g2d);
 		}
@@ -152,19 +158,24 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 	
 	/**
 	 * Renders all fields the currently selected piece can move to.
-	 * @param g2d Graphics object
+	 * 
+	 * @param g2d
+	 *            Graphics object
 	 */
-	private void renderPossibleMoves(Graphics2D g2d) {
-		if(activeField != null && chessboard != null) {
+	private void renderPossibleMoves(Graphics2D g2d)
+	{
+		if(activeField != null && chessboard != null)
+		{
 			Piece piece = chessboard.getBoard().getPiece(activeField);
 			
-			if(piece != null) {
+			if(piece != null)
+			{
 				Point topLeftPoint = this.getChessboardLocation();
-				for(Field field : chessboard.getPossibleMoves(chessboard.getBoard().getPiece(activeField), true)) {
-					g2d.drawImage(this.getPossibleFieldImage(),
-							(int)(field.getPosX() * squareHeight) + topLeftPoint.x,
-							(int)(field.getPosY() * squareHeight) + topLeftPoint.y,
-					        (int) squareHeight, (int) squareHeight, null);
+				for(Field field : chessboard.getPossibleMoves(chessboard.getBoard().getPiece(activeField), true))
+				{
+					g2d.drawImage(this.getPossibleFieldImage(), (int) (field.getPosX() * squareHeight) + topLeftPoint.x,
+					        (int) (field.getPosY() * squareHeight) + topLeftPoint.y, (int) squareHeight,
+					        (int) squareHeight, null);
 				}
 			}
 		}
@@ -204,37 +215,42 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 		
 		log.log(Level.FINE, "Square X: " + squareX + " | Square Y: " + squareY);
 		
-		if(chessboard == null) {
+		if(chessboard == null)
+		{
 			return null;
 		}
 		
-		try {
+		try
+		{
 			return chessboard.getBoard().getField(squareX, squareY);
-		} catch(ArrayIndexOutOfBoundsException exc) {
-			// Realistically should only happen when something with the board is f'ed up
+		} catch(ArrayIndexOutOfBoundsException exc)
+		{
+			// Realistically should only happen when something with the board is
+			// f'ed up
 			log.log(Level.SEVERE, "Failed to retrieve chessboard field!", exc);
 			return null;
 		}
 	}
 	
 	/**
-	 * Method selecting piece in chessboard
+	 * Selects a field on the chessboard.
 	 * 
-	 * @param sq
-	 *            square to select (when clicked))
+	 * @param field
+	 *            Field to select
 	 */
 	public void select(Field field)
 	{
 		this.activeField = field;
 		
-		if(field != null) {
+		if(field != null)
+		{
 			log.log(Level.FINE, "Active X: " + (field.getPosX() + 1) + " | Active Y: " + (field.getPosY() + 1));
 		}
 		this.render();
 	}
 	
 	/**
-	 * Method set variables active_x_square & active_y_square to 0 values.
+	 * De-selects the current active field. This triggers a re-render.
 	 */
 	public void unselect()
 	{
@@ -260,8 +276,10 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 		
 		this.renderBackground(g2d);
 		
-		if(chessboard != null) {
-			for(Piece piece : chessboard.getBoard().getPieces()) {
+		if(chessboard != null)
+		{
+			for(Piece piece : chessboard.getBoard().getPieces())
+			{
 				this.renderPiece(piece, g2d);
 			}
 			
@@ -272,8 +290,8 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 	public void resizeChessboard(int height)
 	{
 		this.chessboardHeight = height;
-		this.squareHeight = height / (double)(this.getSquareCount());
-		this.labelHeight = Math.max(MIN_LABEL_HEIGHT, (int)(squareHeight / 4.0));
+		this.squareHeight = height / (double) (this.getSquareCount());
+		this.labelHeight = Math.max(MIN_LABEL_HEIGHT, (int) (squareHeight / 4.0));
 		
 		if(renderLabels)
 		{
@@ -301,14 +319,11 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 		g2d.fillRect(0, 0, labelWidth, labelHeight);
 		g2d.setColor(Color.black);
 		g2d.setFont(new Font("Arial", Font.BOLD, 12));
-
+		
 		// Render the letter strings
-		this.renderStrings(g2d, this.getLabelLetters(),
-				addX, 10 + labelHeight / 3.0,
-				squareHeight, 0,
-				invertedBoard);
+		this.renderStrings(g2d, this.getLabelLetters(), addX, 10 + labelHeight / 3.0, squareHeight, 0, invertedBoard);
 		g2d.dispose();
-
+		
 		// Clear the label
 		g2d = (Graphics2D) this.leftRightLabel.getGraphics();
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -316,18 +331,17 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 		g2d.fillRect(0, 0, labelHeight, labelWidth);
 		g2d.setColor(Color.black);
 		g2d.setFont(new Font("Arial", Font.BOLD, 12));
-
+		
 		// Render the letter number strings
-		this.renderStrings(g2d, this.getLabelNumbers(),
-				3 + labelHeight / 3.0, addX,
-				0, squareHeight,
-				!invertedBoard);
+		this.renderStrings(g2d, this.getLabelNumbers(), 3 + labelHeight / 3.0, addX, 0, squareHeight, !invertedBoard);
 		g2d.dispose();
 	}
 	
-	private void renderStrings(Graphics2D g2d, List<String> strings,
-			double startX, double startY, double stepX, double stepY, boolean inverse) {
-		if(inverse) {
+	private void renderStrings(Graphics2D g2d, List<String> strings, double startX, double startY, double stepX,
+	        double stepY, boolean inverse)
+	{
+		if(inverse)
+		{
 			// When reversed, start at the end instead
 			startX += stepX * (strings.size() - 1);
 			stepX *= -1;
@@ -336,7 +350,8 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 		}
 		
 		// Render each string at the current position
-		for(String str : strings) {
+		for(String str : strings)
+		{
 			g2d.drawString(str, (int) startX, (int) startY);
 			startX += stepX;
 			startY += stepY;
@@ -352,7 +367,7 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 	public void mouseClicked(MouseEvent arg0)
 	{
 	}
-
+	
 	@Override
 	public void mousePressed(MouseEvent event)
 	{
@@ -371,52 +386,61 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 		}
 		this.render();
 	}
-
+	
 	@Override
 	public void mouseReleased(MouseEvent arg0)
 	{
 	}
-
+	
 	@Override
 	public void mouseEntered(MouseEvent arg0)
 	{
 	}
-
+	
 	@Override
 	public void mouseExited(MouseEvent arg0)
 	{
 	}
 	
 	@Override
-	public void showMessage(String key, String arg) {
+	public void showMessage(String key, String arg)
+	{
 		String message = Localization.getMessage(key);
-		if(!arg.isEmpty()) {
+		if(!arg.isEmpty())
+		{
 			message += " : " + arg;
 		}
 		JOptionPane.showMessageDialog(this, message);
 	}
 	
 	@Override
-	public Option showConfirmMessage(String key, String arg) {
+	public Option showConfirmMessage(String key, String arg)
+	{
 		String message = Localization.getMessage(key);
-		if(!arg.isEmpty()) {
+		if(!arg.isEmpty())
+		{
 			message += " : " + arg;
 		}
 		int selectedOption = JOptionPane.showConfirmDialog(this, message, "", JOptionPane.YES_NO_CANCEL_OPTION);
 		
-		if(selectedOption == JOptionPane.YES_OPTION) {
+		if(selectedOption == JOptionPane.YES_OPTION)
+		{
 			return Option.YES;
-		} else if(selectedOption == JOptionPane.NO_OPTION) {
+		} else if(selectedOption == JOptionPane.NO_OPTION)
+		{
 			return Option.NO;
-		} else {
+		} else
+		{
 			return Option.CANCEL;
 		}
 	}
-
+	
 	@Override
-	public String showInputMessage(String key, String arg, String initialValue) {
+	public String showInputMessage(String key, String arg, String initialValue)
+	{
 		String message = Localization.getMessage(key);
-		if(!arg.isEmpty()) {
+		if(!arg.isEmpty())
+		{
 			message += " : " + arg;
 		}
 		return JOptionPane.showInputDialog(this, message, initialValue);

@@ -79,7 +79,7 @@ public class BiMap<K, V> implements Map<K, V>
 	 * To keep the general Map-API, only one (unidirectional) view of the
 	 * map is available at a time. To obtain the inverse view, a 'new'
 	 * BiMap is returned with swapped mapping roles.
-	 * @return
+	 * @return inverse view of BiMap
 	 */
 	public BiMap<V, K> inverse() {
 		return new BiMap<V, K>(inverseMap, map);

@@ -42,10 +42,7 @@ import jchess.gamelogic.pieces.Piece;
 /**
  * Class representing the players moves, it's also checking that the moves taken
  * by player are correct. All moves which was taken by current player are saving
- * as List of Strings The history of moves is printing in a table
- * 
- * @param game
- *            The current game
+ * as List of Strings The history of moves is printing in a table.
  */
 public class Moves extends AbstractTableModel
 {
@@ -224,7 +221,7 @@ public class Moves extends AbstractTableModel
 		if(move.getCastlingMove() == CastlingType.SHORT_CASTLING)
 		{
 			this.addCastling("0-0");
-		} else if(move.getCastlingMove()  == CastlingType.LONG_CASTLING)
+		} else if(move.getCastlingMove() == CastlingType.LONG_CASTLING)
 		{
 			this.addCastling("0-0-0");
 		} else
@@ -495,8 +492,8 @@ public class Moves extends AbstractTableModel
 				if(locMove.equals("O-O-O"))
 				{
 					if(this.chessboard.getActivePlayer().getColor() == Player.Color.BLACK) // if
-					                                                                 // black
-					                                                                 // turn
+					// black
+					// turn
 					{
 						values = new int[]{ 4, 0, 2, 0 };// move value for
 						                                 // castling (King move)
@@ -508,8 +505,8 @@ public class Moves extends AbstractTableModel
 				} else if(locMove.equals("O-O")) // if short castling
 				{
 					if(this.chessboard.getActivePlayer().getColor() == Player.Color.BLACK) // if
-					                                                                 // black
-					                                                                 // turn
+					// black
+					// turn
 					{
 						values = new int[]{ 4, 0, 6, 0 };// move value for
 						                                 // castling (King move)
@@ -520,7 +517,10 @@ public class Moves extends AbstractTableModel
 					}
 				}
 				
-				if(!this.isValidMove(values[0], values[1], values[2], values[3])) // if move is illegal
+				if(!this.isValidMove(values[0], values[1], values[2], values[3])) // if
+				                                                                  // move
+				                                                                  // is
+				                                                                  // illegal
 				{
 					this.chessboard.getView().showMessage("illegal_move_on", locMove);
 					return;// finish reading game and show message
@@ -545,10 +545,11 @@ public class Moves extends AbstractTableModel
 				xTo = tempTo.getPosX();
 				yTo = tempTo.getPosY();
 				
-				
-				for(Field field : chessboard.getBoard().getFields()) {
+				for(Field field : chessboard.getBoard().getFields())
+				{
 					Piece piece = chessboard.getBoard().getPiece(field);
-					if(piece == null || this.chessboard.getActivePlayer().getColor() != piece.getPlayer().getColor()) {
+					if(piece == null || this.chessboard.getActivePlayer().getColor() != piece.getPlayer().getColor())
+					{
 						continue;
 					}
 					for(Field possibleMove : chessboard.getPossibleMoves(piece, true))
@@ -560,14 +561,15 @@ public class Moves extends AbstractTableModel
 							pieceFound = true;
 						}
 					}
-					if(pieceFound) {
+					if(pieceFound)
+					{
 						break;
 					}
 				}
 			} else
 			{
 				Field tempFrom = chessboard.getFieldFromDesignation(locMove.substring(from, from + 1));
-				Field tempTo = chessboard.getFieldFromDesignation(locMove.substring(from+3, from + 4));
+				Field tempTo = chessboard.getFieldFromDesignation(locMove.substring(from + 3, from + 4));
 				
 				xFrom = tempFrom.getPosX();
 				yFrom = tempFrom.getPosY();
@@ -582,17 +584,20 @@ public class Moves extends AbstractTableModel
 			}
 		}
 	}
-
-	private boolean isValidMove(int xFrom, int yFrom, int xTo, int yTo) {
+	
+	private boolean isValidMove(int xFrom, int yFrom, int xTo, int yTo)
+	{
 		Field from = chessboard.getBoard().getField(xFrom, yFrom);
-		if(from != null) {
+		if(from != null)
+		{
 			Field to = chessboard.getBoard().getField(xTo, yTo);
 			Piece piece = chessboard.getBoard().getPiece(from);
-			if(to != null && piece != null) {
+			if(to != null && piece != null)
+			{
 				return chessboard.getPossibleMoves(piece, true).contains(to);
 			}
 		}
-
+		
 		return false;
 	}
 }

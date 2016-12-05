@@ -13,6 +13,7 @@ public interface IChessboardController
 {
 	
 	public IChessboardView getView();
+	
 	public Moves getHistory();
 	
 	public Player getActivePlayer();
@@ -25,7 +26,8 @@ public interface IChessboardController
 	 * Returns the string representation of the given field.
 	 * 
 	 * @param field
-	 * @return
+	 *            Field to get designation for
+	 * @return Designation of field
 	 */
 	public String getFieldDesignation(Field field);
 	
@@ -85,9 +87,7 @@ public interface IChessboardController
 	 * @param begin
 	 *            square from which move piece
 	 * @param end
-	 *            square where we want to move piece *
-	 * @param refresh
-	 *            chessboard, default: true
+	 *            square where we want to move piece
 	 */
 	public void move(Field begin, Field end);
 	

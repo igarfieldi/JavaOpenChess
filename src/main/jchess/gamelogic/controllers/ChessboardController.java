@@ -70,14 +70,6 @@ public class ChessboardController implements IChessboardController
 	private Pawn twoSquareMovedPawn = null;
 	private Moves movesHistory;
 	
-	/**
-	 * Chessboard class constructor
-	 * 
-	 * @param settings
-	 *            reference to Settings class object for this chessboard
-	 * @param moves_history
-	 *            reference to Moves class object for this chessboard
-	 */
 	public ChessboardController(Settings settings, IChessboardView view, IChessboardModel board)
 	{
 		this.board = board;
@@ -87,11 +79,14 @@ public class ChessboardController implements IChessboardController
 	}
 	
 	@Override
-	public Moves getHistory() {
+	public Moves getHistory()
+	{
 		return movesHistory;
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jchess.gamelogic.field.IChessboardController#getView()
 	 */
 	@Override
@@ -100,7 +95,9 @@ public class ChessboardController implements IChessboardController
 		return view;
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jchess.gamelogic.field.IChessboardController#getActivePlayer()
 	 */
 	@Override
@@ -109,7 +106,9 @@ public class ChessboardController implements IChessboardController
 		return this.activePlayer;
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jchess.gamelogic.field.IChessboardController#switchToNextPlayer()
 	 */
 	@Override
@@ -124,8 +123,11 @@ public class ChessboardController implements IChessboardController
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see jchess.gamelogic.field.IChessboardController#switchToPreviousPlayer()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * jchess.gamelogic.field.IChessboardController#switchToPreviousPlayer()
 	 */
 	@Override
 	public void switchToPreviousPlayer()
@@ -134,8 +136,12 @@ public class ChessboardController implements IChessboardController
 		this.switchToNextPlayer();
 	}
 	
-	/* (non-Javadoc)
-	 * @see jchess.gamelogic.field.IChessboardController#getFieldDesignation(jchess.gamelogic.field.Field)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * jchess.gamelogic.field.IChessboardController#getFieldDesignation(jchess.
+	 * gamelogic.field.Field)
 	 */
 	@Override
 	public String getFieldDesignation(Field field)
@@ -145,8 +151,12 @@ public class ChessboardController implements IChessboardController
 		return FIELD_LETTERS[WIDTH - field.getPosX() - 1] + FIELD_NUMBERS[field.getPosY()];
 	}
 	
-	/* (non-Javadoc)
-	 * @see jchess.gamelogic.field.IChessboardController#getFieldFromDesignation(java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * jchess.gamelogic.field.IChessboardController#getFieldFromDesignation(java
+	 * .lang.String)
 	 */
 	@Override
 	public Field getFieldFromDesignation(String designation)
@@ -168,7 +178,9 @@ public class ChessboardController implements IChessboardController
 		return board.getField(x, y);
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jchess.gamelogic.field.IChessboardController#initialize()
 	 */
 	@Override
@@ -231,8 +243,12 @@ public class ChessboardController implements IChessboardController
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see jchess.gamelogic.field.IChessboardController#getPossibleMoves(jchess.gamelogic.pieces.Piece, boolean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * jchess.gamelogic.field.IChessboardController#getPossibleMoves(jchess.
+	 * gamelogic.pieces.Piece, boolean)
 	 */
 	@Override
 	public Set<Field> getPossibleMoves(Piece piece, boolean careForCheck)
@@ -254,7 +270,8 @@ public class ChessboardController implements IChessboardController
 			
 			// Store the part of the state that undo will not restore
 			Field activeField = null;
-			if(this.getView() != null) {
+			if(this.getView() != null)
+			{
 				activeField = this.getView().getActiveSquare();
 			}
 			Pawn twoMovedPawn = this.twoSquareMovedPawn;
@@ -278,8 +295,9 @@ public class ChessboardController implements IChessboardController
 				board = tempModel;
 				this.twoSquareMovedPawn = twoMovedPawn;
 			}
-
-			if(this.getView() != null) {
+			
+			if(this.getView() != null)
+			{
 				this.getView().select(activeField);
 			}
 		}
@@ -370,9 +388,10 @@ public class ChessboardController implements IChessboardController
 	}
 	
 	/**
-	 * Returns the list of all fields in a direction a piece might consider moving to.
-	 * This does not include a check for blocking by pieces. The fields are
-	 * ordered; fields closer to the piece first.
+	 * Returns the list of all fields in a direction a piece might consider
+	 * moving to. This does not include a check for blocking by pieces. The
+	 * fields are ordered; fields closer to the piece first.
+	 * 
 	 * @param piece
 	 * @param dir
 	 * @return List of fields in direction
@@ -445,8 +464,10 @@ public class ChessboardController implements IChessboardController
 	
 	/**
 	 * Returns the set of fields a given piece can move to without capturing.
+	 * 
 	 * @param piece
-	 * @param directions Set of directions to consider
+	 * @param directions
+	 *            Set of directions to consider
 	 * @return Set of fields piece can move to
 	 */
 	private Set<Field> getMovableFieldsInDirection(Piece piece, Set<Direction> directions)
@@ -533,8 +554,12 @@ public class ChessboardController implements IChessboardController
 		return capturableFields;
 	}
 	
-	/* (non-Javadoc)
-	 * @see jchess.gamelogic.field.IChessboardController#isChecked(jchess.gamelogic.Player)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * jchess.gamelogic.field.IChessboardController#isChecked(jchess.gamelogic.
+	 * Player)
 	 */
 	@Override
 	public boolean isChecked(Player player)
@@ -556,8 +581,11 @@ public class ChessboardController implements IChessboardController
 		return false;
 	}
 	
-	/* (non-Javadoc)
-	 * @see jchess.gamelogic.field.IChessboardController#isCheckmated(jchess.gamelogic.Player)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jchess.gamelogic.field.IChessboardController#isCheckmated(jchess.
+	 * gamelogic.Player)
 	 */
 	@Override
 	public boolean isCheckmated(Player player)
@@ -573,7 +601,9 @@ public class ChessboardController implements IChessboardController
 		return this.isChecked(player);
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jchess.gamelogic.field.IChessboardController#isStalemate()
 	 */
 	@Override
@@ -636,9 +666,13 @@ public class ChessboardController implements IChessboardController
 		}
 		return false;
 	}
-
-	/* (non-Javadoc)
-	 * @see jchess.gamelogic.field.IChessboardController#move(jchess.gamelogic.field.Field, jchess.gamelogic.field.Field, boolean, boolean, boolean)
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * jchess.gamelogic.field.IChessboardController#move(jchess.gamelogic.field.
+	 * Field, jchess.gamelogic.field.Field, boolean, boolean, boolean)
 	 */
 	@Override
 	public void move(Field begin, Field end)
@@ -764,7 +798,9 @@ public class ChessboardController implements IChessboardController
 		}
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jchess.gamelogic.field.IChessboardController#redo(boolean)
 	 */
 	@Override
@@ -780,19 +816,21 @@ public class ChessboardController implements IChessboardController
 			from = first.getFrom();
 			to = first.getTo();
 			
-			this.move(board.getField(from.getPosX(), from.getPosY()), board.getField(to.getPosX(), to.getPosY()),
-			        true, false, true);
+			this.move(board.getField(from.getPosX(), from.getPosY()), board.getField(to.getPosX(), to.getPosY()), true,
+			        false, true);
 			if(first.getPromotedPiece() != null)
 			{
 				board.setPiece(to, first.getPromotedPiece());
 			}
 			return true;
 		}
-			
+		
 		return false;
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jchess.gamelogic.field.IChessboardController#undo()
 	 */
 	@Override
@@ -860,7 +898,6 @@ public class ChessboardController implements IChessboardController
 					board.removePiece(end);
 				}
 				
-				
 				view.unselect();// unselect square
 				view.render();
 				
@@ -879,7 +916,9 @@ public class ChessboardController implements IChessboardController
 		}
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jchess.gamelogic.field.IChessboardController#getBoard()
 	 */
 	@Override

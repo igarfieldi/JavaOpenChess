@@ -100,12 +100,14 @@ public class Game implements IBoardActionHandler
 	}
 	
 	@Override
-	public void onUndoRequested() {
+	public void onUndoRequested()
+	{
 		this.undo();
 	}
 	
 	@Override
-	public void onRedoRequested() {
+	public void onRedoRequested()
+	{
 		this.redo();
 	};
 	
@@ -291,6 +293,7 @@ public class Game implements IBoardActionHandler
 	 * @throws ReadGameError
 	 *             class object when something goes wrong when reading file
 	 * @throws IOException
+	 *             If an error occurred when reading from BufferedReader
 	 */
 	static public String getLineWithVar(BufferedReader br, String srcStr) throws ReadGameError, IOException
 	{

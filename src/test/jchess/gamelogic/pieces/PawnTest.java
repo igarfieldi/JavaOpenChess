@@ -26,13 +26,11 @@ public class PawnTest
 	@Before
 	public void setUp() throws Exception
 	{
-		// TODO: test in reverse (white on top)!
 		Settings settings = new Settings();
 		model = new TwoPlayerChessboardModel();
 		board = new ChessboardController(settings, null, model);
 		white = settings.getWhitePlayer();
 		black = settings.getBlackPlayer();
-		black.setTopSide(true);
 		board.initialize();
 		King whiteKing = new King(board, white);
 		King blackKing = new King(board, black);

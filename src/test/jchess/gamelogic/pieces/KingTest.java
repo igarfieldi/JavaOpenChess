@@ -29,13 +29,11 @@ public class KingTest
 	@Before
 	public void setUp() throws Exception
 	{
-		// TODO: test in reverse (white on top!)
 		Settings settings = new Settings();
 		model = new TwoPlayerChessboardModel();
 		board = new ChessboardController(settings, null, model);
 		white = settings.getWhitePlayer();
 		black = settings.getBlackPlayer();
-		black.setTopSide(true);
 		board.initialize();
 		// Need to remove the pieces we don't want
 		for(Field field : board.getBoard().getFields())

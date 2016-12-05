@@ -32,12 +32,11 @@ import jchess.gamelogic.views.GameClockView;
 
 /**
  * Class to representing the full game time.
- * @param game the current game
  */
 public class GameClockController implements Runnable
 {
 	private static Logger log = Logger.getLogger(GameClockController.class.getName());
-
+	
 	private GameClockModel clocks;
 	private GameClockView clockView;
 	private Clock runningClock;
@@ -64,7 +63,13 @@ public class GameClockController implements Runnable
 		this.clockView = new GameClockView(settings, clocks);
 	}
 	
-	public GameClockView getView() {
+	/**
+	 * Returns the view of the game clock.
+	 * 
+	 * @return game clock view
+	 */
+	public GameClockView getView()
+	{
 		return clockView;
 	}
 	
@@ -87,8 +92,11 @@ public class GameClockController implements Runnable
 	
 	/**
 	 * Sets the current time for both clocks.
-	 * @param t1 time for clock 1
-	 * @param t2 time for clock 2
+	 * 
+	 * @param t1
+	 *            time for clock 1
+	 * @param t2
+	 *            time for clock 2
 	 */
 	public void setTimes(int t1, int t2)
 	{
@@ -98,7 +106,9 @@ public class GameClockController implements Runnable
 	
 	/**
 	 * Sets the current time for both clocks.
-	 * @param t time to set both clocks to
+	 * 
+	 * @param t
+	 *            time to set both clocks to
 	 */
 	public void setTimes(int t)
 	{
@@ -107,8 +117,11 @@ public class GameClockController implements Runnable
 	
 	/**
 	 * Method with is setting the clock's players.
-	 * @param p1 First player
-	 * @param p2 Second player
+	 * 
+	 * @param p1
+	 *            First player
+	 * @param p2
+	 *            Second player
 	 */
 	private void setPlayers(Player p1, Player p2)
 	{
@@ -152,8 +165,7 @@ public class GameClockController implements Runnable
 	 */
 	private void timeOver()
 	{
-		switchClocks();	// Current clock ran out of time -> other clock wins
-		game.endGame("Time is up! " + runningClock.getPlayer().getColor().toString() +
-				" player wins the game.");
+		switchClocks(); // Current clock ran out of time -> other clock wins
+		game.endGame("Time is up! " + runningClock.getPlayer().getColor().toString() + " player wins the game.");
 	}
 }
