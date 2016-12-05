@@ -175,7 +175,7 @@ public class ChessboardController implements IChessboardController
 	public void initialize()
 	{
 		this.initializePlayers();
-		this.initializePieces(this.whitePlayer.isTopSide());
+		this.initializePieces();
 		
 		this.activePlayer = whitePlayer;
 	}
@@ -188,7 +188,6 @@ public class ChessboardController implements IChessboardController
 	{
 		this.whitePlayer = settings.getWhitePlayer();
 		this.blackPlayer = settings.getBlackPlayer();
-		this.blackPlayer.setTopSide(true);
 	}
 	
 	/**
@@ -198,15 +197,10 @@ public class ChessboardController implements IChessboardController
 	 * @param whiteIsTop
 	 *            is white playing from top-side
 	 */
-	private void initializePieces(boolean whiteIsTop)
+	private void initializePieces()
 	{
 		Player topSide = this.blackPlayer;
 		Player bottomSide = this.whitePlayer;
-		if(whiteIsTop)
-		{
-			topSide = this.whitePlayer;
-			bottomSide = this.blackPlayer;
-		}
 		
 		board.initialize();
 		// Set rooks, bishops, knights
@@ -223,22 +217,11 @@ public class ChessboardController implements IChessboardController
 		board.setPiece(board.getField(2, 0), new Bishop(this, topSide));
 		board.setPiece(board.getField(5, 0), new Bishop(this, topSide));
 		
-		// Since the queen is always placed on the field of her own color, we
-		// need
-		// to check on which side white is playing
-		if(whiteIsTop)
-		{
-			board.setPiece(board.getField(4, 7), new Queen(this, bottomSide));
-			board.setPiece(board.getField(3, 7), new King(this, bottomSide));
-			board.setPiece(board.getField(4, 0), new Queen(this, topSide));
-			board.setPiece(board.getField(3, 0), new King(this, topSide));
-		} else
-		{
-			board.setPiece(board.getField(3, 7), new Queen(this, bottomSide));
-			board.setPiece(board.getField(4, 7), new King(this, bottomSide));
-			board.setPiece(board.getField(3, 0), new Queen(this, topSide));
-			board.setPiece(board.getField(4, 0), new King(this, topSide));
-		}
+		// The queen is always placed on the field of her own color
+		board.setPiece(board.getField(3, 7), new Queen(this, bottomSide));
+		board.setPiece(board.getField(4, 7), new King(this, bottomSide));
+		board.setPiece(board.getField(3, 0), new Queen(this, topSide));
+		board.setPiece(board.getField(4, 0), new King(this, topSide));
 		
 		// Initialize pawns: no special distinctions necessary
 		for(int x = 0; x < WIDTH; x++)
@@ -443,7 +426,7 @@ public class ChessboardController implements IChessboardController
 						// Our pawn is right next to the pawn which moved two
 						// squares. Now we need to check the direction in which
 						// the pawn has to go
-						if(piece.getPlayer().isTopSide())
+						if(piece.getPlayer() == blackPlayer)
 						{
 							capturableFields.add(board.getField(board.getField(twoSquareMovedPawn).getPosX(),
 							        board.getField(piece).getPosY() + 1));
