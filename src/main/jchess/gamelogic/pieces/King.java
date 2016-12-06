@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.controllers.IChessboardController;
 import jchess.util.Direction;
 
 public class King extends Piece
@@ -53,11 +52,11 @@ public class King extends Piece
 	
 	@Override
 	public King copy() {
-		return new King(chessboard, player);
+		return new King(player);
 	}
 	
-	public King(IChessboardController chessboard, Player player)
+	public King(Player player)
 	{
-		super(chessboard, player, "K", false);
+		super(player, "K", false, PieceType.KING);
 	}
 }

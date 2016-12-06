@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.controllers.IChessboardController;
 import jchess.util.Direction;
 
 /**
@@ -66,11 +65,11 @@ public class Knight extends Piece
 	
 	@Override
 	public Knight copy() {
-		return new Knight(chessboard, player);
+		return new Knight(player);
 	}
 	
-	public Knight(IChessboardController chessboard, Player player)
+	public Knight(Player player)
 	{
-		super(chessboard, player, "N", false);// call initialiser of super type: PieceW
+		super(player, "N", false, PieceType.KNIGHT);// call initialiser of super type: PieceW
 	}
 }

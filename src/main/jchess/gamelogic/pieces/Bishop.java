@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.controllers.IChessboardController;
 import jchess.util.Direction;
 
 /**
@@ -62,11 +61,11 @@ public class Bishop extends Piece
 	@Override
 	public Bishop copy()
 	{
-		return new Bishop(chessboard, player);
+		return new Bishop(player);
 	}
 	
-	public Bishop(IChessboardController chessboard, Player player)
+	public Bishop(Player player)
 	{
-		super(chessboard, player, "B"); // call initialiser of super type: Piece
+		super(player, "B", PieceType.BISHOP); // call initialiser of super type: Piece
 	}
 }
