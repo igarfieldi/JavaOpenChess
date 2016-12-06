@@ -21,16 +21,21 @@
 package jchess.gamelogic.field;
 
 /**
- * Class to represent a chessboard square
+ * Class to represent a chessboard field.
  */
 public class Field
 {
+	private static final String FIELD_LETTERS =
+			"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	
 	private int posX;
 	private int posY;
 	
 	public Field(int posX, int posY)
 	{
+		if(posX < 0 || posY < 0) {
+			throw new IllegalArgumentException("Field components must be larger than zero!");
+		}
 		this.posX = posX;
 		this.posY = posY;
 	}
@@ -41,9 +46,26 @@ public class Field
 		this.posY = square.posY;
 	}
 	
-	public Field clone()
-	{
-		return new Field(posX, posY);
+	@Override
+	public String toString() {
+		return Field.getAlphabeticalDesignation(getPosX()) + Integer.toString(getPosY() + 1);
+	}
+	
+	/**
+	 * Gets the alphabetical part of a field designation.
+	 * If no more letters are available, they will be repeated, e.g. a field
+	 * at (72|7) will have designation 'uu7'
+	 * @param x field's x component
+	 * @return alphabetical part of field designation
+	 */
+	private static String getAlphabeticalDesignation(int x) {
+		String designation = "";
+		int repetitions = 1 + x / FIELD_LETTERS.length();
+		int index = x % FIELD_LETTERS.length();
+		for(int i = 0; i < repetitions; i++) {
+			designation += FIELD_LETTERS.charAt(index);
+		}
+		return designation;
 	}
 	
 	public int getPosX()
@@ -77,9 +99,35 @@ public class Field
 		}
 	}
 	
-	@Override
-	public String toString()
-	{
-		return "(" + posX + "|" + posY + ")";
+	/**
+	 * Parses a field from a given designation.
+	 * If the designation is invalid, null is returned instead.
+	 * @param designation Field designation (e.g. a8)
+	 * @return Field constructed from designation or null
+	 */
+	public static Field getFieldFromDesignation(String designation) {
+		// First we need to split the alphabetical and number part
+		String[] splitDesignation = designation.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
+		
+		if(splitDesignation.length != 2) {
+			return null;
+		}
+		
+		// For the alphabetical part, the number of repetitions is important
+		int repetitions = splitDesignation[0].length();
+		// Also get the index of the first letter for the non-repetitive component
+		int index = FIELD_LETTERS.indexOf(splitDesignation[0].charAt(0));
+
+		if(index < 0) {
+			return null;
+		}
+		
+		
+		try {
+    		return new Field((repetitions - 1) * FIELD_LETTERS.length() + index,
+    				Integer.parseInt(splitDesignation[1]) - 1);
+		} catch(NumberFormatException exc) {
+			return null;
+		}
 	}
 }

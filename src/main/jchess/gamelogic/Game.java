@@ -32,14 +32,13 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 import jchess.JChessApp;
-import jchess.gamelogic.controllers.ChessboardController;
 import jchess.gamelogic.controllers.GameClockController;
 import jchess.gamelogic.controllers.IBoardActionHandler;
+import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Moves;
+import jchess.gamelogic.views.IChessboardView;
 import jchess.gamelogic.views.IGameView;
-import jchess.gamelogic.views.chessboardviews.SquareChessboardView;
-import jchess.gamelogic.views.chessboardviews.TwoPlayerChessboardView;
 import jchess.gamelogic.views.gameviews.SwingGameView;
 
 /**
@@ -54,23 +53,20 @@ public class Game implements IBoardActionHandler
 	private IGameView gameView;
 	private Settings settings;
 	private boolean blockedChessboard;
-	private ChessboardController chessboard;
+	private IChessboardController chessboard;
 	private GameClockController gameClock;
-	private Moves moves;
 	
-	public Game()
+	public Game(Settings settings, IChessboardController chessboard, IChessboardView view)
 	{
-		this.moves = new Moves(this);
-		settings = new Settings();
-		chessboard = new ChessboardController(this.settings, this.moves);
-		SquareChessboardView view = new TwoPlayerChessboardView(settings, chessboard);
-		view.initialize(chessboard.getBoard(), this);
-		chessboard.setView(view);
+		this.settings = settings;
+		this.chessboard = chessboard;
+		view.initialize(chessboard, this);
 		gameClock = new GameClockController(this);
 		
 		this.blockedChessboard = false;
 		
-		gameView = new SwingGameView(view, gameClock.getView(), this.moves.getScrollPane());
+		gameView = new SwingGameView(gameClock.getView(), chessboard.getHistory().getScrollPane());
+		gameView.setChessboardView(view);
 	}
 	
 	public IGameView getView()
@@ -83,7 +79,7 @@ public class Game implements IBoardActionHandler
 		return settings;
 	}
 	
-	public ChessboardController getChessboard()
+	public IChessboardController getChessboard()
 	{
 		return chessboard;
 	}
@@ -95,7 +91,7 @@ public class Game implements IBoardActionHandler
 	
 	public Moves getMoves()
 	{
-		return moves;
+		return chessboard.getHistory();
 	}
 	
 	public void setSettings(Settings settings)
@@ -104,12 +100,14 @@ public class Game implements IBoardActionHandler
 	}
 	
 	@Override
-	public void onUndoRequested() {
+	public void onUndoRequested()
+	{
 		this.undo();
 	}
 	
 	@Override
-	public void onRedoRequested() {
+	public void onRedoRequested()
+	{
 		this.redo();
 	};
 	
@@ -211,7 +209,7 @@ public class Game implements IBoardActionHandler
 		        + this.settings.getWhitePlayer().getName() + "\"]\n" + "[Black \""
 		        + this.settings.getBlackPlayer().getName() + "\"]\n\n");
 		str += info;
-		str += this.moves.getMovesInString();
+		str += this.chessboard.getHistory().getMovesInString();
 		try
 		{
 			fileW.write(str);
@@ -223,7 +221,7 @@ public class Game implements IBoardActionHandler
 			gameView.showMessage("error_writing_to_file", exc.toString());
 			return;
 		}
-		gameView.showMessage("game_saved_properly");
+		gameView.showMessage("game_saved_properly", "");
 	}
 	
 	/**
@@ -267,7 +265,7 @@ public class Game implements IBoardActionHandler
 			log.log(Level.SEVERE, "Error reading game file!", err);
 			return;
 		}
-		Game newGUI = JChessApp.view.addNewGameTab(whiteName + " vs. " + blackName);
+		Game newGUI = JChessApp.view.addNewTwoPlayerTab(whiteName + " vs. " + blackName);
 		Settings locSetts = newGUI.settings;
 		locSetts.getBlackPlayer().setName(blackName);
 		locSetts.getWhitePlayer().setName(whiteName);
@@ -277,7 +275,7 @@ public class Game implements IBoardActionHandler
 		
 		newGUI.newGame();
 		newGUI.blockedChessboard = true;
-		newGUI.moves.setMoves(tempStr);
+		newGUI.chessboard.getHistory().setMoves(tempStr);
 		newGUI.blockedChessboard = false;
 		newGUI.chessboard.getView().render();
 		// newGUI.chessboard.draw();
@@ -295,6 +293,7 @@ public class Game implements IBoardActionHandler
 	 * @throws ReadGameError
 	 *             class object when something goes wrong when reading file
 	 * @throws IOException
+	 *             If an error occurred when reading from BufferedReader
 	 */
 	static public String getLineWithVar(BufferedReader br, String srcStr) throws ReadGameError, IOException
 	{
@@ -415,54 +414,6 @@ public class Game implements IBoardActionHandler
 			this.blockedChessboard = false;
 		} else if(chessboard.getActivePlayer().getType() == Player.Type.COMPUTER)
 		{
-		}
-	}
-	
-	/**
-	 * Method to simulate Move to check if it's correct etc. (usable for network
-	 * game).
-	 * 
-	 * @param beginX
-	 *            from which X (on chessboard) move starts
-	 * @param beginY
-	 *            from which Y (on chessboard) move starts
-	 * @param endX
-	 *            to which X (on chessboard) move go
-	 * @param endY
-	 *            to which Y (on chessboard) move go
-	 */
-	public boolean simulateMove(int beginX, int beginY, int endX, int endY)
-	{
-		try
-		{
-			chessboard.getView().select(chessboard.getBoard().getField(beginX, beginY));
-			if(chessboard.getPossibleMoves(chessboard.getBoard().getPiece(chessboard.getView().getActiveSquare()), true)
-			        .contains(chessboard.getBoard().getField(endX, endY)))
-			{
-				chessboard.move(chessboard.getBoard().getField(beginX, beginY),
-				        chessboard.getBoard().getField(endX, endY));
-			} else
-			{
-				log.log(Level.WARNING, "Bad move!");
-				return false;
-			}
-			chessboard.getView().unselect();
-			nextMove();
-			
-			return true;
-			
-		} catch(StringIndexOutOfBoundsException exc)
-		{
-			return false;
-		} catch(ArrayIndexOutOfBoundsException exc)
-		{
-			return false;
-		} catch(NullPointerException exc)
-		{
-			return false;
-		} finally
-		{
-			Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, "ERROR");
 		}
 	}
 	

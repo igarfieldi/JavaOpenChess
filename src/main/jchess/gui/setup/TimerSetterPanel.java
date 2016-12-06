@@ -33,7 +33,6 @@ public class TimerSetterPanel extends GridBagPanel
 		setGridBagConstraints(hasTimeLimitCheckBox, 0, 1);
 		setGridBagConstraints(timeLimitsComboBox, 1, 1);
 	}
-	
 	public void setTimeLimit(Game gameWindow, Settings localSettings)
 	{
 		if(this.hasTimeLimitCheckBox.isSelected())

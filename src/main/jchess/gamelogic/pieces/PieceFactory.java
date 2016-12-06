@@ -23,6 +23,7 @@ public class PieceFactory
 				piece = new Rook(player);
 				break;
 			case PAWN:
+				//TODO: find a way to pass the direction
 				piece = new Pawn(player);
 				break;
 			case QUEEN:

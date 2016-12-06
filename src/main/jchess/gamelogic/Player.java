@@ -42,12 +42,10 @@ public class Player implements Serializable
 	private String name;
 	private Color color;
 	private Type playerType;
-	private boolean topSide;
 	
 	public Player(String name, Color color) {
 		this.name = name;
 		this.color = color;
-		this.topSide = false;
 	}
 	
 	/**
@@ -70,11 +68,6 @@ public class Player implements Serializable
 		return this.playerType;
 	}
 	
-	public boolean isTopSide()
-	{
-		return topSide;
-	}
-	
 	/**
 	 * Method setting the players name
 	 * 
@@ -95,10 +88,5 @@ public class Player implements Serializable
 	public void setType(Type type)
 	{
 		this.playerType = type;
-	}
-	
-	public void setTopSide(boolean isTop)
-	{
-		this.topSide = isTop;
 	}
 }

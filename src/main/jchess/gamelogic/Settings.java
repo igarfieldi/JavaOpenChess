@@ -37,7 +37,6 @@ public class Settings implements Serializable
 	private int timeForGame;
 	private boolean runningGameClock;
 	private boolean timeLimitSet;
-	private boolean upsideDown;
 	private GameMode gameMode;
 	private Player playerWhite;
 	private Player playerBlack;
@@ -73,11 +72,6 @@ public class Settings implements Serializable
 		return timeLimitSet;
 	}
 	
-	public boolean isUpsideDown()
-	{
-		return upsideDown;
-	}
-	
 	public GameMode getGameMode()
 	{
 		return gameMode;
@@ -106,11 +100,6 @@ public class Settings implements Serializable
 	public void setTimeLimit(boolean set)
 	{
 		this.timeLimitSet = set;
-	}
-	
-	public void setUpsideDown(boolean down)
-	{
-		this.upsideDown = down;
 	}
 	
 	public void setGameMode(GameMode mode)

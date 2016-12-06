@@ -33,18 +33,16 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 
 import jchess.Localization;
-import jchess.gamelogic.Game;
 import jchess.gamelogic.Player;
+import jchess.gamelogic.Settings;
+import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.field.Move.CastlingType;
 import jchess.gamelogic.pieces.Piece;
 
 /**
  * Class representing the players moves, it's also checking that the moves taken
  * by player are correct. All moves which was taken by current player are saving
- * as List of Strings The history of moves is printing in a table
- * 
- * @param game
- *            The current game
+ * as List of Strings The history of moves is printing in a table.
  */
 public class Moves extends AbstractTableModel
 {
@@ -59,19 +57,21 @@ public class Moves extends AbstractTableModel
 	private JScrollPane scrollPane;
 	private JTable table;
 	private boolean enterBlack = false;
-	private Game game;
 	private Stack<Move> moveBackStack = new Stack<Move>();
 	private Stack<Move> moveForwardStack = new Stack<Move>();
+	private IChessboardController chessboard;
+	private Settings settings;
 	
-	public Moves(Game game)
+	public Moves(IChessboardController chessboard, Settings settings)
 	{
 		super();
+		this.settings = settings;
+		this.chessboard = chessboard;
 		this.tableModel = new MyDefaultTableModel();
 		this.table = new JTable(this.tableModel);
 		this.scrollPane = new JScrollPane(this.table);
 		this.scrollPane.setMaximumSize(new Dimension(100, 100));
 		this.table.setMinimumSize(new Dimension(100, 100));
-		this.game = game;
 		
 		this.tableModel.addColumn(this.names[0]);
 		this.tableModel.addColumn(this.names[1]);
@@ -188,7 +188,7 @@ public class Moves extends AbstractTableModel
 		String locMove = new String(move.getMovedPiece().getSymbol());
 		
 		// Get field designation of 'from' field
-		locMove += game.getChessboard().getFieldDesignation(move.getFrom());
+		locMove += move.getFrom().toString();
 		
 		if(move.getTakenPiece() != null)
 		{
@@ -199,18 +199,18 @@ public class Moves extends AbstractTableModel
 		}
 		
 		// Get field designation of 'from' field
-		locMove += game.getChessboard().getFieldDesignation(move.getTo());
+		locMove += move.getTo().toString();
 		
 		if(move.wasEnPassant())
 		{
 			locMove += "(e.p)";// pawn take down opponent en passant
 		}
-		if((!this.enterBlack && this.game.getChessboard().isChecked(game.getSettings().getBlackPlayer()))
-		        || (this.enterBlack && this.game.getChessboard().isChecked(game.getSettings().getWhitePlayer())))
+		if((!this.enterBlack && this.chessboard.isChecked(settings.getBlackPlayer()))
+		        || (this.enterBlack && this.chessboard.isChecked(settings.getWhitePlayer())))
 		{// if checked
 			
-			if((!this.enterBlack && this.game.getChessboard().isCheckmated(game.getSettings().getBlackPlayer()))
-			        || (this.enterBlack && this.game.getChessboard().isCheckmated(game.getSettings().getWhitePlayer())))
+			if((!this.enterBlack && this.chessboard.isCheckmated(settings.getBlackPlayer()))
+			        || (this.enterBlack && this.chessboard.isCheckmated(settings.getWhitePlayer())))
 			{// check if checkmated
 				locMove += "#";// check mate
 			} else
@@ -221,7 +221,7 @@ public class Moves extends AbstractTableModel
 		if(move.getCastlingMove() == CastlingType.SHORT_CASTLING)
 		{
 			this.addCastling("0-0");
-		} else if(move.getCastlingMove()  == CastlingType.LONG_CASTLING)
+		} else if(move.getCastlingMove() == CastlingType.LONG_CASTLING)
 		{
 			this.addCastling("0-0-0");
 		} else
@@ -480,11 +480,10 @@ public class Moves extends AbstractTableModel
 		{
 			if(!Moves.isMoveCorrect(locMove.trim())) // if not
 			{
-				this.game.getView().showMessage("invalid_file_to_load", move.toString());
+				this.chessboard.getView().showMessage("invalid_file_to_load", move.toString());
 				return;// show message and finish reading game
 			}
 		}
-		boolean canMove = false;
 		for(String locMove : tempArray)
 		{
 			if(locMove.equals("O-O-O") || locMove.equals("O-O")) // if castling
@@ -492,9 +491,9 @@ public class Moves extends AbstractTableModel
 				int[] values = new int[4];
 				if(locMove.equals("O-O-O"))
 				{
-					if(this.game.getActivePlayer().getColor() == Player.Color.BLACK) // if
-					                                                                 // black
-					                                                                 // turn
+					if(this.chessboard.getActivePlayer().getColor() == Player.Color.BLACK) // if
+					// black
+					// turn
 					{
 						values = new int[]{ 4, 0, 2, 0 };// move value for
 						                                 // castling (King move)
@@ -505,9 +504,9 @@ public class Moves extends AbstractTableModel
 					}
 				} else if(locMove.equals("O-O")) // if short castling
 				{
-					if(this.game.getActivePlayer().getColor() == Player.Color.BLACK) // if
-					                                                                 // black
-					                                                                 // turn
+					if(this.chessboard.getActivePlayer().getColor() == Player.Color.BLACK) // if
+					// black
+					// turn
 					{
 						values = new int[]{ 4, 0, 6, 0 };// move value for
 						                                 // castling (King move)
@@ -517,11 +516,13 @@ public class Moves extends AbstractTableModel
 						                                 // castling (King move)
 					}
 				}
-				canMove = this.game.simulateMove(values[0], values[1], values[2], values[3]);
 				
-				if(!canMove) // if move is illegal
+				if(!this.isValidMove(values[0], values[1], values[2], values[3])) // if
+				                                                                  // move
+				                                                                  // is
+				                                                                  // illegal
 				{
-					this.game.getView().showMessage("illegal_move_on", locMove);
+					this.chessboard.getView().showMessage("illegal_move_on", locMove);
 					return;// finish reading game and show message
 				}
 				continue;
@@ -540,17 +541,18 @@ public class Moves extends AbstractTableModel
 			boolean pieceFound = false;
 			if(locMove.length() <= 3)
 			{
-				Field tempTo = game.getChessboard().getFieldFromDesignation(locMove.substring(from, from + 1));
+				Field tempTo = Field.getFieldFromDesignation(locMove.substring(from, from + 1));
 				xTo = tempTo.getPosX();
 				yTo = tempTo.getPosY();
 				
-				
-				for(Field field : game.getChessboard().getBoard().getFields()) {
-					Piece piece = game.getChessboard().getBoard().getPiece(field);
-					if(piece == null || this.game.getActivePlayer().getColor() != piece.getPlayer().getColor()) {
+				for(Field field : chessboard.getBoard().getFields())
+				{
+					Piece piece = chessboard.getBoard().getPiece(field);
+					if(piece == null || this.chessboard.getActivePlayer().getColor() != piece.getPlayer().getColor())
+					{
 						continue;
 					}
-					for(Field possibleMove : game.getChessboard().getPossibleMoves(piece, true))
+					for(Field possibleMove : chessboard.getPossibleMoves(piece, true))
 					{
 						if(possibleMove.getPosX() == xTo && possibleMove.getPosY() == yTo)
 						{
@@ -559,30 +561,47 @@ public class Moves extends AbstractTableModel
 							pieceFound = true;
 						}
 					}
-					if(pieceFound) {
+					if(pieceFound)
+					{
 						break;
 					}
 				}
 			} else
 			{
-				Field tempFrom = game.getChessboard().getFieldFromDesignation(locMove.substring(from, from + 1));
-				Field tempTo = game.getChessboard().getFieldFromDesignation(locMove.substring(from+3, from + 4));
+				Field tempFrom = Field.getFieldFromDesignation(locMove.substring(from, from + 1));
+				Field tempTo = Field.getFieldFromDesignation(locMove.substring(from + 3, from + 4));
 				
 				xFrom = tempFrom.getPosX();
 				yFrom = tempFrom.getPosY();
 				xTo = tempTo.getPosX();
 				yTo = tempTo.getPosY();
 			}
-			canMove = this.game.simulateMove(xFrom, yFrom, xTo, yTo);
-			if(!canMove) // if move is illegal
+			if(!this.isValidMove(xFrom, yFrom, xTo, yTo)) // if move is illegal
 			{
-				this.game.getView().showMessage("illegal_move_on", locMove);
-				this.game.getChessboard().getView().unselect();
+				this.chessboard.getView().showMessage("illegal_move_on", locMove);
+				this.chessboard.getView().unselect();
 				return;// finish reading game and show message
 			}
 		}
 	}
+	
+	private boolean isValidMove(int xFrom, int yFrom, int xTo, int yTo)
+	{
+		Field from = chessboard.getBoard().getField(xFrom, yFrom);
+		if(from != null)
+		{
+			Field to = chessboard.getBoard().getField(xTo, yTo);
+			Piece piece = chessboard.getBoard().getPiece(from);
+			if(to != null && piece != null)
+			{
+				return chessboard.getPossibleMoves(piece, true).contains(to);
+			}
+		}
+		
+		return false;
+	}
 }
+
 /*
  * Overriding DefaultTableModel and isCellEditable method (history cannot be
  * edited by player)

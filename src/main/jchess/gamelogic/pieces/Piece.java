@@ -57,7 +57,23 @@ public abstract class Piece implements Copyable<Piece>
 		this.type = type;
 	}
 	
+	/**
+	 * Gets a set of directions in which the piece can move without capturing a unit.
+	 * These do not necessarily have to be distinct (e.g. Bishop can both move
+	 * and capture on both diagonals), but when applied the piece will only
+	 * be able to move in this direction when no piece (regardless of friend
+	 * or foe) currently blocks it.
+	 * @return Set of non-capturing movement directions
+	 */
 	public abstract Set<Direction> getNormalMovements();
+	
+	/**
+	 * Gets a set of directions in which the piece can move when capturing a unit.
+	 * These do not necessarily have to be distinct (e.g. Bishop can both move
+	 * and capture on both diagonals), but when applied the piece will only
+	 * be able to move in this direction when an enemy piece currently blocks it.
+	 * @return Set of capturing movement directions
+	 */
 	public abstract Set<Direction> getCapturingMovements();
 	
 	public final String getSymbol() {

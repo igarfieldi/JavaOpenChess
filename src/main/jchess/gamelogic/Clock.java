@@ -52,9 +52,9 @@ public class Clock
 	}
 	
 	/**
-	 * Method to decrement value of left time
+	 * Method to decrement value of left time.
 	 * 
-	 * @return bool true if time_left > 0, else returns false
+	 * @return false if no time is left
 	 */
 	public boolean decrement()
 	{

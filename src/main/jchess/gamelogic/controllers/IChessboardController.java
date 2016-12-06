@@ -4,6 +4,7 @@ import java.util.Set;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.Moves;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.views.IChessboardView;
@@ -12,30 +13,14 @@ public interface IChessboardController
 {
 	
 	public IChessboardView getView();
-	public void setView(IChessboardView view);
+	
+	public Moves getHistory();
 	
 	public Player getActivePlayer();
 	
 	public void switchToNextPlayer();
 	
 	public void switchToPreviousPlayer();
-	
-	/**
-	 * Returns the string representation of the given field.
-	 * 
-	 * @param field
-	 * @return
-	 */
-	public String getFieldDesignation(Field field);
-	
-	/**
-	 * Returns the field specified by the given string, if applicable.
-	 * 
-	 * @param designation
-	 *            Designation of desired field
-	 * @return field denoted by given string (or null if non-existent)
-	 */
-	public Field getFieldFromDesignation(String designation);
 	
 	/**
 	 * Brings the controller (and the associated board) into a clean state.
@@ -84,11 +69,9 @@ public interface IChessboardController
 	 * @param begin
 	 *            square from which move piece
 	 * @param end
-	 *            square where we want to move piece *
-	 * @param refresh
-	 *            chessboard, default: true
+	 *            square where we want to move piece
 	 */
-	public void move(Field begin, Field end, boolean refresh, boolean clearForwardHistory, boolean enterIntoHistory);
+	public void move(Field begin, Field end);
 	
 	public boolean redo();
 	

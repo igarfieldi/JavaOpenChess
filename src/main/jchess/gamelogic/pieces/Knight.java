@@ -43,14 +43,14 @@ import jchess.util.Direction;
 public class Knight extends Piece
 {
 	private static final Direction[] NORMAL_MOVEMENT = {
-			new Direction(1, 2),
-			new Direction(-1, 2),
-			new Direction(1, -2),
-			new Direction(1, -2),
-			new Direction(2, 1),
-			new Direction(2, -1),
+			new Direction(-2, -1),
 			new Direction(-2, 1),
-			new Direction(-2, -1)
+			new Direction(-1, 2),
+			new Direction(-1, -2),
+			new Direction(1, 2),
+			new Direction(1, -2),
+			new Direction(2, -1),
+			new Direction(2, 1)
 	};
 	
 	@Override

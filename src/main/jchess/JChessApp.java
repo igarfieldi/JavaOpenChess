@@ -59,6 +59,7 @@ public class JChessApp extends SingleFrameApplication
 	
 	/**
 	 * Main method launching the application.
+	 * @param args Command line arguments
 	 */
 	public static void main(String[] args)
 	{

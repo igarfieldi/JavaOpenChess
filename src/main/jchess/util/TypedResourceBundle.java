@@ -18,7 +18,7 @@ public class TypedResourceBundle {
 	
 	/**
 	 * Constructor. Creates a new ResourceBundle from the given name.
-	 * @param baseName
+	 * @param baseName Name of the resource bundle
 	 */
 	public TypedResourceBundle(String baseName) {
 		resource = PropertyResourceBundle.getBundle(baseName);

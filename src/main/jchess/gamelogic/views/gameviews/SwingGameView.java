@@ -23,14 +23,9 @@ public class SwingGameView extends JPanel implements ComponentListener, IGameVie
 	private GameClockView clockView;
 	private JScrollPane historyView;
 	
-	public SwingGameView(SquareChessboardView boardView, GameClockView clockView, JScrollPane historyView) {
-		this.boardView = boardView;
+	public SwingGameView(GameClockView clockView, JScrollPane historyView) {
 		this.clockView = clockView;
 		this.historyView = historyView;
-
-		this.add(this.boardView);
-		this.boardView.setLocation(new Point(0, 0));
-		this.boardView.setVisible(true); // TODO: necessary?
 
 		this.add(this.clockView);
 		this.clockView.setSize(new Dimension(200, 100));
@@ -49,8 +44,16 @@ public class SwingGameView extends JPanel implements ComponentListener, IGameVie
 		this.setDoubleBuffered(true);
 	}
 	
+	@Override
 	public IChessboardView getChessboardView() {
 		return boardView;
+	}
+	
+	@Override
+	public void setChessboardView(IChessboardView view) {
+		this.boardView = (SquareChessboardView) view;
+		this.add(this.boardView);
+		this.boardView.setLocation(new Point(0, 0));
 	}
 
 	@Override
@@ -72,17 +75,40 @@ public class SwingGameView extends JPanel implements ComponentListener, IGameVie
 		this.repaint();
 	}
 	
-	public void showMessage(String key) {
-		JOptionPane.showMessageDialog(this, Localization.getMessage(key));
+	@Override
+	public void showMessage(String key, String arg) {
+		String message = Localization.getMessage(key);
+		if(!arg.isEmpty()) {
+			message += " : " + arg;
+		}
+		JOptionPane.showMessageDialog(this, message);
 	}
 	
-	public void showMessage(String key, String args) {
-		JOptionPane.showMessageDialog(this, Localization.getMessage(key) + ": " + args);
+	@Override
+	public Option showConfirmMessage(String key, String arg) {
+		String message = Localization.getMessage(key);
+		if(!arg.isEmpty()) {
+			message += " : " + arg;
+		}
+		
+		int selectedOption = JOptionPane.showConfirmDialog(this, message, "", JOptionPane.YES_NO_CANCEL_OPTION);
+		
+		if(selectedOption == JOptionPane.YES_OPTION) {
+			return Option.YES;
+		} else if(selectedOption == JOptionPane.NO_OPTION) {
+			return Option.NO;
+		} else {
+			return Option.CANCEL;
+		}
 	}
-	
-	public boolean showYesNoDialog(String key) {
-		return JOptionPane.showConfirmDialog(this, Localization.getMessage(key),
-				Localization.getMessage(key), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+
+	@Override
+	public String showInputMessage(String key, String arg, String initialValue) {
+		String message = Localization.getMessage(key);
+		if(!arg.isEmpty()) {
+			message += " : " + arg;
+		}
+		return JOptionPane.showInputDialog(this, message, initialValue);
 	}
 
 	@Override

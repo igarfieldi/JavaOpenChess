@@ -21,6 +21,7 @@ package jchess.gui.setup;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JButton;
@@ -85,9 +86,22 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 		if(!playerNameInputPanel.playerNamesEmpty())
 		{
 			playerNameInputPanel.shortenPlayerNames();
+			Game gameWindow = null;
 			
-			Game gameWindow = JChessApp.view.addNewGameTab(
-			        playerNameInputPanel.getPlayerName(1) + " vs " + playerNameInputPanel.getPlayerName(2));
+			if(playerNumberChoicePanel.getPlayerCount() == 2) {
+				gameWindow = JChessApp.view.addNewTwoPlayerTab(
+				        playerNameInputPanel.getPlayerName(1) + " vs " +
+				        playerNameInputPanel.getPlayerName(2));
+			} else if(playerNumberChoicePanel.getPlayerCount() == 4) {
+				gameWindow = JChessApp.view.addNewFourPlayerTab(
+				        playerNameInputPanel.getPlayerName(1) + " vs " +
+				        playerNameInputPanel.getPlayerName(2) + " vs " +
+				        playerNameInputPanel.getPlayerName(3) + " vs " +
+				        playerNameInputPanel.getPlayerName(4));
+			} else {
+				log.log(Level.SEVERE, "Could not start game because the number of players is not supported!");
+				return ;
+			}
 			applySettings(gameWindow);
 			drawGameWindow(gameWindow);
 		}
@@ -117,7 +131,7 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 	{
 		log.info("****************\nStarting new game: " + firstPlayer.getName() + " vs. " + secondPlayer.getName()
 		        + "\ntime 4 game: " + localSettings.getTimeForGame() + "\ntime limit set: "
-		        + localSettings.isTimeLimitSet() + "\nwhite on top?: " + localSettings.isUpsideDown()
+		        + localSettings.isTimeLimitSet()
 		        + "\n****************");
 	}
 	

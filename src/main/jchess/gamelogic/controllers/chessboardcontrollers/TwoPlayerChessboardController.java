@@ -18,10 +18,9 @@
  * Mateusz Sławomir Lach ( matlak, msl )
  * Damian Marciniak
  */
-package jchess.gamelogic.controllers;
+package jchess.gamelogic.controllers.chessboardcontrollers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -30,11 +29,11 @@ import java.util.Set;
 import jchess.JChessApp;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
+import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Move;
 import jchess.gamelogic.field.Move.CastlingType;
 import jchess.gamelogic.field.Moves;
-import jchess.gamelogic.models.ChessboardModel;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.pieces.Bishop;
 import jchess.gamelogic.pieces.King;
@@ -44,7 +43,6 @@ import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.pieces.Queen;
 import jchess.gamelogic.pieces.Rook;
 import jchess.gamelogic.views.IChessboardView;
-import jchess.util.ArgumentChecker;
 import jchess.util.Direction;
 
 /**
@@ -52,12 +50,9 @@ import jchess.util.Direction;
  * the squers of chessboard and sets the pieces(pawns) witch the owner is
  * current player on it.
  */
-public class ChessboardController implements IChessboardController
+public class TwoPlayerChessboardController implements IChessboardController
 {
 	private static final int WIDTH = 8;
-	private static final int HEIGHT = 8;
-	private static final String[] FIELD_LETTERS = { "a", "b", "c", "d", "e", "f", "g", "h" };
-	private static final String[] FIELD_NUMBERS = { "1", "2", "3", "4", "5", "6", "7", "8" };
 	
 	private IChessboardModel board;
 	private IChessboardView view;
@@ -72,26 +67,23 @@ public class ChessboardController implements IChessboardController
 	private Pawn twoSquareMovedPawn = null;
 	private Moves movesHistory;
 	
-	/**
-	 * Chessboard class constructor
-	 * 
-	 * @param settings
-	 *            reference to Settings class object for this chessboard
-	 * @param moves_history
-	 *            reference to Moves class object for this chessboard
-	 */
-	public ChessboardController(Settings settings, Moves movesHistory)
+	public TwoPlayerChessboardController(Settings settings, IChessboardView view, IChessboardModel board)
 	{
-		this.board = new ChessboardModel(WIDTH, HEIGHT);
-		this.settings = settings;
-		this.movesHistory = movesHistory;
-	}
-	
-	public void setView(IChessboardView view) {
+		this.board = board;
 		this.view = view;
+		this.settings = settings;
+		this.movesHistory = new Moves(this, settings);
 	}
 	
-	/* (non-Javadoc)
+	@Override
+	public Moves getHistory()
+	{
+		return movesHistory;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jchess.gamelogic.field.IChessboardController#getView()
 	 */
 	@Override
@@ -100,7 +92,9 @@ public class ChessboardController implements IChessboardController
 		return view;
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jchess.gamelogic.field.IChessboardController#getActivePlayer()
 	 */
 	@Override
@@ -109,7 +103,9 @@ public class ChessboardController implements IChessboardController
 		return this.activePlayer;
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jchess.gamelogic.field.IChessboardController#switchToNextPlayer()
 	 */
 	@Override
@@ -124,8 +120,11 @@ public class ChessboardController implements IChessboardController
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see jchess.gamelogic.field.IChessboardController#switchToPreviousPlayer()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * jchess.gamelogic.field.IChessboardController#switchToPreviousPlayer()
 	 */
 	@Override
 	public void switchToPreviousPlayer()
@@ -134,63 +133,16 @@ public class ChessboardController implements IChessboardController
 		this.switchToNextPlayer();
 	}
 	
-	/* (non-Javadoc)
-	 * @see jchess.gamelogic.field.IChessboardController#getFieldDesignation(jchess.gamelogic.field.Field)
-	 */
-	@Override
-	public String getFieldDesignation(Field field)
-	{
-		ArgumentChecker.checkForNull(field);
-		
-		if(settings.isUpsideDown())
-		{
-			// In upside-down case, field (0|0) is equivalent to h1
-			return FIELD_LETTERS[field.getPosX()] + FIELD_NUMBERS[HEIGHT - field.getPosY() - 1];
-		} else
-		{
-			// If not upside down, field (0|0) is equivalent to a8
-			return FIELD_LETTERS[WIDTH - field.getPosX() - 1] + FIELD_NUMBERS[field.getPosY()];
-		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see jchess.gamelogic.field.IChessboardController#getFieldFromDesignation(java.lang.String)
-	 */
-	@Override
-	public Field getFieldFromDesignation(String designation)
-	{
-		ArgumentChecker.checkForNull(designation);
-		
-		if(designation.length() != 2)
-		{
-			return null;
-		}
-		
-		// Check the arrays of letters and numbers for the given strings
-		int x = Arrays.asList(FIELD_LETTERS).indexOf("" + designation.charAt(0));
-		int y = Arrays.asList(FIELD_NUMBERS).indexOf("" + designation.charAt(1));
-		
-		// Account for the oddities of the chosen field coordinate system (0|0 =
-		// a8 or h1)
-		if(settings.isUpsideDown())
-		{
-			y = HEIGHT - y - 1;
-		} else
-		{
-			x = WIDTH - x - 1;
-		}
-		
-		return board.getField(x, y);
-	}
-	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jchess.gamelogic.field.IChessboardController#initialize()
 	 */
 	@Override
 	public void initialize()
 	{
 		this.initializePlayers();
-		this.initializePieces(this.whitePlayer.isTopSide());
+		this.initializePieces();
 		
 		this.activePlayer = whitePlayer;
 	}
@@ -203,14 +155,6 @@ public class ChessboardController implements IChessboardController
 	{
 		this.whitePlayer = settings.getWhitePlayer();
 		this.blackPlayer = settings.getBlackPlayer();
-		
-		if(settings.isUpsideDown())
-		{
-			this.whitePlayer.setTopSide(true);
-		} else
-		{
-			this.blackPlayer.setTopSide(true);
-		}
 	}
 	
 	/**
@@ -220,15 +164,10 @@ public class ChessboardController implements IChessboardController
 	 * @param whiteIsTop
 	 *            is white playing from top-side
 	 */
-	private void initializePieces(boolean whiteIsTop)
+	private void initializePieces()
 	{
 		Player topSide = this.blackPlayer;
 		Player bottomSide = this.whitePlayer;
-		if(whiteIsTop)
-		{
-			topSide = this.whitePlayer;
-			bottomSide = this.blackPlayer;
-		}
 		
 		board.initialize();
 		// Set rooks, bishops, knights
@@ -245,33 +184,26 @@ public class ChessboardController implements IChessboardController
 		board.setPiece(board.getField(2, 0), new Bishop(this, topSide));
 		board.setPiece(board.getField(5, 0), new Bishop(this, topSide));
 		
-		// Since the queen is always placed on the field of her own color, we
-		// need
-		// to check on which side white is playing
-		if(whiteIsTop)
-		{
-			board.setPiece(board.getField(4, 7), new Queen(this, bottomSide));
-			board.setPiece(board.getField(3, 7), new King(this, bottomSide));
-			board.setPiece(board.getField(4, 0), new Queen(this, topSide));
-			board.setPiece(board.getField(3, 0), new King(this, topSide));
-		} else
-		{
-			board.setPiece(board.getField(3, 7), new Queen(this, bottomSide));
-			board.setPiece(board.getField(4, 7), new King(this, bottomSide));
-			board.setPiece(board.getField(3, 0), new Queen(this, topSide));
-			board.setPiece(board.getField(4, 0), new King(this, topSide));
-		}
+		// The queen is always placed on the field of her own color
+		board.setPiece(board.getField(3, 7), new Queen(this, bottomSide));
+		board.setPiece(board.getField(4, 7), new King(this, bottomSide));
+		board.setPiece(board.getField(3, 0), new Queen(this, topSide));
+		board.setPiece(board.getField(4, 0), new King(this, topSide));
 		
 		// Initialize pawns: no special distinctions necessary
 		for(int x = 0; x < WIDTH; x++)
 		{
-			board.setPiece(board.getField(x, 6), new Pawn(this, bottomSide));
-			board.setPiece(board.getField(x, 1), new Pawn(this, topSide));
+			board.setPiece(board.getField(x, 6), new Pawn(this, bottomSide, new Direction(0, -1)));
+			board.setPiece(board.getField(x, 1), new Pawn(this, topSide, new Direction(0, 1)));
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see jchess.gamelogic.field.IChessboardController#getPossibleMoves(jchess.gamelogic.pieces.Piece, boolean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * jchess.gamelogic.field.IChessboardController#getPossibleMoves(jchess.
+	 * gamelogic.pieces.Piece, boolean)
 	 */
 	@Override
 	public Set<Field> getPossibleMoves(Piece piece, boolean careForCheck)
@@ -293,7 +225,8 @@ public class ChessboardController implements IChessboardController
 			
 			// Store the part of the state that undo will not restore
 			Field activeField = null;
-			if(this.getView() != null) {
+			if(this.getView() != null)
+			{
 				activeField = this.getView().getActiveSquare();
 			}
 			Pawn twoMovedPawn = this.twoSquareMovedPawn;
@@ -317,8 +250,9 @@ public class ChessboardController implements IChessboardController
 				board = tempModel;
 				this.twoSquareMovedPawn = twoMovedPawn;
 			}
-
-			if(this.getView() != null) {
+			
+			if(this.getView() != null)
+			{
 				this.getView().select(activeField);
 			}
 		}
@@ -409,9 +343,10 @@ public class ChessboardController implements IChessboardController
 	}
 	
 	/**
-	 * Returns the list of all fields in a direction a piece might consider moving to.
-	 * This does not include a check for blocking by pieces. The fields are
-	 * ordered; fields closer to the piece first.
+	 * Returns the list of all fields in a direction a piece might consider
+	 * moving to. This does not include a check for blocking by pieces. The
+	 * fields are ordered; fields closer to the piece first.
+	 * 
 	 * @param piece
 	 * @param dir
 	 * @return List of fields in direction
@@ -465,7 +400,7 @@ public class ChessboardController implements IChessboardController
 						// Our pawn is right next to the pawn which moved two
 						// squares. Now we need to check the direction in which
 						// the pawn has to go
-						if(piece.getPlayer().isTopSide())
+						if(piece.getPlayer() == blackPlayer)
 						{
 							capturableFields.add(board.getField(board.getField(twoSquareMovedPawn).getPosX(),
 							        board.getField(piece).getPosY() + 1));
@@ -484,8 +419,10 @@ public class ChessboardController implements IChessboardController
 	
 	/**
 	 * Returns the set of fields a given piece can move to without capturing.
+	 * 
 	 * @param piece
-	 * @param directions Set of directions to consider
+	 * @param directions
+	 *            Set of directions to consider
 	 * @return Set of fields piece can move to
 	 */
 	private Set<Field> getMovableFieldsInDirection(Piece piece, Set<Direction> directions)
@@ -494,11 +431,6 @@ public class ChessboardController implements IChessboardController
 		
 		for(Direction dir : directions)
 		{
-			if(!piece.getPlayer().isTopSide())
-			{
-				dir = dir.multiply(-1);
-			}
-			
 			for(Field field : this.getFieldsInDirection(piece, dir))
 			{
 				Piece currPiece = board.getPiece(field);
@@ -533,11 +465,6 @@ public class ChessboardController implements IChessboardController
 		
 		for(Direction dir : directions)
 		{
-			if(!piece.getPlayer().isTopSide())
-			{
-				dir = dir.multiply(-1);
-			}
-			
 			for(Field field : this.getFieldsInDirection(piece, dir))
 			{
 				Piece currPiece = board.getPiece(field);
@@ -582,8 +509,12 @@ public class ChessboardController implements IChessboardController
 		return capturableFields;
 	}
 	
-	/* (non-Javadoc)
-	 * @see jchess.gamelogic.field.IChessboardController#isChecked(jchess.gamelogic.Player)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * jchess.gamelogic.field.IChessboardController#isChecked(jchess.gamelogic.
+	 * Player)
 	 */
 	@Override
 	public boolean isChecked(Player player)
@@ -605,8 +536,11 @@ public class ChessboardController implements IChessboardController
 		return false;
 	}
 	
-	/* (non-Javadoc)
-	 * @see jchess.gamelogic.field.IChessboardController#isCheckmated(jchess.gamelogic.Player)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jchess.gamelogic.field.IChessboardController#isCheckmated(jchess.
+	 * gamelogic.Player)
 	 */
 	@Override
 	public boolean isCheckmated(Player player)
@@ -622,7 +556,9 @@ public class ChessboardController implements IChessboardController
 		return this.isChecked(player);
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jchess.gamelogic.field.IChessboardController#isStalemate()
 	 */
 	@Override
@@ -686,26 +622,20 @@ public class ChessboardController implements IChessboardController
 		return false;
 	}
 	
-	public void move(Field begin, Field end)
-	{
-		move(begin, end, true);
-	}
-	
-	public void move(Field begin, Field end, boolean refresh)
-	{
-		this.move(begin, end, refresh, true);
-	}
-	
-	public void move(Field begin, Field end, boolean refresh, boolean clearForwardHistory)
-	{
-		this.move(begin, end, refresh, clearForwardHistory, true);
-	}
-	
-	/* (non-Javadoc)
-	 * @see jchess.gamelogic.field.IChessboardController#move(jchess.gamelogic.field.Field, jchess.gamelogic.field.Field, boolean, boolean, boolean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * jchess.gamelogic.field.IChessboardController#move(jchess.gamelogic.field.
+	 * Field, jchess.gamelogic.field.Field, boolean, boolean, boolean)
 	 */
 	@Override
-	public void move(Field begin, Field end, boolean refresh, boolean clearForwardHistory, boolean enterIntoHistory)
+	public void move(Field begin, Field end)
+	{
+		move(begin, end, true, true, true);
+	}
+	
+	private void move(Field begin, Field end, boolean refresh, boolean clearForwardHistory, boolean enterIntoHistory)
 	{
 		// Standard move
 		Move move = new Move(begin, end, board.getPiece(begin), board.getPiece(end), CastlingType.NONE, false, null);
@@ -798,15 +728,15 @@ public class ChessboardController implements IChessboardController
 			if(begin.getPosX() + 2 == end.getPosX())
 			{
 				move(board.getField(7, begin.getPosY()), board.getField(end.getPosX() - 1, begin.getPosY()), false,
-				        false);
+				        false, true);
 			} else
 			{
 				move(board.getField(0, begin.getPosY()), board.getField(end.getPosX() + 1, begin.getPosY()), false,
-				        false);
+				        false, true);
 			}
 		}
 		
-		if(refresh)
+		if(refresh && view != null)
 		{
 			view.unselect();// unselect square
 			view.render();
@@ -823,7 +753,9 @@ public class ChessboardController implements IChessboardController
 		}
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jchess.gamelogic.field.IChessboardController#redo(boolean)
 	 */
 	@Override
@@ -839,24 +771,27 @@ public class ChessboardController implements IChessboardController
 			from = first.getFrom();
 			to = first.getTo();
 			
-			this.move(board.getField(from.getPosX(), from.getPosY()), board.getField(to.getPosX(), to.getPosY()),
-			        true, false, true);
+			this.move(board.getField(from.getPosX(), from.getPosY()), board.getField(to.getPosX(), to.getPosY()), true,
+			        false, true);
 			if(first.getPromotedPiece() != null)
 			{
 				board.setPiece(to, first.getPromotedPiece());
 			}
 			return true;
 		}
-			
+		
 		return false;
 	}
 	
-	/* (non-Javadoc)
-	 * @see jchess.gamelogic.field.IChessboardController#undo(boolean)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jchess.gamelogic.field.IChessboardController#undo()
 	 */
 	@Override
 	public synchronized boolean undo() // undo last move
 	{
+		
 		Move last = this.movesHistory.undo();
 		
 		if(last != null && last.getFrom() != null)
@@ -885,15 +820,15 @@ public class ChessboardController implements IChessboardController
 					}
 					moved.markAsUnmoved();
 					rook.markAsUnmoved();
-				} else if(moved.getName().equals("Rook"))
+				} else if(moved instanceof Rook)
 				{
 					moved.markAsUnmoved();
-				} else if(moved.getName().equals("Pawn") && last.wasEnPassant())
+				} else if(moved instanceof Pawn && last.wasEnPassant())
 				{
 					Pawn pawn = (Pawn) last.getTakenPiece();
 					board.setPiece(board.getField(end.getPosX(), begin.getPosY()), pawn);
 					
-				} else if(moved.getName().equals("Pawn") && last.getPromotedPiece() != null)
+				} else if(moved instanceof Pawn && last.getPromotedPiece() != null)
 				{
 					// TODO: wtf does this accomplish?
 					board.removePiece(end);
@@ -904,7 +839,7 @@ public class ChessboardController implements IChessboardController
 				if(oneMoveEarlier != null && oneMoveEarlier.wasPawnTwoFieldsMove())
 				{
 					Piece canBeTakenEnPassant = board.getPiece(oneMoveEarlier.getTo());
-					if(canBeTakenEnPassant.getName().equals("Pawn"))
+					if(canBeTakenEnPassant instanceof Pawn)
 					{
 						this.twoSquareMovedPawn = (Pawn) canBeTakenEnPassant;
 					}
@@ -912,12 +847,11 @@ public class ChessboardController implements IChessboardController
 				
 				if(taken != null && !last.wasEnPassant())
 				{
-					board.setPiece(board.getField(end.getPosX(), end.getPosY()), taken);
+					board.setPiece(end, taken);
 				} else
 				{
-					board.setPiece(board.getField(end.getPosX(), end.getPosY()), null);
+					board.removePiece(end);
 				}
-				
 				
 				view.unselect();// unselect square
 				view.render();
@@ -937,7 +871,9 @@ public class ChessboardController implements IChessboardController
 		}
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see jchess.gamelogic.field.IChessboardController#getBoard()
 	 */
 	@Override
