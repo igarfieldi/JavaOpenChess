@@ -36,8 +36,8 @@ public class QueenTest
 		{
 			board.getBoard().removePiece(field);
 		}
-		King whiteKing = new King(board, white);
-		King blackKing = new King(board, black);
+		King whiteKing = new King(white);
+		King blackKing = new King(black);
 		board.getBoard().setPiece(board.getBoard().getField(4, 7), whiteKing);
 		board.getBoard().setPiece(board.getBoard().getField(4, 0), blackKing);
 	}
@@ -45,7 +45,7 @@ public class QueenTest
 	@Test
 	public void testPossibleMovesRegular()
 	{
-		Queen whiteQueen = new Queen(board, white);
+		Queen whiteQueen = new Queen(white);
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whiteQueen);
 		
 		// The queen has to be able to move along every directional path
@@ -69,9 +69,9 @@ public class QueenTest
 	@Test
 	public void testPossibleMovesCapture()
 	{
-		Queen whiteQueen = new Queen(board, white);
-		Pawn blackPawn1 = new Pawn(board, black, new Direction(1, 0));
-		Pawn blackPawn2 = new Pawn(board, black, new Direction(1, 0));
+		Queen whiteQueen = new Queen(white);
+		Pawn blackPawn1 = new Pawn(black, new Direction(1, 0));
+		Pawn blackPawn2 = new Pawn(black, new Direction(1, 0));
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whiteQueen);
 		
 		// Place queens in all different directions (vertical, horizontal,

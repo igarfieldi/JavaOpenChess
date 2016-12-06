@@ -171,30 +171,30 @@ public class TwoPlayerChessboardController implements IChessboardController
 		
 		board.initialize();
 		// Set rooks, bishops, knights
-		board.setPiece(board.getField(0, 7), new Rook(this, bottomSide));
-		board.setPiece(board.getField(7, 7), new Rook(this, bottomSide));
-		board.setPiece(board.getField(1, 7), new Knight(this, bottomSide));
-		board.setPiece(board.getField(6, 7), new Knight(this, bottomSide));
-		board.setPiece(board.getField(2, 7), new Bishop(this, bottomSide));
-		board.setPiece(board.getField(5, 7), new Bishop(this, bottomSide));
-		board.setPiece(board.getField(0, 0), new Rook(this, topSide));
-		board.setPiece(board.getField(7, 0), new Rook(this, topSide));
-		board.setPiece(board.getField(1, 0), new Knight(this, topSide));
-		board.setPiece(board.getField(6, 0), new Knight(this, topSide));
-		board.setPiece(board.getField(2, 0), new Bishop(this, topSide));
-		board.setPiece(board.getField(5, 0), new Bishop(this, topSide));
+		board.setPiece(board.getField(0, 7), new Rook(bottomSide));
+		board.setPiece(board.getField(7, 7), new Rook(bottomSide));
+		board.setPiece(board.getField(1, 7), new Knight(bottomSide));
+		board.setPiece(board.getField(6, 7), new Knight(bottomSide));
+		board.setPiece(board.getField(2, 7), new Bishop(bottomSide));
+		board.setPiece(board.getField(5, 7), new Bishop(bottomSide));
+		board.setPiece(board.getField(0, 0), new Rook(topSide));
+		board.setPiece(board.getField(7, 0), new Rook(topSide));
+		board.setPiece(board.getField(1, 0), new Knight(topSide));
+		board.setPiece(board.getField(6, 0), new Knight(topSide));
+		board.setPiece(board.getField(2, 0), new Bishop(topSide));
+		board.setPiece(board.getField(5, 0), new Bishop(topSide));
 		
 		// The queen is always placed on the field of her own color
-		board.setPiece(board.getField(3, 7), new Queen(this, bottomSide));
-		board.setPiece(board.getField(4, 7), new King(this, bottomSide));
-		board.setPiece(board.getField(3, 0), new Queen(this, topSide));
-		board.setPiece(board.getField(4, 0), new King(this, topSide));
+		board.setPiece(board.getField(3, 7), new Queen(bottomSide));
+		board.setPiece(board.getField(4, 7), new King(bottomSide));
+		board.setPiece(board.getField(3, 0), new Queen(topSide));
+		board.setPiece(board.getField(4, 0), new King(topSide));
 		
 		// Initialize pawns: no special distinctions necessary
 		for(int x = 0; x < WIDTH; x++)
 		{
-			board.setPiece(board.getField(x, 6), new Pawn(this, bottomSide, new Direction(0, -1)));
-			board.setPiece(board.getField(x, 1), new Pawn(this, topSide, new Direction(0, 1)));
+			board.setPiece(board.getField(x, 6), new Pawn(bottomSide, new Direction(0, -1)));
+			board.setPiece(board.getField(x, 1), new Pawn(topSide, new Direction(0, 1)));
 		}
 	}
 	
@@ -691,20 +691,20 @@ public class TwoPlayerChessboardController implements IChessboardController
 					
 					if(newPiece.equals("Queen")) // transform pawn to queen
 					{
-						Queen queen = new Queen(this, board.getPiece(begin).getPlayer());
+						Queen queen = new Queen(board.getPiece(begin).getPlayer());
 						board.setPiece(begin, queen);
 					} else if(newPiece.equals("Rook")) // transform pawn to rook
 					{
-						Rook rook = new Rook(this, board.getPiece(begin).getPlayer());
+						Rook rook = new Rook(board.getPiece(begin).getPlayer());
 						board.setPiece(begin, rook);
 					} else if(newPiece.equals("Bishop")) // transform pawn to
 					                                     // bishop
 					{
-						Bishop bishop = new Bishop(this, board.getPiece(begin).getPlayer());
+						Bishop bishop = new Bishop(board.getPiece(begin).getPlayer());
 						board.setPiece(begin, bishop);
 					} else // transform pawn to knight
 					{
-						Knight knight = new Knight(this, board.getPiece(begin).getPlayer());
+						Knight knight = new Knight(board.getPiece(begin).getPlayer());
 						board.setPiece(begin, knight);
 					}
 					promotedPiece = board.getPiece(begin);

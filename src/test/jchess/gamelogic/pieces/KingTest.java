@@ -40,8 +40,8 @@ public class KingTest
 		{
 			board.getBoard().removePiece(field);
 		}
-		whiteKing = new King(board, white);
-		blackKing = new King(board, black);
+		whiteKing = new King(white);
+		blackKing = new King(black);
 		board.getBoard().setPiece(board.getBoard().getField(4, 7), whiteKing);
 		board.getBoard().setPiece(board.getBoard().getField(4, 0), blackKing);
 	}
@@ -65,7 +65,7 @@ public class KingTest
 	@Test
 	public void testCheckFromPawn()
 	{
-		Pawn pawn = new Pawn(board, black, new Direction(0, 1));
+		Pawn pawn = new Pawn(black, new Direction(0, 1));
 		pawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(3, 6), pawn);
 		assertTrue(board.isChecked(white));
@@ -80,25 +80,25 @@ public class KingTest
 	@Test
 	public void testCheckFromBishop()
 	{
-		checkForCheck(board.getBoard().getField(4, 4), new Bishop(board, black));
+		checkForCheck(board.getBoard().getField(4, 4), new Bishop(black));
 	}
 	
 	@Test
 	public void testCheckFromRook()
 	{
-		checkForCheck(board.getBoard().getField(4, 4), new Rook(board, black));
+		checkForCheck(board.getBoard().getField(4, 4), new Rook(black));
 	}
 	
 	@Test
 	public void testCheckFromQueen()
 	{
-		checkForCheck(board.getBoard().getField(4, 4), new Queen(board, black));
+		checkForCheck(board.getBoard().getField(4, 4), new Queen(black));
 	}
 	
 	@Test
 	public void testCheckFromKnight()
 	{
-		checkForCheck(board.getBoard().getField(4, 4), new Knight(board, black));
+		checkForCheck(board.getBoard().getField(4, 4), new Knight(black));
 	}
 	
 	private void movePiece(Field field, Piece piece)
