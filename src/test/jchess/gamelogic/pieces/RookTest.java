@@ -36,8 +36,8 @@ public class RookTest
 		{
 			board.getBoard().removePiece(field);
 		}
-		King whiteKing = new King(board, white);
-		King blackKing = new King(board, black);
+		King whiteKing = new King(white);
+		King blackKing = new King(black);
 		board.getBoard().setPiece(board.getBoard().getField(4, 7), whiteKing);
 		board.getBoard().setPiece(board.getBoard().getField(4, 0), blackKing);
 	}
@@ -45,7 +45,7 @@ public class RookTest
 	@Test
 	public void testPossibleMovesRegular()
 	{
-		Rook whiteRook = new Rook(board, white);
+		Rook whiteRook = new Rook(white);
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whiteRook);
 		
 		// The rook can move vertical and horizontal
@@ -63,9 +63,9 @@ public class RookTest
 	@Test
 	public void testPossibleMovesCapture()
 	{
-		Rook whiteRook = new Rook(board, white);
-		Pawn blackPawn1 = new Pawn(board, black, new Direction(1, 0));
-		Pawn blackPawn2 = new Pawn(board, black, new Direction(1, 0));
+		Rook whiteRook = new Rook(white);
+		Pawn blackPawn1 = new Pawn(black, new Direction(1, 0));
+		Pawn blackPawn2 = new Pawn(black, new Direction(1, 0));
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whiteRook);
 		
 		// Place rooks vertically and horizontally

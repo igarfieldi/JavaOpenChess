@@ -36,8 +36,8 @@ public class TwoPlayerPawnTest
 		{
 			board.getBoard().removePiece(field);
 		}
-		King whiteKing = new King(board, white);
-		King blackKing = new King(board, black);
+		King whiteKing = new King(white);
+		King blackKing = new King(black);
 		board.getBoard().setPiece(board.getBoard().getField(4, 7), whiteKing);
 		board.getBoard().setPiece(board.getBoard().getField(4, 0), blackKing);
 	}
@@ -45,8 +45,8 @@ public class TwoPlayerPawnTest
 	@Test
 	public void testRegularMove()
 	{
-		Pawn whitePawn = new Pawn(board, white, new Direction(0, -1));
-		Pawn blackPawn = new Pawn(board, black, new Direction(0, 1));
+		Pawn whitePawn = new Pawn(white, new Direction(0, -1));
+		Pawn blackPawn = new Pawn(black, new Direction(0, 1));
 		whitePawn.markAsMoved();
 		blackPawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(2, 5), whitePawn);
@@ -58,8 +58,8 @@ public class TwoPlayerPawnTest
 	@Test
 	public void testNormalStrikeToLeft()
 	{
-		Pawn whitePawn = new Pawn(board, white, new Direction(0, -1));
-		Pawn blackPawn = new Pawn(board, black, new Direction(0, 1));
+		Pawn whitePawn = new Pawn(white, new Direction(0, -1));
+		Pawn blackPawn = new Pawn(black, new Direction(0, 1));
 		whitePawn.markAsMoved();
 		blackPawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(4, 4), whitePawn);
@@ -73,8 +73,8 @@ public class TwoPlayerPawnTest
 	@Test
 	public void testNormalStrikeToRight()
 	{
-		Pawn whitePawn = new Pawn(board, white, new Direction(0, -1));
-		Pawn blackPawn = new Pawn(board, black, new Direction(0, 1));
+		Pawn whitePawn = new Pawn(white, new Direction(0, -1));
+		Pawn blackPawn = new Pawn(black, new Direction(0, 1));
 		whitePawn.markAsMoved();
 		blackPawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whitePawn);
@@ -88,8 +88,8 @@ public class TwoPlayerPawnTest
 	@Test
 	public void testTwoStepMove()
 	{
-		Pawn whitePawn = new Pawn(board, white, new Direction(0, -1));
-		Pawn blackPawn = new Pawn(board, black, new Direction(0, 1));
+		Pawn whitePawn = new Pawn(white, new Direction(0, -1));
+		Pawn blackPawn = new Pawn(black, new Direction(0, 1));
 		board.getBoard().setPiece(board.getBoard().getField(3, 6), whitePawn);
 		board.getBoard().setPiece(board.getBoard().getField(3, 1), blackPawn);
 		assertTrue(PieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(3, 5),
@@ -101,8 +101,8 @@ public class TwoPlayerPawnTest
 	@Test
 	public void testEnPassant()
 	{
-		Pawn whitePawn = new Pawn(board, white, new Direction(0, -1));
-		Pawn blackPawn = new Pawn(board, black, new Direction(0, 1));
+		Pawn whitePawn = new Pawn(white, new Direction(0, -1));
+		Pawn blackPawn = new Pawn(black, new Direction(0, 1));
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whitePawn);
 		board.getBoard().setPiece(board.getBoard().getField(2, 1), blackPawn);
 		try

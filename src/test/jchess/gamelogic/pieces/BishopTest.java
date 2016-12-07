@@ -36,8 +36,8 @@ public class BishopTest
 		{
 			board.getBoard().removePiece(field);
 		}
-		King whiteKing = new King(board, white);
-		King blackKing = new King(board, black);
+		King whiteKing = new King(white);
+		King blackKing = new King(black);
 		board.getBoard().setPiece(board.getBoard().getField(4, 7), whiteKing);
 		board.getBoard().setPiece(board.getBoard().getField(4, 0), blackKing);
 	}
@@ -45,7 +45,7 @@ public class BishopTest
 	@Test
 	public void testPossibleMovesRegular()
 	{
-		Bishop whiteBishop = new Bishop(board, white);
+		Bishop whiteBishop = new Bishop(white);
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whiteBishop);
 		
 		// The bishop can move diagonally
@@ -61,9 +61,9 @@ public class BishopTest
 	@Test
 	public void testPossibleMovesCapture()
 	{
-		Bishop whiteBishop = new Bishop(board, white);
-		Pawn blackPawn1 = new Pawn(board, black, new Direction(1, 0));
-		Pawn blackPawn2 = new Pawn(board, black, new Direction(1, 0));
+		Bishop whiteBishop = new Bishop(white);
+		Pawn blackPawn1 = new Pawn(black, new Direction(1, 0));
+		Pawn blackPawn2 = new Pawn(black, new Direction(1, 0));
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whiteBishop);
 		
 		// Place bishops in diagonal directions

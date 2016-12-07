@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.controllers.IChessboardController;
 import jchess.util.Direction;
 
 /**
@@ -95,9 +94,9 @@ public class Pawn extends Piece
 		return new HashSet<Direction>(Arrays.asList(this.capturingMovement));
 	}
 	
-	public Pawn(IChessboardController chessboard, Player player, Direction forward)
+	public Pawn(Player player, Direction forward)
 	{
-		super(chessboard, player, "P", false);
+		super(player, "P", false, PieceType.PAWN);
 		this.normalMovement = forward;
 		this.twoStepMovement = forward.multiply(2);
 		this.capturingMovement = new Direction[2];
@@ -114,7 +113,7 @@ public class Pawn extends Piece
 	
 	@Override
 	public Pawn copy() {
-		return new Pawn(chessboard, player, normalMovement);
+		return new Pawn(player, normalMovement);
 	}
 	
 	void promote(Piece newPiece)

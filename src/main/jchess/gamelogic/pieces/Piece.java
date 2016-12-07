@@ -41,19 +41,20 @@ public abstract class Piece implements Copyable<Piece>
 	private final String SYMBOL;
 	private final boolean CAN_MOVE_MULTIPLE_STEPS;
 	private boolean moved;
+	private PieceType type;
 	
-	public Piece(IChessboardController chessboard, Player player, String symbol)
+	public Piece(Player player, String symbol, PieceType piece)
 	{
-		this(chessboard, player, symbol, true);
+		this(player, symbol, true, piece);
 	}
 
-	public Piece(IChessboardController chessboard, Player player, String symbol, boolean multiMovePiece)
+	public Piece(Player player, String symbol, boolean multiMovePiece, PieceType type)
 	{
-		this.chessboard = chessboard;
 		this.player = player;
 		this.SYMBOL = symbol;
 		this.CAN_MOVE_MULTIPLE_STEPS = multiMovePiece;
 		this.moved = false;
+		this.type = type;
 	}
 	
 	/**
@@ -109,4 +110,12 @@ public abstract class Piece implements Copyable<Piece>
 	{
 		return player;
 	}
+	
+    public PieceType getType() {
+        return type;
+    }
+ 
+    public void setType(PieceType type) {
+        this.type = type;
+    }
 }

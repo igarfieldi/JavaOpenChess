@@ -35,8 +35,8 @@ public class KnightTest
 		{
 			board.getBoard().removePiece(field);
 		}
-		King whiteKing = new King(board, white);
-		King blackKing = new King(board, black);
+		King whiteKing = new King(white);
+		King blackKing = new King(black);
 		board.getBoard().setPiece(board.getBoard().getField(4, 7), whiteKing);
 		board.getBoard().setPiece(board.getBoard().getField(4, 0), blackKing);
 	}
@@ -44,7 +44,7 @@ public class KnightTest
 	@Test
 	public void testPossibleMovesRegular()
 	{
-		Knight whiteKnight = new Knight(board, white);
+		Knight whiteKnight = new Knight(white);
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whiteKnight);
 		
 		// The rook can move vertical and horizontal
@@ -58,8 +58,8 @@ public class KnightTest
 	@Test
 	public void testPossibleMovesCapture()
 	{
-		Knight whiteKnight = new Knight(board, white);
-		Pawn blackPawn = new Pawn(board, black, new Direction(1, 0));
+		Knight whiteKnight = new Knight(white);
+		Pawn blackPawn = new Pawn(black, new Direction(1, 0));
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whiteKnight);
 		
 		// Knights also have to be able to capture on their moves
