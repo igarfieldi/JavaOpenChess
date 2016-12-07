@@ -551,20 +551,20 @@ public abstract class RegularChessboardController implements IChessboardControll
 					
 					if(newPiece.equals("Queen")) // transform pawn to queen
 					{
-						Queen queen = new Queen(this, board.getPiece(begin).getPlayer());
+						Queen queen = new Queen(board.getPiece(begin).getPlayer());
 						board.setPiece(begin, queen);
 					} else if(newPiece.equals("Rook")) // transform pawn to rook
 					{
-						Rook rook = new Rook(this, board.getPiece(begin).getPlayer());
+						Rook rook = new Rook(board.getPiece(begin).getPlayer());
 						board.setPiece(begin, rook);
 					} else if(newPiece.equals("Bishop")) // transform pawn to
 					                                     // bishop
 					{
-						Bishop bishop = new Bishop(this, board.getPiece(begin).getPlayer());
+						Bishop bishop = new Bishop(board.getPiece(begin).getPlayer());
 						board.setPiece(begin, bishop);
 					} else // transform pawn to knight
 					{
-						Knight knight = new Knight(this, board.getPiece(begin).getPlayer());
+						Knight knight = new Knight(board.getPiece(begin).getPlayer());
 						board.setPiece(begin, knight);
 					}
 					promotedPiece = board.getPiece(begin);

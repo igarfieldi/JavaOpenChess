@@ -2,12 +2,13 @@
 package jchess.gamelogic.pieces;
 
 import jchess.gamelogic.Player;
+import jchess.util.Direction;
 
 public class PieceFactory
 {
 	private static Player player;
 
-	public static Piece buildPiece (PieceType type){
+	public static Piece buildPiece(PieceType type){
 		Piece piece = null;
 		switch (type){
 			case BISHOP:
@@ -23,8 +24,8 @@ public class PieceFactory
 				piece = new Rook(player);
 				break;
 			case PAWN:
-				//TODO: find a way to pass the direction
-				piece = new Pawn(player);
+				//TODO: find a way to pass the direction; preliminary fix
+				piece = new Pawn(player, new Direction(0, 1));
 				break;
 			case QUEEN:
 				piece = new Queen(player);

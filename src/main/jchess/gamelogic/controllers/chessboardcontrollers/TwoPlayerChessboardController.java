@@ -59,30 +59,30 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 		
 		getBoard().initialize();
 		// Set rooks, bishops, knights
-		getBoard().setPiece(getBoard().getField(0, 7), new Rook(this, bottomSide));
-		getBoard().setPiece(getBoard().getField(7, 7), new Rook(this, bottomSide));
-		getBoard().setPiece(getBoard().getField(1, 7), new Knight(this, bottomSide));
-		getBoard().setPiece(getBoard().getField(6, 7), new Knight(this, bottomSide));
-		getBoard().setPiece(getBoard().getField(2, 7), new Bishop(this, bottomSide));
-		getBoard().setPiece(getBoard().getField(5, 7), new Bishop(this, bottomSide));
-		getBoard().setPiece(getBoard().getField(0, 0), new Rook(this, topSide));
-		getBoard().setPiece(getBoard().getField(7, 0), new Rook(this, topSide));
-		getBoard().setPiece(getBoard().getField(1, 0), new Knight(this, topSide));
-		getBoard().setPiece(getBoard().getField(6, 0), new Knight(this, topSide));
-		getBoard().setPiece(getBoard().getField(2, 0), new Bishop(this, topSide));
-		getBoard().setPiece(getBoard().getField(5, 0), new Bishop(this, topSide));
+		getBoard().setPiece(getBoard().getField(0, 7), new Rook(bottomSide));
+		getBoard().setPiece(getBoard().getField(7, 7), new Rook( bottomSide));
+		getBoard().setPiece(getBoard().getField(1, 7), new Knight(bottomSide));
+		getBoard().setPiece(getBoard().getField(6, 7), new Knight(bottomSide));
+		getBoard().setPiece(getBoard().getField(2, 7), new Bishop(bottomSide));
+		getBoard().setPiece(getBoard().getField(5, 7), new Bishop(bottomSide));
+		getBoard().setPiece(getBoard().getField(0, 0), new Rook(topSide));
+		getBoard().setPiece(getBoard().getField(7, 0), new Rook(topSide));
+		getBoard().setPiece(getBoard().getField(1, 0), new Knight(topSide));
+		getBoard().setPiece(getBoard().getField(6, 0), new Knight(topSide));
+		getBoard().setPiece(getBoard().getField(2, 0), new Bishop(topSide));
+		getBoard().setPiece(getBoard().getField(5, 0), new Bishop(topSide));
 		
 		// The queen is always placed on the field of her own color
-		getBoard().setPiece(getBoard().getField(3, 7), new Queen(this, bottomSide));
-		getBoard().setPiece(getBoard().getField(4, 7), new King(this, bottomSide));
-		getBoard().setPiece(getBoard().getField(3, 0), new Queen(this, topSide));
-		getBoard().setPiece(getBoard().getField(4, 0), new King(this, topSide));
+		getBoard().setPiece(getBoard().getField(3, 7), new Queen(bottomSide));
+		getBoard().setPiece(getBoard().getField(4, 7), new King(bottomSide));
+		getBoard().setPiece(getBoard().getField(3, 0), new Queen(topSide));
+		getBoard().setPiece(getBoard().getField(4, 0), new King(topSide));
 		
 		// Initialize pawns: no special distinctions necessary
 		for(int x = 0; x < 8; x++)
 		{
-			getBoard().setPiece(getBoard().getField(x, 6), new Pawn(this, bottomSide, new Direction(0, -1)));
-			getBoard().setPiece(getBoard().getField(x, 1), new Pawn(this, topSide, new Direction(0, 1)));
+			getBoard().setPiece(getBoard().getField(x, 6), new Pawn(bottomSide, new Direction(0, -1)));
+			getBoard().setPiece(getBoard().getField(x, 1), new Pawn(topSide, new Direction(0, 1)));
 		}
 	}
 	
