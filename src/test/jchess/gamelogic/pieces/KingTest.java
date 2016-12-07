@@ -30,10 +30,10 @@ public class KingTest
 	public void setUp() throws Exception
 	{
 		Settings settings = new Settings();
-		model = new TwoPlayerChessboardModel();
-		board = new TwoPlayerChessboardController(settings, null, model);
 		white = settings.getWhitePlayer();
 		black = settings.getBlackPlayer();
+		model = new TwoPlayerChessboardModel();
+		board = new TwoPlayerChessboardController(null, model, white, black);
 		board.initialize();
 		// Need to remove the pieces we don't want
 		for(Field field : board.getBoard().getFields())

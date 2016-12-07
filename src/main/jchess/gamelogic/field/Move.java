@@ -18,6 +18,7 @@
  */
 package jchess.gamelogic.field;
 
+import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.Piece;
 
 public class Move
@@ -48,7 +49,9 @@ public class Move
 		this.castlingMove = castlingMove;
 		this.wasEnPassant = wasEnPassant;
 		
-		if(movedPiece.getName().equals("Pawn") && Math.abs(to.getPosY() - from.getPosY()) == 2)
+		// TODO: adapt to 4p chess
+		if(movedPiece instanceof Pawn && (Math.abs(to.getPosY() - from.getPosY()) == 2||
+				Math.abs(to.getPosX() - from.getPosX()) == 2))
 		{
 			this.wasPawnTwoFieldsMove = true;
 		} else if(movedPiece.getName().equals("Pawn") && promotedPiece != null)

@@ -62,8 +62,6 @@ public class ThemeFileReader
 		while((entry = zip.getNextEntry()) != null)
 		{
 			// Find the resources we're looking for (the themes)
-			// TODO: If the beginning of the path is not specified we
-			// get lots of double matches...
 			if(entry.getName().matches("jchess/resources/theme/[^/]+/$"))
 			{
 				Matcher themeMatcher = themePattern.matcher(entry.getName());

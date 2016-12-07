@@ -8,6 +8,7 @@ import org.junit.Test;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
 import jchess.gamelogic.controllers.IChessboardController;
+import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.models.IChessboardModel;
@@ -26,7 +27,7 @@ public class TwoPlayerPawnTest
 	{
 		Settings settings = new Settings();
 		model = new TwoPlayerChessboardModel();
-		board = new TwoPlayerChessboardController(settings, null, model);
+		board = new TwoPlayerChessboardController(null, model, null, null);
 		white = settings.getWhitePlayer();
 		black = settings.getBlackPlayer();
 		board.initialize();
@@ -104,9 +105,15 @@ public class TwoPlayerPawnTest
 		Pawn blackPawn = new Pawn(board, black, new Direction(0, 1));
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whitePawn);
 		board.getBoard().setPiece(board.getBoard().getField(2, 1), blackPawn);
-		board.move(board.getBoard().getField(whitePawn), board.getBoard().getField(3, 3));
-		board.move(board.getBoard().getField(blackPawn), board.getBoard().getField(2, 3));
-		assertTrue(PieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(3, 2),
-		        board.getBoard().getField(2, 2)));
+		try
+		{
+			board.move(board.getBoard().getField(whitePawn), board.getBoard().getField(3, 3));
+			board.move(board.getBoard().getField(blackPawn), board.getBoard().getField(2, 3));
+			assertTrue(PieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(3, 2),
+			        board.getBoard().getField(2, 2)));
+		} catch(IllegalMoveException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

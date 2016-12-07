@@ -3,6 +3,7 @@ package jchess.gamelogic.controllers;
 import java.util.Set;
 
 import jchess.gamelogic.Player;
+import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Moves;
 import jchess.gamelogic.models.IChessboardModel;
@@ -70,12 +71,9 @@ public interface IChessboardController
 	 *            square from which move piece
 	 * @param end
 	 *            square where we want to move piece
+	 * @throws IllegalMoveException if the proposed move is not valid
 	 */
-	public void move(Field begin, Field end);
-	
-	public boolean redo();
-	
-	public boolean undo();
+	public void move(Field begin, Field end) throws IllegalMoveException;
 	
 	public IChessboardModel getBoard();
 	

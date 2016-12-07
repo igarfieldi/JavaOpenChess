@@ -86,6 +86,10 @@ public class Pawn extends Piece
 		return movements;
 	}
 	
+	public Direction getForwardDirection() {
+		return normalMovement;
+	}
+	
 	@Override
 	public Set<Direction> getCapturingMovements() {
 		return new HashSet<Direction>(Arrays.asList(this.capturingMovement));

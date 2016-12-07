@@ -37,8 +37,6 @@ jar {
     }
 }
 
-
-
 sourceSets {
 	main {
 		java {

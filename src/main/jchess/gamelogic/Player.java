@@ -31,7 +31,7 @@ public class Player implements Serializable
 	
 	public enum Color
 	{
-		BLACK, WHITE
+		WHITE, RED, BLACK, GOLDEN
 	}
 	
 	public enum Type
@@ -44,8 +44,13 @@ public class Player implements Serializable
 	private Type playerType;
 	
 	public Player(String name, Color color) {
+		this(name, color, Type.LOCAL);
+	}
+	
+	public Player(String name, Color color, Type type) {
 		this.name = name;
 		this.color = color;
+		this.playerType = type;
 	}
 	
 	/**

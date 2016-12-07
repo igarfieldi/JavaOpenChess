@@ -5,6 +5,4 @@ import jchess.gamelogic.field.Field;
 public interface IBoardActionHandler
 {
 	public void onFieldSelection(Field field);
-	public void onRedoRequested();
-	public void onUndoRequested();
 }

@@ -9,7 +9,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jchess.JChessApp;
-import jchess.gamelogic.Player;
 import jchess.gamelogic.pieces.Piece;
 
 public class ThemeImageLoader
@@ -49,11 +48,6 @@ public class ThemeImageLoader
 	
 	public Image loadThemeImage(String imageName, String theme)
 	{
-		// TODO: is this necessary? Shouldn't we create a config file if none
-		// exists or work with default values?
-		if(this.configFile == null)
-			return null;
-		
 		try
 		{
 			// Locate the image in the theme folder
@@ -70,10 +64,21 @@ public class ThemeImageLoader
 	
 	public Image loadThemedPieceImage(Piece piece) {
 		String imageName = piece.getName() + "-";
-		if(piece.getPlayer().getColor() == Player.Color.WHITE) {
-			imageName += "W";
-		} else {
-			imageName += "B";
+		switch(piece.getPlayer().getColor()) {
+			case WHITE:
+				imageName += "W";
+				break;
+			case RED:
+				imageName += "BR";
+				break;
+			case BLACK:
+				imageName += "B";
+				break;
+			case GOLDEN:
+				imageName += "G";
+				break;
+			default:
+				log.log(Level.SEVERE, "Piece of player with unknown color exists!");
 		}
 		imageName += ".png";
 		

@@ -35,6 +35,7 @@ import jchess.JChessApp;
 import jchess.gamelogic.controllers.GameClockController;
 import jchess.gamelogic.controllers.IBoardActionHandler;
 import jchess.gamelogic.controllers.IChessboardController;
+import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Moves;
 import jchess.gamelogic.views.IChessboardView;
@@ -100,18 +101,6 @@ public class Game implements IBoardActionHandler
 	}
 	
 	@Override
-	public void onUndoRequested()
-	{
-		this.undo();
-	}
-	
-	@Override
-	public void onRedoRequested()
-	{
-		this.redo();
-	};
-	
-	@Override
 	public void onFieldSelection(Field selectedField)
 	{
 		log.log(Level.FINE, "Selected field: " + selectedField);
@@ -152,21 +141,25 @@ public class Game implements IBoardActionHandler
 				                chessboard.getBoard().getPiece(gameView.getChessboardView().getActiveSquare()), true)
 				                .contains(selectedField))
 				{
-					chessboard.move(gameView.getChessboardView().getActiveSquare(), selectedField);
+					try {
+						chessboard.move(gameView.getChessboardView().getActiveSquare(), selectedField);
 					
-					gameView.getChessboardView().unselect();
-					
-					// switch player
-					this.nextMove();
-					
-					// checkmate or stalemate
-					if(chessboard.isCheckmated(chessboard.getActivePlayer()))
-					{
-						this.endGame("Checkmate! " + this.chessboard.getActivePlayer().getColor().toString()
-						        + " player lose!");
-					} else if(chessboard.isStalemate())
-					{
-						this.endGame("Stalemate! Draw!");
+    					gameView.getChessboardView().unselect();
+    					
+    					// switch player
+    					this.nextMove();
+    					
+    					// checkmate or stalemate
+    					if(chessboard.isCheckmated(chessboard.getActivePlayer()))
+    					{
+    						this.endGame("Checkmate! " + this.chessboard.getActivePlayer().getColor().toString()
+    						        + " player lose!");
+    					} else if(chessboard.isStalemate())
+    					{
+    						this.endGame("Stalemate! Draw!");
+    					}
+					} catch(IllegalMoveException exc) {
+						log.log(Level.SEVERE, "Tried to execute illegal move!", exc);
 					}
 				}
 				
@@ -265,7 +258,7 @@ public class Game implements IBoardActionHandler
 			log.log(Level.SEVERE, "Error reading game file!", err);
 			return;
 		}
-		Game newGUI = JChessApp.view.addNewTwoPlayerTab(whiteName + " vs. " + blackName);
+		Game newGUI = JChessApp.view.addNewTwoPlayerTab(whiteName, blackName);
 		Settings locSetts = newGUI.settings;
 		locSetts.getBlackPlayer().setName(blackName);
 		locSetts.getWhitePlayer().setName(whiteName);
@@ -415,58 +408,6 @@ public class Game implements IBoardActionHandler
 		} else if(chessboard.getActivePlayer().getType() == Player.Type.COMPUTER)
 		{
 		}
-	}
-	
-	public boolean undo()
-	{
-		boolean status = false;
-		
-		status = chessboard.undo();
-		if(status)
-		{
-			this.switchActive();
-		} else
-		{
-			chessboard.getView().render();// repaint for sure
-		}
-		return status;
-	}
-	
-	public boolean rewindToBegin()
-	{
-		boolean result = false;
-		
-		while(chessboard.undo())
-		{
-			result = true;
-		}
-		
-		return result;
-	}
-	
-	public boolean rewindToEnd() throws UnsupportedOperationException
-	{
-		boolean result = false;
-		
-		while(chessboard.redo())
-		{
-			result = true;
-		}
-		
-		return result;
-	}
-	
-	public boolean redo()
-	{
-		boolean status = chessboard.redo();
-		if(status)
-		{
-			this.nextMove();
-		} else
-		{
-			chessboard.getView().render();// repaint for sure
-		}
-		return status;
 	}
 }
 

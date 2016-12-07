@@ -366,25 +366,17 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 	@Override
 	public void mouseClicked(MouseEvent event)
 	{
-		if(event.getButton() == MouseEvent.BUTTON3) // right button
-		{
-			log.log(Level.FINE, "Right button click for undo");
-			this.boardActionHandler.onUndoRequested();
-		} else if(event.getButton() == MouseEvent.BUTTON2)
-		{
-			log.log(Level.FINE, "Middle button click for redo");
-			this.boardActionHandler.onRedoRequested();
-		} else if(event.getButton() == MouseEvent.BUTTON1) // left button
-		{
-			log.log(Level.FINE, "Left button click for field selection");
-			this.boardActionHandler.onFieldSelection(this.getFieldFromMousePosition(event));
-		}
-		this.render();
 	}
 	
 	@Override
 	public void mousePressed(MouseEvent event)
 	{
+		if(event.getButton() == MouseEvent.BUTTON1) // left button
+		{
+			log.log(Level.FINE, "Left button click for field selection");
+			this.boardActionHandler.onFieldSelection(this.getFieldFromMousePosition(event));
+		}
+		this.render();
 	}
 	
 	@Override

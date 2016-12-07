@@ -34,7 +34,6 @@ import javax.swing.table.DefaultTableModel;
 
 import jchess.Localization;
 import jchess.gamelogic.Player;
-import jchess.gamelogic.Settings;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.field.Move.CastlingType;
 import jchess.gamelogic.pieces.Piece;
@@ -60,12 +59,14 @@ public class Moves extends AbstractTableModel
 	private Stack<Move> moveBackStack = new Stack<Move>();
 	private Stack<Move> moveForwardStack = new Stack<Move>();
 	private IChessboardController chessboard;
-	private Settings settings;
+	private Player white;
+	private Player black;
 	
-	public Moves(IChessboardController chessboard, Settings settings)
+	public Moves(IChessboardController chessboard, Player white, Player black)
 	{
 		super();
-		this.settings = settings;
+		this.white = white;
+		this.black = black;
 		this.chessboard = chessboard;
 		this.tableModel = new MyDefaultTableModel();
 		this.table = new JTable(this.tableModel);
@@ -205,12 +206,12 @@ public class Moves extends AbstractTableModel
 		{
 			locMove += "(e.p)";// pawn take down opponent en passant
 		}
-		if((!this.enterBlack && this.chessboard.isChecked(settings.getBlackPlayer()))
-		        || (this.enterBlack && this.chessboard.isChecked(settings.getWhitePlayer())))
+		if((!this.enterBlack && this.chessboard.isChecked(black))
+		        || (this.enterBlack && this.chessboard.isChecked(white)))
 		{// if checked
 			
-			if((!this.enterBlack && this.chessboard.isCheckmated(settings.getBlackPlayer()))
-			        || (this.enterBlack && this.chessboard.isCheckmated(settings.getWhitePlayer())))
+			if((!this.enterBlack && this.chessboard.isCheckmated(black))
+			        || (this.enterBlack && this.chessboard.isCheckmated(white)))
 			{// check if checkmated
 				locMove += "#";// check mate
 			} else

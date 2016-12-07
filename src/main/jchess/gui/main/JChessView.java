@@ -60,8 +60,10 @@ import org.jdesktop.application.TaskMonitor;
 import jchess.JChessApp;
 import jchess.Localization;
 import jchess.gamelogic.Game;
+import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
 import jchess.gamelogic.controllers.IChessboardController;
+import jchess.gamelogic.controllers.chessboardcontrollers.FourPlayerChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
 import jchess.gamelogic.models.chessboardmodels.FourPlayerChessboardModel;
 import jchess.gamelogic.models.chessboardmodels.TwoPlayerChessboardModel;
@@ -70,7 +72,6 @@ import jchess.gamelogic.views.IMessageDisplay.Option;
 import jchess.gamelogic.views.chessboardviews.FourPlayerChessboardView;
 import jchess.gamelogic.views.chessboardviews.TwoPlayerChessboardView;
 import jchess.gamelogic.views.gameviews.SwingGameView;
-import jchess.gui.ThemeConfigurator;
 import jchess.gui.secondary.JChessAboutBox;
 import jchess.gui.secondary.PawnPromotionWindow;
 import jchess.gui.secondary.ThemeChooseWindow;
@@ -85,22 +86,16 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	private static Logger log = Logger.getLogger(JChessView.class.getName());
 	private static final TypedResourceBundle VIEW_PROPERTIES = new TypedResourceBundle("jchess.resources.JChessView");
 	
-	private static ThemeConfigurator themeConfigurator = null;
 	private List<Game> gameList = new ArrayList<Game>(1);
-	private Game activeGame;
 	
 	private JMenu gameMenu;
 	private JTabbedPane gamesPane;
 	private JMenuItem loadGameItem;
 	private JPanel mainPanel;
 	private JMenuBar menuBar;
-	private JMenuItem moveBackItem;
-	private JMenuItem moveForwardItem;
 	private JMenuItem newGameItem;
 	private JMenu optionsMenu;
 	private JProgressBar progressBar;
-	private JMenuItem rewindToBeginItem;
-	private JMenuItem rewindToEndItem;
 	private JMenuItem saveGameItem;
 	private JLabel statusAnimationLabel;
 	private JLabel statusMessageLabel;
@@ -120,7 +115,6 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	public JChessView(SingleFrameApplication app)
 	{
 		super(app);
-		activeGame = null;
 		
 		initializeComponents();
 		
@@ -148,10 +142,6 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		loadGameItem = new JMenuItem();
 		saveGameItem = new JMenuItem();
 		gameMenu = new JMenu();
-		moveBackItem = new JMenuItem();
-		moveForwardItem = new JMenuItem();
-		rewindToBeginItem = new JMenuItem();
-		rewindToEndItem = new JMenuItem();
 		optionsMenu = new JMenu();
 		themeSettingsMenu = new JMenuItem();
 		statusPanel = new JPanel();
@@ -240,154 +230,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		gameMenu.setText(resourceBundle.getString("gameMenu.text")); // NOI18N
 		gameMenu.setName("gameMenu"); // NOI18N
 		
-		setMoveBackItem(resourceBundle);
-		setMoveForwardItem(resourceBundle);
-		setRewindToBeginItem(resourceBundle);
-		setRewindToEndItem(resourceBundle);
-		
 		menuBar.add(gameMenu);
-	}
-
-	private void setMoveBackItem(TypedResourceBundle resourceBundle)
-	{
-		moveBackItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
-		moveBackItem.setText(resourceBundle.getString("moveBackItem.text"));
-		moveBackItem.setName("moveBackItem"); 
-		moveBackItem.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent event)
-			{
-				moveBackItemActionPerformed(event);
-			}
-		});
-		gameMenu.add(moveBackItem);
-	}
-
-	private void moveBackItemActionPerformed(ActionEvent event)
-	{
-		if(themeConfigurator != null && activeGame != null)
-			activeGame.undo();
-		else
-			try
-			{
-				Game activeGame = this.getActiveTabGame();
-				if(!activeGame.undo())
-					JOptionPane.showMessageDialog(null, "Cannot undo!");
-			}
-			catch(ArrayIndexOutOfBoundsException exception)
-			{
-				JOptionPane.showMessageDialog(null, "No active tabs!");
-			}
-			catch(UnsupportedOperationException exception)
-			{
-				JOptionPane.showMessageDialog(null, exception.getMessage());
-			}
-	}
-
-	private void setMoveForwardItem(TypedResourceBundle resourceBundle)
-	{
-		moveForwardItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_MASK));
-		moveForwardItem.setText(resourceBundle.getString("moveForwardItem.text")); // NOI18N
-		moveForwardItem.setName("moveForwardItem"); // NOI18N
-		moveForwardItem.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent event)
-			{
-				moveForwardItemActionPerformed(event);
-			}
-		});
-		gameMenu.add(moveForwardItem);
-	}
-
-	private void moveForwardItemActionPerformed(ActionEvent event)
-	{
-		if(themeConfigurator != null && activeGame != null)
-			activeGame.redo();
-		else
-		{
-			try
-			{
-				Game activeGame = this.getActiveTabGame();
-				if(!activeGame.redo())
-					JOptionPane.showMessageDialog(null, "Cannot redo any further!");
-			}
-			catch(ArrayIndexOutOfBoundsException exception)
-			{
-				JOptionPane.showMessageDialog(null, "No active tabs!");
-			}
-			catch(UnsupportedOperationException exception)
-			{
-				JOptionPane.showMessageDialog(null, exception.getMessage());
-			}
-		}
-	}
-
-	private void setRewindToBeginItem(TypedResourceBundle resourceBundle)
-	{
-		rewindToBeginItem
-		        .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK));
-		rewindToBeginItem.setText(resourceBundle.getString("rewindToBegin.text")); // NOI18N
-		rewindToBeginItem.setName("rewindToBegin"); // NOI18N
-		rewindToBeginItem.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent event)
-			{
-				rewindToBeginActionPerformed(event);
-			}
-		});
-		gameMenu.add(rewindToBeginItem);
-	}
-
-	private void rewindToBeginActionPerformed(ActionEvent event)
-	{
-		try
-		{
-			Game activeGame = this.getActiveTabGame();
-			if(!activeGame.rewindToBegin())
-				JOptionPane.showMessageDialog(null, "Cannot rewind to beginning!");
-		}
-		catch(ArrayIndexOutOfBoundsException exception)
-		{
-			JOptionPane.showMessageDialog(null, "No active tabs!");
-		}
-		catch(UnsupportedOperationException exception)
-		{
-			JOptionPane.showMessageDialog(null, exception.getMessage());
-		}
-	}
-
-	private void setRewindToEndItem(TypedResourceBundle resourceBundle)
-	{
-		rewindToEndItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
-		        InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK));
-		rewindToEndItem.setText(resourceBundle.getString("rewindToEnd.text")); // NOI18N
-		rewindToEndItem.setName("rewindToEnd"); // NOI18N
-		rewindToEndItem.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent event)
-			{
-				rewindToEndActionPerformed(event);
-			}
-		});
-		gameMenu.add(rewindToEndItem);
-	}
-
-	private void rewindToEndActionPerformed(ActionEvent event)
-	{
-		try
-		{
-			Game activeGame = this.getActiveTabGame();
-			if(!activeGame.rewindToEnd())
-				JOptionPane.showMessageDialog(null, "Cannot rewind to end!");
-		}
-		catch(ArrayIndexOutOfBoundsException exception)
-		{
-			JOptionPane.showMessageDialog(null, "No active tabs!");
-		}
-		catch(UnsupportedOperationException exception)
-		{
-			JOptionPane.showMessageDialog(null, exception.getMessage());
-		}
 	}
 
 	private void addOptionsMenu(TypedResourceBundle resourceBundle)
@@ -569,26 +412,34 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		});
 	}
 
-	public Game addNewTwoPlayerTab(String title)
+	public Game addNewTwoPlayerTab(String p1, String p2)
 	{
 		Settings settings = new Settings();
 		IChessboardView view = new TwoPlayerChessboardView(true, false);
-		IChessboardController chessboard = new TwoPlayerChessboardController(settings,
-				view, new TwoPlayerChessboardModel());
+		IChessboardController chessboard = new TwoPlayerChessboardController(view,
+				new TwoPlayerChessboardModel(), new Player(p1, Player.Color.WHITE),
+				new Player(p2, Player.Color.BLACK));
 		Game newGameTab = new Game(settings, chessboard, view);
 		this.gameList.add(newGameTab);
+		
+		String title = p1 + " vs " + p2;
 		this.gamesPane.addTab(title, (SwingGameView)newGameTab.getView());
 		return newGameTab;
 	}
 
-	public Game addNewFourPlayerTab(String title)
+	public Game addNewFourPlayerTab(String p1, String p2, String p3, String p4)
 	{
 		Settings settings = new Settings();
 		IChessboardView view = new FourPlayerChessboardView(true, false);
-		IChessboardController chessboard = new TwoPlayerChessboardController(settings,
-				view, new FourPlayerChessboardModel());
+		IChessboardController chessboard = new FourPlayerChessboardController(view,
+				new FourPlayerChessboardModel(), new Player(p1, Player.Color.WHITE),
+				new Player(p2, Player.Color.RED),
+				new Player(p3, Player.Color.BLACK),
+				new Player(p4, Player.Color.GOLDEN));
 		Game newGameTab = new Game(settings, chessboard, view);
 		this.gameList.add(newGameTab);
+		
+		String title = p1 + " vs " + p2 + " vs " + p3 + " vs " + p4;
 		this.gamesPane.addTab(title, (SwingGameView)newGameTab.getView());
 		return newGameTab;
 	}

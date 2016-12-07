@@ -27,7 +27,7 @@ public class BishopTest
 	{
 		Settings settings = new Settings();
 		model = new TwoPlayerChessboardModel();
-		board = new TwoPlayerChessboardController(settings, null, model);
+		board = new TwoPlayerChessboardController(null, model, null, null);
 		white = settings.getWhitePlayer();
 		black = settings.getBlackPlayer();
 		board.initialize();

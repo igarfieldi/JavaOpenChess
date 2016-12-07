@@ -90,13 +90,13 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 			
 			if(playerNumberChoicePanel.getPlayerCount() == 2) {
 				gameWindow = JChessApp.view.addNewTwoPlayerTab(
-				        playerNameInputPanel.getPlayerName(1) + " vs " +
+				        playerNameInputPanel.getPlayerName(1),
 				        playerNameInputPanel.getPlayerName(2));
 			} else if(playerNumberChoicePanel.getPlayerCount() == 4) {
 				gameWindow = JChessApp.view.addNewFourPlayerTab(
-				        playerNameInputPanel.getPlayerName(1) + " vs " +
-				        playerNameInputPanel.getPlayerName(2) + " vs " +
-				        playerNameInputPanel.getPlayerName(3) + " vs " +
+				        playerNameInputPanel.getPlayerName(1),
+				        playerNameInputPanel.getPlayerName(2),
+				        playerNameInputPanel.getPlayerName(3),
 				        playerNameInputPanel.getPlayerName(4));
 			} else {
 				log.log(Level.SEVERE, "Could not start game because the number of players is not supported!");
