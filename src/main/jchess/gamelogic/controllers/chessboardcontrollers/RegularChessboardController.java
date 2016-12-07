@@ -487,6 +487,17 @@ public abstract class RegularChessboardController implements IChessboardControll
 		return move(begin, end, true, true, true, true);
 	}
 	
+	/**
+	 * Checks whether a given pawn is eligible for promotion.
+	 * With regular chess rules this occurs when a pawn reaches the end of the
+	 * board. Since different boards have different directions, this method
+	 * has to be overridden.
+	 * @param pawn Pawn to check promotion for
+	 * @param target Field where the pawn will be moved to
+	 * @return True if the pawn can be promoted
+	 */
+	protected abstract boolean checkForPromotion(Pawn pawn, Field target);
+	
 	private boolean move(Field begin, Field end, boolean checkMove, boolean refresh, boolean clearForwardHistory, boolean enterIntoHistory) throws IllegalMoveException
 	{
 		// Standard move
@@ -529,46 +540,37 @@ public abstract class RegularChessboardController implements IChessboardControll
 							CastlingType.NONE, true, null);
 				}
 			}
-			
-			Piece promotedPiece = null;
-			if(end.getPosY() == 0 || end.getPosY() == 7) // promote
-			// Pawn
+			if(clearForwardHistory && this.checkForPromotion((Pawn) movedPiece, end))
 			{
-				if(clearForwardHistory)
+				// Promotion of pawns has to be handled for the specific board layout
+				String newPiece = JChessApp.view.showPawnPromotionBox(movedPiece.getPlayer().getColor());
+				
+				Piece promoted = null;
+				if(newPiece.equals("Queen")) // transform pawn to queen
 				{
-					// return name of new piece
-					String newPiece = JChessApp.view.showPawnPromotionBox(movedPiece.getPlayer().getColor());
-					
-					if(newPiece.equals("Queen")) // transform pawn to queen
-					{
-						Queen queen = new Queen(board.getPiece(begin).getPlayer());
-						board.setPiece(begin, queen);
-					} else if(newPiece.equals("Rook")) // transform pawn to rook
-					{
-						Rook rook = new Rook(board.getPiece(begin).getPlayer());
-						board.setPiece(begin, rook);
-					} else if(newPiece.equals("Bishop")) // transform pawn to
-					                                     // bishop
-					{
-						Bishop bishop = new Bishop(board.getPiece(begin).getPlayer());
-						board.setPiece(begin, bishop);
-					} else if(newPiece.equals("Knight"))// transform pawn to knight
-					{
-						Knight knight = new Knight(board.getPiece(begin).getPlayer());
-						board.setPiece(begin, knight);
-					} else {
-						// If promotion was cancelled don't execute the move!
-						return false;
-					}
-					promotedPiece = board.getPiece(begin);
+					promoted = new Queen(movedPiece.getPlayer());
+				} else if(newPiece.equals("Rook")) // transform pawn to rook
+				{
+					promoted = new Rook(movedPiece.getPlayer());
+				} else if(newPiece.equals("Bishop")) // transform pawn to
+				                                     // bishop
+				{
+					promoted = new Bishop(movedPiece.getPlayer());
+				} else if(newPiece.equals("Knight"))// transform pawn to knight
+				{
+					promoted = new Knight(movedPiece.getPlayer());
+				} else {
+					// If promotion was cancelled don't execute the move!
+					return false;
 				}
+				
+				board.setPiece(begin, promoted);
+				move = new Move(begin, end, movedPiece, board.getPiece(end), CastlingType.NONE, false,
+						promoted);
 			}
-			
-			move = new Move(begin, end, board.getPiece(begin), board.getPiece(end), CastlingType.NONE, false,
-			        promotedPiece);
 		} else
 		{
-			move = new Move(begin, end, board.getPiece(begin), board.getPiece(end), CastlingType.NONE, false, null);
+			move = new Move(begin, end, movedPiece, board.getPiece(end), CastlingType.NONE, false, null);
 		}
 		
 		board.movePiece(board.getPiece(begin), end);

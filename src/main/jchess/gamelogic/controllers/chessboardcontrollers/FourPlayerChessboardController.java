@@ -211,4 +211,25 @@ public class FourPlayerChessboardController extends RegularChessboardController
 		
 		return enPassantMoves;
 	}
+	
+	@Override
+	protected boolean checkForPromotion(Pawn pawn, Field target) {
+		Direction forward = pawn.getForwardDirection();
+		
+		// In 4p chess there are 4 different "base lines" where promotion
+		// can happen
+		if(forward.getX() == 0) {
+			if(forward.getY() > 0) {
+				return target.getPosY() == 13;
+			} else {
+				return target.getPosY() == 0;
+			}
+		} else {
+			if(forward.getX() > 0) {
+				return target.getPosX() == 13;
+			} else {
+				return target.getPosX() == 0;
+			}
+		}
+	}
 }

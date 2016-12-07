@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import jchess.JChessApp;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Move;
@@ -190,5 +191,18 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 		}
 		
 		return enPassantMoves;
+	}
+	
+	@Override
+	protected boolean checkForPromotion(Pawn pawn, Field target) {
+		Direction forward = pawn.getForwardDirection();
+		
+		// Only two possibilities: pawn moves up or down; then check if it
+		// is at the board end
+		if(forward.getY() > 0) {
+			return target.getPosY() == 7;
+		} else {
+			return target.getPosY() == 0;
+		}
 	}
 }
