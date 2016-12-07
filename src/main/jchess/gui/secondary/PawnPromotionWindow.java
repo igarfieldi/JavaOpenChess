@@ -150,7 +150,7 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 			this.selectedPromotion = "Rook";
 		else if(button.getSource() == bishopButton)
 			this.selectedPromotion = "Bishop";
-		else
+		else if(button.getSource() == knightButton)
 			this.selectedPromotion = "Knight";
 	}
 }

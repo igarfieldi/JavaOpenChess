@@ -73,7 +73,7 @@ public interface IChessboardController
 	 *            square where we want to move piece
 	 * @throws IllegalMoveException if the proposed move is not valid
 	 */
-	public void move(Field begin, Field end) throws IllegalMoveException;
+	public boolean move(Field begin, Field end) throws IllegalMoveException;
 	
 	public IChessboardModel getBoard();
 	

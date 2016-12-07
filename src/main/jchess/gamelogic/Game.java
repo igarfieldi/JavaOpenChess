@@ -142,25 +142,28 @@ public class Game implements IBoardActionHandler
 				                .contains(selectedField))
 				{
 					try {
-						chessboard.move(gameView.getChessboardView().getActiveSquare(), selectedField);
-					
-    					gameView.getChessboardView().unselect();
-    					
-    					// switch player
-    					this.nextMove();
-    					
-    					// checkmate or stalemate
-    					if(chessboard.isCheckmated(chessboard.getActivePlayer()))
-    					{
-    						this.endGame("Checkmate! " + this.chessboard.getActivePlayer().getColor().toString()
-    						        + " player lose!");
-    					} else if(chessboard.isStalemate())
-    					{
-    						this.endGame("Stalemate! Draw!");
-    					}
+						if(chessboard.move(gameView.getChessboardView().getActiveSquare(), selectedField)) {
+							// Only switch players etc. when the move was
+							// actually executed
+	    					// switch player
+	    					this.nextMove();
+	    					
+	    					// checkmate or stalemate
+	    					if(chessboard.isCheckmated(chessboard.getActivePlayer()))
+	    					{
+	    						this.endGame("Checkmate! " + this.chessboard.getActivePlayer().getColor().toString()
+	    						        + " player lose!");
+	    					} else if(chessboard.isStalemate())
+	    					{
+	    						this.endGame("Stalemate! Draw!");
+	    					}
+						}
+						
 					} catch(IllegalMoveException exc) {
 						log.log(Level.SEVERE, "Tried to execute illegal move!", exc);
 					}
+
+					gameView.getChessboardView().unselect();
 				}
 				
 			} catch(NullPointerException exc)

@@ -482,12 +482,12 @@ public abstract class RegularChessboardController implements IChessboardControll
 	 * Field, jchess.gamelogic.field.Field, boolean, boolean, boolean)
 	 */
 	@Override
-	public void move(Field begin, Field end) throws IllegalMoveException
+	public boolean move(Field begin, Field end) throws IllegalMoveException
 	{
-		move(begin, end, true, true, true, true);
+		return move(begin, end, true, true, true, true);
 	}
 	
-	private void move(Field begin, Field end, boolean checkMove, boolean refresh, boolean clearForwardHistory, boolean enterIntoHistory) throws IllegalMoveException
+	private boolean move(Field begin, Field end, boolean checkMove, boolean refresh, boolean clearForwardHistory, boolean enterIntoHistory) throws IllegalMoveException
 	{
 		// Standard move
 		Piece movedPiece = board.getPiece(begin);
@@ -552,10 +552,13 @@ public abstract class RegularChessboardController implements IChessboardControll
 					{
 						Bishop bishop = new Bishop(board.getPiece(begin).getPlayer());
 						board.setPiece(begin, bishop);
-					} else // transform pawn to knight
+					} else if(newPiece.equals("Knight"))// transform pawn to knight
 					{
 						Knight knight = new Knight(board.getPiece(begin).getPlayer());
 						board.setPiece(begin, knight);
+					} else {
+						// If promotion was cancelled don't execute the move!
+						return false;
 					}
 					promotedPiece = board.getPiece(begin);
 				}
@@ -600,6 +603,8 @@ public abstract class RegularChessboardController implements IChessboardControll
 		{
 			this.movesHistory.addMove(move, clearForwardHistory);
 		}
+		
+		return true;
 	}
 	
 	/*
