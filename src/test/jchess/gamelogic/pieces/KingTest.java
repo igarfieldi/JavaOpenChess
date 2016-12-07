@@ -14,7 +14,7 @@ import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.models.IChessboardModel;
-import jchess.gamelogic.models.chessboardmodels.TwoPlayerChessboardModel;
+import jchess.gamelogic.models.chessboardfactories.TwoPlayerChessboardFactory;
 import jchess.util.Direction;
 
 public class KingTest
@@ -32,9 +32,7 @@ public class KingTest
 		Settings settings = new Settings();
 		white = settings.getWhitePlayer();
 		black = settings.getBlackPlayer();
-		model = new TwoPlayerChessboardModel();
-		board = new TwoPlayerChessboardController(null, model, white, black);
-		board.initialize();
+		board = new TwoPlayerChessboardController(null, TwoPlayerChessboardFactory.getInstance(), white, black);
 		// Need to remove the pieces we don't want
 		for(Field field : board.getBoard().getFields())
 		{

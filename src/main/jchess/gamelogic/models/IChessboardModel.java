@@ -12,30 +12,30 @@ import jchess.util.Direction;
 public interface IChessboardModel extends Copyable<IChessboardModel>
 {
 	
-	void initialize();
+	public IChessboardModel copy();
 	
-	IChessboardModel copy();
+	public void addField(Field field);
 	
-	Field getField(int x, int y);
+	public Field getField(int x, int y);
 	
-	Field getField(Piece piece);
+	public Field getField(Piece piece);
 	
-	Set<Field> getFields();
+	public Piece getPiece(Field field);
 	
-	Field getFieldInDirection(Field origin, Direction dir);
+	public void setPiece(Field field, Piece piece);
 	
-	List<Field> getFieldsInDirection(Field start, Direction dir);
+	public Piece movePiece(Piece piece, Field target);
 	
-	Set<Piece> getPieces();
+	public Piece removePiece(Field field);
 	
-	Set<Piece> getPieces(Player player);
+	public Set<Field> getFields();
 	
-	Piece getPiece(Field field);
+	public Field getFieldInDirection(Field origin, Direction dir);
 	
-	void setPiece(Field field, Piece piece);
+	public List<Field> getFieldsInDirection(Field start, Direction dir);
 	
-	Piece movePiece(Piece piece, Field target);
+	public Set<Piece> getPieces();
 	
-	Piece removePiece(Field field);
+	public Set<Piece> getPieces(Player player);
 	
 }

@@ -61,13 +61,13 @@ import jchess.JChessApp;
 import jchess.Localization;
 import jchess.gamelogic.Game;
 import jchess.gamelogic.Player;
-import jchess.gamelogic.Settings;
 import jchess.gamelogic.Player.Color;
+import jchess.gamelogic.Settings;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.FourPlayerChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
-import jchess.gamelogic.models.chessboardmodels.FourPlayerChessboardModel;
-import jchess.gamelogic.models.chessboardmodels.TwoPlayerChessboardModel;
+import jchess.gamelogic.models.chessboardfactories.FourPlayerChessboardFactory;
+import jchess.gamelogic.models.chessboardfactories.TwoPlayerChessboardFactory;
 import jchess.gamelogic.views.IChessboardView;
 import jchess.gamelogic.views.IMessageDisplay.Option;
 import jchess.gamelogic.views.chessboardviews.FourPlayerChessboardView;
@@ -418,7 +418,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		Settings settings = new Settings();
 		IChessboardView view = new TwoPlayerChessboardView(true, false);
 		IChessboardController chessboard = new TwoPlayerChessboardController(view,
-				new TwoPlayerChessboardModel(), new Player(p1, Player.Color.WHITE),
+				TwoPlayerChessboardFactory.getInstance(), new Player(p1, Player.Color.WHITE),
 				new Player(p2, Player.Color.BLACK));
 		Game newGameTab = new Game(settings, chessboard, view);
 		this.gameList.add(newGameTab);
@@ -433,7 +433,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		Settings settings = new Settings();
 		IChessboardView view = new FourPlayerChessboardView(true, false);
 		IChessboardController chessboard = new FourPlayerChessboardController(view,
-				new FourPlayerChessboardModel(), new Player(p1, Player.Color.WHITE),
+				FourPlayerChessboardFactory.getInstance(), new Player(p1, Player.Color.WHITE),
 				new Player(p2, Player.Color.RED),
 				new Player(p3, Player.Color.BLACK),
 				new Player(p4, Player.Color.GOLDEN));

@@ -24,18 +24,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import jchess.JChessApp;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Move;
-import jchess.gamelogic.models.IChessboardModel;
-import jchess.gamelogic.pieces.Bishop;
+import jchess.gamelogic.models.IBoardFactory;
 import jchess.gamelogic.pieces.King;
-import jchess.gamelogic.pieces.Knight;
 import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.Piece;
-import jchess.gamelogic.pieces.Queen;
-import jchess.gamelogic.pieces.Rook;
 import jchess.gamelogic.views.IChessboardView;
 import jchess.util.Direction;
 
@@ -46,45 +41,11 @@ import jchess.util.Direction;
  */
 public class TwoPlayerChessboardController extends RegularChessboardController
 {
-	public TwoPlayerChessboardController(IChessboardView view, IChessboardModel board,
+	public TwoPlayerChessboardController(IChessboardView view, IBoardFactory boardFactory,
 			Player white, Player black)
 	{
-		super(view, board, Arrays.asList(new Player[]{white, black}));
-	}
-	
-	@Override
-	protected void initializePieces()
-	{
-		Player topSide = this.getPlayer(1);
-		Player bottomSide = this.getPlayer(0);
-		
-		getBoard().initialize();
-		// Set rooks, bishops, knights
-		getBoard().setPiece(getBoard().getField(0, 7), new Rook(bottomSide));
-		getBoard().setPiece(getBoard().getField(7, 7), new Rook( bottomSide));
-		getBoard().setPiece(getBoard().getField(1, 7), new Knight(bottomSide));
-		getBoard().setPiece(getBoard().getField(6, 7), new Knight(bottomSide));
-		getBoard().setPiece(getBoard().getField(2, 7), new Bishop(bottomSide));
-		getBoard().setPiece(getBoard().getField(5, 7), new Bishop(bottomSide));
-		getBoard().setPiece(getBoard().getField(0, 0), new Rook(topSide));
-		getBoard().setPiece(getBoard().getField(7, 0), new Rook(topSide));
-		getBoard().setPiece(getBoard().getField(1, 0), new Knight(topSide));
-		getBoard().setPiece(getBoard().getField(6, 0), new Knight(topSide));
-		getBoard().setPiece(getBoard().getField(2, 0), new Bishop(topSide));
-		getBoard().setPiece(getBoard().getField(5, 0), new Bishop(topSide));
-		
-		// The queen is always placed on the field of her own color
-		getBoard().setPiece(getBoard().getField(3, 7), new Queen(bottomSide));
-		getBoard().setPiece(getBoard().getField(4, 7), new King(bottomSide));
-		getBoard().setPiece(getBoard().getField(3, 0), new Queen(topSide));
-		getBoard().setPiece(getBoard().getField(4, 0), new King(topSide));
-		
-		// Initialize pawns: no special distinctions necessary
-		for(int x = 0; x < 8; x++)
-		{
-			getBoard().setPiece(getBoard().getField(x, 6), new Pawn(bottomSide, new Direction(0, -1)));
-			getBoard().setPiece(getBoard().getField(x, 1), new Pawn(topSide, new Direction(0, 1)));
-		}
+		super(view, boardFactory.createChessboard(Arrays.asList(new Player[]{white, black})),
+				Arrays.asList(new Player[]{white, black}));
 	}
 	
 	protected Set<Field> getCastleMoves(Piece piece) {

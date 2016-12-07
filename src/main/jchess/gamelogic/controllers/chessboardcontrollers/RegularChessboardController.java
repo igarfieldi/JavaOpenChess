@@ -45,6 +45,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 		this.view = view;
 		this.players = players;
 		this.movesHistory = new Moves(this, players.get(0), players.get(1));
+		this.currPlayerIndex = 0;
 		
 		//this.movesHistory = new Moves(this, white, black);
 	}
@@ -107,28 +108,6 @@ public abstract class RegularChessboardController implements IChessboardControll
 		// Since we only have two players, this is equal to switchToNextPlayer
 		this.switchToNextPlayer();
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see jchess.gamelogic.field.IChessboardController#initialize()
-	 */
-	@Override
-	public void initialize()
-	{
-		this.initializePieces();
-		
-		this.currPlayerIndex = 0;
-	}
-	
-	/**
-	 * Initializes the chessboard's pieces. This includes checking which player
-	 * is on top etc.
-	 * 
-	 * @param whiteIsTop
-	 *            is white playing from top-side
-	 */
-	protected abstract void initializePieces();
 	
 	/*
 	 * (non-Javadoc)

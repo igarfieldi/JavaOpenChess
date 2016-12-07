@@ -12,7 +12,7 @@ import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.models.IChessboardModel;
-import jchess.gamelogic.models.chessboardmodels.TwoPlayerChessboardModel;
+import jchess.gamelogic.models.chessboardfactories.TwoPlayerChessboardFactory;
 import jchess.util.Direction;
 
 public class RookTest
@@ -26,11 +26,9 @@ public class RookTest
 	public void setUp() throws Exception
 	{
 		Settings settings = new Settings();
-		model = new TwoPlayerChessboardModel();
-		board = new TwoPlayerChessboardController(null, model, null, null);
+		board = new TwoPlayerChessboardController(null, TwoPlayerChessboardFactory.getInstance(), null, null);
 		white = settings.getWhitePlayer();
 		black = settings.getBlackPlayer();
-		board.initialize();
 		// Need to remove the pieces we don't want
 		for(Field field : board.getBoard().getFields())
 		{

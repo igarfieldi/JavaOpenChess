@@ -24,11 +24,6 @@ public interface IChessboardController
 	public void switchToPreviousPlayer();
 	
 	/**
-	 * Brings the controller (and the associated board) into a clean state.
-	 */
-	public void initialize();
-	
-	/**
 	 * Returns the set of fields a piece can move to. This includes both
 	 * capturing and non-capturing moves as well as special cases (e.g. castling
 	 * or en passant capturing). If specified, the set will also be cleaned from

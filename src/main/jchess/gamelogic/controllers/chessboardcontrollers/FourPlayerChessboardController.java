@@ -26,14 +26,9 @@ import java.util.Set;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Field;
-import jchess.gamelogic.models.IChessboardModel;
-import jchess.gamelogic.pieces.Bishop;
-import jchess.gamelogic.pieces.King;
-import jchess.gamelogic.pieces.Knight;
+import jchess.gamelogic.models.IBoardFactory;
 import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.Piece;
-import jchess.gamelogic.pieces.Queen;
-import jchess.gamelogic.pieces.Rook;
 import jchess.gamelogic.views.IChessboardView;
 import jchess.util.Direction;
 
@@ -44,64 +39,11 @@ import jchess.util.Direction;
  */
 public class FourPlayerChessboardController extends RegularChessboardController
 {	
-	public FourPlayerChessboardController(IChessboardView view, IChessboardModel board,
+	public FourPlayerChessboardController(IChessboardView view, IBoardFactory boardFactory,
 			Player white, Player red, Player black, Player golden)
 	{
-		super(view, board, Arrays.asList(new Player[]{white, red, black, golden}));
-	}
-	
-	@Override
-	protected void initializePieces()
-	{
-		getBoard().initialize();
-		// Set rooks, bishops, knights, queen, king
-		getBoard().setPiece(getBoard().getField(3, 13), new Rook(getPlayer(0)));
-		getBoard().setPiece(getBoard().getField(10, 13), new Rook(getPlayer(0)));
-		getBoard().setPiece(getBoard().getField(4, 13), new Knight(getPlayer(0)));
-		getBoard().setPiece(getBoard().getField(9, 13), new Knight(getPlayer(0)));
-		getBoard().setPiece(getBoard().getField(5, 13), new Bishop(getPlayer(0)));
-		getBoard().setPiece(getBoard().getField(8, 13), new Bishop(getPlayer(0)));
-		getBoard().setPiece(getBoard().getField(6, 13), new Queen(getPlayer(0)));
-		getBoard().setPiece(getBoard().getField(7, 13), new King(getPlayer(0)));
-		
-		getBoard().setPiece(getBoard().getField(0, 10), new Rook(getPlayer(1)));
-		getBoard().setPiece(getBoard().getField(0, 3), new Rook(getPlayer(1)));
-		getBoard().setPiece(getBoard().getField(0, 9), new Knight(getPlayer(1)));
-		getBoard().setPiece(getBoard().getField(0, 4), new Knight(getPlayer(1)));
-		getBoard().setPiece(getBoard().getField(0, 8), new Bishop(getPlayer(1)));
-		getBoard().setPiece(getBoard().getField(0, 5), new Bishop(getPlayer(1)));
-		getBoard().setPiece(getBoard().getField(0, 7), new Queen(getPlayer(1)));
-		getBoard().setPiece(getBoard().getField(0, 6), new King(getPlayer(1)));
-		
-		getBoard().setPiece(getBoard().getField(3, 0), new Rook(getPlayer(2)));
-		getBoard().setPiece(getBoard().getField(10, 0), new Rook(getPlayer(2)));
-		getBoard().setPiece(getBoard().getField(4, 0), new Knight(getPlayer(2)));
-		getBoard().setPiece(getBoard().getField(9, 0), new Knight(getPlayer(2)));
-		getBoard().setPiece(getBoard().getField(5, 0), new Bishop(getPlayer(2)));
-		getBoard().setPiece(getBoard().getField(8, 0), new Bishop(getPlayer(2)));
-		getBoard().setPiece(getBoard().getField(7, 0), new Queen(getPlayer(2)));
-		getBoard().setPiece(getBoard().getField(6, 0), new King(getPlayer(2)));
-
-		getBoard().setPiece(getBoard().getField(13, 10), new Rook(getPlayer(3)));
-		getBoard().setPiece(getBoard().getField(13, 3), new Rook(getPlayer(3)));
-		getBoard().setPiece(getBoard().getField(13, 9), new Knight(getPlayer(3)));
-		getBoard().setPiece(getBoard().getField(13, 4), new Knight(getPlayer(3)));
-		getBoard().setPiece(getBoard().getField(13, 8), new Bishop(getPlayer(3)));
-		getBoard().setPiece(getBoard().getField(13, 5), new Bishop(getPlayer(3)));
-		getBoard().setPiece(getBoard().getField(13, 6), new Queen(getPlayer(3)));
-		getBoard().setPiece(getBoard().getField(13, 7), new King(getPlayer(3)));
-		
-		// Initialize pawns: no special distinctions necessary
-		for(int x = 3; x < 11; x++)
-		{
-			getBoard().setPiece(getBoard().getField(x, 12), new Pawn(getPlayer(0), new Direction(0, -1)));
-			getBoard().setPiece(getBoard().getField(x, 1), new Pawn(getPlayer(2), new Direction(0, 1)));
-		}
-		for(int y = 3; y < 11; y++)
-		{
-			getBoard().setPiece(getBoard().getField(1, y), new Pawn(getPlayer(1), new Direction(1, 0)));
-			getBoard().setPiece(getBoard().getField(12, y), new Pawn(getPlayer(3), new Direction(-1, 0)));
-		}
+		super(view, boardFactory.createChessboard(Arrays.asList(new Player[]{white, red, black, golden})),
+				Arrays.asList(new Player[]{white, red, black, golden}));
 	}
 	
 	protected Set<Field> getCastleMoves(Piece piece) {

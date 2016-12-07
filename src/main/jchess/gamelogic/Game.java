@@ -107,6 +107,7 @@ public class Game implements IBoardActionHandler
 		
 		if(!blockedChessboard)
 		{
+			Field activeField = gameView.getChessboardView().getActiveSquare();
 			try
 			{
 				// TODO: clean up. Hand-full of scenarios:
@@ -117,7 +118,7 @@ public class Game implements IBoardActionHandler
 				// us -> select new field
 				// 4. Field selected and we select possible move -> carry out
 				// move etc.
-				if(gameView.getChessboardView().getActiveSquare() == null)
+				if(activeField == null)
 				{
 					if(selectedField == null || (chessboard.getBoard().getPiece(selectedField) != null) && (chessboard
 					        .getBoard().getPiece(selectedField).getPlayer() != this.chessboard.getActivePlayer()))
@@ -128,21 +129,21 @@ public class Game implements IBoardActionHandler
 				
 				if(chessboard.getBoard().getPiece(selectedField) != null && chessboard.getBoard()
 				        .getPiece(selectedField).getPlayer() == this.chessboard.getActivePlayer()
-				        && selectedField != gameView.getChessboardView().getActiveSquare())
+				        && selectedField != activeField)
 				{
 					gameView.getChessboardView().unselect();
 					gameView.getChessboardView().select(selectedField);
-				} else if(gameView.getChessboardView().getActiveSquare() == selectedField) // unselect
+				} else if(activeField == selectedField) // unselect
 				{
 					gameView.getChessboardView().unselect();
-				} else if(gameView.getChessboardView().getActiveSquare() != null
-				        && chessboard.getBoard().getPiece(gameView.getChessboardView().getActiveSquare()) != null
+				} else if(activeField != null
+				        && chessboard.getBoard().getPiece(activeField) != null
 				        && chessboard.getPossibleMoves(
-				                chessboard.getBoard().getPiece(gameView.getChessboardView().getActiveSquare()), true)
+				                chessboard.getBoard().getPiece(activeField), true)
 				                .contains(selectedField))
 				{
 					try {
-						if(chessboard.move(gameView.getChessboardView().getActiveSquare(), selectedField)) {
+						if(chessboard.move(activeField, selectedField)) {
 							// Only switch players etc. when the move was
 							// actually executed
 	    					// switch player
@@ -340,8 +341,6 @@ public class Game implements IBoardActionHandler
 	 */
 	public void newGame()
 	{
-		chessboard.initialize();
-		
 		log.info("Starting new local game");
 		
 		if(chessboard.getActivePlayer().getType() != Player.Type.LOCAL)
