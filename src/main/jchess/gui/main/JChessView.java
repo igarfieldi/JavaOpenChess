@@ -62,6 +62,7 @@ import jchess.Localization;
 import jchess.gamelogic.Game;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
+import jchess.gamelogic.Player.Color;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.FourPlayerChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
@@ -543,17 +544,14 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		JChessApp.getApplication().show(aboutBox);
 	}
 	
-	public String showPawnPromotionBox(String color)
+	public String showPawnPromotionBox(Color color)
 	{
-		if(pawnPromotionBox == null)
-		{
-			JFrame mainFrame = JChessApp.getApplication().getMainFrame();
-			pawnPromotionBox = new PawnPromotionWindow(mainFrame, color);
-			pawnPromotionBox.setLocationRelativeTo(mainFrame);
-			pawnPromotionBox.setModal(true);
-			
-		}
-		pawnPromotionBox.setColor(color);
+		
+		JFrame mainFrame = JChessApp.getApplication().getMainFrame();
+		pawnPromotionBox = new PawnPromotionWindow(mainFrame, color);
+		pawnPromotionBox.setLocationRelativeTo(mainFrame);
+		pawnPromotionBox.setModal(true);
+		
 		JChessApp.getApplication().show(pawnPromotionBox);
 		
 		return pawnPromotionBox.getSelectedPromotion();

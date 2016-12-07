@@ -536,18 +536,8 @@ public abstract class RegularChessboardController implements IChessboardControll
 			{
 				if(clearForwardHistory)
 				{
-					String color;
-					if(board.getPiece(begin).getPlayer().getColor() == Player.Color.WHITE)
-					{
-						color = "W"; // promotionWindow was show with pieces in
-						             // this color
-					} else
-					{
-						color = "B";
-					}
-					
 					// return name of new piece
-					String newPiece = JChessApp.view.showPawnPromotionBox(color);
+					String newPiece = JChessApp.view.showPawnPromotionBox(movedPiece.getPlayer().getColor());
 					
 					if(newPiece.equals("Queen")) // transform pawn to queen
 					{
