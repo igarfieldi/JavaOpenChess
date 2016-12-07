@@ -79,8 +79,8 @@ public class FourPlayerChessboardController extends RegularChessboardController
 		getBoard().setPiece(getBoard().getField(9, 0), new Knight(getPlayer(2)));
 		getBoard().setPiece(getBoard().getField(5, 0), new Bishop(getPlayer(2)));
 		getBoard().setPiece(getBoard().getField(8, 0), new Bishop(getPlayer(2)));
-		getBoard().setPiece(getBoard().getField(6, 0), new Queen(getPlayer(2)));
-		getBoard().setPiece(getBoard().getField(7, 0), new King(getPlayer(2)));
+		getBoard().setPiece(getBoard().getField(7, 0), new Queen(getPlayer(2)));
+		getBoard().setPiece(getBoard().getField(6, 0), new King(getPlayer(2)));
 
 		getBoard().setPiece(getBoard().getField(13, 10), new Rook(getPlayer(3)));
 		getBoard().setPiece(getBoard().getField(13, 3), new Rook(getPlayer(3)));
