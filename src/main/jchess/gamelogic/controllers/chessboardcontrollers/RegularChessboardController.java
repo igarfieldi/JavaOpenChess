@@ -14,7 +14,7 @@ import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Move;
 import jchess.gamelogic.field.Move.CastlingType;
-import jchess.gamelogic.field.Moves;
+import jchess.gamelogic.field.History;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.pieces.Bishop;
 import jchess.gamelogic.pieces.King;
@@ -36,7 +36,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 	private List<Player> players;
 	private int currPlayerIndex;
 	
-	private Moves movesHistory;
+	private History movesHistory;
 	
 	public RegularChessboardController(IChessboardView view, IChessboardModel board,
 			List<Player> players)
@@ -44,14 +44,26 @@ public abstract class RegularChessboardController implements IChessboardControll
 		this.board = board;
 		this.view = view;
 		this.players = players;
-		this.movesHistory = new Moves(this, players.get(0), players.get(1));
+		this.movesHistory = new History(this, players.get(0), players.get(1));
 		this.currPlayerIndex = 0;
 		
 		//this.movesHistory = new Moves(this, white, black);
 	}
 	
+	protected abstract String getPlayerInfo();
+	
 	@Override
-	public Moves getHistory()
+	public String saveToString() {
+		return this.getPlayerInfo() + "\n" + this.getHistory().getMovesInString();
+	}
+	
+	@Override
+	public void loadFromString(String str) {
+		
+	}
+	
+	@Override
+	public History getHistory()
 	{
 		return movesHistory;
 	}

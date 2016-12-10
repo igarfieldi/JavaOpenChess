@@ -48,6 +48,11 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 				Arrays.asList(new Player[]{white, black}));
 	}
 	
+	protected String getPlayerInfo() {
+		return "[White " + this.getPlayer(0) + "]\n" +
+				"[Black " + this.getPlayer(1) + "]\n";
+	}
+	
 	protected Set<Field> getCastleMoves(Piece piece) {
 		Set<Field> castleFields = new HashSet<Field>();
 		

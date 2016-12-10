@@ -63,6 +63,7 @@ import jchess.gamelogic.Game;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Player.Color;
 import jchess.gamelogic.Settings;
+import jchess.gamelogic.controllers.GameClockController;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.FourPlayerChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
@@ -415,12 +416,15 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 
 	public Game addNewTwoPlayerTab(String p1, String p2)
 	{
+		Player white = new Player(p1, Color.WHITE);
+		Player black = new Player(p2, Color.BLACK);
+		
 		Settings settings = new Settings();
 		IChessboardView view = new TwoPlayerChessboardView(true, false);
 		IChessboardController chessboard = new TwoPlayerChessboardController(view,
-				TwoPlayerChessboardFactory.getInstance(), new Player(p1, Player.Color.WHITE),
-				new Player(p2, Player.Color.BLACK));
-		Game newGameTab = new Game(settings, chessboard, view);
+				TwoPlayerChessboardFactory.getInstance(), white, black);
+		GameClockController clock = new GameClockController(settings, white, black);
+		Game newGameTab = new Game(settings, chessboard, view, clock);
 		this.gameList.add(newGameTab);
 		
 		String title = p1 + " vs " + p2;
@@ -430,14 +434,19 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 
 	public Game addNewFourPlayerTab(String p1, String p2, String p3, String p4)
 	{
+		Player white = new Player(p1, Color.WHITE);
+		Player red = new Player(p2, Color.RED);
+		Player black = new Player(p3, Color.BLACK);
+		Player golden = new Player(p4, Color.GOLDEN);
+		
 		Settings settings = new Settings();
 		IChessboardView view = new FourPlayerChessboardView(true, false);
 		IChessboardController chessboard = new FourPlayerChessboardController(view,
-				FourPlayerChessboardFactory.getInstance(), new Player(p1, Player.Color.WHITE),
-				new Player(p2, Player.Color.RED),
-				new Player(p3, Player.Color.BLACK),
-				new Player(p4, Player.Color.GOLDEN));
-		Game newGameTab = new Game(settings, chessboard, view);
+				FourPlayerChessboardFactory.getInstance(),
+				white, red, black, golden);
+		// TODO: adapt to different clocks!
+		GameClockController clock = new GameClockController(settings, white, black);
+		Game newGameTab = new Game(settings, chessboard, view, clock);
 		this.gameList.add(newGameTab);
 		
 		String title = p1 + " vs " + p2 + " vs " + p3 + " vs " + p4;

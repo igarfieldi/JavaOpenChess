@@ -38,15 +38,9 @@ public class Settings implements Serializable
 	private boolean runningGameClock;
 	private boolean timeLimitSet;
 	private GameMode gameMode;
-	private Player playerWhite;
-	private Player playerBlack;
-	private boolean renderLabels = true;
 	
 	public Settings()
 	{
-		// temporarily
-		this.playerWhite = new Player("", Player.Color.WHITE);
-		this.playerBlack = new Player("", Player.Color.BLACK);
 		this.timeLimitSet = false;
 		
 		gameMode = GameMode.NEW_GAME;
@@ -75,21 +69,6 @@ public class Settings implements Serializable
 	public GameMode getGameMode()
 	{
 		return gameMode;
-	}
-	
-	public Player getWhitePlayer()
-	{
-		return playerWhite;
-	}
-	
-	public Player getBlackPlayer()
-	{
-		return playerBlack;
-	}
-	
-	public boolean isLabelRenderingEnabled()
-	{
-		return renderLabels;
 	}
 	
 	public void setTimeForGame(int time)

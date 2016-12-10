@@ -35,19 +35,21 @@ import jchess.JChessApp;
 import jchess.gamelogic.controllers.GameClockController;
 import jchess.gamelogic.controllers.IBoardActionHandler;
 import jchess.gamelogic.controllers.IChessboardController;
+import jchess.gamelogic.controllers.IGameStateHandler;
 import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
 import jchess.gamelogic.field.Field;
-import jchess.gamelogic.field.Moves;
+import jchess.gamelogic.field.History;
 import jchess.gamelogic.views.IChessboardView;
 import jchess.gamelogic.views.IGameView;
 import jchess.gamelogic.views.gameviews.SwingGameView;
+import jchess.util.PropertyFileParser;
 
 /**
  * Class responsible for the starts of new games, loading games, saving it, and
  * for ending it. This class is also responsible for appoing player with have a
  * move at the moment
  */
-public class Game implements IBoardActionHandler
+public class Game implements IBoardActionHandler, IGameStateHandler
 {
 	private static Logger log = Logger.getLogger(Game.class.getName());
 	
@@ -57,17 +59,35 @@ public class Game implements IBoardActionHandler
 	private IChessboardController chessboard;
 	private GameClockController gameClock;
 	
-	public Game(Settings settings, IChessboardController chessboard, IChessboardView view)
+	public Game(Settings settings, IChessboardController chessboard, IChessboardView view,
+			GameClockController gameClock)
 	{
 		this.settings = settings;
 		this.chessboard = chessboard;
 		view.initialize(chessboard, this);
-		gameClock = new GameClockController(this);
+		this.gameClock = gameClock;
+		this.gameClock.setStateHandler(this);
 		
 		this.blockedChessboard = false;
 		
 		gameView = new SwingGameView(gameClock.getView(), chessboard.getHistory().getScrollPane());
 		gameView.setChessboardView(view);
+	}
+	
+	@Override
+	public void onCheckmate() {
+		this.endGame("Checkmate! " + this.chessboard.getActivePlayer().getColor().toString()
+		        + " player lose!");
+	}
+	
+	@Override
+	public void onStalemate() {
+		this.endGame("Stalemate! Draw!");
+	}
+	
+	@Override
+	public void onTimeOver() {
+		
 	}
 	
 	public IGameView getView()
@@ -90,7 +110,7 @@ public class Game implements IBoardActionHandler
 		return gameClock;
 	}
 	
-	public Moves getMoves()
+	public History getMoves()
 	{
 		return chessboard.getHistory();
 	}
@@ -152,11 +172,10 @@ public class Game implements IBoardActionHandler
 	    					// checkmate or stalemate
 	    					if(chessboard.isCheckmated(chessboard.getActivePlayer()))
 	    					{
-	    						this.endGame("Checkmate! " + this.chessboard.getActivePlayer().getColor().toString()
-	    						        + " player lose!");
+	    						this.onCheckmate();
 	    					} else if(chessboard.isStalemate())
 	    					{
-	    						this.endGame("Stalemate! Draw!");
+	    						this.onStalemate();
 	    					}
 						}
 						
@@ -200,13 +219,11 @@ public class Game implements IBoardActionHandler
 			return;
 		}
 		Calendar cal = Calendar.getInstance();
-		String str = new String("");
-		String info = new String("[Event \"Game\"]\n[Date \"" + cal.get(Calendar.YEAR) + "."
-		        + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH) + "\"]\n" + "[White \""
-		        + this.settings.getWhitePlayer().getName() + "\"]\n" + "[Black \""
-		        + this.settings.getBlackPlayer().getName() + "\"]\n\n");
-		str += info;
-		str += this.chessboard.getHistory().getMovesInString();
+		// TODO: save game event
+		String event = "[Event Game]";
+		String date = new String("[Date " + cal.get(Calendar.YEAR) + "."
+		        + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH) + "]");
+		String str = event + '\n' + date + '\n' + this.chessboard.saveToString();
 		try
 		{
 			fileW.write(str);
@@ -238,44 +255,32 @@ public class Game implements IBoardActionHandler
 	 */
 	static public void loadGame(File file)
 	{
-		FileReader fileR = null;
-		try
-		{
-			fileR = new FileReader(file);
-		} catch(java.io.IOException exc)
-		{
-			log.log(Level.SEVERE, "Error opening FileReader!", exc);
-			return;
+		// TODO: extract to different class!
+		try {
+			PropertyFileParser parser = new PropertyFileParser(file);
+			
+			Game newGame = null;
+			String gameType = parser.getProperty("Event");
+			
+			switch(gameType) {
+				case "Game":
+					newGame = JChessApp.view.addNewTwoPlayerTab(
+							parser.getProperty("White"),
+							parser.getProperty("Black"));
+					break;
+				default:
+					log.log(Level.SEVERE, "Unknown game type!");
+					return ;
+			}
+			
+			newGame.newGame();
+			newGame.blockedChessboard = true;
+			newGame.getChessboard().loadFromString(parser.getBody());
+			newGame.blockedChessboard = false;
+			newGame.chessboard.getView().render();
+		} catch(IOException exc) {
+			log.log(Level.SEVERE, "Error while reading game file!", exc);
 		}
-		BufferedReader br = new BufferedReader(fileR);
-		String tempStr = new String();
-		String blackName, whiteName;
-		try
-		{
-			tempStr = getLineWithVar(br, new String("[White"));
-			whiteName = getValue(tempStr);
-			tempStr = getLineWithVar(br, new String("[Black"));
-			blackName = getValue(tempStr);
-			tempStr = getLineWithVar(br, new String("1."));
-		} catch(ReadGameError | IOException err)
-		{
-			log.log(Level.SEVERE, "Error reading game file!", err);
-			return;
-		}
-		Game newGUI = JChessApp.view.addNewTwoPlayerTab(whiteName, blackName);
-		Settings locSetts = newGUI.settings;
-		locSetts.getBlackPlayer().setName(blackName);
-		locSetts.getWhitePlayer().setName(whiteName);
-		locSetts.getBlackPlayer().setType(Player.Type.LOCAL);
-		locSetts.getWhitePlayer().setType(Player.Type.LOCAL);
-		locSetts.setGameMode(Settings.GameMode.LOAD_GAME);
-		
-		newGUI.newGame();
-		newGUI.blockedChessboard = true;
-		newGUI.chessboard.getHistory().setMoves(tempStr);
-		newGUI.blockedChessboard = false;
-		newGUI.chessboard.getView().render();
-		// newGUI.chessboard.draw();
 	}
 	
 	/**

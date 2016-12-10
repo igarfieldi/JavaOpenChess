@@ -42,17 +42,16 @@ public class GameClockController implements Runnable
 	private Clock runningClock;
 	private Settings settings;
 	private Thread thread;
-	private Game game;
+	private IGameStateHandler stateHandler;
 	
-	public GameClockController(Game game)
+	public GameClockController(Settings settings, Player white, Player black)
 	{
 		clocks = new GameClockModel(2);
 		this.runningClock = this.clocks.getClock(0); // running/active clock
-		this.game = game;
-		this.settings = game.getSettings();
+		this.settings = settings;
 		
 		this.setTimes(settings.getTimeForGame());
-		this.setPlayers(this.settings.getBlackPlayer(), this.settings.getWhitePlayer());
+		this.setPlayers(white, black);
 		
 		this.thread = new Thread(this);
 		if(this.settings.isTimeLimitSet())
@@ -60,7 +59,7 @@ public class GameClockController implements Runnable
 			thread.start();
 		}
 		
-		this.clockView = new GameClockView(settings, clocks);
+		this.clockView = new GameClockView(clocks, white, black);
 	}
 	
 	/**
@@ -166,6 +165,11 @@ public class GameClockController implements Runnable
 	private void timeOver()
 	{
 		switchClocks(); // Current clock ran out of time -> other clock wins
-		game.endGame("Time is up! " + runningClock.getPlayer().getColor().toString() + " player wins the game.");
+		this.stateHandler.onTimeOver();
+	}
+
+	public void setStateHandler(IGameStateHandler handler)
+	{
+		this.stateHandler = handler;
 	}
 }

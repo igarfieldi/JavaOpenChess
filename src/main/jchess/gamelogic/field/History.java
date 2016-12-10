@@ -35,6 +35,7 @@ import javax.swing.table.DefaultTableModel;
 import jchess.Localization;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.controllers.IChessboardController;
+import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
 import jchess.gamelogic.field.Move.CastlingType;
 import jchess.gamelogic.pieces.Piece;
 
@@ -43,10 +44,10 @@ import jchess.gamelogic.pieces.Piece;
  * by player are correct. All moves which was taken by current player are saving
  * as List of Strings The history of moves is printing in a table.
  */
-public class Moves extends AbstractTableModel
+public class History extends AbstractTableModel
 {
 	private static final long serialVersionUID = -316401211821501289L;
-	private static Logger log = Logger.getLogger(Moves.class.getName());
+	private static Logger log = Logger.getLogger(History.class.getName());
 	
 	private ArrayList<String> move = new ArrayList<String>();
 	private int columnsNum = 3;
@@ -62,7 +63,7 @@ public class Moves extends AbstractTableModel
 	private Player white;
 	private Player black;
 	
-	public Moves(IChessboardController chessboard, Player white, Player black)
+	public History(IChessboardController chessboard, Player white, Player black)
 	{
 		super();
 		this.white = white;
@@ -479,7 +480,7 @@ public class Moves extends AbstractTableModel
 		}
 		for(String locMove : tempArray) // test if moves are written correctly
 		{
-			if(!Moves.isMoveCorrect(locMove.trim())) // if not
+			if(!History.isMoveCorrect(locMove.trim())) // if not
 			{
 				this.chessboard.getView().showMessage("invalid_file_to_load", move.toString());
 				return;// show message and finish reading game
@@ -577,8 +578,10 @@ public class Moves extends AbstractTableModel
 				xTo = tempTo.getPosX();
 				yTo = tempTo.getPosY();
 			}
-			if(!this.isValidMove(xFrom, yFrom, xTo, yTo)) // if move is illegal
-			{
+			try {
+				chessboard.move(new Field(xFrom, yFrom), new Field(xTo, yTo));
+			} catch(IllegalMoveException exc) {
+				log.log(Level.SEVERE, "Illegal move le loading!", exc);
 				this.chessboard.getView().showMessage("illegal_move_on", locMove);
 				this.chessboard.getView().unselect();
 				return;// finish reading game and show message

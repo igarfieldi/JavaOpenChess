@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
+import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
 import jchess.gamelogic.models.GameClockModel;
 
@@ -19,11 +20,12 @@ public class GameClockView extends JPanel implements IRenderable
 	
 	private BufferedImage background = new BufferedImage(600, 600, BufferedImage.TYPE_INT_ARGB);
 	private GameClockModel clocks;
-	private Settings settings;
+	private Player white, black;
 	
-	public GameClockView(Settings settings, GameClockModel clocks) {
+	public GameClockView(GameClockModel clocks, Player white, Player black) {
+		this.white = white;
+		this.black = black;
 		this.clocks = clocks;
-		this.settings = settings;
 		
 		this.setDoubleBuffered(true);
 		
@@ -73,9 +75,9 @@ public class GameClockView extends JPanel implements IRenderable
 	{
 		g2d.setFont(clockFont);
 		g2d.setColor(Color.BLACK);
-		g2d.drawString(settings.getWhitePlayer().getName(), 10, 50);
+		g2d.drawString(white.getName(), 10, 50);
 		g2d.setColor(Color.WHITE);
-		g2d.drawString(settings.getBlackPlayer().getName(), 100, 50);
+		g2d.drawString(black.getName(), 100, 50);
 	}
 	
 	/**

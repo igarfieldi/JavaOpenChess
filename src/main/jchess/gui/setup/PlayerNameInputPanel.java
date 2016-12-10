@@ -130,18 +130,16 @@ public class PlayerNameInputPanel extends GridBagPanel
 		secondPlayer.setName(this.secondPlayerNameTextField.getText());
 	}
 	
-	public String getPlayerName(int player)
-	{
-		switch(player)
-		{
+	public String getPlayerName(int index) {
+		switch(index) {
+			case 0:
+				return this.firstPlayerNameTextField.getText();
 			case 1:
-				return firstPlayerNameTextField.getText();
+				return this.secondPlayerNameTextField.getText();
 			case 2:
-				return secondPlayerNameTextField.getText();
+				return this.thirdPlayerNameTextField.getText();
 			case 3:
-				return thirdPlayerNameTextField.getText();
-			case 4:
-				return fourthPlayerNameTextField.getText();
+				return this.fourthPlayerNameTextField.getText();
 			default:
 				return "";
 		}

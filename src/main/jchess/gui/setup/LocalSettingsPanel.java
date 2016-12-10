@@ -30,7 +30,6 @@ import javax.swing.JDialog;
 import jchess.JChessApp;
 import jchess.Localization;
 import jchess.gamelogic.Game;
-import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
 
 /**
@@ -90,14 +89,14 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 			
 			if(playerNumberChoicePanel.getPlayerCount() == 2) {
 				gameWindow = JChessApp.view.addNewTwoPlayerTab(
-				        playerNameInputPanel.getPlayerName(1),
-				        playerNameInputPanel.getPlayerName(2));
+				        playerNameInputPanel.getPlayerName(0),
+				        playerNameInputPanel.getPlayerName(1));
 			} else if(playerNumberChoicePanel.getPlayerCount() == 4) {
 				gameWindow = JChessApp.view.addNewFourPlayerTab(
+				        playerNameInputPanel.getPlayerName(0),
 				        playerNameInputPanel.getPlayerName(1),
 				        playerNameInputPanel.getPlayerName(2),
-				        playerNameInputPanel.getPlayerName(3),
-				        playerNameInputPanel.getPlayerName(4));
+				        playerNameInputPanel.getPlayerName(3));
 			} else {
 				log.log(Level.SEVERE, "Could not start game because the number of players is not supported!");
 				return ;
@@ -110,29 +109,9 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 	private void applySettings(Game gameWindow)
 	{
 		Settings localSettings = gameWindow.getSettings();
-		Player firstPlayer = localSettings.getWhitePlayer();
-		Player secondPlayer = localSettings.getBlackPlayer();
 		
 		localSettings.setGameMode(Settings.GameMode.NEW_GAME);
-		setPlayerSettings(firstPlayer, secondPlayer);
 		timerSetterPanel.setTimeLimit(gameWindow, localSettings);
-		
-		logSettings(localSettings, firstPlayer, secondPlayer);
-	}
-	
-	private void setPlayerSettings(Player firstPlayer, Player secondPlayer)
-	{
-		playerNameInputPanel.assignPlayerNames(firstPlayer, secondPlayer);
-		firstPlayer.setType(Player.Type.LOCAL);
-		secondPlayer.setType(Player.Type.LOCAL);
-	}
-	
-	private void logSettings(Settings localSettings, Player firstPlayer, Player secondPlayer)
-	{
-		log.info("****************\nStarting new game: " + firstPlayer.getName() + " vs. " + secondPlayer.getName()
-		        + "\ntime 4 game: " + localSettings.getTimeForGame() + "\ntime limit set: "
-		        + localSettings.isTimeLimitSet()
-		        + "\n****************");
 	}
 	
 	private void drawGameWindow(Game gameWindow)

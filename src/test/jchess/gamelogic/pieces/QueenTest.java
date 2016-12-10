@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Settings;
+import jchess.gamelogic.Player.Color;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
 import jchess.gamelogic.field.Field;
@@ -25,10 +26,10 @@ public class QueenTest
 	@Before
 	public void setUp() throws Exception
 	{
-		Settings settings = new Settings();
-		board = new TwoPlayerChessboardController(null, TwoPlayerChessboardFactory.getInstance(), null, null);
-		white = settings.getWhitePlayer();
-		black = settings.getBlackPlayer();
+		white = new Player("p1", Color.WHITE);
+		black = new Player("p2", Color.BLACK);
+		board = new TwoPlayerChessboardController(null,
+				TwoPlayerChessboardFactory.getInstance(), white, black);
 		// Need to remove the pieces we don't want
 		for(Field field : board.getBoard().getFields())
 		{
