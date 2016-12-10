@@ -25,6 +25,7 @@ import jchess.gamelogic.pieces.Queen;
 import jchess.gamelogic.pieces.Rook;
 import jchess.gamelogic.views.IChessboardView;
 import jchess.util.Direction;
+import jchess.util.GameStateParser;
 
 public abstract class RegularChessboardController implements IChessboardController
 {
@@ -50,11 +51,13 @@ public abstract class RegularChessboardController implements IChessboardControll
 		//this.movesHistory = new Moves(this, white, black);
 	}
 	
-	protected abstract String getPlayerInfo();
-	
 	@Override
-	public String saveToString() {
-		return this.getPlayerInfo() + "\n" + this.getHistory().getMovesInString();
+	public void save(GameStateParser parser) {
+		for(Player player : players) {
+			parser.setProperty(player.getColor().toString(), player.getName());
+		}
+		
+		parser.setNoves(this.getHistory().getMovesInString());
 	}
 	
 	@Override

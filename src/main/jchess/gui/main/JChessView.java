@@ -78,6 +78,7 @@ import jchess.gui.secondary.JChessAboutBox;
 import jchess.gui.secondary.PawnPromotionWindow;
 import jchess.gui.secondary.ThemeChooseWindow;
 import jchess.gui.setup.NewGameWindow;
+import jchess.util.GameStateParser;
 import jchess.util.TypedResourceBundle;
 
 /**
@@ -485,8 +486,24 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 							continue;
 						}
 					}
-					if(selectedFile.canWrite())
-						tempGUI.saveGame(selectedFile);
+					if(selectedFile.canWrite()) {
+						try
+						{
+							GameStateParser parser = new GameStateParser();
+							tempGUI.saveGame(parser);
+							parser.save(selectedFile);
+							tempGUI.getView().showMessage("game_saved_properly", "");
+							
+							// TODO: save to disk
+						} catch(IOException exc)
+						{
+							log.log(Level.SEVERE, "Failed to save game!", exc);
+							// TODO: add message key for individual message
+							tempGUI.getView().showMessage("error_writing_to_file", selectedFile.getName());
+						}
+					} else {
+						tempGUI.getView().showMessage("error_writing_to_file", selectedFile.getName());
+					}
 					
 					log.info(Boolean.toString(fileChooser.getSelectedFile().isFile()));
 					break;
@@ -522,8 +539,34 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		if(retVal == JFileChooser.APPROVE_OPTION)
 		{
 			File file = fileChooser.getSelectedFile();
-			if(file.exists() && file.canRead())
-				Game.loadGame(file);
+			if(file.exists() && file.canRead()) {
+				GameStateParser parser = new GameStateParser();
+				try
+				{
+					parser.load(file);
+					Game newGame = null;
+					String gameType = parser.getProperty("Event");
+					
+					// Depending on the game we start a new one
+					switch(gameType) {
+						case "Game":
+							newGame = JChessApp.view.addNewTwoPlayerTab(
+									parser.getProperty("WHITE"),
+									parser.getProperty("BLACK"));
+							break;
+						default:
+							log.log(Level.SEVERE, "Unknown game type!");
+							return ;
+					}
+					
+					newGame.loadGame(parser.getMoves());
+					
+				} catch(IOException exc)
+				{
+					log.log(Level.SEVERE, "Failed to load saved game!", exc);
+					JOptionPane.showMessageDialog(this.getFrame(), Localization.getMessage("error_reading_file"));
+				}
+			}
 		}
 	}
 

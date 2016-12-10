@@ -1,13 +1,17 @@
 package jchess.gamelogic;
 
+import jchess.gamelogic.controllers.GameClockController;
 import jchess.gamelogic.controllers.IBoardActionHandler;
-import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.IGameStateHandler;
 import jchess.gamelogic.views.IGameView;
+import jchess.util.GameStateParser;
 
 public interface IGame extends IBoardActionHandler, IGameStateHandler
 {
 	public IGameView getView();
-	public IChessboardController getChessboard();
-	
+	public Settings getSettings();
+	public GameClockController getGameClock();
+	public void newGame();
+	public void saveGame(GameStateParser parser);
+	public void loadGame(String moves);
 }

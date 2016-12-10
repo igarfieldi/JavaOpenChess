@@ -20,35 +20,27 @@
  */
 package jchess.gamelogic;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
-import jchess.JChessApp;
 import jchess.gamelogic.controllers.GameClockController;
-import jchess.gamelogic.controllers.IBoardActionHandler;
 import jchess.gamelogic.controllers.IChessboardController;
-import jchess.gamelogic.controllers.IGameStateHandler;
 import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
 import jchess.gamelogic.field.Field;
-import jchess.gamelogic.field.History;
 import jchess.gamelogic.views.IChessboardView;
 import jchess.gamelogic.views.IGameView;
 import jchess.gamelogic.views.gameviews.SwingGameView;
-import jchess.util.PropertyFileParser;
+import jchess.util.GameStateParser;
 
 /**
  * Class responsible for the starts of new games, loading games, saving it, and
  * for ending it. This class is also responsible for appoing player with have a
  * move at the moment
  */
-public class Game implements IBoardActionHandler, IGameStateHandler
+public class Game implements IGame
 {
 	private static Logger log = Logger.getLogger(Game.class.getName());
 	
@@ -75,8 +67,8 @@ public class Game implements IBoardActionHandler, IGameStateHandler
 	
 	@Override
 	public void onCheckmate() {
-		this.endGame("Checkmate! " + this.chessboard.getActivePlayer().getColor().toString()
-		        + " player lose!");
+		this.endGame("Checkmate! " + this.chessboard.getActivePlayer().getColor()
+		        + " player loses!");
 	}
 	
 	@Override
@@ -86,37 +78,26 @@ public class Game implements IBoardActionHandler, IGameStateHandler
 	
 	@Override
 	public void onTimeOver() {
-		
+		this.endGame("Time over! " + chessboard.getActivePlayer().getColor() + " player loses!");
+		// TODO: game over
 	}
-	
+
+	@Override
 	public IGameView getView()
 	{
 		return gameView;
 	}
-	
+
+	@Override
 	public Settings getSettings()
 	{
 		return settings;
 	}
-	
-	public IChessboardController getChessboard()
-	{
-		return chessboard;
-	}
-	
+
+	@Override
 	public GameClockController getGameClock()
 	{
 		return gameClock;
-	}
-	
-	public History getMoves()
-	{
-		return chessboard.getHistory();
-	}
-	
-	public void setSettings(Settings settings)
-	{
-		this.settings = settings;
 	}
 	
 	@Override
@@ -168,7 +149,7 @@ public class Game implements IBoardActionHandler, IGameStateHandler
 	    					// switch player
 	    					this.nextMove();
 	    					
-	    					// checkmate or stalemate
+	    					// Checkmate or stalemate
 	    					if(chessboard.isCheckmated(chessboard.getActivePlayer()))
 	    					{
 	    						this.onCheckmate();
@@ -204,39 +185,18 @@ public class Game implements IBoardActionHandler, IGameStateHandler
 	 * @param path
 	 *            address of place where game will be saved
 	 */
-	public void saveGame(File path)
+	@Override
+	public void saveGame(GameStateParser parser)
 	{
-		File file = path;
-		FileWriter fileW = null;
-		try
-		{
-			fileW = new FileWriter(file);
-		} catch(java.io.IOException exc)
-		{
-			log.log(Level.SEVERE, "Error creating FileWriter!", exc);
-			gameView.showMessage("error_writing_to_file", exc.toString());
-			return;
-		}
+		parser.setProperty("Event", "Game");	// TODO: different game types!
+		
 		Calendar cal = Calendar.getInstance();
-		// TODO: save game event
-		String event = "[Event Game]";
-		String date = new String("[Date " + cal.get(Calendar.YEAR) + "."
-		        + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH) + "]");
-		String str = event + '\n' + date + '\n' + this.chessboard.saveToString();
-		try
-		{
-			fileW.write(str);
-			fileW.flush();
-			fileW.close();
-		} catch(java.io.IOException exc)
-		{
-			log.log(Level.SEVERE, "Error saving game file!", exc);
-			gameView.showMessage("error_writing_to_file", exc.toString());
-			return;
-		}
-		gameView.showMessage("game_saved_properly", "");
+		parser.setProperty("Date", cal.get(Calendar.YEAR) + "."
+		        + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH));
+		this.chessboard.save(parser);
 	}
-	
+
+	@Override
 	public void loadGame(String moves) {
 		log.info("Loading saved local game");
 		
@@ -248,98 +208,10 @@ public class Game implements IBoardActionHandler, IGameStateHandler
 	}
 	
 	/**
-	 * Loading game method(loading game state from the earlier saved file)
-	 * 
-	 * @param file
-	 *            File where is saved game
-	 */
-	static public void loadGame(File file)
-	{
-		// TODO: extract to different class!
-		try {
-			PropertyFileParser parser = new PropertyFileParser(file);
-			
-			Game newGame = null;
-			String gameType = parser.getProperty("Event");
-			
-			switch(gameType) {
-				case "Game":
-					newGame = JChessApp.view.addNewTwoPlayerTab(
-							parser.getProperty("White"),
-							parser.getProperty("Black"));
-					break;
-				default:
-					log.log(Level.SEVERE, "Unknown game type!");
-					return ;
-			}
-			
-			newGame.loadGame(parser.getBody());
-		} catch(IOException exc) {
-			log.log(Level.SEVERE, "Error while reading game file!", exc);
-		}
-	}
-	
-	/**
-	 * Method checking in with of line there is an error
-	 * 
-	 * @param br
-	 *            BufferedReader class object to operate on
-	 * @param srcStr
-	 *            String class object with text which variable you want to get
-	 *            in file
-	 * @return String with searched variable in file (whole line)
-	 * @throws ReadGameError
-	 *             class object when something goes wrong when reading file
-	 * @throws IOException
-	 *             If an error occurred when reading from BufferedReader
-	 */
-	static public String getLineWithVar(BufferedReader br, String srcStr) throws ReadGameError, IOException
-	{
-		String str = new String();
-		while((str = br.readLine()) != null)
-		{
-			if(str.startsWith(srcStr))
-			{
-				return str;
-			}
-		}
-		throw new ReadGameError();
-	}
-	
-	/**
-	 * Method to get value from loaded txt line
-	 * 
-	 * @param line
-	 *            Line which is readed
-	 * @return result String with loaded value
-	 * @throws ReadGameError
-	 *             object class when something goes wrong
-	 */
-	static public String getValue(String line) throws ReadGameError
-	{
-		int from = line.indexOf("\"");
-		int to = line.lastIndexOf("\"");
-		int size = line.length() - 1;
-		String result = new String();
-		if(to < from || from > size || to > size || to < 0 || from < 0)
-		{
-			throw new ReadGameError();
-		}
-		try
-		{
-			result = line.substring(from + 1, to);
-		} catch(java.lang.StringIndexOutOfBoundsException exc)
-		{
-			log.log(Level.WARNING, "Couldn't read line value.", exc);
-			return "none";
-		}
-		return result;
-	}
-	
-	/**
 	 * Method to Start new game
 	 *
 	 */
+	@Override
 	public void newGame()
 	{
 		log.info("Starting new local game");
@@ -348,17 +220,8 @@ public class Game implements IBoardActionHandler, IGameStateHandler
 		{
 			this.blockedChessboard = true;
 		}
-		// dirty hacks starts over here :)
-		// to fix rendering artefacts on first run
-		Game activeGame = JChessApp.view.getActiveTabGame();
-		if(activeGame != null && JChessApp.view.getNumberOfOpenedTabs() == 1)
-		{
-			activeGame.chessboard.getView().render();
-			activeGame.getView().render();
-		}
-		chessboard.getView().render();
+		
 		this.getView().render();
-		// dirty hacks ends over here :)
 	}
 	
 	/**
@@ -368,7 +231,7 @@ public class Game implements IBoardActionHandler, IGameStateHandler
 	 *            what to show player(s) at end of the game (for example "draw",
 	 *            "black wins" etc.)
 	 */
-	public void endGame(String message)
+	private void endGame(String message)
 	{
 		this.blockedChessboard = true;
 		log.info(message);
@@ -378,26 +241,16 @@ public class Game implements IBoardActionHandler, IGameStateHandler
 	/**
 	 * Method to swich active players after move
 	 */
-	public void switchActive()
+	private void switchActive()
 	{
 		chessboard.switchToNextPlayer();
 		this.gameClock.switchClocks();
 	}
 	
 	/**
-	 * Method of getting accualy active player
-	 * 
-	 * @return player The player which have a move
-	 */
-	public Player getActivePlayer()
-	{
-		return chessboard.getActivePlayer();
-	}
-	
-	/**
 	 * Method to go to next move (checks if game is local/network etc.)
 	 */
-	public void nextMove()
+	private void nextMove()
 	{
 		switchActive();
 		
@@ -410,11 +263,7 @@ public class Game implements IBoardActionHandler, IGameStateHandler
 			this.blockedChessboard = false;
 		} else if(chessboard.getActivePlayer().getType() == Player.Type.COMPUTER)
 		{
+			// TODO: implement AI^^
 		}
 	}
-}
-
-class ReadGameError extends Exception
-{
-	private static final long serialVersionUID = -7273990297881723999L;
 }

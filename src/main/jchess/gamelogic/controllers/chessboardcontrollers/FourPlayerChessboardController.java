@@ -46,13 +46,6 @@ public class FourPlayerChessboardController extends RegularChessboardController
 				Arrays.asList(new Player[]{white, red, black, golden}));
 	}
 	
-	protected String getPlayerInfo() {
-		return "[White " + this.getPlayer(0).getName() + "]\n" +
-				"[Red " + this.getPlayer(1).getName() + "]\n" +
-				"[Black " + this.getPlayer(2).getName() + "]\n" +
-				"[Golden " + this.getPlayer(3).getName() + "]\n";
-	}
-	
 	protected Set<Field> getCastleMoves(Piece piece) {
 		Set<Field> castleFields = new HashSet<Field>();
 		
