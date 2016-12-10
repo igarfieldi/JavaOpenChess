@@ -49,8 +49,8 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 	}
 	
 	protected String getPlayerInfo() {
-		return "[White " + this.getPlayer(0) + "]\n" +
-				"[Black " + this.getPlayer(1) + "]\n";
+		return "[White " + this.getPlayer(0).getName() + "]\n" +
+				"[Black " + this.getPlayer(1).getName() + "]\n";
 	}
 	
 	protected Set<Field> getCastleMoves(Piece piece) {

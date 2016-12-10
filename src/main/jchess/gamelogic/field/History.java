@@ -570,8 +570,9 @@ public class History extends AbstractTableModel
 				}
 			} else
 			{
-				Field tempFrom = Field.getFieldFromDesignation(locMove.substring(from, from + 1));
-				Field tempTo = Field.getFieldFromDesignation(locMove.substring(from + 3, from + 4));
+				
+				Field tempFrom = Field.getFieldFromDesignation(locMove.substring(from, from + 2));
+				Field tempTo = Field.getFieldFromDesignation(locMove.substring(from + 3, from + 5));
 				
 				xFrom = tempFrom.getPosX();
 				yFrom = tempFrom.getPosY();

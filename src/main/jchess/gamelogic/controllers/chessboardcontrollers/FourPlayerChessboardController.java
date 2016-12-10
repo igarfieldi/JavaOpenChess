@@ -47,10 +47,10 @@ public class FourPlayerChessboardController extends RegularChessboardController
 	}
 	
 	protected String getPlayerInfo() {
-		return "[White " + this.getPlayer(0) + "]\n" +
-				"[Red " + this.getPlayer(1) + "]\n" +
-				"[Black " + this.getPlayer(2) + "]\n" +
-				"[Golden " + this.getPlayer(3) + "]\n";
+		return "[White " + this.getPlayer(0).getName() + "]\n" +
+				"[Red " + this.getPlayer(1).getName() + "]\n" +
+				"[Black " + this.getPlayer(2).getName() + "]\n" +
+				"[Golden " + this.getPlayer(3).getName() + "]\n";
 	}
 	
 	protected Set<Field> getCastleMoves(Piece piece) {

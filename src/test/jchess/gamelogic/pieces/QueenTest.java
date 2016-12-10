@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.Settings;
 import jchess.gamelogic.Player.Color;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;

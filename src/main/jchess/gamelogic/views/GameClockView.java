@@ -10,7 +10,6 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.Settings;
 import jchess.gamelogic.models.GameClockModel;
 
 public class GameClockView extends JPanel implements IRenderable

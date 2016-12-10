@@ -96,7 +96,8 @@ public class Pawn extends Piece
 	
 	public Pawn(Player player, Direction forward)
 	{
-		super(player, "P", false, PieceType.PAWN);
+		// Apparently pawns as the basic figure do not get a symbol...
+		super(player, "", false, PieceType.PAWN);
 		this.normalMovement = forward;
 		this.twoStepMovement = forward.multiply(2);
 		this.capturingMovement = new Direction[2];

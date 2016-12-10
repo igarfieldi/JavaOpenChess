@@ -22,7 +22,6 @@ package jchess.gamelogic;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Calendar;
@@ -238,20 +237,21 @@ public class Game implements IBoardActionHandler, IGameStateHandler
 		gameView.showMessage("game_saved_properly", "");
 	}
 	
+	public void loadGame(String moves) {
+		log.info("Loading saved local game");
+		
+		this.blockedChessboard = true;
+		chessboard.loadFromString(moves);
+		this.blockedChessboard = false;
+		
+		this.getView().render();
+	}
+	
 	/**
 	 * Loading game method(loading game state from the earlier saved file)
 	 * 
 	 * @param file
 	 *            File where is saved game
-	 */
-	
-	/*
-	 * @Override public void setSize(int width, int height) { Dimension min =
-	 * this.getMinimumSize(); if(min.getHeight() < height && min.getWidth() <
-	 * width) { super.setSize(width, height); } else if(min.getHeight() <
-	 * height) { super.setSize(width, (int)min.getHeight()); } else
-	 * if(min.getWidth() < width) { super.setSize((int)min.getWidth(), height);
-	 * } else { super.setSize(width, height); } }
 	 */
 	static public void loadGame(File file)
 	{
@@ -273,11 +273,7 @@ public class Game implements IBoardActionHandler, IGameStateHandler
 					return ;
 			}
 			
-			newGame.newGame();
-			newGame.blockedChessboard = true;
-			newGame.getChessboard().loadFromString(parser.getBody());
-			newGame.blockedChessboard = false;
-			newGame.chessboard.getView().render();
+			newGame.loadGame(parser.getBody());
 		} catch(IOException exc) {
 			log.log(Level.SEVERE, "Error while reading game file!", exc);
 		}

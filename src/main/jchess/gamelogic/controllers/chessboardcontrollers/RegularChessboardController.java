@@ -12,9 +12,9 @@ import jchess.JChessApp;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.History;
 import jchess.gamelogic.field.Move;
 import jchess.gamelogic.field.Move.CastlingType;
-import jchess.gamelogic.field.History;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.pieces.Bishop;
 import jchess.gamelogic.pieces.King;
@@ -58,8 +58,8 @@ public abstract class RegularChessboardController implements IChessboardControll
 	}
 	
 	@Override
-	public void loadFromString(String str) {
-		
+	public void loadFromString(String moves) {
+		this.movesHistory.setMoves(moves);
 	}
 	
 	@Override
