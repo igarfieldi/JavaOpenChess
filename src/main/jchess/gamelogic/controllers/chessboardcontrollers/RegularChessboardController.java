@@ -25,7 +25,7 @@ import jchess.gamelogic.pieces.Queen;
 import jchess.gamelogic.pieces.Rook;
 import jchess.gamelogic.views.IChessboardView;
 import jchess.util.Direction;
-import jchess.util.GameStateParser;
+import jchess.util.FileMapParser;
 
 public abstract class RegularChessboardController implements IChessboardController
 {
@@ -52,12 +52,12 @@ public abstract class RegularChessboardController implements IChessboardControll
 	}
 	
 	@Override
-	public void save(GameStateParser parser) {
+	public void save(FileMapParser parser) {
 		for(Player player : players) {
 			parser.setProperty(player.getColor().toString(), player.getName());
 		}
 		
-		parser.setNoves(this.getHistory().getMovesInString());
+		parser.setProperty("Moves", this.getHistory().getMovesInString());
 	}
 	
 	@Override

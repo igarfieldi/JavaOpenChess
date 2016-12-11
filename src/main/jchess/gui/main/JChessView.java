@@ -78,7 +78,7 @@ import jchess.gui.secondary.JChessAboutBox;
 import jchess.gui.secondary.PawnPromotionWindow;
 import jchess.gui.secondary.ThemeChooseWindow;
 import jchess.gui.setup.NewGameWindow;
-import jchess.util.GameStateParser;
+import jchess.util.FileMapParser;
 import jchess.util.TypedResourceBundle;
 
 /**
@@ -489,7 +489,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 					if(selectedFile.canWrite()) {
 						try
 						{
-							GameStateParser parser = new GameStateParser();
+							FileMapParser parser = new FileMapParser();
 							tempGUI.saveGame(parser);
 							parser.save(selectedFile);
 							tempGUI.getView().showMessage("game_saved_properly", "");
@@ -540,7 +540,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		{
 			File file = fileChooser.getSelectedFile();
 			if(file.exists() && file.canRead()) {
-				GameStateParser parser = new GameStateParser();
+				FileMapParser parser = new FileMapParser();
 				try
 				{
 					parser.load(file);
@@ -559,7 +559,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 							return ;
 					}
 					
-					newGame.loadGame(parser.getMoves());
+					newGame.loadGame(parser.getProperty("Moves"));
 					
 				} catch(IOException exc)
 				{

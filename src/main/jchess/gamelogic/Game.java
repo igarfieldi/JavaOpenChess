@@ -30,10 +30,11 @@ import jchess.gamelogic.controllers.GameClockController;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.views.IChessboardView;
 import jchess.gamelogic.views.IGameView;
 import jchess.gamelogic.views.gameviews.SwingGameView;
-import jchess.util.GameStateParser;
+import jchess.util.FileMapParser;
 
 /**
  * Class responsible for the starts of new games, loading games, saving it, and
@@ -51,7 +52,7 @@ public class Game implements IGame
 	private GameClockController gameClock;
 	
 	public Game(Settings settings, IChessboardController chessboard, IChessboardView view,
-			GameClockController gameClock)
+	        GameClockController gameClock)
 	{
 		this.settings = settings;
 		this.chessboard = chessboard;
@@ -66,34 +67,36 @@ public class Game implements IGame
 	}
 	
 	@Override
-	public void onCheckmate() {
-		this.endGame("Checkmate! " + this.chessboard.getActivePlayer().getColor()
-		        + " player loses!");
+	public void onCheckmate()
+	{
+		this.endGame("Checkmate! " + this.chessboard.getActivePlayer().getColor() + " player loses!");
 	}
 	
 	@Override
-	public void onStalemate() {
+	public void onStalemate()
+	{
 		this.endGame("Stalemate! Draw!");
 	}
 	
 	@Override
-	public void onTimeOver() {
+	public void onTimeOver()
+	{
 		this.endGame("Time over! " + chessboard.getActivePlayer().getColor() + " player loses!");
 		// TODO: game over
 	}
-
+	
 	@Override
 	public IGameView getView()
 	{
 		return gameView;
 	}
-
+	
 	@Override
 	public Settings getSettings()
 	{
 		return settings;
 	}
-
+	
 	@Override
 	public GameClockController getGameClock()
 	{
@@ -105,77 +108,84 @@ public class Game implements IGame
 	{
 		log.log(Level.FINE, "Selected field: " + selectedField);
 		
-		if(!blockedChessboard)
+		if(blockedChessboard)
 		{
-			Field activeField = gameView.getChessboardView().getActiveSquare();
-			try
+			log.info("Chessboard is blocked!");
+			return;
+		}
+		
+		Field activeField = gameView.getChessboardView().getActiveSquare();
+		
+		// Check if a field was already selected and then either
+		// unselect, select different or execute move
+		if(activeField != null && selectedField != null)
+		{
+			if(selectedField.equals(activeField))
 			{
-				// TODO: clean up. Hand-full of scenarios:
-				// 1. Nothing selected yet and we select either no field, empty
-				// field or field with piece not ours
-				// 2. Field selected and we select field again -> unselect
-				// 3. Field selected and we select different piece belonging to
-				// us -> select new field
-				// 4. Field selected and we select possible move -> carry out
-				// move etc.
-				if(activeField == null)
-				{
-					if(selectedField == null || (chessboard.getBoard().getPiece(selectedField) != null) && (chessboard
-					        .getBoard().getPiece(selectedField).getPlayer() != this.chessboard.getActivePlayer()))
-					{
-						return;
-					}
-				}
+				gameView.getChessboardView().unselect();
+			} else
+			{
+				Piece activePiece = chessboard.getBoard().getPiece(activeField);
+				Piece selectedPiece = chessboard.getBoard().getPiece(selectedField);
 				
-				if(chessboard.getBoard().getPiece(selectedField) != null && chessboard.getBoard()
-				        .getPiece(selectedField).getPlayer() == this.chessboard.getActivePlayer()
-				        && selectedField != activeField)
+				if(selectedPiece == null || activePiece.getPlayer() != selectedPiece.getPlayer())
 				{
+					this.executeMove(activeField, selectedField);
+				} else
+				{
+					// Select different piece
 					gameView.getChessboardView().unselect();
 					gameView.getChessboardView().select(selectedField);
-				} else if(activeField == selectedField) // unselect
-				{
-					gameView.getChessboardView().unselect();
-				} else if(activeField != null
-				        && chessboard.getBoard().getPiece(activeField) != null
-				        && chessboard.getPossibleMoves(
-				                chessboard.getBoard().getPiece(activeField), true)
-				                .contains(selectedField))
-				{
-					try {
-						if(chessboard.move(activeField, selectedField)) {
-							// Only switch players etc. when the move was
-							// actually executed
-	    					// switch player
-	    					this.nextMove();
-	    					
-	    					// Checkmate or stalemate
-	    					if(chessboard.isCheckmated(chessboard.getActivePlayer()))
-	    					{
-	    						this.onCheckmate();
-	    					} else if(chessboard.isStalemate())
-	    					{
-	    						this.onStalemate();
-	    					}
-						}
-						
-					} catch(IllegalMoveException exc) {
-						log.log(Level.SEVERE, "Tried to execute illegal move!", exc);
-					}
-
-					gameView.getChessboardView().unselect();
 				}
-				
-			} catch(NullPointerException exc)
-			{
-				// TODO: how could there be a NullPointerException here?
-				log.log(Level.SEVERE, "Encountered exception while determining click position!", exc);
-				gameView.render();
-				return;
 			}
-		} else
+		} else if(selectedField != null)
 		{
-			log.info("Chessboard is blocked");
+			Piece selectedPiece = chessboard.getBoard().getPiece(selectedField);
+			if(selectedPiece != null && selectedPiece.getPlayer() == chessboard.getActivePlayer())
+			{
+				// Select new field
+				gameView.getChessboardView().select(selectedField);
+			}
+		}
+		
+		gameView.render();
+	}
+	
+	/**
+	 * Attempts to execute a chess move for the two given fields. If the move is
+	 * valid, it should get carried out by the chessboard controller. If not, or
+	 * if the move was cancelled (e.g. denied promotion), then no change to
+	 * board or players happens.
+	 * 
+	 * @param origin
+	 *            Field on which the piece to move is located
+	 * @param target
+	 *            Target field for move
+	 */
+	private void executeMove(Field origin, Field target)
+	{
+		// Try to execute move
+		try
+		{
+			if(chessboard.move(origin, target))
+			{
+				gameView.getChessboardView().unselect();
+				// Only switch players etc. when the move was
+				// actually executed
+				this.nextMove();
+				
+				// Checkmate or stalemate
+				if(chessboard.isCheckmated(chessboard.getActivePlayer()))
+				{
+					this.onCheckmate();
+				} else if(chessboard.isStalemate())
+				{
+					this.onStalemate();
+				}
+			}
+		} catch(IllegalMoveException exc)
+		{
+			log.log(Level.WARNING, "Illegal move!");
 		}
 	}
 	
@@ -186,18 +196,19 @@ public class Game implements IGame
 	 *            address of place where game will be saved
 	 */
 	@Override
-	public void saveGame(GameStateParser parser)
+	public void saveGame(FileMapParser parser)
 	{
-		parser.setProperty("Event", "Game");	// TODO: different game types!
+		parser.setProperty("Event", "Game"); // TODO: different game types!
 		
 		Calendar cal = Calendar.getInstance();
-		parser.setProperty("Date", cal.get(Calendar.YEAR) + "."
-		        + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH));
+		parser.setProperty("Date",
+		        cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH));
 		this.chessboard.save(parser);
 	}
-
+	
 	@Override
-	public void loadGame(String moves) {
+	public void loadGame(String moves)
+	{
 		log.info("Loading saved local game");
 		
 		this.blockedChessboard = true;

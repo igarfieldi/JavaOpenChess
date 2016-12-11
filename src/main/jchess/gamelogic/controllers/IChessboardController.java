@@ -9,12 +9,12 @@ import jchess.gamelogic.field.History;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.views.IChessboardView;
-import jchess.util.GameStateParser;
+import jchess.util.FileMapParser;
 
 public interface IChessboardController
 {
 	
-	public void save(GameStateParser parser);
+	public void save(FileMapParser parser);
 	
 	public void loadFromString(String str);
 	

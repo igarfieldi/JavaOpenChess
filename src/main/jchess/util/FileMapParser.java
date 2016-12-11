@@ -9,24 +9,21 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GameStateParser
+public class FileMapParser
 {
 	private Map<String, String> properties;
-	private String moves;
 	
-	public GameStateParser() {
+	public FileMapParser() {
 		this.properties = new HashMap<String, String>();
-		this.moves = new String("");
 	}
 	
 	public void save(File file) throws IOException {
 		try(BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
 			for(Map.Entry<String, String> entry : this.properties.entrySet()) {
+				System.out.println(entry.getKey());
 				writer.write('[' + entry.getKey() + ' ' + entry.getValue() + ']');
 				writer.newLine();
 			}
-			writer.newLine();
-			writer.write(moves);
 		} catch(IOException exc) {
 			// Rethrow the exception; we only catch it to close the writer anyway
 			throw exc;
@@ -39,11 +36,15 @@ public class GameStateParser
 			
 			while((line = reader.readLine()) != null) {
 				if(!line.isEmpty() && line.charAt(0) == '[') {
-					String[] keyValuePair = line.split(" ");
-					properties.put(keyValuePair[0].substring(1),
-							keyValuePair[1].substring(0, keyValuePair[1].length() - 1));
-				} else if(!line.isEmpty()) {
-					moves += line + '\n';
+					// Property line found
+					String[] keyValuePair = line.split(" ", 2);
+					String key = keyValuePair[0].substring(1);
+					String value = keyValuePair[1];
+					if(value.charAt(value.length() - 1) == ']') {
+						// Remove trailing property indicator
+						value = value.substring(0, value.length() - 1);
+					}
+					properties.put(key, value);
 				}
 			}
 		} catch(IOException exc) {
@@ -58,21 +59,5 @@ public class GameStateParser
 	
 	public String setProperty(String key, String value) {
 		return this.properties.put(key, value);
-	}
-	
-	public String getProperties() {
-		String allProperties = "";
-		for(String val : this.properties.values()) {
-			allProperties += val;
-		}
-		return allProperties;
-	}
-	
-	public String getMoves() {
-		return moves;
-	}
-	
-	public void setNoves(String moves) {
-		this.moves = moves;
 	}
 }
