@@ -4,14 +4,12 @@ import jchess.gamelogic.controllers.GameClockController;
 import jchess.gamelogic.controllers.IBoardActionHandler;
 import jchess.gamelogic.controllers.IGameStateHandler;
 import jchess.gamelogic.views.IGameView;
-import jchess.util.FileMapParser;
+import jchess.util.LoadSaveable;
 
-public interface IGame extends IBoardActionHandler, IGameStateHandler
+public interface IGame extends IBoardActionHandler, IGameStateHandler, LoadSaveable
 {
 	public IGameView getView();
 	public Settings getSettings();
 	public GameClockController getGameClock();
 	public void newGame();
-	public void saveGame(FileMapParser parser);
-	public void loadGame(String moves);
 }

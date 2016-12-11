@@ -196,7 +196,7 @@ public class Game implements IGame
 	 *            address of place where game will be saved
 	 */
 	@Override
-	public void saveGame(FileMapParser parser)
+	public void save(FileMapParser parser)
 	{
 		parser.setProperty("Event", "Game"); // TODO: different game types!
 		
@@ -207,12 +207,12 @@ public class Game implements IGame
 	}
 	
 	@Override
-	public void loadGame(String moves)
+	public void load(FileMapParser parser)
 	{
 		log.info("Loading saved local game");
 		
 		this.blockedChessboard = true;
-		chessboard.loadFromString(moves);
+		chessboard.load(parser);
 		this.blockedChessboard = false;
 		
 		this.getView().render();

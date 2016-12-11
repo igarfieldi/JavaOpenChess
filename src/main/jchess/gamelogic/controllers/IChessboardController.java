@@ -10,13 +10,14 @@ import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.views.IChessboardView;
 import jchess.util.FileMapParser;
+import jchess.util.LoadSaveable;
 
-public interface IChessboardController
+public interface IChessboardController extends LoadSaveable
 {
 	
 	public void save(FileMapParser parser);
 	
-	public void loadFromString(String str);
+	public void load(FileMapParser parser);
 	
 	public IChessboardView getView();
 	

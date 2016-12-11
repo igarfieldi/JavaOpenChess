@@ -490,7 +490,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 						try
 						{
 							FileMapParser parser = new FileMapParser();
-							tempGUI.saveGame(parser);
+							tempGUI.save(parser);
 							parser.save(selectedFile);
 							tempGUI.getView().showMessage("game_saved_properly", "");
 							
@@ -559,7 +559,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 							return ;
 					}
 					
-					newGame.loadGame(parser.getProperty("Moves"));
+					newGame.load(parser);
 					
 				} catch(IOException exc)
 				{

@@ -62,9 +62,9 @@ public abstract class RegularChessboardController implements IChessboardControll
 	}
 	
 	@Override
-	public void loadFromString(String moves)
+	public void load(FileMapParser parser)
 	{
-		this.movesHistory.setMoves(moves);
+		this.movesHistory.setMoves(parser.getProperty("Moves"));
 	}
 	
 	@Override
