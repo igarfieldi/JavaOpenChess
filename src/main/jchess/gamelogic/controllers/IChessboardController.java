@@ -46,6 +46,14 @@ public interface IChessboardController
 	public Set<Field> getPossibleMoves(Piece piece, boolean careForCheck);
 	
 	/**
+	 * Returns the set of fields which currently threaten the given piece.
+	 * @param piece Piece under threat
+	 * @param careForCheck Should moves resulting in check be filtered out or not
+	 * @return Set of threatening fields
+	 */
+	public Set<Field> getPossibleThreats(Piece piece, boolean careForCheck);
+	
+	/**
 	 * Checks if the player is currently in a check position.
 	 * 
 	 * @param player

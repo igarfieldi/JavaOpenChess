@@ -171,6 +171,25 @@ public abstract class RegularChessboardController implements IChessboardControll
 		return reachableFields;
 	}
 	
+	@Override
+	public Set<Field> getPossibleThreats(Piece piece, boolean careForCheck) {
+		Set<Field> threateningFields = new HashSet<Field>();
+		Field target = board.getField(piece);
+		
+		for(Player enemy : players) {
+			if(enemy != this.getActivePlayer()) {
+				// Iterate over all pieces of the player
+				for(Piece enemyPiece : board.getPieces(enemy)) {
+					if(this.getPossibleMoves(enemyPiece, careForCheck).contains(target)) {
+						threateningFields.add(board.getField(enemyPiece));
+					}
+				}
+			}
+		}
+		
+		return threateningFields;
+	}
+	
 	/**
 	 * Removes all fields from the set that would leave the player in a check.
 	 * 

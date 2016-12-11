@@ -62,8 +62,10 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 	protected abstract Image getChessboardImage();
 	
 	protected abstract Image getSelectedFieldImage();
-	
+
 	protected abstract Image getPossibleFieldImage();
+	
+	protected abstract Image getThreateningFieldImage();
 	
 	protected abstract int getSquareCount();
 	
@@ -153,6 +155,7 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 			        (int) squareHeight, null);
 			
 			this.renderPossibleMoves(g2d);
+			this.renderPossibleThreats(g2d);
 		}
 	}
 	
@@ -174,6 +177,25 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 				for(Field field : chessboard.getPossibleMoves(chessboard.getBoard().getPiece(activeField), true))
 				{
 					g2d.drawImage(this.getPossibleFieldImage(), (int) (field.getPosX() * squareHeight) + topLeftPoint.x,
+					        (int) (field.getPosY() * squareHeight) + topLeftPoint.y, (int) squareHeight,
+					        (int) squareHeight, null);
+				}
+			}
+		}
+	}
+	
+	private void renderPossibleThreats(Graphics2D g2d) {
+		if(activeField != null && chessboard != null)
+		{
+			Piece piece = chessboard.getBoard().getPiece(activeField);
+			
+			if(piece != null)
+			{
+				Point topLeftPoint = this.getChessboardLocation();
+				
+				// Render all threats to this piece
+				for(Field field : chessboard.getPossibleThreats(piece, true)) {
+					g2d.drawImage(this.getThreateningFieldImage(), (int) (field.getPosX() * squareHeight) + topLeftPoint.x,
 					        (int) (field.getPosY() * squareHeight) + topLeftPoint.y, (int) squareHeight,
 					        (int) squareHeight, null);
 				}

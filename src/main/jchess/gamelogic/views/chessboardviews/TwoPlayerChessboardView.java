@@ -67,6 +67,12 @@ public class TwoPlayerChessboardView extends SquareChessboardView
 	{
 		return themeLoader.loadThemeImage("able_square.png");
 	}
+
+	@Override
+	protected Image getThreateningFieldImage()
+	{
+		return themeLoader.loadThemeImage("threat_square.png");
+	}
 	
 	@Override
 	protected int getSquareCount() {
