@@ -41,6 +41,9 @@ import jchess.util.Direction;
  */
 public class TwoPlayerChessboardController extends RegularChessboardController
 {
+	private static int WHITE_BASE_LINE = 7;
+	private static int BLACK_BASE_LINE = 0;
+	
 	public TwoPlayerChessboardController(IChessboardView view, IBoardFactory boardFactory,
 			Player white, Player black)
 	{
@@ -153,7 +156,12 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 		
 		return enPassantMoves;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jchess.gamelogic.field.chessboardcontrollers.RegularChessboardController#checkForPromotion(Pawn, Field)
+	 */
 	@Override
 	protected boolean checkForPromotion(Pawn pawn, Field target) {
 		Direction forward = pawn.getForwardDirection();
@@ -161,9 +169,9 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 		// Only two possibilities: pawn moves up or down; then check if it
 		// is at the board end
 		if(forward.getY() > 0) {
-			return target.getPosY() == 7;
+			return target.getPosY() == WHITE_BASE_LINE;
 		} else {
-			return target.getPosY() == 0;
+			return target.getPosY() == BLACK_BASE_LINE;
 		}
 	}
 }

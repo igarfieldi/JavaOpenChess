@@ -38,7 +38,12 @@ import jchess.util.Direction;
  * current player on it.
  */
 public class FourPlayerChessboardController extends RegularChessboardController
-{	
+{
+	private static int WHITE_BASE_LINE = 13;
+	private static int RED_BASE_LINE = 0;
+	private static int BLACK_BASE_LINE = 0;
+	private static int GOLDEN_BASE_LINE = 13;
+	
 	public FourPlayerChessboardController(IChessboardView view, IBoardFactory boardFactory,
 			Player white, Player red, Player black, Player golden)
 	{
@@ -153,7 +158,12 @@ public class FourPlayerChessboardController extends RegularChessboardController
 		
 		return enPassantMoves;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jchess.gamelogic.field.chessboardcontrollers.RegularChessboardController#checkForPromotion(Pawn, Field)
+	 */
 	@Override
 	protected boolean checkForPromotion(Pawn pawn, Field target) {
 		Direction forward = pawn.getForwardDirection();
@@ -162,15 +172,15 @@ public class FourPlayerChessboardController extends RegularChessboardController
 		// can happen
 		if(forward.getX() == 0) {
 			if(forward.getY() > 0) {
-				return target.getPosY() == 13;
+				return target.getPosY() == WHITE_BASE_LINE;
 			} else {
-				return target.getPosY() == 0;
+				return target.getPosY() == BLACK_BASE_LINE;
 			}
 		} else {
 			if(forward.getX() > 0) {
-				return target.getPosX() == 13;
+				return target.getPosX() == GOLDEN_BASE_LINE;
 			} else {
-				return target.getPosX() == 0;
+				return target.getPosX() == RED_BASE_LINE;
 			}
 		}
 	}
