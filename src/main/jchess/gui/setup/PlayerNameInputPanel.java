@@ -2,6 +2,8 @@ package jchess.gui.setup;
 
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -128,6 +130,16 @@ public class PlayerNameInputPanel extends GridBagPanel
 	{
 		firstPlayer.setName(this.firstPlayerNameTextField.getText());
 		secondPlayer.setName(this.secondPlayerNameTextField.getText());
+	}
+	
+	public List<String> getPlayerNames() {
+		List<String> playerList = new ArrayList<String>();
+		playerList.add(this.getPlayerName(0));
+		playerList.add(this.getPlayerName(1));
+		playerList.add(this.getPlayerName(2));
+		playerList.add(this.getPlayerName(3));
+		
+		return playerList;
 	}
 	
 	public String getPlayerName(int index) {

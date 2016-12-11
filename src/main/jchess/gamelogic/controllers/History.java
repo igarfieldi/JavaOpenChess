@@ -18,7 +18,7 @@
  * Mateusz Sławomir Lach ( matlak, msl )
  * Damian Marciniak
  */
-package jchess.gamelogic.field;
+package jchess.gamelogic.controllers;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -32,10 +32,12 @@ import javax.swing.table.DefaultTableModel;
 
 import jchess.Localization;
 import jchess.gamelogic.Player;
-import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
+import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.Move;
 import jchess.gamelogic.field.Move.CastlingType;
 import jchess.gamelogic.pieces.Piece;
+import jchess.gamelogic.views.HistoryView;
 
 /**
  * Class representing the players moves, it's also checking that the moves taken

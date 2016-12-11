@@ -11,7 +11,8 @@ import jchess.gamelogic.controllers.IBoardActionHandler;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
 import jchess.gamelogic.field.Field;
-import jchess.gamelogic.models.chessboardfactories.TwoPlayerChessboardFactory;
+import jchess.gamelogic.models.factories.TwoPlayerChessboardFactory;
+import jchess.gamelogic.views.factories.TwoPlayerChessboardViewFactory;
 
 public class SquareChessboardViewTest
 {
@@ -21,9 +22,10 @@ public class SquareChessboardViewTest
 	@Before
 	public void setUp() throws Exception
 	{
-		view = new TwoPlayerChessboardView(false, false);
-		IChessboardController controller = new TwoPlayerChessboardController(view,
+		IChessboardController controller = new TwoPlayerChessboardController(
+				TwoPlayerChessboardViewFactory.getInstance(),
 				TwoPlayerChessboardFactory.getInstance(), null, null);
+		view = (SquareChessboardView) controller.getView();
 		handler = new CustomActionHandler();
 		view.initialize(controller, handler);
 		view.changeSize(800, 800);

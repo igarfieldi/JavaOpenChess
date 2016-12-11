@@ -18,7 +18,7 @@
  * Mateusz Sławomir Lach ( matlak, msl )
  * Damian Marciniak
  */
-package jchess.gamelogic;
+package jchess.gamelogic.game;
 
 import java.util.Calendar;
 import java.util.logging.Level;
@@ -26,12 +26,12 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
+import jchess.gamelogic.Player;
 import jchess.gamelogic.controllers.GameClockController;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.pieces.Piece;
-import jchess.gamelogic.views.IChessboardView;
 import jchess.gamelogic.views.IGameView;
 import jchess.gamelogic.views.gameviews.SwingGameView;
 import jchess.util.FileMapParser;
@@ -41,28 +41,26 @@ import jchess.util.FileMapParser;
  * for ending it. This class is also responsible for appoing player with have a
  * move at the moment
  */
-public class Game implements IGame
+public class TimedGame implements IGame
 {
-	private static Logger log = Logger.getLogger(Game.class.getName());
+	private static Logger log = Logger.getLogger(TimedGame.class.getName());
 	
 	private IGameView gameView;
-	private Settings settings;
 	private boolean blockedChessboard;
 	private IChessboardController chessboard;
 	private GameClockController gameClock;
 	
-	public Game(Settings settings, IChessboardController chessboard, IChessboardView view,
+	public TimedGame(IChessboardController chessboard,
 	        GameClockController gameClock)
 	{
-		this.settings = settings;
 		this.chessboard = chessboard;
-		view.initialize(chessboard, this);
+		this.chessboard.getView().initialize(chessboard, this);
 		this.gameClock = gameClock;
 		this.gameClock.setStateHandler(this);
 		
 		this.blockedChessboard = false;
 		
-		gameView = new SwingGameView(view);
+		gameView = new SwingGameView(this.chessboard.getView());
 		gameView.addInfoComponent(gameClock.getView());
 		gameView.addInfoComponent(chessboard.getHistory().getView());
 	}
@@ -90,18 +88,6 @@ public class Game implements IGame
 	public IGameView getView()
 	{
 		return gameView;
-	}
-	
-	@Override
-	public Settings getSettings()
-	{
-		return settings;
-	}
-	
-	@Override
-	public GameClockController getGameClock()
-	{
-		return gameClock;
 	}
 	
 	@Override
@@ -210,6 +196,7 @@ public class Game implements IGame
 	@Override
 	public void load(FileMapParser parser)
 	{
+		// TODO: load clock times, too!
 		log.info("Loading saved local game");
 		
 		this.blockedChessboard = true;
@@ -217,6 +204,7 @@ public class Game implements IGame
 		this.blockedChessboard = false;
 		
 		this.getView().render();
+		this.gameClock.start();
 	}
 	
 	/**
@@ -234,6 +222,7 @@ public class Game implements IGame
 		}
 		
 		this.getView().render();
+		this.gameClock.start();
 	}
 	
 	/**

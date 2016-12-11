@@ -4,8 +4,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
 import jchess.Localization;
-import jchess.gamelogic.Game;
-import jchess.gamelogic.Settings;
 
 public class TimerSetterPanel extends GridBagPanel
 {
@@ -33,18 +31,14 @@ public class TimerSetterPanel extends GridBagPanel
 		setGridBagConstraints(hasTimeLimitCheckBox, 0, 1);
 		setGridBagConstraints(timeLimitsComboBox, 1, 1);
 	}
-	public void setTimeLimit(Game gameWindow, Settings localSettings)
+	public int getTimeLimit()
 	{
 		if(this.hasTimeLimitCheckBox.isSelected())
 		{
 			String selectedTimeLimit = this.timeLimits[this.timeLimitsComboBox.getSelectedIndex()];
-			Integer timeLimitValue = new Integer(selectedTimeLimit);
-			
-			localSettings.setTimeLimit(true);
-			localSettings.setTimeForGame((int) timeLimitValue * 60);
-			
-			gameWindow.getGameClock().setTimes(localSettings.getTimeForGame(), localSettings.getTimeForGame());
-			gameWindow.getGameClock().start();
+			return ((int) Integer.parseInt(selectedTimeLimit) * 60);
+		} else {
+			return 0;
 		}
 	}
 	

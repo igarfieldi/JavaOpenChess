@@ -31,7 +31,7 @@ import jchess.gamelogic.models.IBoardFactory;
 import jchess.gamelogic.pieces.King;
 import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.Piece;
-import jchess.gamelogic.views.IChessboardView;
+import jchess.gamelogic.views.factories.IChessboardViewFactory;
 import jchess.util.Direction;
 
 /**
@@ -44,10 +44,10 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 	private static int WHITE_BASE_LINE = 7;
 	private static int BLACK_BASE_LINE = 0;
 	
-	public TwoPlayerChessboardController(IChessboardView view, IBoardFactory boardFactory,
+	public TwoPlayerChessboardController(IChessboardViewFactory viewFactory, IBoardFactory boardFactory,
 			Player white, Player black)
 	{
-		super(view, boardFactory.createChessboard(Arrays.asList(new Player[]{white, black})),
+		super(viewFactory, boardFactory,
 				Arrays.asList(new Player[]{white, black}));
 	}
 	

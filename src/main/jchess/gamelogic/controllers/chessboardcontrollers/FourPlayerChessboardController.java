@@ -29,7 +29,7 @@ import jchess.gamelogic.field.Field;
 import jchess.gamelogic.models.IBoardFactory;
 import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.Piece;
-import jchess.gamelogic.views.IChessboardView;
+import jchess.gamelogic.views.factories.IChessboardViewFactory;
 import jchess.util.Direction;
 
 /**
@@ -44,10 +44,10 @@ public class FourPlayerChessboardController extends RegularChessboardController
 	private static int BLACK_BASE_LINE = 0;
 	private static int GOLDEN_BASE_LINE = 13;
 	
-	public FourPlayerChessboardController(IChessboardView view, IBoardFactory boardFactory,
-			Player white, Player red, Player black, Player golden)
+	public FourPlayerChessboardController(IChessboardViewFactory viewFactory,
+			IBoardFactory boardFactory, Player white, Player red, Player black, Player golden)
 	{
-		super(view, boardFactory.createChessboard(Arrays.asList(new Player[]{white, red, black, golden})),
+		super(viewFactory, boardFactory,
 				Arrays.asList(new Player[]{white, red, black, golden}));
 	}
 	

@@ -1,11 +1,9 @@
-package jchess.gamelogic.field;
+package jchess.gamelogic.views;
 
 import java.awt.Dimension;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-
-import jchess.gamelogic.views.IRenderable;
 
 public class HistoryView extends JScrollPane implements IRenderable
 {

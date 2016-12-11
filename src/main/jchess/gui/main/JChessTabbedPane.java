@@ -35,6 +35,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JTabbedPane;
 
 import jchess.JChessApp;
+import jchess.gamelogic.game.IGameBuilderFactory;
 import jchess.gui.ThemeImageLoader;
 import jchess.gui.setup.NewGameWindow;
 
@@ -45,10 +46,12 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 	
 	private Image addIcon;
 	private Rectangle addIconRectangle = null;
+	private IGameBuilderFactory factory;
 	
-	public JChessTabbedPane()
+	public JChessTabbedPane(IGameBuilderFactory factory)
 	{
 		super();
+		this.factory = factory;
 		this.addIcon = ThemeImageLoader.getInstance().loadThemeImage("add-tab-icon.png");
 		
 		this.setDoubleBuffered(true);
@@ -106,7 +109,7 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 	private void showNewGameWindow()
 	{
 		if(JChessApp.view.newGameFrame == null)
-			JChessApp.view.newGameFrame = new NewGameWindow(JChessApp.view.getFrame());
+			JChessApp.view.newGameFrame = new NewGameWindow(JChessApp.view.getFrame(), factory);
 		
 		JChessApp.getApplication().show(JChessApp.view.newGameFrame);
 	}

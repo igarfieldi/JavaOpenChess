@@ -10,11 +10,12 @@ import java.util.logging.Logger;
 
 import jchess.JChessApp;
 import jchess.gamelogic.Player;
+import jchess.gamelogic.controllers.History;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.field.Field;
-import jchess.gamelogic.field.History;
 import jchess.gamelogic.field.Move;
 import jchess.gamelogic.field.Move.CastlingType;
+import jchess.gamelogic.models.IBoardFactory;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.pieces.Bishop;
 import jchess.gamelogic.pieces.King;
@@ -24,6 +25,7 @@ import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.pieces.Queen;
 import jchess.gamelogic.pieces.Rook;
 import jchess.gamelogic.views.IChessboardView;
+import jchess.gamelogic.views.factories.IChessboardViewFactory;
 import jchess.util.Direction;
 import jchess.util.FileMapParser;
 
@@ -39,10 +41,13 @@ public abstract class RegularChessboardController implements IChessboardControll
 	
 	private History movesHistory;
 	
-	public RegularChessboardController(IChessboardView view, IChessboardModel board, List<Player> players)
+	public RegularChessboardController(IChessboardViewFactory viewFactory,
+			IBoardFactory boardFactory, List<Player> players)
 	{
-		this.board = board;
-		this.view = view;
+		this.board = boardFactory.createChessboard(players);
+		if(viewFactory != null) {
+			this.view = viewFactory.create();
+		}
 		this.players = players;
 		this.movesHistory = new History(this, players.get(0), players.get(1));
 		this.currPlayerIndex = 0;

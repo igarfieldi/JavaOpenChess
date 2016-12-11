@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 
 import jchess.gamelogic.Clock;
 import jchess.gamelogic.Player;
-import jchess.gamelogic.Settings;
 import jchess.gamelogic.models.GameClockModel;
 import jchess.gamelogic.views.GameClockView;
 
@@ -39,24 +38,18 @@ public class GameClockController implements Runnable
 	private GameClockModel clocks;
 	private GameClockView clockView;
 	private Clock runningClock;
-	private Settings settings;
 	private Thread thread;
 	private IGameStateHandler stateHandler;
 	
-	public GameClockController(Settings settings, Player white, Player black)
+	public GameClockController(int timeLimit, Player white, Player black)
 	{
 		clocks = new GameClockModel(2);
 		this.runningClock = this.clocks.getClock(0); // running/active clock
-		this.settings = settings;
 		
-		this.setTimes(settings.getTimeForGame());
+		this.setTimes(timeLimit);
 		this.setPlayers(white, black);
 		
 		this.thread = new Thread(this);
-		if(this.settings.isTimeLimitSet())
-		{
-			thread.start();
-		}
 		
 		this.clockView = new GameClockView(clocks, white, black);
 	}

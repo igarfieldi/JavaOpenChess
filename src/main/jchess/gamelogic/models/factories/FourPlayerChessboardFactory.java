@@ -1,12 +1,12 @@
-package jchess.gamelogic.models.chessboardfactories;
+package jchess.gamelogic.models.factories;
 
 import java.util.List;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Field;
-import jchess.gamelogic.models.ChessboardModel;
 import jchess.gamelogic.models.IBoardFactory;
 import jchess.gamelogic.models.IChessboardModel;
+import jchess.gamelogic.models.chessboardmodels.ChessboardModel;
 import jchess.gamelogic.pieces.Bishop;
 import jchess.gamelogic.pieces.King;
 import jchess.gamelogic.pieces.Knight;

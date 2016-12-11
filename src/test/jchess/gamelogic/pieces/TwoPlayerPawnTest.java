@@ -12,7 +12,7 @@ import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.models.IChessboardModel;
-import jchess.gamelogic.models.chessboardfactories.TwoPlayerChessboardFactory;
+import jchess.gamelogic.models.factories.TwoPlayerChessboardFactory;
 import jchess.util.Direction;
 
 public class TwoPlayerPawnTest

@@ -6,35 +6,36 @@ import org.junit.Before;
 import org.junit.Test;
 
 import jchess.gamelogic.Player.Color;
-import jchess.gamelogic.controllers.GameClockController;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
 import jchess.gamelogic.field.Field;
-import jchess.gamelogic.models.chessboardfactories.TwoPlayerChessboardFactory;
-import jchess.gamelogic.views.IChessboardView;
-import jchess.gamelogic.views.chessboardviews.TwoPlayerChessboardView;
+import jchess.gamelogic.game.IGame;
+import jchess.gamelogic.game.IGameBuilder;
+import jchess.gamelogic.game.UntimedGame;
+import jchess.gamelogic.models.factories.TwoPlayerChessboardFactory;
+import jchess.gamelogic.views.factories.TwoPlayerChessboardViewFactory;
 import jchess.util.FileMapParser;
 
 public class GameTest
 {
 	IGame game;
 	IChessboardController controller;
+	IGameBuilder builder;
 	
 	@Before
 	public void setUp() throws Exception
 	{
 		Player white = new Player("p1", Color.WHITE);
 		Player black = new Player("p2", Color.BLACK);
+
+		this.controller = new TwoPlayerChessboardController(
+				TwoPlayerChessboardViewFactory.getInstance(),
+				TwoPlayerChessboardFactory.getInstance(),
+				black, white);
 		
-		Settings settings = new Settings();
+		this.game = new UntimedGame(controller);
 		
-		GameClockController clock = new GameClockController(settings, white, black);
-		IChessboardView view = new TwoPlayerChessboardView(true, false);
-		controller = new TwoPlayerChessboardController(view, TwoPlayerChessboardFactory.getInstance(),
-		        white, black);
-		
-		game = new Game(settings, controller, view, clock);
 		game.newGame();
 	}
 	

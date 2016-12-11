@@ -29,8 +29,11 @@ import javax.swing.JDialog;
 
 import jchess.JChessApp;
 import jchess.Localization;
-import jchess.gamelogic.Game;
-import jchess.gamelogic.Settings;
+import jchess.gamelogic.Player;
+import jchess.gamelogic.Player.Color;
+import jchess.gamelogic.game.IGame;
+import jchess.gamelogic.game.IGameBuilder;
+import jchess.gamelogic.game.IGameBuilderFactory;
 
 /**
  * Class responsible for drawing the fold with local game settings
@@ -46,10 +49,12 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 	private PlayerNameInputPanel playerNameInputPanel;
 	private TimerSetterPanel timerSetterPanel;
 	private JButton okButton;
+	private IGameBuilderFactory builderFactory;
 	
-	LocalSettingsPanel(JDialog newGameWindow)
+	LocalSettingsPanel(JDialog newGameWindow, IGameBuilderFactory builderFactory)
 	{
 		super();
+		this.builderFactory = builderFactory;
 		this.newGameWindow = newGameWindow;
 		
 		initializeGuiElements();
@@ -85,36 +90,31 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 		if(!playerNameInputPanel.playerNamesEmpty())
 		{
 			playerNameInputPanel.shortenPlayerNames();
-			Game gameWindow = null;
 			
+			IGameBuilder builder = builderFactory.getBuilder();
+			builder.setProperty("timeLimit", "" + timerSetterPanel.getTimeLimit());
+			
+			// Check how many players are supposed to play
 			if(playerNumberChoicePanel.getPlayerCount() == 2) {
-				gameWindow = JChessApp.view.addNewTwoPlayerTab(
-				        playerNameInputPanel.getPlayerName(0),
-				        playerNameInputPanel.getPlayerName(1));
+				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(0), Color.WHITE));
+				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(1), Color.BLACK));
 			} else if(playerNumberChoicePanel.getPlayerCount() == 4) {
-				gameWindow = JChessApp.view.addNewFourPlayerTab(
-				        playerNameInputPanel.getPlayerName(0),
-				        playerNameInputPanel.getPlayerName(1),
-				        playerNameInputPanel.getPlayerName(2),
-				        playerNameInputPanel.getPlayerName(3));
+				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(0), Color.WHITE));
+				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(1), Color.RED));
+				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(2), Color.BLACK));
+				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(3), Color.GOLDEN));
 			} else {
 				log.log(Level.SEVERE, "Could not start game because the number of players is not supported!");
 				return ;
 			}
-			applySettings(gameWindow);
-			drawGameWindow(gameWindow);
+			
+			IGame game = builder.create();
+			JChessApp.view.addNewGameTab(game);
+			drawGameWindow(game);
 		}
 	}
 	
-	private void applySettings(Game gameWindow)
-	{
-		Settings localSettings = gameWindow.getSettings();
-		
-		localSettings.setGameMode(Settings.GameMode.NEW_GAME);
-		timerSetterPanel.setTimeLimit(gameWindow, localSettings);
-	}
-	
-	private void drawGameWindow(Game gameWindow)
+	private void drawGameWindow(IGame gameWindow)
 	{
 		gameWindow.newGame();
 		this.newGameWindow.setVisible(false);

@@ -15,6 +15,7 @@
 
 package jchess.gui.main;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -59,21 +60,12 @@ import org.jdesktop.application.TaskMonitor;
 
 import jchess.JChessApp;
 import jchess.Localization;
-import jchess.gamelogic.Game;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Player.Color;
-import jchess.gamelogic.Settings;
-import jchess.gamelogic.controllers.GameClockController;
-import jchess.gamelogic.controllers.IChessboardController;
-import jchess.gamelogic.controllers.chessboardcontrollers.FourPlayerChessboardController;
-import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
-import jchess.gamelogic.models.chessboardfactories.FourPlayerChessboardFactory;
-import jchess.gamelogic.models.chessboardfactories.TwoPlayerChessboardFactory;
-import jchess.gamelogic.views.IChessboardView;
+import jchess.gamelogic.game.IGame;
+import jchess.gamelogic.game.IGameBuilder;
+import jchess.gamelogic.game.IGameBuilderFactory;
 import jchess.gamelogic.views.IMessageDisplay.Option;
-import jchess.gamelogic.views.chessboardviews.FourPlayerChessboardView;
-import jchess.gamelogic.views.chessboardviews.TwoPlayerChessboardView;
-import jchess.gamelogic.views.gameviews.SwingGameView;
 import jchess.gui.secondary.JChessAboutBox;
 import jchess.gui.secondary.PawnPromotionWindow;
 import jchess.gui.secondary.ThemeChooseWindow;
@@ -89,7 +81,8 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	private static Logger log = Logger.getLogger(JChessView.class.getName());
 	private static final TypedResourceBundle VIEW_PROPERTIES = new TypedResourceBundle("jchess.resources.JChessView");
 	
-	private List<Game> gameList = new ArrayList<Game>(1);
+	private List<IGame> gameList = new ArrayList<IGame>(1);
+	private IGameBuilderFactory gameBuilderFactory;
 	
 	private JMenu gameMenu;
 	private JTabbedPane gamesPane;
@@ -115,9 +108,10 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	private PawnPromotionWindow pawnPromotionBox;
 	public JDialog newGameFrame;
 	
-	public JChessView(SingleFrameApplication app)
+	public JChessView(SingleFrameApplication app, IGameBuilderFactory factory)
 	{
 		super(app);
+		this.gameBuilderFactory = factory;
 		
 		initializeComponents();
 		
@@ -156,7 +150,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	private void initializeMainPanel()
 	{
 		mainPanel = new JPanel();
-		gamesPane = new JChessTabbedPane();
+		gamesPane = new JChessTabbedPane(gameBuilderFactory);
 		
 		configureMainPanelSize();
 		configureMainPanelLayout();
@@ -414,45 +408,10 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 			}
 		});
 	}
-
-	public Game addNewTwoPlayerTab(String p1, String p2)
-	{
-		Player white = new Player(p1, Color.WHITE);
-		Player black = new Player(p2, Color.BLACK);
-		
-		Settings settings = new Settings();
-		IChessboardView view = new TwoPlayerChessboardView(true, false);
-		IChessboardController chessboard = new TwoPlayerChessboardController(view,
-				TwoPlayerChessboardFactory.getInstance(), white, black);
-		GameClockController clock = new GameClockController(settings, white, black);
-		Game newGameTab = new Game(settings, chessboard, view, clock);
-		this.gameList.add(newGameTab);
-		
-		String title = p1 + " vs " + p2;
-		this.gamesPane.addTab(title, (SwingGameView)newGameTab.getView());
-		return newGameTab;
-	}
-
-	public Game addNewFourPlayerTab(String p1, String p2, String p3, String p4)
-	{
-		Player white = new Player(p1, Color.WHITE);
-		Player red = new Player(p2, Color.RED);
-		Player black = new Player(p3, Color.BLACK);
-		Player golden = new Player(p4, Color.GOLDEN);
-		
-		Settings settings = new Settings();
-		IChessboardView view = new FourPlayerChessboardView(true, false);
-		IChessboardController chessboard = new FourPlayerChessboardController(view,
-				FourPlayerChessboardFactory.getInstance(),
-				white, red, black, golden);
-		// TODO: adapt to different clocks!
-		GameClockController clock = new GameClockController(settings, white, black);
-		Game newGameTab = new Game(settings, chessboard, view, clock);
-		this.gameList.add(newGameTab);
-		
-		String title = p1 + " vs " + p2 + " vs " + p3 + " vs " + p4;
-		this.gamesPane.addTab(title, (SwingGameView)newGameTab.getView());
-		return newGameTab;
+	
+	public void addNewGameTab(IGame game) {
+		this.gameList.add(game);
+		this.gamesPane.addTab("", (Component)game.getView());
 	}
 	
 	public void actionPerformed(ActionEvent event)
@@ -460,7 +419,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		Object target = event.getSource();
 		if(target == newGameItem)
 		{
-			this.newGameFrame = new NewGameWindow(this.getFrame());
+			this.newGameFrame = new NewGameWindow(this.getFrame(), this.gameBuilderFactory);
 			JChessApp.getApplication().show(this.newGameFrame);
 		}
 		else if(target == saveGameItem)
@@ -477,7 +436,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 				if(retVal == JFileChooser.APPROVE_OPTION)
 				{
 					File selectedFile = fileChooser.getSelectedFile();
-					Game tempGUI = this.getActiveTabGame();
+					IGame tempGUI = this.getActiveTabGame();
 					if(!selectedFile.exists())
 						createSaveFile(selectedFile);
 					else if(selectedFile.exists())
@@ -544,15 +503,20 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 				try
 				{
 					parser.load(file);
-					Game newGame = null;
+					IGame newGame = null;
 					String gameType = parser.getProperty("Event");
 					
 					// Depending on the game we start a new one
 					switch(gameType) {
 						case "Game":
-							newGame = JChessApp.view.addNewTwoPlayerTab(
-									parser.getProperty("WHITE"),
-									parser.getProperty("BLACK"));
+							IGameBuilder builder = gameBuilderFactory.getBuilder();
+
+							Player white = new Player(parser.getProperty("WHITE"), Color.WHITE);
+							Player black = new Player(parser.getProperty("BLACK"), Color.BLACK);
+							builder.addPlayer(white);
+							builder.addPlayer(black);
+							
+							newGame = builder.create();
 							break;
 						default:
 							log.log(Level.SEVERE, "Unknown game type!");
@@ -614,13 +578,17 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		return "";
 	}
 	
+	public void setGameBuilderFactory(IGameBuilderFactory factory) {
+		this.gameBuilderFactory = factory;
+	}
+	
 	public void componentResized(ComponentEvent event)
 	{
 		log.log(Level.SEVERE, "jchessView resized!!;");
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	
-	public Game getActiveTabGame() throws ArrayIndexOutOfBoundsException
+	public IGame getActiveTabGame() throws ArrayIndexOutOfBoundsException
 	{
 		return this.gameList.get(this.gamesPane.getSelectedIndex());
 	}
