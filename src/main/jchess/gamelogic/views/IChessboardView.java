@@ -10,5 +10,4 @@ public interface IChessboardView extends IRenderable, IMessageDisplay
 	public Field getActiveSquare();
 	public void select(Field field);
 	public void unselect();
-	public void resizeChessboard(int sideLength);
 }

@@ -52,7 +52,7 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 		this.activeField = null;
 		this.renderLabels = renderLabels;
 		this.invertedBoard = invertedBoard;
-		this.resizeChessboard(INITIAL_HEIGHT);
+		this.changeSize(INITIAL_HEIGHT, INITIAL_HEIGHT);
 		this.drawLabels();
 		
 		this.setDoubleBuffered(true);
@@ -309,16 +309,20 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 		}
 	}
 	
-	public void resizeChessboard(int height)
+	@Override
+	public void changeSize(int width, int height)
 	{
+		height = Math.min(width, height);
 		this.chessboardHeight = height;
-		this.squareHeight = height / (double) (this.getSquareCount());
-		this.labelHeight = Math.max(MIN_LABEL_HEIGHT, (int) (squareHeight / 4.0));
-		
 		if(renderLabels)
 		{
-			height += 2 * labelHeight;
+			// If we need to consider labels the height has to be adapted
+			this.labelHeight = Math.max(MIN_LABEL_HEIGHT, (int) (height / 32.0));
+			this.chessboardHeight -= 2 * this.labelHeight;
+		} else {
+			this.labelHeight = 1;
 		}
+		this.squareHeight = this.chessboardHeight / (double) (this.getSquareCount());
 		
 		this.setSize(height, height);
 		this.drawLabels();

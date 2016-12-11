@@ -1,18 +1,18 @@
 package jchess.gamelogic.views.gameviews;
 
-import java.awt.Dimension;
-import java.awt.Point;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
+import javax.swing.BoxLayout;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import jchess.Localization;
-import jchess.gamelogic.views.GameClockView;
 import jchess.gamelogic.views.IChessboardView;
 import jchess.gamelogic.views.IGameView;
+import jchess.gamelogic.views.IRenderable;
 import jchess.gamelogic.views.chessboardviews.SquareChessboardView;
 
 public class SwingGameView extends JPanel implements ComponentListener, IGameView
@@ -20,55 +20,43 @@ public class SwingGameView extends JPanel implements ComponentListener, IGameVie
 	private static final long serialVersionUID = -5137905954028032336L;
 	
 	private SquareChessboardView boardView;
-	private GameClockView clockView;
-	private JScrollPane historyView;
+	private JPanel infoPanel;
 	
-	public SwingGameView(GameClockView clockView, JScrollPane historyView) {
-		this.clockView = clockView;
-		this.historyView = historyView;
-
-		this.add(this.clockView);
-		this.clockView.setSize(new Dimension(200, 100));
-		this.clockView.setLocation(new Point(500, 0));
-		this.clockView.setVisible(true); // TODO: necessary?
-
-		// TODO: replace with HistoryView class/interface
-		this.add(this.historyView);
-		this.historyView.setSize(new Dimension(180, 350));
-		this.historyView.setLocation(new Point(500, 121));
-		this.historyView.setVisible(true); // TODO: necessary?
-
-		// General layout stuff
-		this.setLayout(null);
+	public SwingGameView(IChessboardView view) {
+		this.boardView = (SquareChessboardView) view;
+		this.infoPanel = new JPanel();
+		
+		this.infoPanel.setLayout(new BoxLayout(this.infoPanel, BoxLayout.PAGE_AXIS));
+		this.setLayout(new BorderLayout());
+		
+		super.add(this.boardView, BorderLayout.CENTER);
+		super.add(this.infoPanel, BorderLayout.EAST);
+		
 		this.addComponentListener(this);
 		this.setDoubleBuffered(true);
+	}
+	
+	@Override
+	public void changeSize(int width, int height) {
+		this.setSize(width, height);
+	}
+	
+	@Override
+	public void addInfoComponent(IRenderable component) {
+		this.infoPanel.add((Component) component);
 	}
 	
 	@Override
 	public IChessboardView getChessboardView() {
 		return boardView;
 	}
-	
-	@Override
-	public void setChessboardView(IChessboardView view) {
-		this.boardView = (SquareChessboardView) view;
-		this.add(this.boardView);
-		this.boardView.setLocation(new Point(0, 0));
-	}
 
 	@Override
 	public void componentResized(ComponentEvent e)
 	{
-		// Compute new height for board (has to stay square)
-		int height = this.getHeight() >= this.getWidth() ? this.getWidth() : this.getHeight();
-		int chess_height = (int) Math.round((height * 0.8) / 8) * 8;
-		this.boardView.resizeChessboard(chess_height);
-		
-		// Reposition history and clock views to match new board height
-		chess_height = this.boardView.getHeight();
-		this.historyView.setLocation(new Point(chess_height + 5, 100));
-		this.historyView.setSize(this.historyView.getWidth(), chess_height - 100);
-		this.clockView.setLocation(new Point(chess_height + 5, 0));
+		// Figure out the width of the component's to the side
+		// The height of the chessboard then gets adapted to remain squared
+		this.boardView.changeSize(this.getWidth() - this.infoPanel.getWidth(), this.getHeight());
 	}
 
 	public void render() {

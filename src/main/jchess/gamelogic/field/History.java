@@ -20,14 +20,12 @@
  */
 package jchess.gamelogic.field;
 
-import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
@@ -54,7 +52,7 @@ public class History extends AbstractTableModel
 	private int rowsNum = 0;
 	private String[] names = new String[]{ Localization.getMessage("white"), Localization.getMessage("black") };
 	private MyDefaultTableModel tableModel;
-	private JScrollPane scrollPane;
+	private HistoryView view;
 	private JTable table;
 	private boolean enterBlack = false;
 	private Stack<Move> moveBackStack = new Stack<Move>();
@@ -71,19 +69,13 @@ public class History extends AbstractTableModel
 		this.chessboard = chessboard;
 		this.tableModel = new MyDefaultTableModel();
 		this.table = new JTable(this.tableModel);
-		this.scrollPane = new JScrollPane(this.table);
-		this.scrollPane.setMaximumSize(new Dimension(100, 100));
-		this.table.setMinimumSize(new Dimension(100, 100));
+		this.view = new HistoryView(this.table);
+		//this.table.setMinimumSize(new Dimension(100, 100));
 		
 		this.tableModel.addColumn(this.names[0]);
 		this.tableModel.addColumn(this.names[1]);
 		this.addTableModelListener(null);
 		this.tableModel.addTableModelListener(null);
-		this.scrollPane.setAutoscrolls(true);
-	}
-	
-	public void draw()
-	{
 	}
 	
 	@Override
@@ -231,7 +223,7 @@ public class History extends AbstractTableModel
 			this.move.add(locMove);
 			this.addMove2Table(locMove);
 		}
-		this.scrollPane.scrollRectToVisible(new Rectangle(0, this.scrollPane.getHeight() - 2, 1, 1));
+		this.view.scrollRectToVisible(new Rectangle(0, this.view.getHeight() - 2, 1, 1));
 		
 		if(registerInHistory)
 		{
@@ -244,9 +236,9 @@ public class History extends AbstractTableModel
 		this.moveForwardStack.clear();
 	}
 	
-	public JScrollPane getScrollPane()
+	public HistoryView getView()
 	{
-		return this.scrollPane;
+		return this.view;
 	}
 	
 	public ArrayList<String> getMoveList()

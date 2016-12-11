@@ -1,6 +1,7 @@
 package jchess.gamelogic.views;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -32,11 +33,18 @@ public class GameClockView extends JPanel implements IRenderable
 		Graphics2D g2d = (Graphics2D) this.background.getGraphics();
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		this.drawBackground(g2d);
+		this.setMinimumSize(new Dimension(200, 100));
+		this.setPreferredSize(new Dimension(200, 100));
 	}
 	
 	@Override
 	public void render() {
 		this.repaint();
+	}
+	
+	@Override
+	public void changeSize(int width, int height) {
+		this.setSize(width, height);
 	}
 	
 	/**

@@ -26,7 +26,7 @@ public class SquareChessboardViewTest
 				TwoPlayerChessboardFactory.getInstance(), null, null);
 		handler = new CustomActionHandler();
 		view.initialize(controller, handler);
-		view.resizeChessboard(800);
+		view.changeSize(800, 800);
 	}
 	
 	@Test

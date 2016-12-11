@@ -62,8 +62,9 @@ public class Game implements IGame
 		
 		this.blockedChessboard = false;
 		
-		gameView = new SwingGameView(gameClock.getView(), chessboard.getHistory().getScrollPane());
-		gameView.setChessboardView(view);
+		gameView = new SwingGameView(view);
+		gameView.addInfoComponent(gameClock.getView());
+		gameView.addInfoComponent(chessboard.getHistory().getView());
 	}
 	
 	@Override
