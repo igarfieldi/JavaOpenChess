@@ -94,6 +94,18 @@ public class TwoPlayerPawnTest
 		        board.getBoard().getField(3, 4)));
 		assertTrue(PieceTest.canMakeMoves(board, blackPawn, board.getBoard().getField(3, 2),
 		        board.getBoard().getField(3, 3)));
+		
+		// Test if a piece blocks the two square move
+		whitePawn.markAsUnmoved();
+		board.getBoard().setPiece(board.getBoard().getField(3, 6), whitePawn);
+		board.getBoard().setPiece(board.getBoard().getField(3, 5), blackPawn);
+		assertTrue(board.getPossibleMoves(whitePawn, false).isEmpty());
+
+		// Same for black
+		blackPawn.markAsUnmoved();
+		board.getBoard().setPiece(board.getBoard().getField(3, 2), whitePawn);
+		board.getBoard().setPiece(board.getBoard().getField(3, 1), blackPawn);
+		assertTrue(board.getPossibleMoves(blackPawn, false).isEmpty());
 	}
 	
 	@Test

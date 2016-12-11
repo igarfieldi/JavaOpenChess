@@ -39,8 +39,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 	
 	private History movesHistory;
 	
-	public RegularChessboardController(IChessboardView view, IChessboardModel board,
-			List<Player> players)
+	public RegularChessboardController(IChessboardView view, IChessboardModel board, List<Player> players)
 	{
 		this.board = board;
 		this.view = view;
@@ -48,12 +47,14 @@ public abstract class RegularChessboardController implements IChessboardControll
 		this.movesHistory = new History(this, players.get(0), players.get(1));
 		this.currPlayerIndex = 0;
 		
-		//this.movesHistory = new Moves(this, white, black);
+		// this.movesHistory = new Moves(this, white, black);
 	}
 	
 	@Override
-	public void save(FileMapParser parser) {
-		for(Player player : players) {
+	public void save(FileMapParser parser)
+	{
+		for(Player player : players)
+		{
 			parser.setProperty(player.getColor().toString(), player.getName());
 		}
 		
@@ -61,7 +62,8 @@ public abstract class RegularChessboardController implements IChessboardControll
 	}
 	
 	@Override
-	public void loadFromString(String moves) {
+	public void loadFromString(String moves)
+	{
 		this.movesHistory.setMoves(moves);
 	}
 	
@@ -71,7 +73,8 @@ public abstract class RegularChessboardController implements IChessboardControll
 		return movesHistory;
 	}
 	
-	protected Player getPlayer(int index) {
+	protected Player getPlayer(int index)
+	{
 		return this.players.get(index);
 	}
 	
@@ -106,7 +109,8 @@ public abstract class RegularChessboardController implements IChessboardControll
 	public void switchToNextPlayer()
 	{
 		currPlayerIndex++;
-		if(currPlayerIndex >= players.size()) {
+		if(currPlayerIndex >= players.size())
+		{
 			currPlayerIndex = 0;
 		}
 	}
@@ -142,50 +146,81 @@ public abstract class RegularChessboardController implements IChessboardControll
 		// Non-capturing moves only
 		reachableFields.addAll(this.getMovableFields(piece));
 		
-		if(careForCheck)
+		// Special case for pawns: remove two-step move if there's a piece in
+		// its way!
+		if(piece instanceof Pawn && !piece.hasMoved())
 		{
-			// For each move we need to simuate the future board state and see
-			// if
-			// we're in check.
+			Direction forward = ((Pawn) piece).getForwardDirection();
+			Field pawnField = board.getField(piece);
+			Field inFrontOfPawn = new Field(pawnField.getPosX() + forward.getX(), pawnField.getPosY() + forward.getY());
 			
-			// Store the part of the state that undo will not restore
-			Field activeField = null;
-			if(this.getView() != null)
+			if(board.getPiece(inFrontOfPawn) != null)
 			{
-				activeField = this.getView().getActiveSquare();
-			}
-			
-			for(Iterator<Field> fieldIterator = reachableFields.iterator(); fieldIterator.hasNext();)
-			{
-				// We need to use the iterator instead of foreach to be able to
-				// use .remove()
-				Field currField = fieldIterator.next();
-				// Simulate the board state
-				IChessboardModel tempModel = board;
-				board = board.copy();
-				
-				try {
-					this.move(tempModel.getField(piece), currField, false, false, false, false);
-				} catch (IllegalMoveException exc) {
-					// Should not happen
-					log.log(Level.SEVERE, "Unexpected error while simulating move!", exc);
-				}
-				if(this.isChecked(piece.getPlayer()))
-				{
-					// Checked moves are not allowed, so remove it
-					fieldIterator.remove();
-				}
-				// Undo the move again
-				board = tempModel;
-			}
-			
-			if(this.getView() != null)
-			{
-				this.getView().select(activeField);
+				// We need to remove the two-field move
+				Field twoFieldMove = new Field(pawnField.getPosX() + 2 * forward.getX(),
+				        pawnField.getPosY() + 2 * forward.getY());
+				reachableFields.remove(twoFieldMove);
 			}
 		}
 		
+		if(careForCheck)
+		{
+			this.removeMovesResultingInCheck(piece, reachableFields);
+		}
+		
 		return reachableFields;
+	}
+	
+	/**
+	 * Removes all fields from the set that would leave the player in a check.
+	 * 
+	 * @param piece
+	 *            Piece to be moved
+	 * @param moves
+	 *            Set of (so far) possible moves
+	 */
+	private void removeMovesResultingInCheck(Piece piece, Set<Field> moves)
+	{
+		// For each move we need to simuate the future board state and see
+		// if we're in check
+		
+		// Store the part of the state that we cannot simply revert
+		Field activeField = null;
+		if(this.getView() != null)
+		{
+			activeField = this.getView().getActiveSquare();
+		}
+		
+		for(Iterator<Field> fieldIterator = moves.iterator(); fieldIterator.hasNext();)
+		{
+			// We need to use the iterator instead of foreach to be able to
+			// use .remove()
+			Field currField = fieldIterator.next();
+			// Simulate the board state
+			IChessboardModel tempModel = board;
+			board = board.copy();
+			
+			try
+			{
+				this.move(tempModel.getField(piece), currField, false, false, false, false);
+			} catch(IllegalMoveException exc)
+			{
+				// Should not happen
+				log.log(Level.SEVERE, "Unexpected error while simulating move!", exc);
+			}
+			if(this.isChecked(piece.getPlayer()))
+			{
+				// Checked moves are not allowed, so remove it
+				fieldIterator.remove();
+			}
+			// Undo the move again
+			board = tempModel;
+		}
+		
+		if(this.getView() != null)
+		{
+			this.getView().select(activeField);
+		}
 	}
 	
 	/**
@@ -367,17 +402,20 @@ public abstract class RegularChessboardController implements IChessboardControll
 		{
 			if(piece instanceof King)
 			{
-				for(Player enemy : this.players) {
-					// You cannot  be an enemy of yourself (at least in chess :) )
-					if(player != enemy) {
-    					if(!this.isThreatenedByPlayer(board.getField(piece), enemy).isEmpty()) {
-    						return true;
-    					}
-    				}
-    			}
+				for(Player enemy : this.players)
+				{
+					// You cannot be an enemy of yourself (at least in chess :)
+					// )
+					if(player != enemy)
+					{
+						if(!this.isThreatenedByPlayer(board.getField(piece), enemy).isEmpty())
+						{
+							return true;
+						}
+					}
+				}
 			}
 		}
-		
 		
 		return false;
 	}
@@ -482,26 +520,33 @@ public abstract class RegularChessboardController implements IChessboardControll
 	}
 	
 	/**
-	 * Checks whether a given pawn is eligible for promotion.
-	 * With regular chess rules this occurs when a pawn reaches the end of the
-	 * board. Since different boards have different directions, this method
-	 * has to be overridden.
-	 * @param pawn Pawn to check promotion for
-	 * @param target Field where the pawn will be moved to
+	 * Checks whether a given pawn is eligible for promotion. With regular chess
+	 * rules this occurs when a pawn reaches the end of the board. Since
+	 * different boards have different directions, this method has to be
+	 * overridden.
+	 * 
+	 * @param pawn
+	 *            Pawn to check promotion for
+	 * @param target
+	 *            Field where the pawn will be moved to
 	 * @return True if the pawn can be promoted
 	 */
 	protected abstract boolean checkForPromotion(Pawn pawn, Field target);
 	
-	private boolean move(Field begin, Field end, boolean checkMove, boolean refresh, boolean clearForwardHistory, boolean enterIntoHistory) throws IllegalMoveException
+	private boolean move(Field begin, Field end, boolean checkMove, boolean refresh, boolean clearForwardHistory,
+	        boolean enterIntoHistory) throws IllegalMoveException
 	{
 		// Standard move
 		Piece movedPiece = board.getPiece(begin);
-		if(movedPiece == null) {
+		if(movedPiece == null)
+		{
 			throw new NullPointerException("No piece on starting field!");
 		}
-
-		if(checkMove) {
-			if(!this.getPossibleMoves(movedPiece, true).contains(end)) {
+		
+		if(checkMove)
+		{
+			if(!this.getPossibleMoves(movedPiece, true).contains(end))
+			{
 				throw new IllegalMoveException("Cannot move " + movedPiece + " to " + end);
 			}
 		}
@@ -523,20 +568,22 @@ public abstract class RegularChessboardController implements IChessboardControll
 			}
 		} else if(board.getPiece(begin) instanceof Pawn)
 		{
-			if(lastMove != null && lastMove.wasPawnTwoFieldsMove()) {
+			if(lastMove != null && lastMove.wasPawnTwoFieldsMove())
+			{
 				// Check if the target field lies behind the two-square pawn
 				Direction backwards = ((Pawn) lastMove.getMovedPiece()).getForwardDirection().multiply(-1);
 				Field behindPawn = board.getField(lastMove.getTo().getPosX() + backwards.getX(),
-						lastMove.getTo().getPosY() + backwards.getY());
-				if(behindPawn.equals(end)) {
+				        lastMove.getTo().getPosY() + backwards.getY());
+				if(behindPawn.equals(end))
+				{
 					// In that case we have an En Passant at our hands
-					move = new Move(begin, end, movedPiece, lastMove.getMovedPiece(),
-							CastlingType.NONE, true, null);
+					move = new Move(begin, end, movedPiece, lastMove.getMovedPiece(), CastlingType.NONE, true, null);
 				}
 			}
 			if(clearForwardHistory && this.checkForPromotion((Pawn) movedPiece, end))
 			{
-				// Promotion of pawns has to be handled for the specific board layout
+				// Promotion of pawns has to be handled for the specific board
+				// layout
 				String newPiece = JChessApp.view.showPawnPromotionBox(movedPiece.getPlayer().getColor());
 				
 				Piece promoted = null;
@@ -553,14 +600,14 @@ public abstract class RegularChessboardController implements IChessboardControll
 				} else if(newPiece.equals("Knight"))// transform pawn to knight
 				{
 					promoted = new Knight(movedPiece.getPlayer());
-				} else {
+				} else
+				{
 					// If promotion was cancelled don't execute the move!
 					return false;
 				}
 				
 				board.setPiece(begin, promoted);
-				move = new Move(begin, end, movedPiece, board.getPiece(end), CastlingType.NONE, false,
-						promoted);
+				move = new Move(begin, end, movedPiece, board.getPiece(end), CastlingType.NONE, false, promoted);
 			}
 		} else
 		{
@@ -575,12 +622,12 @@ public abstract class RegularChessboardController implements IChessboardControll
 			// Move the rook
 			if(begin.getPosX() + 2 == end.getPosX())
 			{
-				move(board.getField(7, begin.getPosY()), board.getField(end.getPosX() - 1, begin.getPosY()), false, false,
-				        false, true);
+				move(board.getField(7, begin.getPosY()), board.getField(end.getPosX() - 1, begin.getPosY()), false,
+				        false, false, true);
 			} else
 			{
-				move(board.getField(0, begin.getPosY()), board.getField(end.getPosX() + 1, begin.getPosY()), false, false,
-				        false, true);
+				move(board.getField(0, begin.getPosY()), board.getField(end.getPosX() + 1, begin.getPosY()), false,
+				        false, false, true);
 			}
 		}
 		
