@@ -31,94 +31,38 @@ import jchess.util.Direction;
  * Class to represent a pawn piece Pawn can move only forward and can beat only
  * across In first move pawn can move 2 squares Pawn can be upgrade to rook,
  * knight, bishop, Queen if it's in the squares nearest the side where opponent
- * is located First move of pawn:
- *
-|_|_|_|_|_|_|_|_|7
-|_|_|_|_|_|_|_|_|6
-|_|_|_|X|_|_|_|_|5
-|_|_|_|X|_|_|_|_|4
-|_|_|_|P|_|_|_|_|3
-|_|_|_|_|_|_|_|_|2
-|_|_|_|_|_|_|_|_|1
-|_|_|_|_|_|_|_|_|0
-0 1 2 3 4 5 6 7
- *
- * Movement of a pawn:
- *       
-|_|_|_|_|_|_|_|_|7
-|_|_|_|_|_|_|_|_|6
-|_|_|_|_|_|_|_|_|5
-|_|_|_|X|_|_|_|_|4
-|_|_|_|P|_|_|_|_|3
-|_|_|_|_|_|_|_|_|2
-|_|_|_|_|_|_|_|_|1
-|_|_|_|_|_|_|_|_|0
-0 1 2 3 4 5 6 7
- *
- * Beats with can take pawn:
- *
-|_|_|_|_|_|_|_|_|7
-|_|_|_|_|_|_|_|_|6
-|_|_|_|_|_|_|_|_|5
-|_|_|X|_|X|_|_|_|4
-|_|_|_|P|_|_|_|_|3
-|_|_|_|_|_|_|_|_|2
-|_|_|_|_|_|_|_|_|1
-|_|_|_|_|_|_|_|_|0
-0 1 2 3 4 5 6 7
+ * is located First move of pawn.
  */
-public class Pawn extends Piece
+public class Pawn implements IPieceBehaviour
 {
-	private Direction normalMovement;
-	private Direction twoStepMovement;
-	private Direction[] capturingMovement;
+	private Direction forward;
 	
-	@Override
-	public Set<Direction> getNormalMovements() {
-		Set<Direction> movements = new HashSet<Direction>();
-		movements.add(normalMovement);
-		
-		// If the pawn has not moved yet it may move two fields at once
-		if(!this.hasMoved()) {
-			movements.add(twoStepMovement);
-		}
-		return movements;
-	}
-	
-	public Direction getForwardDirection() {
-		return normalMovement;
-	}
-	
-	@Override
-	public Set<Direction> getCapturingMovements() {
-		return new HashSet<Direction>(Arrays.asList(this.capturingMovement));
-	}
-	
-	public Pawn(Player player, Direction forward)
+	public Pawn(Direction forward)
 	{
-		// Apparently pawns as the basic figure do not get a symbol...
-		super(player, "", false, PieceType.PAWN);
-		this.normalMovement = forward;
-		this.twoStepMovement = forward.multiply(2);
-		this.capturingMovement = new Direction[2];
-		
-		// TODO: find a more independent way to determine this!
-		if(forward.getX() != 0) {
-			capturingMovement[0] = new Direction(forward.getX(), -1);
-			capturingMovement[1] = new Direction(forward.getX(), 1);
-		} else {
-			capturingMovement[0] = new Direction(-1, forward.getY());
-			capturingMovement[1] = new Direction(1, forward.getY());
-		}
+		this.forward = forward;
 	}
 	
 	@Override
-	public Pawn copy() {
-		return new Pawn(player, normalMovement);
+	public Set<Direction> getNormalMovements()
+	{
+		return new HashSet<Direction>(Arrays.asList(new Direction[]{ forward }));
 	}
 	
-	void promote(Piece newPiece)
+	@Override
+	public Set<Direction> getCapturingMovements()
 	{
-		throw new UnsupportedOperationException("Not supported yet.");
+		return DirectionType.getConeMovement(forward);
+	}
+	
+	@Override
+	public boolean canMoveMultipleSteps()
+	{
+		return false;
+	}
+	
+	@Override
+	public boolean canSkipOverPieces()
+	{
+		return false;
 	}
 }

@@ -13,6 +13,7 @@ import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardCon
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.models.factories.TwoPlayerChessboardFactory;
+import jchess.gamelogic.pieces.PieceFactory.PieceType;
 import jchess.util.Direction;
 
 public class RookTest
@@ -21,10 +22,12 @@ public class RookTest
 	IChessboardController board;
 	Player white;
 	Player black;
+	PieceFactory factory;
 	
 	@Before
 	public void setUp() throws Exception
 	{
+		factory = PieceFactory.getInstance();
 		white = new Player("p1", Color.WHITE);
 		black = new Player("p2", Color.BLACK);
 		board = new TwoPlayerChessboardController(null,
@@ -34,16 +37,12 @@ public class RookTest
 		{
 			board.getBoard().removePiece(field);
 		}
-		King whiteKing = new King(white);
-		King blackKing = new King(black);
-		board.getBoard().setPiece(board.getBoard().getField(4, 7), whiteKing);
-		board.getBoard().setPiece(board.getBoard().getField(4, 0), blackKing);
 	}
 	
 	@Test
 	public void testPossibleMovesRegular()
 	{
-		Rook whiteRook = new Rook(white);
+		Piece whiteRook = factory.buildPiece(white, null, PieceType.ROOK);
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whiteRook);
 		
 		// The rook can move vertical and horizontal
@@ -61,9 +60,9 @@ public class RookTest
 	@Test
 	public void testPossibleMovesCapture()
 	{
-		Rook whiteRook = new Rook(white);
-		Pawn blackPawn1 = new Pawn(black, new Direction(1, 0));
-		Pawn blackPawn2 = new Pawn(black, new Direction(1, 0));
+		Piece whiteRook = factory.buildPiece(white, null, PieceType.ROOK);
+		Piece blackPawn1 = factory.buildPiece(black, new Direction(0, 1), PieceType.PAWN);
+		Piece blackPawn2 = factory.buildPiece(black, new Direction(0, 1), PieceType.PAWN);
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whiteRook);
 		
 		// Place rooks vertically and horizontally

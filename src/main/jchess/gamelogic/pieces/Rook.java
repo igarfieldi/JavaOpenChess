@@ -29,45 +29,34 @@ import jchess.gamelogic.Player;
 import jchess.util.Direction;
 
 /**
- * Class to represent a chess pawn rook Rook can move:
- * 
- * |_|_|_|X|_|_|_|_|7 
- * |_|_|_|X|_|_|_|_|6 
- * |_|_|_|X|_|_|_|_|5 
- * |_|_|_|X|_|_|_|_|4
- * |X|X|X|B|X|X|X|X|3 
- * |_|_|_|X|_|_|_|_|2 
- * |_|_|_|X|_|_|_|_|1 
- * |_|_|_|X|_|_|_|_|0 
- * 0 1 2 3 4 5 6 7
+ * Class to represent a chess pawn rook Rook can move.
  *
  */
-public class Rook extends Piece
+public class Rook implements IPieceBehaviour
 {
-	private static final Direction[] NORMAL_MOVEMENT = {
-			new Direction(1, 0),
-			new Direction(-1, 0),
-			new Direction(0, 1),
-			new Direction(0, -1)
-	};
-	
 	@Override
-	public Set<Direction> getNormalMovements() {
-		return new HashSet<Direction>(Arrays.asList(Rook.NORMAL_MOVEMENT));
-	}
-	
-	@Override
-	public Set<Direction> getCapturingMovements() {
-		return new HashSet<Direction>(Arrays.asList(Rook.NORMAL_MOVEMENT));
-	}
-	
-	@Override
-	public Rook copy() {
-		return new Rook(player);
-	}
-	
-	public Rook(Player player)
+	public Set<Direction> getNormalMovements()
 	{
-		super(player, "R", PieceType.ROOK);// call initialiser of super type: Piece
+		Set<Direction> moves = new HashSet<Direction>();
+		moves.addAll(DirectionType.getStraightDirections());
+		return moves;
+	}
+	
+	@Override
+	public Set<Direction> getCapturingMovements()
+	{
+		return this.getNormalMovements();
+	}
+	
+	@Override
+	public boolean canMoveMultipleSteps()
+	{
+		return true;
+	}
+	
+	@Override
+	public boolean canSkipOverPieces()
+	{
+		return false;
 	}
 }

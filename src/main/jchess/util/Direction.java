@@ -43,6 +43,11 @@ public class Direction
 	}
 	
 	@Override
+	public int hashCode() {
+		return 10000*y + x;
+	}
+	
+	@Override
 	public boolean equals(Object obj)
 	{
 		if(this == obj)

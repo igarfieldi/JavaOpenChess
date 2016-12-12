@@ -12,6 +12,7 @@ import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardCon
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.models.factories.TwoPlayerChessboardFactory;
+import jchess.gamelogic.pieces.PieceFactory.PieceType;
 import jchess.util.Direction;
 
 public class KnightTest
@@ -20,10 +21,12 @@ public class KnightTest
 	IChessboardController board;
 	Player white;
 	Player black;
+	PieceFactory factory;
 	
 	@Before
 	public void setUp() throws Exception
 	{
+		factory = PieceFactory.getInstance();
 		white = new Player("p1", Color.WHITE);
 		black = new Player("p2", Color.BLACK);
 		board = new TwoPlayerChessboardController(null,
@@ -33,16 +36,12 @@ public class KnightTest
 		{
 			board.getBoard().removePiece(field);
 		}
-		King whiteKing = new King(white);
-		King blackKing = new King(black);
-		board.getBoard().setPiece(board.getBoard().getField(4, 7), whiteKing);
-		board.getBoard().setPiece(board.getBoard().getField(4, 0), blackKing);
 	}
 	
 	@Test
 	public void testPossibleMovesRegular()
 	{
-		Knight whiteKnight = new Knight(white);
+		Piece whiteKnight = factory.buildPiece(white, null, PieceType.KNIGHT);
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whiteKnight);
 		
 		// The rook can move vertical and horizontal
@@ -56,8 +55,8 @@ public class KnightTest
 	@Test
 	public void testPossibleMovesCapture()
 	{
-		Knight whiteKnight = new Knight(white);
-		Pawn blackPawn = new Pawn(black, new Direction(1, 0));
+		Piece whiteKnight = factory.buildPiece(white, null, PieceType.KNIGHT);
+		Piece blackPawn = factory.buildPiece(black, new Direction(0, 1), PieceType.PAWN);
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whiteKnight);
 		
 		// Knights also have to be able to capture on their moves

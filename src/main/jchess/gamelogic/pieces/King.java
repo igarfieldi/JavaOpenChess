@@ -20,43 +20,37 @@
  */
 package jchess.gamelogic.pieces;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import jchess.gamelogic.Player;
 import jchess.util.Direction;
 
-public class King extends Piece
+public class King implements IPieceBehaviour
 {
-	private static final Direction[] NORMAL_MOVEMENT = {
-			new Direction(1, 0),
-			new Direction(-1, 0),
-			new Direction(0, 1),
-			new Direction(0, -1),
-			new Direction(1, 1),
-			new Direction(-1, 1),
-			new Direction(1, -1),
-			new Direction(-1, -1)
-	};
-	
 	@Override
-	public Set<Direction> getNormalMovements() {
-		return new HashSet<Direction>(Arrays.asList(King.NORMAL_MOVEMENT));
-	}
-	
-	@Override
-	public Set<Direction> getCapturingMovements() {
-		return new HashSet<Direction>(Arrays.asList(King.NORMAL_MOVEMENT));
-	}
-	
-	@Override
-	public King copy() {
-		return new King(player);
-	}
-	
-	public King(Player player)
+	public Set<Direction> getNormalMovements()
 	{
-		super(player, "K", false, PieceType.KING);
+		Set<Direction> moves = new HashSet<Direction>();
+		moves.addAll(DirectionType.getDiagonalDirections());
+		moves.addAll(DirectionType.getStraightDirections());
+		return moves;
+	}
+	
+	@Override
+	public Set<Direction> getCapturingMovements()
+	{
+		return this.getNormalMovements();
+	}
+	
+	@Override
+	public boolean canMoveMultipleSteps()
+	{
+		return false;
+	}
+	
+	@Override
+	public boolean canSkipOverPieces()
+	{
+		return false;
 	}
 }

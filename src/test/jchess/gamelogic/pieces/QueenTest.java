@@ -13,6 +13,7 @@ import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardCon
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.models.factories.TwoPlayerChessboardFactory;
+import jchess.gamelogic.pieces.PieceFactory.PieceType;
 import jchess.util.Direction;
 
 public class QueenTest
@@ -21,10 +22,12 @@ public class QueenTest
 	IChessboardController board;
 	Player white;
 	Player black;
+	PieceFactory factory;
 	
 	@Before
 	public void setUp() throws Exception
 	{
+		factory = PieceFactory.getInstance();
 		white = new Player("p1", Color.WHITE);
 		black = new Player("p2", Color.BLACK);
 		board = new TwoPlayerChessboardController(null,
@@ -34,16 +37,12 @@ public class QueenTest
 		{
 			board.getBoard().removePiece(field);
 		}
-		King whiteKing = new King(white);
-		King blackKing = new King(black);
-		board.getBoard().setPiece(board.getBoard().getField(4, 7), whiteKing);
-		board.getBoard().setPiece(board.getBoard().getField(4, 0), blackKing);
 	}
 	
 	@Test
 	public void testPossibleMovesRegular()
 	{
-		Queen whiteQueen = new Queen(white);
+		Piece whiteQueen = factory.buildPiece(white, null, PieceType.QUEEN);
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whiteQueen);
 		
 		// The queen has to be able to move along every directional path
@@ -67,9 +66,9 @@ public class QueenTest
 	@Test
 	public void testPossibleMovesCapture()
 	{
-		Queen whiteQueen = new Queen(white);
-		Pawn blackPawn1 = new Pawn(black, new Direction(1, 0));
-		Pawn blackPawn2 = new Pawn(black, new Direction(1, 0));
+		Piece whiteQueen = factory.buildPiece(white, null, PieceType.QUEEN);
+		Piece blackPawn1 = factory.buildPiece(black, new Direction(0, 1), PieceType.PAWN);
+		Piece blackPawn2 = factory.buildPiece(black, new Direction(0, 1), PieceType.PAWN);
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whiteQueen);
 		
 		// Place queens in all different directions (vertical, horizontal,

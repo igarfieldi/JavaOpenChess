@@ -28,48 +28,34 @@ import jchess.gamelogic.Player;
 import jchess.util.Direction;
 
 /**
- * Class to represent a queen piece Queen can move almost in every way:
- * 
- 	|_|_|_|X|_|_|_|X|7
-    |X|_|_|X|_|_|X|_|6
-    |_|X|_|X|_|X|_|_|5
-    |_|_|X|X|x|_|_|_|4
-    |X|X|X|Q|X|X|X|X|3
-    |_|_|X|X|X|_|_|_|2
-    |_|X|_|X|_|X|_|_|1
-    |X|_|_|X|_|_|X|_|0
-    0 1 2 3 4 5 6 7
+ * Class to represent a queen piece Queen can move almost in every way.
  */
-public class Queen extends Piece
+public class Queen implements IPieceBehaviour
 {
-	private static final Direction[] NORMAL_MOVEMENT = {
-			new Direction(1, 0),
-			new Direction(-1, 0),
-			new Direction(0, 1),
-			new Direction(0, -1),
-			new Direction(1, 1),
-			new Direction(-1, 1),
-			new Direction(1, -1),
-			new Direction(-1, -1)
-	};
-	
 	@Override
-	public Set<Direction> getNormalMovements() {
-		return new HashSet<Direction>(Arrays.asList(Queen.NORMAL_MOVEMENT));
-	}
-	
-	@Override
-	public Set<Direction> getCapturingMovements() {
-		return new HashSet<Direction>(Arrays.asList(Queen.NORMAL_MOVEMENT));
-	}
-	
-	@Override
-	public Queen copy() {
-		return new Queen(player);
-	}
-	
-	public Queen(Player player)
+	public Set<Direction> getNormalMovements()
 	{
-		super(player, "Q", PieceType.QUEEN);// call initialiser of super type: Piece
+		Set<Direction> moves = new HashSet<Direction>();
+		moves.addAll(DirectionType.getDiagonalDirections());
+		moves.addAll(DirectionType.getStraightDirections());
+		return moves;
+	}
+	
+	@Override
+	public Set<Direction> getCapturingMovements()
+	{
+		return this.getNormalMovements();
+	}
+	
+	@Override
+	public boolean canMoveMultipleSteps()
+	{
+		return true;
+	}
+	
+	@Override
+	public boolean canSkipOverPieces()
+	{
+		return false;
 	}
 }

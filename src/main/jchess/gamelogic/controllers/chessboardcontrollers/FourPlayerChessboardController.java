@@ -165,8 +165,8 @@ public class FourPlayerChessboardController extends RegularChessboardController
 	 * @see jchess.gamelogic.field.chessboardcontrollers.RegularChessboardController#checkForPromotion(Pawn, Field)
 	 */
 	@Override
-	protected boolean checkForPromotion(Pawn pawn, Field target) {
-		Direction forward = pawn.getForwardDirection();
+	protected boolean checkForPromotion(Piece pawn, Field target) {
+		Direction forward = pawn.getBehaviour().getNormalMovements().iterator().next();
 		
 		// In 4p chess there are 4 different "base lines" where promotion
 		// can happen

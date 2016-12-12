@@ -8,11 +8,14 @@ import jchess.gamelogic.models.IBoardFactory;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.models.chessboardmodels.ChessboardModel;
 import jchess.gamelogic.pieces.Bishop;
+import jchess.gamelogic.pieces.IPieceFactory;
 import jchess.gamelogic.pieces.King;
 import jchess.gamelogic.pieces.Knight;
 import jchess.gamelogic.pieces.Pawn;
+import jchess.gamelogic.pieces.PieceFactory;
 import jchess.gamelogic.pieces.Queen;
 import jchess.gamelogic.pieces.Rook;
+import jchess.gamelogic.pieces.PieceFactory.PieceType;
 import jchess.util.Direction;
 
 public class FourPlayerChessboardFactory implements IBoardFactory
@@ -48,53 +51,59 @@ public class FourPlayerChessboardFactory implements IBoardFactory
 			}
 		}
 		
+		IPieceFactory factory = PieceFactory.getInstance();
+		Direction up = new Direction(0, -1);
+		Direction down = new Direction(0, 1);
+		Direction left = new Direction(0, -1);
+		Direction right = new Direction(0, 1);
+		
 		// Regular pieces for all 4 players
-		board.setPiece(board.getField(3, 13), new Rook(players.get(0)));
-		board.setPiece(board.getField(10, 13), new Rook(players.get(0)));
-		board.setPiece(board.getField(4, 13), new Knight(players.get(0)));
-		board.setPiece(board.getField(9, 13), new Knight(players.get(0)));
-		board.setPiece(board.getField(5, 13), new Bishop(players.get(0)));
-		board.setPiece(board.getField(8, 13), new Bishop(players.get(0)));
-		board.setPiece(board.getField(6, 13), new Queen(players.get(0)));
-		board.setPiece(board.getField(7, 13), new King(players.get(0)));
+		board.setPiece(board.getField(3, 13), factory.buildPiece(players.get(0), up, PieceType.ROOK));
+		board.setPiece(board.getField(10, 13), factory.buildPiece(players.get(0), up, PieceType.ROOK));
+		board.setPiece(board.getField(4, 13), factory.buildPiece(players.get(0), up, PieceType.KNIGHT));
+		board.setPiece(board.getField(9, 13), factory.buildPiece(players.get(0), up, PieceType.KNIGHT));
+		board.setPiece(board.getField(5, 13), factory.buildPiece(players.get(0), up, PieceType.BISHOP));
+		board.setPiece(board.getField(8, 13), factory.buildPiece(players.get(0), up, PieceType.BISHOP));
+		board.setPiece(board.getField(6, 13), factory.buildPiece(players.get(0), up, PieceType.QUEEN));
+		board.setPiece(board.getField(7, 13), factory.buildPiece(players.get(0), up, PieceType.KING));
 		
-		board.setPiece(board.getField(0, 10), new Rook(players.get(1)));
-		board.setPiece(board.getField(0, 3), new Rook(players.get(1)));
-		board.setPiece(board.getField(0, 9), new Knight(players.get(1)));
-		board.setPiece(board.getField(0, 4), new Knight(players.get(1)));
-		board.setPiece(board.getField(0, 8), new Bishop(players.get(1)));
-		board.setPiece(board.getField(0, 5), new Bishop(players.get(1)));
-		board.setPiece(board.getField(0, 7), new Queen(players.get(1)));
-		board.setPiece(board.getField(0, 6), new King(players.get(1)));
+		board.setPiece(board.getField(0, 10), factory.buildPiece(players.get(1), right, PieceType.ROOK));
+		board.setPiece(board.getField(0, 3), factory.buildPiece(players.get(1), right, PieceType.ROOK));
+		board.setPiece(board.getField(0, 9), factory.buildPiece(players.get(1), right, PieceType.KNIGHT));
+		board.setPiece(board.getField(0, 4), factory.buildPiece(players.get(1), right, PieceType.KNIGHT));
+		board.setPiece(board.getField(0, 8), factory.buildPiece(players.get(1), right, PieceType.BISHOP));
+		board.setPiece(board.getField(0, 5), factory.buildPiece(players.get(1), right, PieceType.BISHOP));
+		board.setPiece(board.getField(0, 7), factory.buildPiece(players.get(1), right, PieceType.QUEEN));
+		board.setPiece(board.getField(0, 6), factory.buildPiece(players.get(1), right, PieceType.KING));
 		
-		board.setPiece(board.getField(3, 0), new Rook(players.get(2)));
-		board.setPiece(board.getField(10, 0), new Rook(players.get(2)));
-		board.setPiece(board.getField(4, 0), new Knight(players.get(2)));
-		board.setPiece(board.getField(9, 0), new Knight(players.get(2)));
-		board.setPiece(board.getField(5, 0), new Bishop(players.get(2)));
-		board.setPiece(board.getField(8, 0), new Bishop(players.get(2)));
-		board.setPiece(board.getField(7, 0), new Queen(players.get(2)));
-		board.setPiece(board.getField(6, 0), new King(players.get(2)));
+		board.setPiece(board.getField(3, 0), factory.buildPiece(players.get(2), down, PieceType.ROOK));
+		board.setPiece(board.getField(10, 0), factory.buildPiece(players.get(2), down, PieceType.ROOK));
+		board.setPiece(board.getField(4, 0), factory.buildPiece(players.get(2), down, PieceType.KNIGHT));
+		board.setPiece(board.getField(9, 0), factory.buildPiece(players.get(2), down, PieceType.KNIGHT));
+		board.setPiece(board.getField(5, 0), factory.buildPiece(players.get(2), down, PieceType.BISHOP));
+		board.setPiece(board.getField(8, 0), factory.buildPiece(players.get(2), down, PieceType.BISHOP));
+		board.setPiece(board.getField(7, 0), factory.buildPiece(players.get(2), down, PieceType.QUEEN));
+		board.setPiece(board.getField(6, 0), factory.buildPiece(players.get(2), down, PieceType.KING));
 
-		board.setPiece(board.getField(13, 10), new Rook(players.get(3)));
-		board.setPiece(board.getField(13, 3), new Rook(players.get(3)));
-		board.setPiece(board.getField(13, 9), new Knight(players.get(3)));
-		board.setPiece(board.getField(13, 4), new Knight(players.get(3)));
-		board.setPiece(board.getField(13, 8), new Bishop(players.get(3)));
-		board.setPiece(board.getField(13, 5), new Bishop(players.get(3)));
-		board.setPiece(board.getField(13, 6), new Queen(players.get(3)));
-		board.setPiece(board.getField(13, 7), new King(players.get(3)));
+		board.setPiece(board.getField(13, 10), factory.buildPiece(players.get(3), left, PieceType.ROOK));
+		board.setPiece(board.getField(13, 3), factory.buildPiece(players.get(3), left, PieceType.ROOK));
+		board.setPiece(board.getField(13, 9), factory.buildPiece(players.get(3), left, PieceType.KNIGHT));
+		board.setPiece(board.getField(13, 4), factory.buildPiece(players.get(3), left, PieceType.KNIGHT));
+		board.setPiece(board.getField(13, 8), factory.buildPiece(players.get(3), left, PieceType.BISHOP));
+		board.setPiece(board.getField(13, 5), factory.buildPiece(players.get(3), left, PieceType.BISHOP));
+		board.setPiece(board.getField(13, 6), factory.buildPiece(players.get(3), left, PieceType.QUEEN));
+		board.setPiece(board.getField(13, 7), factory.buildPiece(players.get(3), left, PieceType.KING));
 		
 		// Initialize pawns: no special distinctions necessary
 		for(int x = 3; x < 11; x++)
 		{
-			board.setPiece(board.getField(x, 12), new Pawn(players.get(0), new Direction(0, -1)));
-			board.setPiece(board.getField(x, 1), new Pawn(players.get(2), new Direction(0, 1)));
+			board.setPiece(board.getField(x, 12), factory.buildPiece(players.get(0), up, PieceType.PAWN));
+			board.setPiece(board.getField(x, 1), factory.buildPiece(players.get(2), down, PieceType.PAWN));
 		}
 		for(int y = 3; y < 11; y++)
 		{
-			board.setPiece(board.getField(1, y), new Pawn(players.get(1), new Direction(1, 0)));
-			board.setPiece(board.getField(12, y), new Pawn(players.get(3), new Direction(-1, 0)));
+			board.setPiece(board.getField(1, y), factory.buildPiece(players.get(1), right, PieceType.PAWN));
+			board.setPiece(board.getField(12, y), factory.buildPiece(players.get(3), left, PieceType.PAWN));
 		}
 		
 		return board;

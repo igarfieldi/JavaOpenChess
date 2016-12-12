@@ -54,7 +54,7 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 	protected Set<Field> getCastleMoves(Piece piece) {
 		Set<Field> castleFields = new HashSet<Field>();
 		
-		if(piece instanceof King)
+		if(piece.getBehaviour() instanceof King)
 		{
 			// Castling
 			if(!piece.hasMoved())
@@ -67,7 +67,7 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 				if(leftRook != null && !leftRook.hasMoved())
 				{
 					// Neither left rook nor king have moved yet
-					Set<Field> reachable = this.getMovableFieldsInDirection(leftRook, leftRook.getNormalMovements());
+					Set<Field> reachable = this.getMovableFieldsInDirection(leftRook, leftRook.getBehaviour().getNormalMovements());
 					if(reachable.contains(getBoard().getField(kingsField.getPosX() - 1, kingsField.getPosY())))
 					{
 						// Left rook can move right next to the king -> fields
@@ -92,7 +92,7 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 				if(rightRook != null && !rightRook.hasMoved())
 				{
 					// Neither left rook nor king have moved yet
-					Set<Field> reachable = this.getMovableFieldsInDirection(rightRook, rightRook.getNormalMovements());
+					Set<Field> reachable = this.getMovableFieldsInDirection(rightRook, rightRook.getBehaviour().getNormalMovements());
 					if(reachable.contains(getBoard().getField(kingsField.getPosX() + 1, kingsField.getPosY())))
 					{
 						// Right rook can move right next to the king -> fields
@@ -125,13 +125,13 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 	{
 		Set<Field> enPassantMoves = new HashSet<Field>();
 		
-		if(piece instanceof Pawn)
+		if(piece.getBehaviour() instanceof Pawn)
 		{
 			Move lastMove = getHistory().getLastMoveFromHistory();
 			// En passant
 			if(lastMove != null && lastMove.wasPawnTwoFieldsMove())
 			{
-				Pawn twoSquareMovedPawn = (Pawn) lastMove.getMovedPiece();
+				Piece twoSquareMovedPawn = lastMove.getMovedPiece();
 				if(getBoard().getField(piece).getPosY() == getBoard().getField(twoSquareMovedPawn).getPosY())
 				{
 					// Our pawn is in the same row
@@ -163,8 +163,8 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 	 * @see jchess.gamelogic.field.chessboardcontrollers.RegularChessboardController#checkForPromotion(Pawn, Field)
 	 */
 	@Override
-	protected boolean checkForPromotion(Pawn pawn, Field target) {
-		Direction forward = pawn.getForwardDirection();
+	protected boolean checkForPromotion(Piece pawn, Field target) {
+		Direction forward = pawn.getBehaviour().getNormalMovements().iterator().next();
 		
 		// Only two possibilities: pawn moves up or down; then check if it
 		// is at the board end

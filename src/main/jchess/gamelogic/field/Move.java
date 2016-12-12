@@ -50,11 +50,11 @@ public class Move
 		this.wasEnPassant = wasEnPassant;
 		
 		// TODO: adapt to 4p chess
-		if(movedPiece instanceof Pawn && (Math.abs(to.getPosY() - from.getPosY()) == 2||
+		if(movedPiece.getBehaviour() instanceof Pawn && (Math.abs(to.getPosY() - from.getPosY()) == 2||
 				Math.abs(to.getPosX() - from.getPosX()) == 2))
 		{
 			this.wasPawnTwoFieldsMove = true;
-		} else if(movedPiece.getName().equals("Pawn") && promotedPiece != null)
+		} else if(movedPiece.getBehaviour() instanceof Pawn && promotedPiece != null)
 		{
 			this.promotedTo = promotedPiece;
 		}

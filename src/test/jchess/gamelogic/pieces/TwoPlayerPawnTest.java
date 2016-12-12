@@ -13,6 +13,7 @@ import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardCon
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.models.factories.TwoPlayerChessboardFactory;
+import jchess.gamelogic.pieces.PieceFactory.PieceType;
 import jchess.util.Direction;
 
 public class TwoPlayerPawnTest
@@ -21,10 +22,12 @@ public class TwoPlayerPawnTest
 	IChessboardController board;
 	Player white;
 	Player black;
+	PieceFactory factory;
 	
 	@Before
 	public void setUp() throws Exception
 	{
+		factory = PieceFactory.getInstance();
 		white = new Player("p1", Color.WHITE);
 		black = new Player("p2", Color.BLACK);
 		board = new TwoPlayerChessboardController(null,
@@ -34,17 +37,13 @@ public class TwoPlayerPawnTest
 		{
 			board.getBoard().removePiece(field);
 		}
-		King whiteKing = new King(white);
-		King blackKing = new King(black);
-		board.getBoard().setPiece(board.getBoard().getField(4, 7), whiteKing);
-		board.getBoard().setPiece(board.getBoard().getField(4, 0), blackKing);
 	}
 	
 	@Test
 	public void testRegularMove()
 	{
-		Pawn whitePawn = new Pawn(white, new Direction(0, -1));
-		Pawn blackPawn = new Pawn(black, new Direction(0, 1));
+		Piece whitePawn = factory.buildPiece(white, new Direction(0, -1), PieceType.PAWN);
+		Piece blackPawn = factory.buildPiece(black, new Direction(0, 1), PieceType.PAWN);
 		whitePawn.markAsMoved();
 		blackPawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(2, 5), whitePawn);
@@ -56,8 +55,8 @@ public class TwoPlayerPawnTest
 	@Test
 	public void testNormalStrikeToLeft()
 	{
-		Pawn whitePawn = new Pawn(white, new Direction(0, -1));
-		Pawn blackPawn = new Pawn(black, new Direction(0, 1));
+		Piece whitePawn = factory.buildPiece(white, new Direction(0, -1), PieceType.PAWN);
+		Piece blackPawn = factory.buildPiece(black, new Direction(0, 1), PieceType.PAWN);
 		whitePawn.markAsMoved();
 		blackPawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(4, 4), whitePawn);
@@ -71,8 +70,8 @@ public class TwoPlayerPawnTest
 	@Test
 	public void testNormalStrikeToRight()
 	{
-		Pawn whitePawn = new Pawn(white, new Direction(0, -1));
-		Pawn blackPawn = new Pawn(black, new Direction(0, 1));
+		Piece whitePawn = factory.buildPiece(white, new Direction(0, -1), PieceType.PAWN);
+		Piece blackPawn = factory.buildPiece(black, new Direction(0, 1), PieceType.PAWN);
 		whitePawn.markAsMoved();
 		blackPawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whitePawn);
@@ -86,8 +85,8 @@ public class TwoPlayerPawnTest
 	@Test
 	public void testTwoStepMove()
 	{
-		Pawn whitePawn = new Pawn(white, new Direction(0, -1));
-		Pawn blackPawn = new Pawn(black, new Direction(0, 1));
+		Piece whitePawn = factory.buildPiece(white, new Direction(0, -1), PieceType.PAWN);
+		Piece blackPawn = factory.buildPiece(black, new Direction(0, 1), PieceType.PAWN);
 		board.getBoard().setPiece(board.getBoard().getField(3, 6), whitePawn);
 		board.getBoard().setPiece(board.getBoard().getField(3, 1), blackPawn);
 		assertTrue(PieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(3, 5),
@@ -111,8 +110,8 @@ public class TwoPlayerPawnTest
 	@Test
 	public void testEnPassant()
 	{
-		Pawn whitePawn = new Pawn(white, new Direction(0, -1));
-		Pawn blackPawn = new Pawn(black, new Direction(0, 1));
+		Piece whitePawn = factory.buildPiece(white, new Direction(0, -1), PieceType.PAWN);
+		Piece blackPawn = factory.buildPiece(black, new Direction(0, 1), PieceType.PAWN);;
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whitePawn);
 		board.getBoard().setPiece(board.getBoard().getField(2, 1), blackPawn);
 		try

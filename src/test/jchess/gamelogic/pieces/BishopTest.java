@@ -13,6 +13,7 @@ import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardCon
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.models.factories.TwoPlayerChessboardFactory;
+import jchess.gamelogic.pieces.PieceFactory.PieceType;
 import jchess.util.Direction;
 
 public class BishopTest
@@ -21,10 +22,12 @@ public class BishopTest
 	IChessboardController board;
 	Player white;
 	Player black;
+	PieceFactory factory;
 	
 	@Before
 	public void setUp() throws Exception
 	{
+		factory = PieceFactory.getInstance();
 		white = new Player("p1", Color.WHITE);
 		black = new Player("p2", Color.BLACK);
 		board = new TwoPlayerChessboardController(null,
@@ -34,16 +37,12 @@ public class BishopTest
 		{
 			board.getBoard().removePiece(field);
 		}
-		King whiteKing = new King(white);
-		King blackKing = new King(black);
-		board.getBoard().setPiece(board.getBoard().getField(4, 7), whiteKing);
-		board.getBoard().setPiece(board.getBoard().getField(4, 0), blackKing);
 	}
 	
 	@Test
 	public void testPossibleMovesRegular()
 	{
-		Bishop whiteBishop = new Bishop(white);
+		Piece whiteBishop = factory.buildPiece(white, null, PieceType.BISHOP);
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whiteBishop);
 		
 		// The bishop can move diagonally
@@ -59,9 +58,9 @@ public class BishopTest
 	@Test
 	public void testPossibleMovesCapture()
 	{
-		Bishop whiteBishop = new Bishop(white);
-		Pawn blackPawn1 = new Pawn(black, new Direction(1, 0));
-		Pawn blackPawn2 = new Pawn(black, new Direction(1, 0));
+		Piece whiteBishop = factory.buildPiece(white, null, PieceType.BISHOP);
+		Piece blackPawn1 = factory.buildPiece(black, new Direction(0, 1), PieceType.PAWN);
+		Piece blackPawn2 = factory.buildPiece(black, new Direction(0, 1), PieceType.PAWN);
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whiteBishop);
 		
 		// Place bishops in diagonal directions

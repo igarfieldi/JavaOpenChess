@@ -1,40 +1,118 @@
 
 package jchess.gamelogic.pieces;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import jchess.gamelogic.Player;
+import jchess.gamelogic.pieces.IPieceFactory.IPieceType;
 import jchess.util.Direction;
 
-public class PieceFactory
+public class PieceFactory implements IPieceFactory
 {
-	private static Player player;
-
-	public static Piece buildPiece(PieceType type){
-		Piece piece = null;
-		switch (type){
-			case BISHOP:
-				piece = new Bishop(player);
-				break;
-			case KNIGHT:
-				piece = new Knight(player);
-				break;
-			case KING:
-				piece = new King(player);
-				break;
-			case ROOK:
-				piece = new Rook(player);
-				break;
-			case PAWN:
-				//TODO: find a way to pass the direction; preliminary fix
-				piece = new Pawn(player, new Direction(0, 1));
-				break;
-			case QUEEN:
-				piece = new Queen(player);
-				break;
-			default:
-				//TODO: throw exception 
-				break;
+	public enum PieceType implements IPieceType
+	{
+		PAWN
+		{
+			@Override
+			public IPieceBehaviour getBehaviour(Direction forward)
+			{
+				return new Pawn(forward);
+			}
+			
+			@Override
+			public String getSymbol()
+			{
+				return "";
+			}
+		},
+		BISHOP
+		{
+			@Override
+			public IPieceBehaviour getBehaviour(Direction forward)
+			{
+				return new Bishop();
+			}
+			
+			@Override
+			public String getSymbol()
+			{
+				return "B";
+			}
+		},
+		KNIGHT
+		{
+			@Override
+			public IPieceBehaviour getBehaviour(Direction forward)
+			{
+				return new Knight();
+			}
+			
+			@Override
+			public String getSymbol()
+			{
+				return "N";
+			}
+		},
+		ROOK
+		{
+			@Override
+			public IPieceBehaviour getBehaviour(Direction forward)
+			{
+				return new Rook();
+			}
+			
+			@Override
+			public String getSymbol()
+			{
+				return "R";
+			}
+		},
+		QUEEN
+		{
+			@Override
+			public IPieceBehaviour getBehaviour(Direction forward)
+			{
+				return new Queen();
+			}
+			
+			@Override
+			public String getSymbol()
+			{
+				return "Q";
+			}
+		},
+		KING
+		{
+			@Override
+			public IPieceBehaviour getBehaviour(Direction forward)
+			{
+				return new King();
+			}
+			
+			@Override
+			public String getSymbol()
+			{
+				return "K";
+			}
 		}
-		return piece;
+	}
+	
+	private static PieceFactory instance;
+	
+	public static PieceFactory getInstance()
+	{
+		if(instance == null)
+		{
+			instance = new PieceFactory();
+		}
+		return instance;
+	}
+	
+	public Piece buildPiece(Player player, Direction forward, PieceType type)
+	{
+		return new Piece(player, type.getSymbol(), type.getBehaviour(forward));
 	}
 	
 }

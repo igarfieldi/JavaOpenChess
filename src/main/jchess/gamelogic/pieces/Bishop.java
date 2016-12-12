@@ -30,42 +30,35 @@ import jchess.util.Direction;
 /**
  * Class to represent a chess pawn bishop Bishop can move across the chessboard
  *
- * |_|_|_|_|_|_|_|X|7
- * |X|_|_|_|_|_|X|_|6
- * |_|X|_|_| |X|_|_|5
- * |_|_|X|_|X|_|_|_|4
- * |_|_|_|B|_|_|_|_|3
- * |_| |X|_|X|_|_|_|2
- * |_|X|_|_|_|X|_|_|1
- * |X|_|_|_|_|_|X|_|0
- *  0 1 2 3 4 5 6 7
+ * |_|_|_|_|_|_|_|X|7 |X|_|_|_|_|_|X|_|6 |_|X|_|_| |X|_|_|5 |_|_|X|_|X|_|_|_|4
+ * |_|_|_|B|_|_|_|_|3 |_| |X|_|X|_|_|_|2 |_|X|_|_|_|X|_|_|1 |X|_|_|_|_|_|X|_|0 0
+ * 1 2 3 4 5 6 7
  */
-public class Bishop extends Piece
+public class Bishop implements IPieceBehaviour
 {
-	private static final Direction[] NORMAL_MOVEMENT = {
-			new Direction(1, 1), new Direction(-1, 1),
-	        new Direction(1, -1), new Direction(-1, -1) };
-	
 	@Override
 	public Set<Direction> getNormalMovements()
 	{
-		return new HashSet<Direction>(Arrays.asList(Bishop.NORMAL_MOVEMENT));
+		Set<Direction> moves = new HashSet<Direction>();
+		moves.addAll(DirectionType.getDiagonalDirections());
+		return moves;
 	}
 	
 	@Override
 	public Set<Direction> getCapturingMovements()
 	{
-		return new HashSet<Direction>(Arrays.asList(Bishop.NORMAL_MOVEMENT));
+		return this.getNormalMovements();
 	}
 	
 	@Override
-	public Bishop copy()
+	public boolean canMoveMultipleSteps()
 	{
-		return new Bishop(player);
+		return true;
 	}
 	
-	public Bishop(Player player)
+	@Override
+	public boolean canSkipOverPieces()
 	{
-		super(player, "B", PieceType.BISHOP); // call initialiser of super type: Piece
+		return false;
 	}
 }

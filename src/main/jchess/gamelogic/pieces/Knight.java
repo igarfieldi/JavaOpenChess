@@ -28,48 +28,35 @@ import jchess.gamelogic.Player;
 import jchess.util.Direction;
 
 /**
- * Class to represent a chess pawn knight Knight's movements:
- * 
-|_|_|_|_|_|_|_|_|7
-|_|_|_|_|_|_|_|_|6
-|_|_|2|_|3|_|_|_|5
-|_|1|_|_|_|4|_|_|4
-|_|_|_|K|_|_|_|_|3
-|_|8|_|_|_|5|_|_|2
-|_|_|7|_|6|_|_|_|1
-|_|_|_|_|_|_|_|_|0
-0 1 2 3 4 5 6 7
+ * Class to represent a chess pawn knight Knight's movements.
  */
-public class Knight extends Piece
+public class Knight implements IPieceBehaviour
 {
-	private static final Direction[] NORMAL_MOVEMENT = {
-			new Direction(-2, -1),
-			new Direction(-2, 1),
-			new Direction(-1, 2),
-			new Direction(-1, -2),
-			new Direction(1, 2),
-			new Direction(1, -2),
-			new Direction(2, -1),
-			new Direction(2, 1)
-	};
-	
 	@Override
-	public Set<Direction> getNormalMovements() {
-		return new HashSet<Direction>(Arrays.asList(Knight.NORMAL_MOVEMENT));
-	}
-	
-	@Override
-	public Set<Direction> getCapturingMovements() {
-		return new HashSet<Direction>(Arrays.asList(Knight.NORMAL_MOVEMENT));
-	}
-	
-	@Override
-	public Knight copy() {
-		return new Knight(player);
-	}
-	
-	public Knight(Player player)
+	public Set<Direction> getNormalMovements()
 	{
-		super(player, "N", false, PieceType.KNIGHT);// call initialiser of super type: PieceW
+		return new HashSet<Direction>(Arrays.asList(new Direction[]{
+				new Direction(-2, -1), new Direction(-2, 1),
+		        new Direction(-1, -2), new Direction(-1, 2),
+		        new Direction(1, -2), new Direction(1, 2),
+		        new Direction(2, -1), new Direction(2, 1), }));
+	}
+	
+	@Override
+	public Set<Direction> getCapturingMovements()
+	{
+		return this.getNormalMovements();
+	}
+	
+	@Override
+	public boolean canMoveMultipleSteps()
+	{
+		return false;
+	}
+	
+	@Override
+	public boolean canSkipOverPieces()
+	{
+		return false;
 	}
 }

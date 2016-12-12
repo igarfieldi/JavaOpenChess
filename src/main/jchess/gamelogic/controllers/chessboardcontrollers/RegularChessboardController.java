@@ -22,6 +22,8 @@ import jchess.gamelogic.pieces.King;
 import jchess.gamelogic.pieces.Knight;
 import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.Piece;
+import jchess.gamelogic.pieces.PieceFactory;
+import jchess.gamelogic.pieces.PieceFactory.PieceType;
 import jchess.gamelogic.pieces.Queen;
 import jchess.gamelogic.pieces.Rook;
 import jchess.gamelogic.views.IChessboardView;
@@ -151,20 +153,20 @@ public abstract class RegularChessboardController implements IChessboardControll
 		// Non-capturing moves only
 		reachableFields.addAll(this.getMovableFields(piece));
 		
-		// Special case for pawns: remove two-step move if there's a piece in
-		// its way!
-		if(piece instanceof Pawn && !piece.hasMoved())
+		// Special case for pawns: add two-step move if it hasn't moved yet
+		if(piece.getBehaviour() instanceof Pawn && !piece.hasMoved())
 		{
-			Direction forward = ((Pawn) piece).getForwardDirection();
+			// Pawns only have one direction anyway
+			Direction forward = piece.getBehaviour().getNormalMovements().iterator().next();
 			Field pawnField = board.getField(piece);
 			Field inFrontOfPawn = new Field(pawnField.getPosX() + forward.getX(), pawnField.getPosY() + forward.getY());
 			
-			if(board.getPiece(inFrontOfPawn) != null)
+			if(board.getPiece(inFrontOfPawn) == null)
 			{
 				// We need to remove the two-field move
 				Field twoFieldMove = new Field(pawnField.getPosX() + 2 * forward.getX(),
 				        pawnField.getPosY() + 2 * forward.getY());
-				reachableFields.remove(twoFieldMove);
+				reachableFields.add(twoFieldMove);
 			}
 		}
 		
@@ -260,7 +262,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 	private Set<Field> getMovableFields(Piece piece)
 	{
 		Set<Field> reachableFields = new HashSet<Field>();
-		reachableFields.addAll(this.getMovableFieldsInDirection(piece, piece.getNormalMovements()));
+		reachableFields.addAll(this.getMovableFieldsInDirection(piece, piece.getBehaviour().getNormalMovements()));
 		
 		reachableFields.addAll(this.getCastleMoves(piece));
 		
@@ -281,7 +283,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 	private List<Field> getFieldsInDirection(Piece piece, Direction dir)
 	{
 		List<Field> fieldsInDir = new ArrayList<Field>();
-		if(piece.canMoveMultipleSteps())
+		if(piece.getBehaviour().canMoveMultipleSteps())
 		{
 			// Need to add all fields in direction
 			fieldsInDir.addAll(board.getFieldsInDirection(board.getField(piece), dir));
@@ -311,7 +313,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 	{
 		Set<Field> capturableFields = new HashSet<Field>();
 		
-		capturableFields.addAll(this.getCapturableFieldsInDirection(piece, piece.getCapturingMovements()));
+		capturableFields.addAll(this.getCapturableFieldsInDirection(piece, piece.getBehaviour().getCapturingMovements()));
 		
 		capturableFields.addAll(this.getEnPassantMoves(piece));
 		
@@ -424,7 +426,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 	{
 		for(Piece piece : board.getPieces(player))
 		{
-			if(piece instanceof King)
+			if(piece.getBehaviour() instanceof King)
 			{
 				for(Player enemy : this.players)
 				{
@@ -499,7 +501,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 		
 		for(Piece piece : board.getPieces(player))
 		{
-			if(this.getThreatenedFieldsInDirection(piece, piece.getCapturingMovements()).contains(target))
+			if(this.getThreatenedFieldsInDirection(piece, piece.getBehaviour().getCapturingMovements()).contains(target))
 			{
 				threateningPieces.add(piece);
 			}
@@ -555,7 +557,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 	 *            Field where the pawn will be moved to
 	 * @return True if the pawn can be promoted
 	 */
-	protected abstract boolean checkForPromotion(Pawn pawn, Field target);
+	protected abstract boolean checkForPromotion(Piece piece, Field target);
 	
 	private boolean move(Field begin, Field end, boolean checkMove, boolean refresh, boolean clearForwardHistory,
 	        boolean enterIntoHistory) throws IllegalMoveException
@@ -578,7 +580,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 		Move move = new Move(begin, end, movedPiece, board.getPiece(end), CastlingType.NONE, false, null);
 		Move lastMove = this.getHistory().getLastMoveFromHistory();
 		
-		if(board.getPiece(begin) instanceof King)
+		if(board.getPiece(begin).getBehaviour() instanceof King)
 		{
 			// Castling
 			if(begin.getPosX() + 2 == end.getPosX())
@@ -590,12 +592,12 @@ public abstract class RegularChessboardController implements IChessboardControll
 				move = new Move(begin, end, board.getPiece(begin), board.getPiece(end), CastlingType.LONG_CASTLING,
 				        false, null);
 			}
-		} else if(board.getPiece(begin) instanceof Pawn)
+		} else if(board.getPiece(begin).getBehaviour() instanceof Pawn)
 		{
 			if(lastMove != null && lastMove.wasPawnTwoFieldsMove())
 			{
 				// Check if the target field lies behind the two-square pawn
-				Direction backwards = ((Pawn) lastMove.getMovedPiece()).getForwardDirection().multiply(-1);
+				Direction backwards = lastMove.getMovedPiece().getBehaviour().getNormalMovements().iterator().next().multiply(-1);
 				Field behindPawn = board.getField(lastMove.getTo().getPosX() + backwards.getX(),
 				        lastMove.getTo().getPosY() + backwards.getY());
 				if(behindPawn.equals(end))
@@ -604,7 +606,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 					move = new Move(begin, end, movedPiece, lastMove.getMovedPiece(), CastlingType.NONE, true, null);
 				}
 			}
-			if(clearForwardHistory && this.checkForPromotion((Pawn) movedPiece, end))
+			if(clearForwardHistory && this.checkForPromotion(movedPiece, end))
 			{
 				// Promotion of pawns has to be handled for the specific board
 				// layout
@@ -613,17 +615,17 @@ public abstract class RegularChessboardController implements IChessboardControll
 				Piece promoted = null;
 				if(newPiece.equals("Queen")) // transform pawn to queen
 				{
-					promoted = new Queen(movedPiece.getPlayer());
+					promoted = PieceFactory.getInstance().buildPiece(movedPiece.getPlayer(), new Direction(0, 0), PieceType.QUEEN);
 				} else if(newPiece.equals("Rook")) // transform pawn to rook
 				{
-					promoted = new Rook(movedPiece.getPlayer());
+					promoted = PieceFactory.getInstance().buildPiece(movedPiece.getPlayer(), new Direction(0, 0), PieceType.ROOK);
 				} else if(newPiece.equals("Bishop")) // transform pawn to
 				                                     // bishop
 				{
-					promoted = new Bishop(movedPiece.getPlayer());
+					promoted = PieceFactory.getInstance().buildPiece(movedPiece.getPlayer(), new Direction(0, 0), PieceType.BISHOP);
 				} else if(newPiece.equals("Knight"))// transform pawn to knight
 				{
-					promoted = new Knight(movedPiece.getPlayer());
+					promoted = PieceFactory.getInstance().buildPiece(movedPiece.getPlayer(), new Direction(0, 0), PieceType.KNIGHT);
 				} else
 				{
 					// If promotion was cancelled don't execute the move!
