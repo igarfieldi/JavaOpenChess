@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import jchess.gamelogic.Player;
 import jchess.util.Direction;
 
 /**

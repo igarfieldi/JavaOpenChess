@@ -7,14 +7,8 @@ import jchess.gamelogic.field.Field;
 import jchess.gamelogic.models.IBoardFactory;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.models.chessboardmodels.ChessboardModel;
-import jchess.gamelogic.pieces.Bishop;
 import jchess.gamelogic.pieces.IPieceFactory;
-import jchess.gamelogic.pieces.King;
-import jchess.gamelogic.pieces.Knight;
-import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.PieceFactory;
-import jchess.gamelogic.pieces.Queen;
-import jchess.gamelogic.pieces.Rook;
 import jchess.gamelogic.pieces.PieceFactory.PieceType;
 import jchess.util.Direction;
 

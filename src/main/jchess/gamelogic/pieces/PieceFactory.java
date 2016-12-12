@@ -1,12 +1,7 @@
 
 package jchess.gamelogic.pieces;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import jchess.gamelogic.Player;
-import jchess.gamelogic.pieces.IPieceFactory.IPieceType;
 import jchess.util.Direction;
 
 public class PieceFactory implements IPieceFactory
