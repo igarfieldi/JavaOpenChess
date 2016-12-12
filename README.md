@@ -10,7 +10,7 @@ The application runs on Java 8.
 
 ### Documentation ###
 
-Documentation can be found in HTML format in the docs/index.html.
+Documentation can be found in HTML format in the docs/index.html and at the [Code Pasta Chess Page](https://codepastachess.wordpress.com/).
 
 ### Authors ###
 
