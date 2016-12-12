@@ -15,6 +15,10 @@ repositories {
     mavenCentral()
 }
 
+task myJavadocs(type: Javadoc) {
+  source = sourceSets.main.allJava
+}
+
 dependencies {
     compile group: 'org.jdesktop', name: 'appframework', version: '1.0+'
     compile group: 'org.jdesktop', name: 'swing-worker', version: '1.1+'
