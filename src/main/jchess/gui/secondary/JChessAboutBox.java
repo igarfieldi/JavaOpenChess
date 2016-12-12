@@ -15,12 +15,21 @@
 
 package jchess.gui.secondary;
 
-import org.jdesktop.application.*;
-import org.jdesktop.application.Action;
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Font;
+import java.awt.Frame;
 
-import jchess.*;
+import javax.swing.ActionMap;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.LayoutStyle;
+import javax.swing.WindowConstants;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+
+import jchess.JChessApp;
 import jchess.util.TypedResourceBundle;
 
 public class JChessAboutBox extends JDialog

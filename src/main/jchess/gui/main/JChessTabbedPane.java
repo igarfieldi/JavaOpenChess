@@ -20,17 +20,24 @@
  */
 package jchess.gui.main;
 
-import javax.swing.*;
-
-import jchess.JChessApp;
-import jchess.gui.ThemeImageLoader;
-import jchess.gui.setup.NewGameWindow;
-
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.ImageObserver;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JTabbedPane;
+
+import jchess.JChessApp;
+import jchess.gamelogic.game.IGameBuilderFactory;
+import jchess.gui.ThemeImageLoader;
+import jchess.gui.setup.NewGameWindow;
 
 public class JChessTabbedPane extends JTabbedPane implements MouseListener, ImageObserver
 {
@@ -39,11 +46,13 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 	
 	private Image addIcon;
 	private Rectangle addIconRectangle = null;
+	private IGameBuilderFactory factory;
 	
-	public JChessTabbedPane()
+	public JChessTabbedPane(IGameBuilderFactory factory)
 	{
 		super();
-		this.addIcon = ThemeImageLoader.loadThemeImage("add-tab-icon.png");
+		this.factory = factory;
+		this.addIcon = ThemeImageLoader.getInstance().loadThemeImage("add-tab-icon.png");
 		
 		this.setDoubleBuffered(true);
 		super.addMouseListener(this);
@@ -100,7 +109,7 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 	private void showNewGameWindow()
 	{
 		if(JChessApp.view.newGameFrame == null)
-			JChessApp.view.newGameFrame = new NewGameWindow();
+			JChessApp.view.newGameFrame = new NewGameWindow(JChessApp.view.getFrame(), factory);
 		
 		JChessApp.getApplication().show(JChessApp.view.newGameFrame);
 	}
@@ -148,7 +157,7 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 		private int xPosition;
 		private int yPosition;
 		
-		private Image iconImage = ThemeImageLoader.loadThemeImage("close-tab-icon.png");
+		private Image iconImage = ThemeImageLoader.getInstance().loadThemeImage("close-tab-icon.png");
 		private Icon fileIcon;
 		
 		public CloseIcon(Icon fileIcon)

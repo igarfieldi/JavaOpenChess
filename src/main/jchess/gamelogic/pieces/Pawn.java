@@ -20,286 +20,48 @@
  */
 package jchess.gamelogic.pieces;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import jchess.gamelogic.Player;
-import jchess.gamelogic.field.ChessboardController;
-import jchess.gamelogic.field.Field;
 import jchess.util.Direction;
 
 /**
  * Class to represent a pawn piece Pawn can move only forward and can beat only
  * across In first move pawn can move 2 squares Pawn can be upgrade to rook,
  * knight, bishop, Queen if it's in the squares nearest the side where opponent
- * is located First move of pawn:
- *
-|_|_|_|_|_|_|_|_|7
-|_|_|_|_|_|_|_|_|6
-|_|_|_|X|_|_|_|_|5
-|_|_|_|X|_|_|_|_|4
-|_|_|_|P|_|_|_|_|3
-|_|_|_|_|_|_|_|_|2
-|_|_|_|_|_|_|_|_|1
-|_|_|_|_|_|_|_|_|0
-0 1 2 3 4 5 6 7
- *
- * Movement of a pawn:
- *       
-|_|_|_|_|_|_|_|_|7
-|_|_|_|_|_|_|_|_|6
-|_|_|_|_|_|_|_|_|5
-|_|_|_|X|_|_|_|_|4
-|_|_|_|P|_|_|_|_|3
-|_|_|_|_|_|_|_|_|2
-|_|_|_|_|_|_|_|_|1
-|_|_|_|_|_|_|_|_|0
-0 1 2 3 4 5 6 7
- *
- * Beats with can take pawn:
- *
-|_|_|_|_|_|_|_|_|7
-|_|_|_|_|_|_|_|_|6
-|_|_|_|_|_|_|_|_|5
-|_|_|X|_|X|_|_|_|4
-|_|_|_|P|_|_|_|_|3
-|_|_|_|_|_|_|_|_|2
-|_|_|_|_|_|_|_|_|1
-|_|_|_|_|_|_|_|_|0
-0 1 2 3 4 5 6 7
+ * is located First move of pawn.
  */
-public class Pawn extends Piece
+public class Pawn implements IPieceBehaviour
 {
-	private static final Direction[] NORMAL_MOVEMENT = {
-			new Direction(0, 1)
-	};
+	private Direction forward;
 	
-	private static final Direction[] STRIKING_MOVEMENT = {
-			new Direction(1, 1),
-			new Direction(-1, 1)
-	};
-	
-	@Override
-	public List<Direction> getNormalMovements() {
-		return Arrays.asList(Pawn.NORMAL_MOVEMENT);
+	public Pawn(Direction forward)
+	{
+		this.forward = forward;
 	}
 	
 	@Override
-	public List<Direction> getCapturingMovements() {
-		return Arrays.asList(Pawn.STRIKING_MOVEMENT);
-	}
-	
-	boolean down;
-	public static short value = 1;
-	
-	public Pawn(ChessboardController chessboard, Player player)
+	public Set<Direction> getNormalMovements()
 	{
-		super(chessboard, player, "P", false);
+		return new HashSet<Direction>(Arrays.asList(new Direction[]{ forward }));
 	}
 	
-	/**
-	 * Annotation to superclass Piece changing pawns location
-	 * 
-	 * @return ArrayList with new position of piece
-	 */
 	@Override
-	public ArrayList<Field> possibleMoves()
+	public Set<Direction> getCapturingMovements()
 	{
-		ArrayList<Field> list = new ArrayList<Field>();
-		Field sq;
-		Field sq1;
-		int first;
-		int second;
-		if(this.getPlayer().isTopSide())
-		{// check if player "go" down or up
-			first = this.getSquare().getPosY() + 1;// where to move, if the player is
-			                                  // on the top side
-			second = this.getSquare().getPosY() + 2;// where to move, if the player
-			                                   // is on the top side for the
-			                                   // first move
-		} else
-		{
-			first = this.getSquare().getPosY() - 1;// same, for bottom side
-			second = this.getSquare().getPosY() - 2;// same, for bottom side
-		}
-		if(Piece.isout(first, first))
-		{// out of bounds protection
-			return list;// return empty list
-		}
-		sq = chessboard.getBoard().getField(this.getSquare().getPosX(), first);
-		if(sq.getPiece() == null)
-		{// if next is free
-		 // list.add(sq);//add
-			if(this.getPlayer().getColor() == Player.Color.WHITE)
-			{// white
-				
-				if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
-				        chessboard.getBoard().getField(this.getSquare().getPosX(), first)))
-				{
-					list.add(chessboard.getBoard().getField(this.getSquare().getPosX(), first));
-				}
-			} else
-			{// or black
-				
-				if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
-				        chessboard.getBoard().getField(this.getSquare().getPosX(), first)))
-				{
-					list.add(chessboard.getBoard().getField(this.getSquare().getPosX(), first));
-				}
-			}
-			
-			if((getPlayer().isTopSide() && this.getSquare().getPosY() == 1)
-			        || (!getPlayer().isTopSide() && this.getSquare().getPosY() == 6))
-			{
-				sq1 = chessboard.getBoard().getField(this.getSquare().getPosX(), second);
-				if(sq1.getPiece() == null)
-				{
-					// list.add(sq1);//only in first move
-					if(this.getPlayer().getColor() == Player.Color.WHITE)
-					{// white
-						
-						if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
-						        chessboard.getBoard().getField(this.getSquare().getPosX(), second)))
-						{
-							list.add(chessboard.getBoard().getField(this.getSquare().getPosX(), second));
-						}
-					} else
-					{// or black
-						
-						if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
-						        chessboard.getBoard().getField(this.getSquare().getPosX(), second)))
-						{
-							list.add(chessboard.getBoard().getField(this.getSquare().getPosX(), second));
-						}
-					}
-				}
-			}
-		}
-		if(!Piece.isout(this.getSquare().getPosX() - 1, this.getSquare().getPosY())) // out
-		                                                                  // of
-		                                                                  // bounds
-		                                                                  // protection
-		{
-			// capture
-			sq = chessboard.getBoard().getField(this.getSquare().getPosX() - 1, first);
-			if(sq.getPiece() != null)
-			{// check if can hit left
-				if(this.getPlayer() != sq.getPiece().getPlayer() && !sq.getPiece().getName().equals("King"))
-				{
-					// list.add(sq);
-					if(this.getPlayer().getColor() == Player.Color.WHITE)
-					{// white
-						
-						if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
-						        chessboard.getBoard().getField(this.getSquare().getPosX() - 1, first)))
-						{
-							list.add(chessboard.getBoard().getField(this.getSquare().getPosX() - 1, first));
-						}
-					} else
-					{// or black
-						
-						if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
-						        chessboard.getBoard().getField(this.getSquare().getPosX() - 1, first)))
-						{
-							list.add(chessboard.getBoard().getField(this.getSquare().getPosX() - 1, first));
-						}
-					}
-				}
-			}
-			
-			// En passant
-			sq = chessboard.getBoard().getField(this.getSquare().getPosX() - 1, this.getSquare().getPosY());
-			if(sq.getPiece() != null && this.chessboard.isEnPassantApplicable(sq))
-			{// check if can hit left
-				if(this.getPlayer() != sq.getPiece().getPlayer() && !sq.getPiece().getName().equals("King"))
-				{// unnecessary
-					
-					// list.add(sq);
-					if(this.getPlayer().getColor() == Player.Color.WHITE)
-					{// white
-						
-						if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
-						        chessboard.getBoard().getField(this.getSquare().getPosX() - 1, first)))
-						{
-							list.add(chessboard.getBoard().getField(this.getSquare().getPosX() - 1, first));
-						}
-					} else
-					{// or black
-						
-						if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
-						        chessboard.getBoard().getField(this.getSquare().getPosX() - 1, first)))
-						{
-							list.add(chessboard.getBoard().getField(this.getSquare().getPosX() - 1, first));
-						}
-					}
-				}
-			}
-		}
-		if(!Piece.isout(this.getSquare().getPosX() + 1, this.getSquare().getPosY()))
-		{// out of bounds protection
-			
-			// capture
-			sq = chessboard.getBoard().getField(this.getSquare().getPosX() + 1, first);
-			if(sq.getPiece() != null)
-			{// check if can hit right
-				if(this.getPlayer() != sq.getPiece().getPlayer() && !sq.getPiece().getName().equals("King"))
-				{
-					// list.add(sq);
-					if(this.getPlayer().getColor() == Player.Color.WHITE)
-					{ // white
-						
-						if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
-						        chessboard.getBoard().getField(this.getSquare().getPosX() + 1, first)))
-						{
-							list.add(chessboard.getBoard().getField(this.getSquare().getPosX() + 1, first));
-						}
-					} else
-					{// or black
-						
-						if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
-						        chessboard.getBoard().getField(this.getSquare().getPosX() + 1, first)))
-						{
-							list.add(chessboard.getBoard().getField(this.getSquare().getPosX() + 1, first));
-						}
-					}
-				}
-			}
-			
-			// En passant
-			sq = chessboard.getBoard().getField(this.getSquare().getPosX() + 1, this.getSquare().getPosY());
-			if(sq.getPiece() != null && this.chessboard.isEnPassantApplicable(sq))
-			{// check if can hit left
-				if(this.getPlayer() != sq.getPiece().getPlayer() && !sq.getPiece().getName().equals("King"))
-				{// unnecessary
-					
-					// list.add(sq);
-					if(this.getPlayer().getColor() == Player.Color.WHITE)
-					{// white
-						
-						if(this.chessboard.getWhiteKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
-						        chessboard.getBoard().getField(this.getSquare().getPosX() + 1, first)))
-						{
-							list.add(chessboard.getBoard().getField(this.getSquare().getPosX() + 1, first));
-						}
-					} else
-					{// or black
-						
-						if(this.chessboard.getBlackKing().willBeSafeWhenMoveOtherPiece(this.getSquare(),
-						        chessboard.getBoard().getField(this.getSquare().getPosX() + 1, first)))
-						{
-							list.add(chessboard.getBoard().getField(this.getSquare().getPosX() + 1, first));
-						}
-					}
-				}
-			}
-		}
-		
-		return list;
+		return DirectionType.getConeMovement(forward);
 	}
 	
-	void promote(Piece newPiece)
+	@Override
+	public boolean canMoveMultipleSteps()
 	{
-		throw new UnsupportedOperationException("Not supported yet.");
+		return false;
+	}
+	
+	@Override
+	public boolean canSkipOverPieces()
+	{
+		return false;
 	}
 }

@@ -23,6 +23,8 @@ package jchess.gui.setup;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
+import jchess.gamelogic.game.IGameBuilderFactory;
+
 /**
  *
  * @author donmateo
@@ -32,15 +34,12 @@ public class NewGameWindow extends JDialog
 	private static final long serialVersionUID = -6260320901046879928L;
 	private LocalSettingsPanel localSettingsPanel;
 	
-	public NewGameWindow()
+	public NewGameWindow(JFrame parent, IGameBuilderFactory factory)
 	{
+		super(parent);
 		setDialogProperties();
-		initializeGuiElements();
-	}
-	
-	private void initializeGuiElements()
-	{
-		localSettingsPanel = new LocalSettingsPanel(this);
+		
+		this.localSettingsPanel = new LocalSettingsPanel(this, factory);
 		this.add(localSettingsPanel);
 	}
 	
@@ -48,6 +47,7 @@ public class NewGameWindow extends JDialog
 	{
 		this.setTitle("New Game");
 		this.setAlwaysOnTop(true);
+		this.setModalityType(ModalityType.APPLICATION_MODAL);
 		this.setSize(400, 700);
 		this.setResizable(false);
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);

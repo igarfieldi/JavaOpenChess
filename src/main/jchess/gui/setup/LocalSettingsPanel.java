@@ -21,15 +21,19 @@ package jchess.gui.setup;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 
 import jchess.JChessApp;
 import jchess.Localization;
-import jchess.gamelogic.Game;
 import jchess.gamelogic.Player;
-import jchess.gamelogic.Settings;
+import jchess.gamelogic.Player.Color;
+import jchess.gamelogic.game.IGame;
+import jchess.gamelogic.game.IGameBuilder;
+import jchess.gamelogic.game.IGameBuilderFactory;
 
 /**
  * Class responsible for drawing the fold with local game settings
@@ -39,46 +43,29 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 	private static final long serialVersionUID = -9175716765749855635L;
 	private static Logger log = Logger.getLogger(LocalSettingsPanel.class.getName());
 	
-	private JDialog localSettingsWindow;
+	private JDialog newGameWindow;
 	
-	/*private ButtonGroup opponentChoiceButtonGroup;
-	private JRadioButton computerOpponentRadioButton;
-	private JRadioButton humanOpponentRadioButton;*/
-	
+	private PlayerNumberChoicePanel playerNumberChoicePanel;
 	private PlayerNameInputPanel playerNameInputPanel;
-	private ChessboardPropertiesPanel chessBoardPropertiesPanel;
+	private TimerSetterPanel timerSetterPanel;
 	private JButton okButton;
+	private IGameBuilderFactory builderFactory;
 	
-	LocalSettingsPanel(JDialog localSettingsWindow)
+	LocalSettingsPanel(JDialog newGameWindow, IGameBuilderFactory builderFactory)
 	{
 		super();
-		this.localSettingsWindow = localSettingsWindow;
+		this.builderFactory = builderFactory;
+		this.newGameWindow = newGameWindow;
 		
-		//configurePlayerTypeChoiceGUI();
 		initializeGuiElements();
 		placeGuiElements();
 	}
 	
-	/*private void configurePlayerTypeChoiceGUI()
-	{
-		this.opponentChoiceButtonGroup = new ButtonGroup();
-		this.computerOpponentRadioButton = new JRadioButton(Localization.getMessage("against_computer"), false);
-		this.humanOpponentRadioButton = new JRadioButton(Localization.getMessage("against_other_human"), true);
-		
-		this.computerOpponentRadioButton.addActionListener(this);
-		this.humanOpponentRadioButton.addActionListener(this);
-		
-		this.opponentChoiceButtonGroup.add(computerOpponentRadioButton);
-		this.opponentChoiceButtonGroup.add(humanOpponentRadioButton);
-		
-		this.computerOpponentRadioButton.setEnabled(false); // for now, because
-		                                                    // not implemented!
-	}*/
-	
 	private void initializeGuiElements()
 	{
 		playerNameInputPanel = new PlayerNameInputPanel();
-		chessBoardPropertiesPanel = new ChessboardPropertiesPanel();
+		playerNumberChoicePanel = new PlayerNumberChoicePanel(playerNameInputPanel);
+		timerSetterPanel = new TimerSetterPanel();
 		
 		this.okButton = new JButton(Localization.getMessage("ok"));
 		this.okButton.addActionListener(this);
@@ -86,11 +73,9 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 	
 	private void placeGuiElements()
 	{
-		//setGridBagConstraints(computerOpponentRadioButton, 0, 0);
-		//setGridBagConstraints(humanOpponentRadioButton, 1, 0);
-		
+		setGridBagConstraints(playerNumberChoicePanel, 0, 0);
 		setGridBagConstraints(playerNameInputPanel, 0, 1);
-		setGridBagConstraints(chessBoardPropertiesPanel, 0, 2);
+		setGridBagConstraints(timerSetterPanel, 0, 2);
 		setGridBagConstraints(okButton, 0, 3);
 	}
 	
@@ -106,49 +91,33 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 		{
 			playerNameInputPanel.shortenPlayerNames();
 			
-			Game gameWindow = JChessApp.view.addNewTab(
-			        playerNameInputPanel.getFirstPlayerName() + " vs " + playerNameInputPanel.getSecondPlayerName());
-			applySettings(gameWindow);
-			drawGameWindow(gameWindow);
+			IGameBuilder builder = builderFactory.getBuilder();
+			builder.setProperty("timeLimit", "" + timerSetterPanel.getTimeLimit());
+			
+			// Check how many players are supposed to play
+			if(playerNumberChoicePanel.getPlayerCount() == 2) {
+				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(0), Color.WHITE));
+				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(1), Color.BLACK));
+			} else if(playerNumberChoicePanel.getPlayerCount() == 4) {
+				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(0), Color.WHITE));
+				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(1), Color.RED));
+				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(2), Color.BLACK));
+				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(3), Color.GOLDEN));
+			} else {
+				log.log(Level.SEVERE, "Could not start game because the number of players is not supported!");
+				return ;
+			}
+			
+			IGame game = builder.create();
+			JChessApp.view.addNewGameTab(game);
+			drawGameWindow(game);
 		}
 	}
 	
-	private void applySettings(Game gameWindow)
-	{
-		Settings localSettings = gameWindow.getSettings();
-		Player firstPlayer = localSettings.getWhitePlayer();
-		Player secondPlayer = localSettings.getBlackPlayer();
-		
-		localSettings.setGameMode(Settings.GameMode.NEW_GAME);
-		localSettings.setGameType(Settings.GameType.LOCAL);
-		
-		setPlayerSettings(firstPlayer, secondPlayer);
-		
-		chessBoardPropertiesPanel.setFigureColorPlacementOnBoard(localSettings);
-		chessBoardPropertiesPanel.setTimeLimit(gameWindow, localSettings);
-		
-		logSettings(localSettings, firstPlayer, secondPlayer);
-	}
-	
-	private void setPlayerSettings(Player firstPlayer, Player secondPlayer)
-	{
-		playerNameInputPanel.assignPlayerNames(firstPlayer, secondPlayer);
-		firstPlayer.setType(Player.Type.LOCAL);
-		secondPlayer.setType(Player.Type.LOCAL);
-	}
-	
-	private void logSettings(Settings localSettings, Player firstPlayer, Player secondPlayer)
-	{
-		log.info("****************\nStarting new game: " + firstPlayer.getName() + " vs. " + secondPlayer.getName()
-		        + "\ntime 4 game: " + localSettings.getTimeForGame() + "\ntime limit set: "
-		        + localSettings.isTimeLimitSet() + "\nwhite on top?: " + localSettings.isUpsideDown()
-		        + "\n****************");
-	}
-	
-	private void drawGameWindow(Game gameWindow)
+	private void drawGameWindow(IGame gameWindow)
 	{
 		gameWindow.newGame();
-		this.localSettingsWindow.setVisible(false);
-		gameWindow.getChessboard().getView().repaint();
+		this.newGameWindow.setVisible(false);
+		gameWindow.getView().render();
 	}
 }

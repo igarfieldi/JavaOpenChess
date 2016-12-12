@@ -36,20 +36,23 @@ public class ThemeFileReader
 
 	private static ArrayList<String> getThemesFromDirectory(File jarPath)
 	{
+		ArrayList<String> themeList = new ArrayList<String>();
 		File themePath = new File(jarPath.getAbsolutePath() + File.separator + "jchess" + File.separator
 		        + "resources" + File.separator + "theme");
 		File[] themeFiles = themePath.listFiles();
 		for(int i = 0; i < themeFiles.length; i++)
 		{
-			if(themeFiles[i].isDirectory())
-				themes.add(themeFiles[i].getName());
+			if(themeFiles[i].isDirectory()) {
+				themeList.add(themeFiles[i].getName());
+			}
 		}
 		
-		return themes;
+		return themeList;
 	}
 
 	private static ArrayList<String> getThemesFromJAR(CodeSource codeSource) throws IOException
 	{
+		ArrayList<String> themeList = new ArrayList<String>();
 		Pattern themePattern = Pattern.compile("/[^/]+/$");
 		
 		URL jar = codeSource.getLocation();
@@ -59,16 +62,14 @@ public class ThemeFileReader
 		while((entry = zip.getNextEntry()) != null)
 		{
 			// Find the resources we're looking for (the themes)
-			// TODO: If the beginning of the path is not specified we
-			// get lots of double matches...
 			if(entry.getName().matches("jchess/resources/theme/[^/]+/$"))
 			{
 				Matcher themeMatcher = themePattern.matcher(entry.getName());
 				if(themeMatcher.find())
-					themes.add(themeMatcher.group(0).replace("/", ""));
+					themeList.add(themeMatcher.group(0).replace("/", ""));
 			}
 		}
 		
-		return themes;
+		return themeList;
 	}
 }

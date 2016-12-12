@@ -18,7 +18,7 @@
  */
 package jchess.gamelogic.field;
 
-import jchess.gamelogic.field.Moves.CastlingType;
+import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.Piece;
 
 public class Move
@@ -32,7 +32,12 @@ public class Move
 	private CastlingType castlingMove = CastlingType.NONE;
 	private boolean wasPawnTwoFieldsMove = false;
 	
-	Move(Field from, Field to, Piece movedPiece, Piece takenPiece, CastlingType castlingMove, boolean wasEnPassant,
+	public enum CastlingType
+	{
+		NONE, SHORT_CASTLING, LONG_CASTLING
+	}
+	
+	public Move(Field from, Field to, Piece movedPiece, Piece takenPiece, CastlingType castlingMove, boolean wasEnPassant,
 	        Piece promotedPiece)
 	{
 		this.from = from;
@@ -44,10 +49,12 @@ public class Move
 		this.castlingMove = castlingMove;
 		this.wasEnPassant = wasEnPassant;
 		
-		if(movedPiece.getName().equals("Pawn") && Math.abs(to.getPosY() - from.getPosY()) == 2)
+		// TODO: adapt to 4p chess
+		if(movedPiece.getBehaviour() instanceof Pawn && (Math.abs(to.getPosY() - from.getPosY()) == 2||
+				Math.abs(to.getPosX() - from.getPosX()) == 2))
 		{
 			this.wasPawnTwoFieldsMove = true;
-		} else if(movedPiece.getName().equals("Pawn") && promotedPiece != null)
+		} else if(movedPiece.getBehaviour() instanceof Pawn && promotedPiece != null)
 		{
 			this.promotedTo = promotedPiece;
 		}

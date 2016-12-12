@@ -15,30 +15,63 @@
 
 package jchess.gui.main;
 
-import org.jdesktop.application.*;
-import org.jdesktop.application.Action;
-
-import jchess.JChessApp;
-import jchess.Localization;
-import jchess.gamelogic.Game;
-import jchess.gui.main.JChessTabbedPane;
-import jchess.gui.ThemeConfigurator;
-import jchess.gui.secondary.JChessAboutBox;
-import jchess.gui.secondary.PawnPromotionWindow;
-import jchess.gui.secondary.ThemeChooseWindow;
-import jchess.gui.setup.NewGameWindow;
-import jchess.util.TypedResourceBundle;
-
-import java.awt.*;
-import java.beans.*;
-
-import javax.swing.*;
-import java.awt.event.*;
-import java.io.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.ActionMap;
+import javax.swing.GroupLayout;
+import javax.swing.Icon;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JSeparator;
+import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
+import javax.swing.LayoutStyle;
+import javax.swing.SwingConstants;
+import javax.swing.Timer;
+
+import org.jdesktop.application.Action;
+import org.jdesktop.application.Application;
+import org.jdesktop.application.FrameView;
+import org.jdesktop.application.SingleFrameApplication;
+import org.jdesktop.application.TaskMonitor;
+
+import jchess.JChessApp;
+import jchess.Localization;
+import jchess.gamelogic.Player;
+import jchess.gamelogic.Player.Color;
+import jchess.gamelogic.game.IGame;
+import jchess.gamelogic.game.IGameBuilder;
+import jchess.gamelogic.game.IGameBuilderFactory;
+import jchess.gamelogic.views.IMessageDisplay.Option;
+import jchess.gui.secondary.JChessAboutBox;
+import jchess.gui.secondary.PawnPromotionWindow;
+import jchess.gui.secondary.ThemeChooseWindow;
+import jchess.gui.setup.NewGameWindow;
+import jchess.util.FileMapParser;
+import jchess.util.TypedResourceBundle;
 
 /**
  * The application's main frame.
@@ -48,22 +81,17 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	private static Logger log = Logger.getLogger(JChessView.class.getName());
 	private static final TypedResourceBundle VIEW_PROPERTIES = new TypedResourceBundle("jchess.resources.JChessView");
 	
-	private static ThemeConfigurator themeConfigurator = null;
-	private List<Game> gameList = new ArrayList<Game>(1);
-	private Game activeGame;
+	private List<IGame> gameList = new ArrayList<IGame>(1);
+	private IGameBuilderFactory gameBuilderFactory;
 	
 	private JMenu gameMenu;
 	private JTabbedPane gamesPane;
 	private JMenuItem loadGameItem;
 	private JPanel mainPanel;
 	private JMenuBar menuBar;
-	private JMenuItem moveBackItem;
-	private JMenuItem moveForwardItem;
 	private JMenuItem newGameItem;
 	private JMenu optionsMenu;
 	private JProgressBar progressBar;
-	private JMenuItem rewindToBeginItem;
-	private JMenuItem rewindToEndItem;
 	private JMenuItem saveGameItem;
 	private JLabel statusAnimationLabel;
 	private JLabel statusMessageLabel;
@@ -80,11 +108,10 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	private PawnPromotionWindow pawnPromotionBox;
 	public JDialog newGameFrame;
 	
-	public JChessView(SingleFrameApplication app)
+	public JChessView(SingleFrameApplication app, IGameBuilderFactory factory)
 	{
 		super(app);
-		this.gameList.add(new Game());
-		activeGame = gameList.get(0);
+		this.gameBuilderFactory = factory;
 		
 		initializeComponents();
 		
@@ -112,10 +139,6 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		loadGameItem = new JMenuItem();
 		saveGameItem = new JMenuItem();
 		gameMenu = new JMenu();
-		moveBackItem = new JMenuItem();
-		moveForwardItem = new JMenuItem();
-		rewindToBeginItem = new JMenuItem();
-		rewindToEndItem = new JMenuItem();
 		optionsMenu = new JMenu();
 		themeSettingsMenu = new JMenuItem();
 		statusPanel = new JPanel();
@@ -127,7 +150,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	private void initializeMainPanel()
 	{
 		mainPanel = new JPanel();
-		gamesPane = new JChessTabbedPane();
+		gamesPane = new JChessTabbedPane(gameBuilderFactory);
 		
 		configureMainPanelSize();
 		configureMainPanelLayout();
@@ -204,154 +227,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		gameMenu.setText(resourceBundle.getString("gameMenu.text")); // NOI18N
 		gameMenu.setName("gameMenu"); // NOI18N
 		
-		setMoveBackItem(resourceBundle);
-		setMoveForwardItem(resourceBundle);
-		setRewindToBeginItem(resourceBundle);
-		setRewindToEndItem(resourceBundle);
-		
 		menuBar.add(gameMenu);
-	}
-
-	private void setMoveBackItem(TypedResourceBundle resourceBundle)
-	{
-		moveBackItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
-		moveBackItem.setText(resourceBundle.getString("moveBackItem.text"));
-		moveBackItem.setName("moveBackItem"); 
-		moveBackItem.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent event)
-			{
-				moveBackItemActionPerformed(event);
-			}
-		});
-		gameMenu.add(moveBackItem);
-	}
-
-	private void moveBackItemActionPerformed(ActionEvent event)
-	{
-		if(themeConfigurator != null && activeGame != null)
-			activeGame.undo();
-		else
-			try
-			{
-				Game activeGame = this.getActiveTabGame();
-				if(!activeGame.undo())
-					JOptionPane.showMessageDialog(null, "Cannot undo!");
-			}
-			catch(ArrayIndexOutOfBoundsException exception)
-			{
-				JOptionPane.showMessageDialog(null, "No active tabs!");
-			}
-			catch(UnsupportedOperationException exception)
-			{
-				JOptionPane.showMessageDialog(null, exception.getMessage());
-			}
-	}
-
-	private void setMoveForwardItem(TypedResourceBundle resourceBundle)
-	{
-		moveForwardItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_MASK));
-		moveForwardItem.setText(resourceBundle.getString("moveForwardItem.text")); // NOI18N
-		moveForwardItem.setName("moveForwardItem"); // NOI18N
-		moveForwardItem.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent event)
-			{
-				moveForwardItemActionPerformed(event);
-			}
-		});
-		gameMenu.add(moveForwardItem);
-	}
-
-	private void moveForwardItemActionPerformed(ActionEvent event)
-	{
-		if(themeConfigurator != null && activeGame != null)
-			activeGame.redo();
-		else
-		{
-			try
-			{
-				Game activeGame = this.getActiveTabGame();
-				if(!activeGame.redo())
-					JOptionPane.showMessageDialog(null, "Cannot redo any further!");
-			}
-			catch(ArrayIndexOutOfBoundsException exception)
-			{
-				JOptionPane.showMessageDialog(null, "No active tabs!");
-			}
-			catch(UnsupportedOperationException exception)
-			{
-				JOptionPane.showMessageDialog(null, exception.getMessage());
-			}
-		}
-	}
-
-	private void setRewindToBeginItem(TypedResourceBundle resourceBundle)
-	{
-		rewindToBeginItem
-		        .setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK));
-		rewindToBeginItem.setText(resourceBundle.getString("rewindToBegin.text")); // NOI18N
-		rewindToBeginItem.setName("rewindToBegin"); // NOI18N
-		rewindToBeginItem.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent event)
-			{
-				rewindToBeginActionPerformed(event);
-			}
-		});
-		gameMenu.add(rewindToBeginItem);
-	}
-
-	private void rewindToBeginActionPerformed(ActionEvent event)
-	{
-		try
-		{
-			Game activeGame = this.getActiveTabGame();
-			if(!activeGame.rewindToBegin())
-				JOptionPane.showMessageDialog(null, "Cannot rewind to beginning!");
-		}
-		catch(ArrayIndexOutOfBoundsException exception)
-		{
-			JOptionPane.showMessageDialog(null, "No active tabs!");
-		}
-		catch(UnsupportedOperationException exception)
-		{
-			JOptionPane.showMessageDialog(null, exception.getMessage());
-		}
-	}
-
-	private void setRewindToEndItem(TypedResourceBundle resourceBundle)
-	{
-		rewindToEndItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y,
-		        InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK));
-		rewindToEndItem.setText(resourceBundle.getString("rewindToEnd.text")); // NOI18N
-		rewindToEndItem.setName("rewindToEnd"); // NOI18N
-		rewindToEndItem.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent event)
-			{
-				rewindToEndActionPerformed(event);
-			}
-		});
-		gameMenu.add(rewindToEndItem);
-	}
-
-	private void rewindToEndActionPerformed(ActionEvent event)
-	{
-		try
-		{
-			Game activeGame = this.getActiveTabGame();
-			if(!activeGame.rewindToEnd())
-				JOptionPane.showMessageDialog(null, "Cannot rewind to end!");
-		}
-		catch(ArrayIndexOutOfBoundsException exception)
-		{
-			JOptionPane.showMessageDialog(null, "No active tabs!");
-		}
-		catch(UnsupportedOperationException exception)
-		{
-			JOptionPane.showMessageDialog(null, exception.getMessage());
-		}
 	}
 
 	private void addOptionsMenu(TypedResourceBundle resourceBundle)
@@ -532,13 +408,10 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 			}
 		});
 	}
-
-	public Game addNewTab(String title)
-	{
-		Game newGameTab = new Game();
-		this.gameList.add(newGameTab);
-		this.gamesPane.addTab(title, newGameTab.getView());
-		return newGameTab;
+	
+	public void addNewGameTab(IGame game) {
+		this.gameList.add(game);
+		this.gamesPane.addTab("", (Component)game.getView());
 	}
 	
 	public void actionPerformed(ActionEvent event)
@@ -546,7 +419,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		Object target = event.getSource();
 		if(target == newGameItem)
 		{
-			this.newGameFrame = new NewGameWindow();
+			this.newGameFrame = new NewGameWindow(this.getFrame(), this.gameBuilderFactory);
 			JChessApp.getApplication().show(this.newGameFrame);
 		}
 		else if(target == saveGameItem)
@@ -563,18 +436,33 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 				if(retVal == JFileChooser.APPROVE_OPTION)
 				{
 					File selectedFile = fileChooser.getSelectedFile();
-					Game tempGUI = this.getActiveTabGame();
+					IGame tempGUI = this.getActiveTabGame();
 					if(!selectedFile.exists())
 						createSaveFile(selectedFile);
 					else if(selectedFile.exists())
 					{
-						int opt = JOptionPane.showConfirmDialog(tempGUI.getView(), Localization.getMessage("file_exists"),
-						        Localization.getMessage("file_exists"), JOptionPane.YES_NO_OPTION);
-						if(opt == JOptionPane.NO_OPTION) // if user choose to now overwrite
-							continue; // go back to file choose
+						if(tempGUI.getView().showConfirmMessage("file_exists", "") != Option.YES) {
+							continue;
+						}
 					}
-					if(selectedFile.canWrite())
-						tempGUI.saveGame(selectedFile);
+					if(selectedFile.canWrite()) {
+						try
+						{
+							FileMapParser parser = new FileMapParser();
+							tempGUI.save(parser);
+							parser.save(selectedFile);
+							tempGUI.getView().showMessage("game_saved_properly", "");
+							
+							// TODO: save to disk
+						} catch(IOException exc)
+						{
+							log.log(Level.SEVERE, "Failed to save game!", exc);
+							// TODO: add message key for individual message
+							tempGUI.getView().showMessage("error_writing_to_file", selectedFile.getName());
+						}
+					} else {
+						tempGUI.getView().showMessage("error_writing_to_file", selectedFile.getName());
+					}
 					
 					log.info(Boolean.toString(fileChooser.getSelectedFile().isFile()));
 					break;
@@ -610,8 +498,39 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		if(retVal == JFileChooser.APPROVE_OPTION)
 		{
 			File file = fileChooser.getSelectedFile();
-			if(file.exists() && file.canRead())
-				Game.loadGame(file);
+			if(file.exists() && file.canRead()) {
+				FileMapParser parser = new FileMapParser();
+				try
+				{
+					parser.load(file);
+					IGame newGame = null;
+					String gameType = parser.getProperty("Event");
+					
+					// Depending on the game we start a new one
+					switch(gameType) {
+						case "Game":
+							IGameBuilder builder = gameBuilderFactory.getBuilder();
+
+							Player white = new Player(parser.getProperty("WHITE"), Color.WHITE);
+							Player black = new Player(parser.getProperty("BLACK"), Color.BLACK);
+							builder.addPlayer(white);
+							builder.addPlayer(black);
+							
+							newGame = builder.create();
+							break;
+						default:
+							log.log(Level.SEVERE, "Unknown game type!");
+							return ;
+					}
+					
+					newGame.load(parser);
+					
+				} catch(IOException exc)
+				{
+					log.log(Level.SEVERE, "Failed to load saved game!", exc);
+					JOptionPane.showMessageDialog(this.getFrame(), Localization.getMessage("error_reading_file"));
+				}
+			}
 		}
 	}
 
@@ -641,17 +560,14 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		JChessApp.getApplication().show(aboutBox);
 	}
 	
-	public String showPawnPromotionBox(String color)
+	public String showPawnPromotionBox(Color color)
 	{
-		if(pawnPromotionBox == null)
-		{
-			JFrame mainFrame = JChessApp.getApplication().getMainFrame();
-			pawnPromotionBox = new PawnPromotionWindow(mainFrame, color);
-			pawnPromotionBox.setLocationRelativeTo(mainFrame);
-			pawnPromotionBox.setModal(true);
-			
-		}
-		pawnPromotionBox.setColor(color);
+		
+		JFrame mainFrame = JChessApp.getApplication().getMainFrame();
+		pawnPromotionBox = new PawnPromotionWindow(mainFrame, color);
+		pawnPromotionBox.setLocationRelativeTo(mainFrame);
+		pawnPromotionBox.setModal(true);
+		
 		JChessApp.getApplication().show(pawnPromotionBox);
 		
 		return pawnPromotionBox.getSelectedPromotion();
@@ -662,13 +578,17 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		return "";
 	}
 	
+	public void setGameBuilderFactory(IGameBuilderFactory factory) {
+		this.gameBuilderFactory = factory;
+	}
+	
 	public void componentResized(ComponentEvent event)
 	{
 		log.log(Level.SEVERE, "jchessView resized!!;");
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	
-	public Game getActiveTabGame() throws ArrayIndexOutOfBoundsException
+	public IGame getActiveTabGame() throws ArrayIndexOutOfBoundsException
 	{
 		return this.gameList.get(this.gamesPane.getSelectedIndex());
 	}

@@ -1,6 +1,7 @@
 package jchess.gamelogic.views;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -9,21 +10,22 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
-import jchess.gamelogic.Settings;
-import jchess.gamelogic.clock.GameClockModel;
+import jchess.gamelogic.Player;
+import jchess.gamelogic.models.GameClockModel;
 
-public class GameClockView extends JPanel
+public class GameClockView extends JPanel implements IRenderable
 {
 	private static final long serialVersionUID = -5110241622282357707L;
 	private static final Font clockFont = new Font("Sarif", Font.ITALIC, 14);
 	
 	private BufferedImage background = new BufferedImage(600, 600, BufferedImage.TYPE_INT_ARGB);
 	private GameClockModel clocks;
-	private Settings settings;
+	private Player white, black;
 	
-	public GameClockView(Settings settings, GameClockModel clocks) {
+	public GameClockView(GameClockModel clocks, Player white, Player black) {
+		this.white = white;
+		this.black = black;
 		this.clocks = clocks;
-		this.settings = settings;
 		
 		this.setDoubleBuffered(true);
 		
@@ -31,6 +33,18 @@ public class GameClockView extends JPanel
 		Graphics2D g2d = (Graphics2D) this.background.getGraphics();
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		this.drawBackground(g2d);
+		this.setMinimumSize(new Dimension(200, 100));
+		this.setPreferredSize(new Dimension(200, 100));
+	}
+	
+	@Override
+	public void render() {
+		this.repaint();
+	}
+	
+	@Override
+	public void changeSize(int width, int height) {
+		this.setSize(width, height);
 	}
 	
 	/**
@@ -68,9 +82,9 @@ public class GameClockView extends JPanel
 	{
 		g2d.setFont(clockFont);
 		g2d.setColor(Color.BLACK);
-		g2d.drawString(settings.getWhitePlayer().getName(), 10, 50);
+		g2d.drawString(white.getName(), 10, 50);
 		g2d.setColor(Color.WHITE);
-		g2d.drawString(settings.getBlackPlayer().getName(), 100, 50);
+		g2d.drawString(black.getName(), 100, 50);
 	}
 	
 	/**

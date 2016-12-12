@@ -1,41 +1,80 @@
 package jchess.gamelogic.pieces;
 
-import static org.junit.Assert.*;
+import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import jchess.gamelogic.controllers.IChessboardController;
+import jchess.gamelogic.field.Field;
 
 public class PieceTest
 {
-	@Before
-	public void setUp() throws Exception
+	/**
+	 * Checks if a piece can make a move to a given field. This includes both
+	 * capture and normal movement.
+	 * 
+	 * @param board
+	 *            Board state to test for
+	 * @param piece
+	 *            Piece to check move for
+	 * @param field
+	 *            Target field
+	 * @return True if piece can move to field
+	 */
+	public static boolean canMakeMove(IChessboardController board, Piece piece, Field field)
 	{
+		return board.getPossibleMoves(piece, true).contains(field);
 	}
 	
-	@Test
-	public void testIsOut()
+	/**
+	 * Checks if a piece can make a move to all the given fields. This includes
+	 * both capture and normal movement.
+	 * 
+	 * @param board
+	 *            Board state to test for
+	 * @param piece
+	 *            Piece to check move for
+	 * @param field
+	 *            Target fields
+	 * @return True if piece can move to all fields
+	 */
+	public static boolean canMakeMoves(IChessboardController board, Piece piece, Field... fields)
 	{
-		// Test all possible combinations of out-left, inside, out-right (top/bottom for y ofc)
-		assertTrue(Piece.isout(-1, -1));
-		assertTrue(Piece.isout(-1, 3));
-		assertTrue(Piece.isout(-1, 9));
-		assertTrue(Piece.isout(4, -1));
-		assertFalse(Piece.isout(4, 3));
-		assertTrue(Piece.isout(4, 9));
-		assertTrue(Piece.isout(9, -1));
-		assertTrue(Piece.isout(9, 3));
-		assertTrue(Piece.isout(9, 9));
+		for(Field field : fields)
+		{
+			if(!PieceTest.canMakeMove(board, piece, field))
+			{
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
-	@Test
-	public void testCheckPiece() {
-		// TODO: check the various conditions: enemy piece, our piece, no piece, king(??)
-		fail("Not implemented yet!");
-	}
-	
-	@Test
-	public void testOtherPlayer() {
-		// TODO: check the three possibilities
-		fail("Not implemented yet!");
+	/**
+	 * Checks if a piece can make a move to ALL AND ONLY the given fields. This
+	 * includes both capture and normal movement.
+	 * 
+	 * @param board
+	 *            Board state to test for
+	 * @param piece
+	 *            Piece to check move for
+	 * @param field
+	 *            Target fields
+	 * @return True if piece can move to all fields (and only these!)
+	 */
+	public static boolean canMakeExactlyTheseMoves(IChessboardController board, Piece piece, Field... fields)
+	{
+		Set<Field> possibleMoves = board.getPossibleMoves(piece, true);
+		if(possibleMoves.size() != fields.length)
+		{
+			return false;
+		}
+		for(Field field : fields)
+		{
+			if(!possibleMoves.contains(field))
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 }

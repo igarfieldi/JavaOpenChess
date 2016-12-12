@@ -18,6 +18,7 @@ package jchess;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.SingleFrameApplication;
 
+import jchess.gamelogic.game.RegularGameBuilderFactory;
 import jchess.gui.main.JChessView;
 
 /**
@@ -33,7 +34,7 @@ public class JChessApp extends SingleFrameApplication
 	@Override
 	protected void startup()
 	{
-		view = new JChessView(this);
+		view = new JChessView(this, RegularGameBuilderFactory.getInstance());
 		show(view);
 	}
 	
@@ -59,6 +60,7 @@ public class JChessApp extends SingleFrameApplication
 	
 	/**
 	 * Main method launching the application.
+	 * @param args Command line arguments
 	 */
 	public static void main(String[] args)
 	{
