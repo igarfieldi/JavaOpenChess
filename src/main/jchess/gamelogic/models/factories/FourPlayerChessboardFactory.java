@@ -48,8 +48,8 @@ public class FourPlayerChessboardFactory implements IBoardFactory
 		IPieceFactory factory = PieceFactory.getInstance();
 		Direction up = new Direction(0, -1);
 		Direction down = new Direction(0, 1);
-		Direction left = new Direction(0, -1);
-		Direction right = new Direction(0, 1);
+		Direction left = new Direction(-1, 0);
+		Direction right = new Direction(1, 0);
 		
 		// Regular pieces for all 4 players
 		board.setPiece(board.getField(3, 13), factory.buildPiece(players.get(0), up, PieceType.ROOK));
