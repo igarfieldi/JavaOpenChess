@@ -27,6 +27,7 @@ import java.util.Set;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Move;
+import jchess.gamelogic.field.Move.CastlingType;
 import jchess.gamelogic.models.IBoardFactory;
 import jchess.gamelogic.pieces.King;
 import jchess.gamelogic.pieces.Pawn;
@@ -49,6 +50,23 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 	{
 		super(viewFactory, boardFactory,
 				Arrays.asList(new Player[]{white, black}));
+	}
+	
+	protected Move getRookMoveForCastling(Piece piece, CastlingType type) {
+		Field field = getBoard().getField(piece);
+		Field rookField = null;
+		Field rookTarget = null;
+		
+		if(type == CastlingType.SHORT_CASTLING) {
+			rookField = getBoard().getField(field.getPosX() + 3, field.getPosY());
+			rookTarget = getBoard().getField(field.getPosX() + 1, field.getPosY());
+		} else {
+			rookField = getBoard().getField(field.getPosX() - 4, field.getPosY());
+			rookTarget = getBoard().getField(field.getPosX() - 1, field.getPosY());
+		}
+		
+		return new Move(rookField, rookTarget, getBoard().getPiece(rookField), null,
+				type, false, null);
 	}
 	
 	protected Set<Field> getCastleMoves(Piece piece) {

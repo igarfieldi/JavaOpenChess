@@ -265,7 +265,24 @@ public abstract class RegularChessboardController implements IChessboardControll
 		return reachableFields;
 	}
 	
-	protected abstract Set<Field> getCastleMoves(Piece piece);
+	/**
+	 * Returns the set of possible castling moves for the given king.
+	 * E.g. a king on h1 in 2p chess could castle to f1 or j1 (if the other
+	 * castling conditions were fulfilled).
+	 * @param piece King to get castling moves for
+	 * @return Set of possible castling moves for the king
+	 */
+	protected abstract Set<Field> getCastleMoves(Piece king);
+	
+	/**
+	 * Gets the corresponding move of the rook for a given castling king move.
+	 * E.g. a short-castling king on h1 for 2p chess needs a rook move from
+	 * k1 to i1.
+	 * @param king King which moves during castling
+	 * @param type Type of the castling (short/long)
+	 * @return Move the rook will have to make
+	 */
+	protected abstract Move getRookMoveForCastling(Piece king, CastlingType type);
 	
 	/**
 	 * Returns the list of all fields in a direction a piece might consider
@@ -528,6 +545,24 @@ public abstract class RegularChessboardController implements IChessboardControll
 		return false;
 	}
 	
+	protected Set<Player> getEnemies(Player friendly) {
+		Set<Player> enemies = new HashSet<Player>();
+		
+		for(Player player : this.players) {
+			if(player != friendly) {
+				enemies.add(player);
+			}
+		}
+		
+		return enemies;
+	}
+	
+	protected Set<Player> getAllies(Player friendly) {
+		Set<Player> allies = new HashSet<Player>();
+		allies.add(friendly);
+		return allies;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -579,12 +614,19 @@ public abstract class RegularChessboardController implements IChessboardControll
 		if(board.getPiece(begin).getBehaviour() instanceof King)
 		{
 			// Castling
+			// TODO: Clean this up!
 			if(begin.getPosX() + 2 == end.getPosX())
 			{
 				move = new Move(begin, end, board.getPiece(begin), board.getPiece(end), CastlingType.SHORT_CASTLING,
 				        false, null);
 			} else if(begin.getPosX() - 2 == end.getPosX())
 			{
+				move = new Move(begin, end, board.getPiece(begin), board.getPiece(end), CastlingType.LONG_CASTLING,
+				        false, null);
+			} else if(begin.getPosY() + 2 == end.getPosY()) {
+				move = new Move(begin, end, board.getPiece(begin), board.getPiece(end), CastlingType.SHORT_CASTLING,
+				        false, null);
+			} else if(begin.getPosY() - 2 == end.getPosY()) {
 				move = new Move(begin, end, board.getPiece(begin), board.getPiece(end), CastlingType.LONG_CASTLING,
 				        false, null);
 			}
@@ -636,22 +678,15 @@ public abstract class RegularChessboardController implements IChessboardControll
 			move = new Move(begin, end, movedPiece, board.getPiece(end), CastlingType.NONE, false, null);
 		}
 		
-		board.movePiece(board.getPiece(begin), end);
-		board.getPiece(end).markAsMoved();
-		
 		if(move.getCastlingMove() != CastlingType.NONE)
 		{
-			// Move the rook
-			if(begin.getPosX() + 2 == end.getPosX())
-			{
-				move(board.getField(7, begin.getPosY()), board.getField(end.getPosX() - 1, begin.getPosY()), false,
-				        false, false, true);
-			} else
-			{
-				move(board.getField(0, begin.getPosY()), board.getField(end.getPosX() + 1, begin.getPosY()), false,
-				        false, false, true);
-			}
+			// Get the move the rook would make
+			Move rookMove = this.getRookMoveForCastling(move.getMovedPiece(), move.getCastlingMove());
+			board.movePiece(rookMove.getMovedPiece(), rookMove.getTo());
 		}
+		
+		board.movePiece(board.getPiece(begin), end);
+		board.getPiece(end).markAsMoved();
 		
 		if(refresh && view != null)
 		{

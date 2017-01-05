@@ -27,6 +27,10 @@ public class Direction
 		return y;
 	}
 	
+	public Direction signum() {
+		return new Direction((int)Math.signum(x), (int)Math.signum(y));
+	}
+	
 	public Direction add(Direction dir)
 	{
 		return new Direction(this.x + dir.x, this.y + dir.y);

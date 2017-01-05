@@ -67,8 +67,8 @@ public class FourPlayerChessboardFactory implements IBoardFactory
 		board.setPiece(board.getField(0, 4), factory.buildPiece(players.get(1), right, PieceType.KNIGHT));
 		board.setPiece(board.getField(0, 8), factory.buildPiece(players.get(1), right, PieceType.BISHOP));
 		board.setPiece(board.getField(0, 5), factory.buildPiece(players.get(1), right, PieceType.BISHOP));
-		board.setPiece(board.getField(0, 7), factory.buildPiece(players.get(1), right, PieceType.QUEEN));
-		board.setPiece(board.getField(0, 6), factory.buildPiece(players.get(1), right, PieceType.KING));
+		board.setPiece(board.getField(0, 6), factory.buildPiece(players.get(1), right, PieceType.QUEEN));
+		board.setPiece(board.getField(0, 7), factory.buildPiece(players.get(1), right, PieceType.KING));
 		
 		board.setPiece(board.getField(3, 0), factory.buildPiece(players.get(2), down, PieceType.ROOK));
 		board.setPiece(board.getField(10, 0), factory.buildPiece(players.get(2), down, PieceType.ROOK));
@@ -76,8 +76,8 @@ public class FourPlayerChessboardFactory implements IBoardFactory
 		board.setPiece(board.getField(9, 0), factory.buildPiece(players.get(2), down, PieceType.KNIGHT));
 		board.setPiece(board.getField(5, 0), factory.buildPiece(players.get(2), down, PieceType.BISHOP));
 		board.setPiece(board.getField(8, 0), factory.buildPiece(players.get(2), down, PieceType.BISHOP));
-		board.setPiece(board.getField(7, 0), factory.buildPiece(players.get(2), down, PieceType.QUEEN));
-		board.setPiece(board.getField(6, 0), factory.buildPiece(players.get(2), down, PieceType.KING));
+		board.setPiece(board.getField(6, 0), factory.buildPiece(players.get(2), down, PieceType.QUEEN));
+		board.setPiece(board.getField(7, 0), factory.buildPiece(players.get(2), down, PieceType.KING));
 
 		board.setPiece(board.getField(13, 10), factory.buildPiece(players.get(3), left, PieceType.ROOK));
 		board.setPiece(board.getField(13, 3), factory.buildPiece(players.get(3), left, PieceType.ROOK));

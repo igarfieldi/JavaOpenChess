@@ -26,7 +26,10 @@ import java.util.Set;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.Move;
+import jchess.gamelogic.field.Move.CastlingType;
 import jchess.gamelogic.models.IBoardFactory;
+import jchess.gamelogic.pieces.King;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.views.factories.IChessboardViewFactory;
 import jchess.util.Direction;
@@ -50,74 +53,128 @@ public class FourPlayerChessboardController extends RegularChessboardController
 				Arrays.asList(new Player[]{white, red, black, golden}));
 	}
 	
+	protected Move getRookMoveForCastling(Piece piece, CastlingType type) {
+		Field field = getBoard().getField(piece);
+		Field rookField = null;
+		Field rookTarget = null;
+		
+		// Which rook gets to castle and where it should move depends on
+		// the castling type and which player (ie. position on the board)
+		// is castling
+		if(field.getPosY() == BLACK_BASE_LINE || field.getPosY() == WHITE_BASE_LINE) {
+			if(type == CastlingType.SHORT_CASTLING) {
+				rookField = getBoard().getField(field.getPosX() + 3, field.getPosY());
+				rookTarget = getBoard().getField(field.getPosX() + 1, field.getPosY());
+			} else {
+				rookField = getBoard().getField(field.getPosX() - 4, field.getPosY());
+				rookTarget = getBoard().getField(field.getPosX() - 1, field.getPosY());
+			}
+		} else {
+			if(type == CastlingType.SHORT_CASTLING) {
+				rookField = getBoard().getField(field.getPosX(), field.getPosY() + 3);
+				rookTarget = getBoard().getField(field.getPosX(), field.getPosY() + 1);
+			} else {
+				rookField = getBoard().getField(field.getPosX(), field.getPosY() - 4);
+				rookTarget = getBoard().getField(field.getPosX(), field.getPosY() - 1);
+			}
+		}
+		
+		return new Move(rookField, rookTarget, getBoard().getPiece(rookField), null,
+				type, false, null);
+	}
+	
 	protected Set<Field> getCastleMoves(Piece piece) {
 		Set<Field> castleFields = new HashSet<Field>();
 		
-		// TODO: proper castling implementation
-		/*if(piece instanceof King)
+		// Castling is only possible for kings
+		if(piece.getBehaviour() instanceof King)
 		{
-			// Castling
+			// The king must not have been moved
 			if(!piece.hasMoved())
 			{
-				Field kingsField = getBoard().getField(piece);
+				// There are two possible rooks to castle with
+				Piece leftRook = this.getRookMoveForCastling(piece, CastlingType.LONG_CASTLING).getMovedPiece();
+				Piece rightRook = this.getRookMoveForCastling(piece, CastlingType.SHORT_CASTLING).getMovedPiece();
 				
-				Piece leftRook = getBoard().getPiece(getBoard().getField(0, kingsField.getPosY()));
-				Piece rightRook = getBoard().getPiece(getBoard().getField(7, kingsField.getPosY()));
-				
-				if(leftRook != null && !leftRook.hasMoved())
-				{
-					// Neither left rook nor king have moved yet
-					Set<Field> reachable = this.getMovableFieldsInDirection(leftRook, leftRook.getNormalMovements());
-					if(reachable.contains(getBoard().getField(kingsField.getPosX() - 1, kingsField.getPosY())))
-					{
-						// Left rook can move right next to the king -> fields
-						// in between both are free
-						Set<Field> involvedFields = new HashSet<Field>();
-						involvedFields.add(kingsField);
-						involvedFields.add(getBoard().getField(kingsField.getPosX() - 1, kingsField.getPosY()));
-						involvedFields.add(getBoard().getField(kingsField.getPosX() - 2, kingsField.getPosY()));
-						// None of the fields involved must be in check
-						
-						Player enemy = getPlayer(0);
-						if(piece.getPlayer() == getPlayer(0))
-						{
-							enemy = getPlayer(1);
-						}
-						if(!this.isAnyThreatenedByPlayer(involvedFields, enemy))
-						{
-							castleFields.add(getBoard().getField(kingsField.getPosX() - 2, kingsField.getPosY()));
-						}
+				// Check both rooks for possible castling
+				if(leftRook != null) {
+					Field castled = this.getCastledKingField(CastlingType.LONG_CASTLING,
+							piece, leftRook);
+					if(castled != null) {
+						castleFields.add(castled);
 					}
 				}
-				if(rightRook != null && !rightRook.hasMoved())
-				{
-					// Neither left rook nor king have moved yet
-					Set<Field> reachable = this.getMovableFieldsInDirection(rightRook, rightRook.getNormalMovements());
-					if(reachable.contains(getBoard().getField(kingsField.getPosX() + 1, kingsField.getPosY())))
-					{
-						// Right rook can move right next to the king -> fields
-						// in between both are free
-						Set<Field> involvedFields = new HashSet<Field>();
-						involvedFields.add(kingsField);
-						involvedFields.add(getBoard().getField(kingsField.getPosX() + 1, kingsField.getPosY()));
-						involvedFields.add(getBoard().getField(kingsField.getPosX() + 2, kingsField.getPosY()));
-						// None of the fields involved must be in check
-						
-						Player enemy = getPlayer(0);
-						if(piece.getPlayer() == getPlayer(0))
-						{
-							enemy = getPlayer(1);
-						}
-						if(!this.isAnyThreatenedByPlayer(involvedFields, enemy))
-						{
-							castleFields.add(getBoard().getField(kingsField.getPosX() + 2, kingsField.getPosY()));
-						}
+				if(rightRook != null) {
+					Field castled = this.getCastledKingField(CastlingType.SHORT_CASTLING,
+							piece, rightRook);
+					if(castled != null) {
+						castleFields.add(castled);
 					}
 				}
 			}
-		}*/
+		}
 		
 		return castleFields;
+	}
+	
+	/**
+	 * Checks whether a given rook and king can castle.
+	 * @param type Type of castling
+	 * @param king King to castle with
+	 * @param rook Rook to castle with
+	 * @return The king's new field if castling is possible, null otherwise
+	 */
+	private Field getCastledKingField(CastlingType type, Piece king, Piece rook) {
+		if(rook == null || rook.hasMoved()) {
+			// A non-existant rook or one that has moved already cannot castle
+			return null;
+		}
+		
+		Field kingField = getBoard().getField(king);
+		Field rookField = getBoard().getField(rook);
+		
+		// Determine the 'direction' of the castling; e.g. (0, 1) or (-1, 0)
+		Direction castleDir = new Direction(rookField.getPosX() - kingField.getPosX(),
+				rookField.getPosY() - kingField.getPosY()).signum();
+		
+		// Determine the target field of the rook; this is dependent on the castling
+		// type
+		Field rookTarget;
+		if(type == CastlingType.SHORT_CASTLING) {
+			rookTarget = getBoard().getField(rookField.getPosX() - 2*castleDir.getX(),
+					rookField.getPosY() - 2*castleDir.getY());
+		} else {
+			rookTarget = getBoard().getField(rookField.getPosX() - 3*castleDir.getX(),
+					rookField.getPosY() - 3*castleDir.getY());
+		}
+		
+		// Check if the rook can move to its target field meaning no other pieces
+		// are in between rook and king
+		Set<Field> reachable = this.getMovableFieldsInDirection(rook, rook.getBehaviour().getNormalMovements());
+		if(reachable.contains(rookTarget))
+		{
+			// Get the fields the king would have to cross to get to its new
+			// position + its old position
+			Set<Field> involvedFields = new HashSet<Field>();
+			involvedFields.add(kingField);
+			involvedFields.add(getBoard().getField(kingField.getPosX() + castleDir.getX(),
+					kingField.getPosY() + castleDir.getY()));
+			involvedFields.add(getBoard().getField(kingField.getPosX() + 2*castleDir.getX(),
+					kingField.getPosY() + 2*castleDir.getY()));
+			
+			// None of the fields involved must be in check so they must not
+			// be threatened by an enemy
+			for(Player enemy : this.getEnemies(king.getPlayer())) {
+				if(!this.isAnyThreatenedByPlayer(involvedFields, enemy))
+				{
+					return getBoard().getField(kingField.getPosX() + 2*castleDir.getX(),
+							kingField.getPosY() + 2*castleDir.getY());
+				}
+			}
+		}
+		
+		// No castling possible
+		return null;
 	}
 	
 	@Override
