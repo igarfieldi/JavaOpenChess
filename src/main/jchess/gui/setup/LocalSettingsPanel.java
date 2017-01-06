@@ -21,8 +21,6 @@ package jchess.gui.setup;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -41,7 +39,6 @@ import jchess.gamelogic.game.IGameBuilderFactory;
 public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 {
 	private static final long serialVersionUID = -9175716765749855635L;
-	private static Logger log = Logger.getLogger(LocalSettingsPanel.class.getName());
 	
 	private JDialog newGameWindow;
 	
@@ -56,12 +53,9 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 		super();
 		this.builderFactory = builderFactory;
 		this.newGameWindow = newGameWindow;
-		
-		initializeGuiElements();
-		placeGuiElements();
 	}
 	
-	private void initializeGuiElements()
+	protected void initializeGuiElements()
 	{
 		playerNameInputPanel = new PlayerNameInputPanel();
 		playerNumberChoicePanel = new PlayerNumberChoicePanel(playerNameInputPanel);
@@ -71,7 +65,7 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 		this.okButton.addActionListener(this);
 	}
 	
-	private void placeGuiElements()
+	protected void placeGuiElements()
 	{
 		setGridBagConstraints(playerNumberChoicePanel, 0, 0);
 		setGridBagConstraints(playerNameInputPanel, 0, 1);
@@ -90,27 +84,36 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 		if(!playerNameInputPanel.playerNamesEmpty())
 		{
 			playerNameInputPanel.shortenPlayerNames();
+			IGame game = setGameProperties();
 			
-			IGameBuilder builder = builderFactory.getBuilder();
-			builder.setProperty("timeLimit", "" + timerSetterPanel.getTimeLimit());
-			
-			// Check how many players are supposed to play
-			if(playerNumberChoicePanel.getPlayerCount() == 2) {
-				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(0), Color.WHITE));
-				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(1), Color.BLACK));
-			} else if(playerNumberChoicePanel.getPlayerCount() == 4) {
-				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(0), Color.WHITE));
-				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(1), Color.RED));
-				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(2), Color.BLACK));
-				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(3), Color.GOLDEN));
-			} else {
-				log.log(Level.SEVERE, "Could not start game because the number of players is not supported!");
-				return ;
-			}
-			
-			IGame game = builder.create();
 			JChessApp.view.addNewGameTab(game);
 			drawGameWindow(game);
+		}
+	}
+
+	private IGame setGameProperties()
+	{
+		IGameBuilder builder = builderFactory.getBuilder();
+		builder.setProperty("timeLimit", "" + timerSetterPanel.getTimeLimit());
+		addPlayers(builder);
+		
+		IGame game = builder.create();
+		return game;
+	}
+
+	private void addPlayers(IGameBuilder builder)
+	{
+		if(playerNumberChoicePanel.getPlayerCount() == 2)
+		{
+			builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(0), Color.WHITE));
+			builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(1), Color.BLACK));
+		}
+		else if(playerNumberChoicePanel.getPlayerCount() == 4)
+		{
+			builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(0), Color.WHITE));
+			builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(1), Color.RED));
+			builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(2), Color.BLACK));
+			builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(3), Color.GOLDEN));
 		}
 	}
 	

@@ -30,15 +30,7 @@ public class PlayerNameInputPanel extends GridBagPanel
 	private JTextField thirdPlayerNameTextField;
 	private JTextField fourthPlayerNameTextField;
 	
-	public PlayerNameInputPanel()
-	{
-		super();
-		
-		initializeGuiElements();
-		placeGuiElements();
-	}
-	
-	private void initializeGuiElements()
+	protected void initializeGuiElements()
 	{
 		this.firstPlayerNameLabel = new JLabel(Localization.getMessage("first_player_name") + ": ");
 		this.secondPlayerNameLabel = new JLabel(Localization.getMessage("second_player_name") + ": ");
@@ -61,7 +53,7 @@ public class PlayerNameInputPanel extends GridBagPanel
 		return newTextField;
 	}
 	
-	private void placeGuiElements()
+	protected void placeGuiElements()
 	{
 		setGridBagConstraints(firstPlayerNameLabel, 0, 0);
 		setGridBagConstraints(firstPlayerNameTextField, 0, 1);
@@ -89,7 +81,7 @@ public class PlayerNameInputPanel extends GridBagPanel
 		else
 			return false;
 	}
-
+	
 	private boolean additionalTextFieldsActiveAndEmpty()
 	{
 		return (this.thirdPlayerNameTextField.isEnabled() && this.fourthPlayerNameTextField.isEnabled())
@@ -117,7 +109,8 @@ public class PlayerNameInputPanel extends GridBagPanel
 			try
 			{
 				trimmedPlayerName = textField.getText(0, 9);
-			} catch(BadLocationException exception)
+			}
+			catch(BadLocationException exception)
 			{
 				log.log(Level.SEVERE, "Something wrong in edit tables: \n", exception);
 			}
@@ -132,7 +125,8 @@ public class PlayerNameInputPanel extends GridBagPanel
 		secondPlayer.setName(this.secondPlayerNameTextField.getText());
 	}
 	
-	public List<String> getPlayerNames() {
+	public List<String> getPlayerNames()
+	{
 		List<String> playerList = new ArrayList<String>();
 		playerList.add(this.getPlayerName(0));
 		playerList.add(this.getPlayerName(1));
@@ -142,8 +136,10 @@ public class PlayerNameInputPanel extends GridBagPanel
 		return playerList;
 	}
 	
-	public String getPlayerName(int index) {
-		switch(index) {
+	public String getPlayerName(int index)
+	{
+		switch(index)
+		{
 			case 0:
 				return this.firstPlayerNameTextField.getText();
 			case 1:

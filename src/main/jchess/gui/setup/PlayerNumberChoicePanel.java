@@ -22,20 +22,17 @@ public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListe
 	{
 		super();
 		this.playerNameInputPanel = playerNameInputPanel;
-		
-		initializeGuiElements();
-		placeGuiElements();
 	}
 	
-	public int getPlayerCount() {
-		if(twoPlayersRadioButton.isSelected()) {
+	public int getPlayerCount()
+	{
+		if(twoPlayersRadioButton.isSelected())
 			return 2;
-		} else {
+		else
 			return 4;
-		}
 	}
-
-	private void initializeGuiElements()
+	
+	protected void initializeGuiElements()
 	{
 		this.gameTypeChoiceButtonGroup = new ButtonGroup();
 		
@@ -53,12 +50,12 @@ public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListe
 		return newRadioButton;
 	}
 	
-	private void placeGuiElements()
+	protected void placeGuiElements()
 	{
 		setGridBagConstraints(twoPlayersRadioButton, 0, 0);
 		setGridBagConstraints(fourPlayersRadioButton, 1, 0);
 	}
-
+	
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{
@@ -67,5 +64,5 @@ public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListe
 		if(event.getSource() == fourPlayersRadioButton)
 			playerNameInputPanel.setAdditionalTextFieldsEnabled(true);
 	}
-
+	
 }

@@ -11,35 +11,31 @@ public class TimerSetterPanel extends GridBagPanel
 	
 	private JCheckBox hasTimeLimitCheckBox;
 	private JComboBox<String> timeLimitsComboBox;
-	private String timeLimits[] = { "1", "3", "5", "8", "10", "15", "20", "25", "30", "60", "120" };
+	private String timeLimits[];
 	
-	public TimerSetterPanel()
-	{
-		super();
-		initializeGuiElements();
-		placeGuiElements();
-	}
-	
-	private void initializeGuiElements()
+	protected void initializeGuiElements()
 	{
 		this.hasTimeLimitCheckBox = new JCheckBox(Localization.getMessage("time_game_min"));
+		
+		this.timeLimits = new String[] { "1", "3", "5", "8", "10", "15", "20", "25", "30", "60", "120" };
 		this.timeLimitsComboBox = new JComboBox<String>(timeLimits);
 	}
 	
-	private void placeGuiElements()
+	protected void placeGuiElements()
 	{
 		setGridBagConstraints(hasTimeLimitCheckBox, 0, 1);
 		setGridBagConstraints(timeLimitsComboBox, 1, 1);
 	}
+	
 	public int getTimeLimit()
 	{
 		if(this.hasTimeLimitCheckBox.isSelected())
 		{
 			String selectedTimeLimit = this.timeLimits[this.timeLimitsComboBox.getSelectedIndex()];
 			return ((int) Integer.parseInt(selectedTimeLimit) * 60);
-		} else {
-			return 0;
 		}
+		else
+			return 0;
 	}
 	
 	public String getTimeLimitComboBoxChange()
