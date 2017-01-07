@@ -7,6 +7,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 
 import jchess.Localization;
+import jchess.gui.GridBagPanel;
 
 public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListener
 {
@@ -52,8 +53,8 @@ public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListe
 	
 	protected void placeGuiElements()
 	{
-		setGridBagConstraints(twoPlayersRadioButton, 0, 0);
-		setGridBagConstraints(fourPlayersRadioButton, 1, 0);
+		setGridBagConstraints(twoPlayersRadioButton, LEFT, 0);
+		setGridBagConstraints(fourPlayersRadioButton, RIGHT, 0);
 	}
 	
 	@Override
@@ -64,5 +65,4 @@ public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListe
 		if(event.getSource() == fourPlayersRadioButton)
 			playerNameInputPanel.setAdditionalTextFieldsEnabled(true);
 	}
-	
 }

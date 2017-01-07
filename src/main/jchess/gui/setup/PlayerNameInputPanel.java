@@ -14,6 +14,7 @@ import javax.swing.text.BadLocationException;
 
 import jchess.Localization;
 import jchess.gamelogic.Player;
+import jchess.gui.GridBagPanel;
 
 public class PlayerNameInputPanel extends GridBagPanel
 {
@@ -29,6 +30,8 @@ public class PlayerNameInputPanel extends GridBagPanel
 	private JTextField secondPlayerNameTextField;
 	private JTextField thirdPlayerNameTextField;
 	private JTextField fourthPlayerNameTextField;
+	
+	private static final int EMPTY = 0;
 	
 	protected void initializeGuiElements()
 	{
@@ -55,25 +58,27 @@ public class PlayerNameInputPanel extends GridBagPanel
 	
 	protected void placeGuiElements()
 	{
-		setGridBagConstraints(firstPlayerNameLabel, 0, 0);
-		setGridBagConstraints(firstPlayerNameTextField, 0, 1);
+		final Insets BUFFER = new Insets(3, 35, 3, 3);
 		
-		setGridBagConstraints(secondPlayerNameLabel, 0, 2);
-		setGridBagConstraints(secondPlayerNameTextField, 0, 3);
+		setGridBagConstraints(firstPlayerNameLabel, LEFT, 0);
+		setGridBagConstraints(firstPlayerNameTextField, LEFT, 1);
 		
-		this.gridBagConstraints.insets = new Insets(3, 35, 3, 3);
+		setGridBagConstraints(secondPlayerNameLabel, LEFT, 2);
+		setGridBagConstraints(secondPlayerNameTextField, LEFT, 3);
 		
-		setGridBagConstraints(thirdPlayerNameLabel, 1, 0);
-		setGridBagConstraints(thirdPlayerNameTextField, 1, 1);
+		this.gridBagConstraints.insets = BUFFER;
 		
-		setGridBagConstraints(fourthPlayerNameLabel, 1, 2);
-		setGridBagConstraints(fourthPlayerNameTextField, 1, 3);
+		setGridBagConstraints(thirdPlayerNameLabel, RIGHT, 0);
+		setGridBagConstraints(thirdPlayerNameTextField, RIGHT, 1);
+		
+		setGridBagConstraints(fourthPlayerNameLabel, RIGHT, 2);
+		setGridBagConstraints(fourthPlayerNameTextField, RIGHT, 3);
 	}
 	
 	public boolean playerNamesEmpty()
 	{
-		if(this.firstPlayerNameTextField.getText().length() == 0
-		        || this.secondPlayerNameTextField.getText().length() == 0 || additionalTextFieldsActiveAndEmpty())
+		if(this.firstPlayerNameTextField.getText().length() == EMPTY
+		        || this.secondPlayerNameTextField.getText().length() == EMPTY || additionalTextFieldsActiveAndEmpty())
 		{
 			JOptionPane.showMessageDialog(this, Localization.getMessage("fill_names"));
 			return true;
@@ -85,8 +90,8 @@ public class PlayerNameInputPanel extends GridBagPanel
 	private boolean additionalTextFieldsActiveAndEmpty()
 	{
 		return (this.thirdPlayerNameTextField.isEnabled() && this.fourthPlayerNameTextField.isEnabled())
-		        && (this.thirdPlayerNameTextField.getText().length() == 0
-		                || this.fourthPlayerNameTextField.getText().length() == 0);
+		        && (this.thirdPlayerNameTextField.getText().length() == EMPTY
+		                || this.fourthPlayerNameTextField.getText().length() == EMPTY);
 	}
 	
 	public void shortenPlayerNames()
@@ -103,12 +108,14 @@ public class PlayerNameInputPanel extends GridBagPanel
 	
 	private void trimPlayerString(JTextField textField)
 	{
-		if(textField.getText().length() > 9)
+		final int MAX_NAME_LENGTH = 9;
+		
+		if(textField.getText().length() > MAX_NAME_LENGTH)
 		{
 			String trimmedPlayerName = new String();
 			try
 			{
-				trimmedPlayerName = textField.getText(0, 9);
+				trimmedPlayerName = textField.getText(0, MAX_NAME_LENGTH);
 			}
 			catch(BadLocationException exception)
 			{

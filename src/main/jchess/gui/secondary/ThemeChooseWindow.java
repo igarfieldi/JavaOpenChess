@@ -52,12 +52,20 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 	private JButton themePreviewButton;
 	private JButton okButton;
 	
+	private static final int EMPTY = 0;
+	
+	private static final Point THEME_PREVIEW_BUTTON_LOCATION = new Point(110, 10);
+	private static final Dimension THEME_PREVIEW_BUTTON_DIMENSION = new Dimension(420, 120);
+	
+	private static final Point OK_BUTTON_LOCATION = new Point(175, 140);
+	private static final Dimension OK_BUTTON_DIMENSION = new Dimension(200, 50);
+	
 	public ThemeChooseWindow(Frame parent) throws Exception
 	{
 		super(parent);
 		
 		ArrayList<String> themeNames = ThemeFileReader.getThemes();
-		if(themeNames.size() > 0)
+		if(themeNames.size() > EMPTY)
 			createGUI(themeNames);
 		else
 			throw new Exception(Localization.getMessage("error_when_creating_theme_config_window"));
@@ -71,22 +79,23 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 		this.okButton = new JButton("OK");
 		
 		setWindowProperties();
+		
 		setThemeListProperties();
+		setThemePreviewImage();
 		
-		testGettingPreviewImage();
-		
-		setButtonProperties(themePreviewButton, 110, 10, 420, 120, false);
-		setButtonProperties(okButton, 175, 140, 200, 50, true);
+		setButtonProperties(themePreviewButton, THEME_PREVIEW_BUTTON_LOCATION, THEME_PREVIEW_BUTTON_DIMENSION, false);
+		setButtonProperties(okButton, OK_BUTTON_LOCATION, OK_BUTTON_DIMENSION, true);
 	}
 
 	private void setWindowProperties()
 	{
+		final Dimension SIZE = new Dimension(550, 230);
+		
 		this.setTitle(Localization.getMessage("choose_theme_window_title"));
 		this.setModalityType(ModalityType.APPLICATION_MODAL);
-		Dimension winDim = new Dimension(550, 230);
-		this.setMinimumSize(winDim);
-		this.setMaximumSize(winDim);
-		this.setSize(winDim);
+		this.setMinimumSize(SIZE);
+		this.setMaximumSize(SIZE);
+		this.setSize(SIZE);
 		this.setResizable(false);
 		this.setLayout(null);
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -101,7 +110,7 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 		this.themesList.addListSelectionListener(this);
 	}
 
-	private void testGettingPreviewImage()
+	private void setThemePreviewImage()
 	{
 		try
 		{
@@ -115,10 +124,10 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 		}
 	}
 
-	private void setButtonProperties(JButton button, int positionX, int positionY, int sizeX, int sizeY, Boolean isInteractable)
+	private void setButtonProperties(JButton button, Point location, Dimension size, Boolean isInteractable)
 	{
-		button.setLocation(new Point(positionX, positionY));
-		button.setSize(new Dimension(sizeX, sizeY));
+		button.setLocation(location);
+		button.setSize(size);
 		this.add(button);
 		
 		if(isInteractable)

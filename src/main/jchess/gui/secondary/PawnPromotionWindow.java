@@ -52,6 +52,8 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 	private JButton rookButton;
 	private JButton queenButton;
 	
+	private static final String NOTHING_SELECTED = "";
+	
 	public String getSelectedPromotion()
 	{
 		return selectedPromotion;
@@ -68,19 +70,21 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 	public PawnPromotionWindow(Frame parent, Color color)
 	{
 		super(parent);
-		this.selectedPromotion = "";
+		this.selectedPromotion = NOTHING_SELECTED;
 		
-		initializeWindow();
+		setWindowProperties();
 		createPieceButtons(color);
 		initializePieceButtons();
 	}
 	
-	private void initializeWindow()
+	private void setWindowProperties()
 	{
-		this.setTitle("Choose piece");
-		this.setMinimumSize(new Dimension(520, 130));
-		this.setSize(new Dimension(520, 130));
-		this.setMaximumSize(new Dimension(520, 130));
+		final Dimension SIZE = new Dimension(520, 130);
+		
+		this.setTitle("Choose piece!");
+		this.setMinimumSize(SIZE);
+		this.setSize(SIZE);
+		this.setMaximumSize(SIZE);
 		this.setResizable(false);
 		this.setLayout(new GridLayout(1, 4));
 	}
@@ -88,24 +92,8 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 	private void createPieceButtons(Color color)
 	{
 		// TODO: very rigid; shift into ThemeLoader?
-		String colorName = "";
-		switch(color) {
-			case WHITE:
-				colorName = "W";
-				break;
-			case RED:
-				colorName = "BR";
-				break;
-			case BLACK:
-				colorName = "B";
-				break;
-			case GOLDEN:
-				colorName = "G";
-				break;
-			default:
-				log.log(Level.SEVERE, "Tried to show promotion pieces for non-existing color!");
-				break;
-		}
+		String colorName = setColorString(color);
+		
 		this.knightButton = new JButton(
 		        new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Knight-" + colorName + ".png")));
 		this.bishopButton = new JButton(
@@ -114,6 +102,30 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 		        new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Rook-" + colorName + ".png")));
 		this.queenButton = new JButton(
 		        new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Queen-" + colorName + ".png")));
+	}
+
+	private String setColorString(Color color)
+	{
+		String colorString = NOTHING_SELECTED;
+		switch(color)
+		{
+			case WHITE:
+				colorString = "W";
+				break;
+			case RED:
+				colorString = "BR";
+				break;
+			case BLACK:
+				colorString = "B";
+				break;
+			case GOLDEN:
+				colorString = "G";
+				break;
+			default:
+				log.log(Level.SEVERE, "Tried to show promotion pieces for non-existing color!");
+				break;
+		}
+		return colorString;
 	}
 	
 	private void initializePieceButtons()

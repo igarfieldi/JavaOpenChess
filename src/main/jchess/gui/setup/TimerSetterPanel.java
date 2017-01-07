@@ -4,6 +4,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
 import jchess.Localization;
+import jchess.gui.GridBagPanel;
 
 public class TimerSetterPanel extends GridBagPanel
 {
@@ -23,19 +24,22 @@ public class TimerSetterPanel extends GridBagPanel
 	
 	protected void placeGuiElements()
 	{
-		setGridBagConstraints(hasTimeLimitCheckBox, 0, 1);
-		setGridBagConstraints(timeLimitsComboBox, 1, 1);
+		setGridBagConstraints(hasTimeLimitCheckBox, LEFT, 0);
+		setGridBagConstraints(timeLimitsComboBox, RIGHT, 0);
 	}
 	
 	public int getTimeLimit()
 	{
+		final int MINUTES = 60;
+		final int NO_TIME_LIMIT = 0;
+		
 		if(this.hasTimeLimitCheckBox.isSelected())
 		{
 			String selectedTimeLimit = this.timeLimits[this.timeLimitsComboBox.getSelectedIndex()];
-			return ((int) Integer.parseInt(selectedTimeLimit) * 60);
+			return ((int) Integer.parseInt(selectedTimeLimit) * MINUTES);
 		}
 		else
-			return 0;
+			return NO_TIME_LIMIT;
 	}
 	
 	public String getTimeLimitComboBoxChange()

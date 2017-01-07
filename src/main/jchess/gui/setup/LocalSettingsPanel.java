@@ -32,6 +32,7 @@ import jchess.gamelogic.Player.Color;
 import jchess.gamelogic.game.IGame;
 import jchess.gamelogic.game.IGameBuilder;
 import jchess.gamelogic.game.IGameBuilderFactory;
+import jchess.gui.GridBagPanel;
 
 /**
  * Class responsible for drawing the fold with local game settings
@@ -67,10 +68,10 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 	
 	protected void placeGuiElements()
 	{
-		setGridBagConstraints(playerNumberChoicePanel, 0, 0);
-		setGridBagConstraints(playerNameInputPanel, 0, 1);
-		setGridBagConstraints(timerSetterPanel, 0, 2);
-		setGridBagConstraints(okButton, 0, 3);
+		setGridBagConstraints(playerNumberChoicePanel, LEFT, 0);
+		setGridBagConstraints(playerNameInputPanel, LEFT, 1);
+		setGridBagConstraints(timerSetterPanel, LEFT, 2);
+		setGridBagConstraints(okButton, LEFT, 3);
 	}
 	
 	public void actionPerformed(ActionEvent event)
@@ -103,12 +104,15 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 
 	private void addPlayers(IGameBuilder builder)
 	{
-		if(playerNumberChoicePanel.getPlayerCount() == 2)
+		final int TWO_PLAYERS = 2;
+		final int FOUR_PLAYERS = 4;
+		
+		if(playerNumberChoicePanel.getPlayerCount() == TWO_PLAYERS)
 		{
 			builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(0), Color.WHITE));
 			builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(1), Color.BLACK));
 		}
-		else if(playerNumberChoicePanel.getPlayerCount() == 4)
+		else if(playerNumberChoicePanel.getPlayerCount() == FOUR_PLAYERS)
 		{
 			builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(0), Color.WHITE));
 			builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(1), Color.RED));

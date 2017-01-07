@@ -66,7 +66,7 @@ import jchess.gamelogic.game.IGame;
 import jchess.gamelogic.game.IGameBuilder;
 import jchess.gamelogic.game.IGameBuilderFactory;
 import jchess.gamelogic.views.IMessageDisplay.Option;
-import jchess.gui.secondary.JChessAboutBox;
+import jchess.gui.secondary.JChessAboutWindow;
 import jchess.gui.secondary.PawnPromotionWindow;
 import jchess.gui.secondary.ThemeChooseWindow;
 import jchess.gui.setup.NewGameWindow;
@@ -105,7 +105,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	private int busyIconIndex = 0;
 	
 	private JDialog aboutBox;
-	private PawnPromotionWindow pawnPromotionBox;
+	private PawnPromotionWindow pawnPromotionWindow;
 	public JDialog newGameFrame;
 	
 	public JChessView(SingleFrameApplication app, IGameBuilderFactory factory)
@@ -554,7 +554,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		if(aboutBox == null)
 		{
 			JFrame mainFrame = JChessApp.getApplication().getMainFrame();
-			aboutBox = new JChessAboutBox(mainFrame);
+			aboutBox = new JChessAboutWindow(mainFrame);
 			aboutBox.setLocationRelativeTo(mainFrame);
 		}
 		JChessApp.getApplication().show(aboutBox);
@@ -564,13 +564,13 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	{
 		
 		JFrame mainFrame = JChessApp.getApplication().getMainFrame();
-		pawnPromotionBox = new PawnPromotionWindow(mainFrame, color);
-		pawnPromotionBox.setLocationRelativeTo(mainFrame);
-		pawnPromotionBox.setModal(true);
+		pawnPromotionWindow = new PawnPromotionWindow(mainFrame, color);
+		pawnPromotionWindow.setLocationRelativeTo(mainFrame);
+		pawnPromotionWindow.setModal(true);
 		
-		JChessApp.getApplication().show(pawnPromotionBox);
+		JChessApp.getApplication().show(pawnPromotionWindow);
 		
-		return pawnPromotionBox.getSelectedPromotion();
+		return pawnPromotionWindow.getSelectedPromotion();
 	}
 	
 	public String showSaveWindow()

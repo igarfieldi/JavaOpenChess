@@ -45,10 +45,14 @@ public class NewGameWindow extends JDialog
 	
 	private void setDialogProperties()
 	{
-		this.setTitle("New Game");
+		final String TITLE = "New Game";
+		final int WIDTH = 400;
+		final int HEIGHT = 700;
+		
+		this.setTitle(TITLE);
 		this.setAlwaysOnTop(true);
 		this.setModalityType(ModalityType.APPLICATION_MODAL);
-		this.setSize(400, 700);
+		this.setSize(WIDTH, HEIGHT);
 		this.setResizable(false);
 		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 	}

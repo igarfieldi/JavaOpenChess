@@ -11,7 +11,7 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
 import jchess.JChessApp;
-import jchess.gui.setup.GridBagPanel;
+import jchess.gui.GridBagPanel;
 import jchess.util.TypedResourceBundle;
 
 public class AboutPanel extends GridBagPanel
@@ -39,16 +39,13 @@ public class AboutPanel extends GridBagPanel
 	{
 		imageLabel = new JLabel();
 		imageLabel.setIcon(ABOUT_PROPERTIES.getIcon("imageLabel.icon"));
-		imageLabel.setName("imageLabel");
 	}
 	
 	private void initializeCloseButton()
 	{
 		closeButton = new JButton();
 		actionMap = Application.getInstance(JChessApp.class).getContext().getActionMap(AboutPanel.class, this);
-		
 		closeButton.setAction(actionMap.get("closeAboutBox"));
-		closeButton.setName("closeButton");
 	}
 	
 	@Action
@@ -60,8 +57,8 @@ public class AboutPanel extends GridBagPanel
 	
 	protected void placeGuiElements()
 	{
-		setGridBagConstraints(imageLabel, 0, 0);
-		setGridBagConstraints(applicationInfoPanel, 1, 0);
-		setGridBagConstraints(closeButton, 1, 1);
+		setGridBagConstraints(imageLabel, LEFT, 0);
+		setGridBagConstraints(applicationInfoPanel, RIGHT, 0);
+		setGridBagConstraints(closeButton, RIGHT, 1);
 	}
 }

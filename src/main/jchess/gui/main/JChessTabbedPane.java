@@ -48,6 +48,8 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 	private Rectangle addIconRectangle = null;
 	private IGameBuilderFactory factory;
 	
+	private static final int EMPTY = 0;
+	
 	public JChessTabbedPane(IGameBuilderFactory factory)
 	{
 		super();
@@ -69,11 +71,13 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 	@Override
 	public void mouseClicked(MouseEvent event)
 	{
+		final int MINIMUM_INDEX = 0;
+		
 		int tabIndex = getUI().tabForCoordinate(this, event.getX(), event.getY());
-		if(tabIndex >= 0)
+		if(tabIndex >= MINIMUM_INDEX)
 		{
 			closeGameTab(event, tabIndex);
-			if(this.getTabCount() == 0)
+			if(this.getTabCount() == EMPTY)
 				this.showNewGameWindow();
 		}
 		else if(this.addIconRectangle != null && this.addIconRectangle.contains(event.getX(), event.getY()))
@@ -96,10 +100,13 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 
 	private void updateAddIconRectangle()
 	{
-		if(this.getTabCount() > 0)
+		if(this.getTabCount() > EMPTY)
 		{
-			Rectangle newRectangleBounds = this.getBoundsAt(this.getTabCount() - 1);
-			this.addIconRectangle = new Rectangle(newRectangleBounds.x + newRectangleBounds.width + 5,
+			final int RIGHT_TAB = this.getTabCount() - 1;
+			final int RECTANGLE_WIDTH = 5;
+			
+			Rectangle newRectangleBounds = this.getBoundsAt(RIGHT_TAB);
+			this.addIconRectangle = new Rectangle(newRectangleBounds.x + newRectangleBounds.width + RECTANGLE_WIDTH,
 			        newRectangleBounds.y, this.addIcon.getWidth(this), this.addIcon.getHeight(this));
 		}
 		else

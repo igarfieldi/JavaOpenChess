@@ -1,4 +1,4 @@
-package jchess.gui.setup;
+package jchess.gui;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -14,7 +14,8 @@ public abstract class GridBagPanel extends JPanel
 	private GridBagLayout gridBagLayout;
 	protected GridBagConstraints gridBagConstraints;
 	
-	private final Insets DEFAULT_INSETS = new Insets(3,3,3,3);
+	protected static final int LEFT = 0;
+	protected static final int RIGHT = 1;
 
 	public GridBagPanel()
 	{
@@ -25,6 +26,8 @@ public abstract class GridBagPanel extends JPanel
 
 	private void initializeLayout()
 	{
+		final Insets DEFAULT_INSETS = new Insets(3,3,3,3);
+		
 		gridBagLayout = new GridBagLayout();
 		this.setLayout(this.gridBagLayout);
 		

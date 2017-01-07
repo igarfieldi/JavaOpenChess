@@ -5,7 +5,7 @@ import java.awt.GridBagConstraints;
 
 import javax.swing.JLabel;
 
-import jchess.gui.setup.GridBagPanel;
+import jchess.gui.GridBagPanel;
 import jchess.util.TypedResourceBundle;
 
 public class ApplicationInfoPanel extends GridBagPanel
@@ -35,22 +35,26 @@ public class ApplicationInfoPanel extends GridBagPanel
 	
 	private void initializeLabels()
 	{
-		setLabelContent(appTitleLabel, true, 4, "Application.title", "Application.title", APP_PROPERTIES);
-		setLabelContent(appDescriptionLabel, false, 0, "appDescLabel.text", "appDescLabel", ABOUT_PROPERTIES);
+		final int NORMAL_SIZE = 0;
+		final int BIG_SIZE = 4;
 		
-		setLabelContent(versionTitelLabel, true, 0, "versionLabel.text", "versionLabel", ABOUT_PROPERTIES);
-		setLabelContent(versionLabel, false, 0, "Application.version", "appVersionLabel", APP_PROPERTIES);
+		setLabelContent(appTitleLabel, true, BIG_SIZE, "Application.title", "Application.title", APP_PROPERTIES);
+		setLabelContent(appDescriptionLabel, false, NORMAL_SIZE, "appDescLabel.text", "appDescLabel", ABOUT_PROPERTIES);
 		
-		setLabelContent(homepageTitelLabel, true, 0, "homepageLabel.text", "homepageLabel", ABOUT_PROPERTIES);
-		setLabelContent(homepageLabel, false, 0, "Application.homepage", "appHomepageLabel", APP_PROPERTIES);
+		setLabelContent(versionTitelLabel, true, NORMAL_SIZE, "versionLabel.text", "versionLabel", ABOUT_PROPERTIES);
+		setLabelContent(versionLabel, false, NORMAL_SIZE, "Application.version", "appVersionLabel", APP_PROPERTIES);
 		
-		setLabelContent(activeDeveloperTitleLabel, true, 0, "vendorLabel1.text", "vendorLabel1", ABOUT_PROPERTIES);
-		setLabelContent(activeDeveloperLabel, false, 0, "appHomepageLabel2.text", "appHomepageLabel2",
+		setLabelContent(homepageTitelLabel, true, NORMAL_SIZE, "homepageLabel.text", "homepageLabel", ABOUT_PROPERTIES);
+		setLabelContent(homepageLabel, false, NORMAL_SIZE, "Application.homepage", "appHomepageLabel", APP_PROPERTIES);
+		
+		setLabelContent(activeDeveloperTitleLabel, true, NORMAL_SIZE, "vendorLabel1.text", "vendorLabel1",
+		        ABOUT_PROPERTIES);
+		setLabelContent(activeDeveloperLabel, false, NORMAL_SIZE, "appHomepageLabel2.text", "appHomepageLabel2",
 		        ABOUT_PROPERTIES);
 		
-		setLabelContent(inactiveDevelopersTitleLabelLabel, true, 0, "vendorLabel2.text", "vendorLabel2",
+		setLabelContent(inactiveDevelopersTitleLabelLabel, true, NORMAL_SIZE, "vendorLabel2.text", "vendorLabel2",
 		        ABOUT_PROPERTIES);
-		setLabelContent(inactiveDevelopersLabel, false, 0, "appHomepageLabel3.text", "appHomepageLabel3",
+		setLabelContent(inactiveDevelopersLabel, false, NORMAL_SIZE, "appHomepageLabel3.text", "appHomepageLabel3",
 		        ABOUT_PROPERTIES);
 	}
 	
@@ -86,19 +90,19 @@ public class ApplicationInfoPanel extends GridBagPanel
 	{
 		gridBagConstraints.anchor = GridBagConstraints.WEST;
 		
-		setGridBagConstraints(appTitleLabel, 0, 0);
-		setGridBagConstraints(appDescriptionLabel, 0, 1);
+		setGridBagConstraints(appTitleLabel, LEFT, 0);
+		setGridBagConstraints(appDescriptionLabel, LEFT, 1);
 		
-		setGridBagConstraints(versionTitelLabel, 0, 2);
-		setGridBagConstraints(versionLabel, 1, 2);
+		setGridBagConstraints(versionTitelLabel, LEFT, 2);
+		setGridBagConstraints(versionLabel, RIGHT, 2);
 		
-		setGridBagConstraints(homepageTitelLabel, 0, 3);
-		setGridBagConstraints(homepageLabel, 1, 3);
+		setGridBagConstraints(homepageTitelLabel, LEFT, 3);
+		setGridBagConstraints(homepageLabel, RIGHT, 3);
 		
-		setGridBagConstraints(activeDeveloperTitleLabel, 0, 4);
-		setGridBagConstraints(activeDeveloperLabel, 1, 4);
+		setGridBagConstraints(activeDeveloperTitleLabel, LEFT, 4);
+		setGridBagConstraints(activeDeveloperLabel, RIGHT, 4);
 		
-		setGridBagConstraints(inactiveDevelopersTitleLabelLabel, 0, 5);
-		setGridBagConstraints(inactiveDevelopersLabel, 1, 5);
+		setGridBagConstraints(inactiveDevelopersTitleLabelLabel, LEFT, 5);
+		setGridBagConstraints(inactiveDevelopersLabel, RIGHT, 5);
 	}
 }
