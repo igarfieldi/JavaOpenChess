@@ -8,6 +8,12 @@ import javax.swing.JLabel;
 import jchess.gui.GridBagPanel;
 import jchess.util.TypedResourceBundle;
 
+/**
+ * 
+ * This class is a panel that contains all information about the application.
+ * This includes the title and version number of the application and the homepage and name of the developers.
+ *
+ */
 public class ApplicationInfoPanel extends GridBagPanel
 {
 	private static final long serialVersionUID = 5974507268451667934L;
