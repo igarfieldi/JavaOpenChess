@@ -23,7 +23,7 @@ package jchess.gamelogic.pieces;
 import java.awt.Image;
 
 import jchess.gamelogic.Player;
-import jchess.gui.ThemeImageLoader;
+import jchess.gui.secondary.themechooser.ThemeImageLoader;
 import jchess.util.Copyable;
 
 /**

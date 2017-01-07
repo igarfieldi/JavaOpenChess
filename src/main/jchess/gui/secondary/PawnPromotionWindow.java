@@ -33,7 +33,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 
 import jchess.gamelogic.Player.Color;
-import jchess.gui.ThemeImageLoader;
+import jchess.gui.secondary.themechooser.ThemeImageLoader;
 
 /**
  * Class responsible for promotion of a pawn. When a pawn reaches the end of the

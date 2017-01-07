@@ -1,4 +1,4 @@
-package jchess.gui;
+package jchess.gui.secondary;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

@@ -13,21 +13,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package jchess.gui.secondary;
+package jchess.gui.secondary.about;
 
 import java.awt.Frame;
 
 import javax.swing.JDialog;
 import javax.swing.WindowConstants;
 
-import jchess.util.TypedResourceBundle;
-
-public class JChessAboutWindow extends JDialog
+public class JChessAboutWindow extends JDialog implements IResources
 {
 	private static final long serialVersionUID = 8209938830184516667L;
-	
-	private static final TypedResourceBundle ABOUT_PROPERTIES = new TypedResourceBundle(
-	        "jchess.resources.JChessAboutBox");
 	
 	private AboutPanel aboutPanel;
 	

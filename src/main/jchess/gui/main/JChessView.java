@@ -66,10 +66,10 @@ import jchess.gamelogic.game.IGame;
 import jchess.gamelogic.game.IGameBuilder;
 import jchess.gamelogic.game.IGameBuilderFactory;
 import jchess.gamelogic.views.IMessageDisplay.Option;
-import jchess.gui.secondary.JChessAboutWindow;
 import jchess.gui.secondary.PawnPromotionWindow;
-import jchess.gui.secondary.ThemeChooseWindow;
-import jchess.gui.setup.NewGameWindow;
+import jchess.gui.secondary.about.JChessAboutWindow;
+import jchess.gui.secondary.setup.NewGameWindow;
+import jchess.gui.secondary.themechooser.ThemeChooseWindow;
 import jchess.util.FileMapParser;
 import jchess.util.TypedResourceBundle;
 

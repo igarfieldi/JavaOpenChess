@@ -1,11 +1,11 @@
-package jchess.gui.secondary;
+package jchess.gui.secondary.about;
 
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 
 import javax.swing.JLabel;
 
-import jchess.gui.GridBagPanel;
+import jchess.gui.secondary.GridBagPanel;
 import jchess.util.TypedResourceBundle;
 
 /**
@@ -14,12 +14,10 @@ import jchess.util.TypedResourceBundle;
  * This includes the title and version number of the application and the homepage and name of the developers.
  *
  */
-public class ApplicationInfoPanel extends GridBagPanel
+public class ApplicationInfoPanel extends GridBagPanel implements IResources
 {
 	private static final long serialVersionUID = 5974507268451667934L;
 	
-	private static final TypedResourceBundle ABOUT_PROPERTIES = new TypedResourceBundle(
-	        "jchess.resources.JChessAboutBox");
 	private static final TypedResourceBundle APP_PROPERTIES = new TypedResourceBundle("jchess.resources.JChessApp");
 	
 	private JLabel appTitleLabel;

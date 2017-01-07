@@ -36,8 +36,8 @@ import javax.swing.JTabbedPane;
 
 import jchess.JChessApp;
 import jchess.gamelogic.game.IGameBuilderFactory;
-import jchess.gui.ThemeImageLoader;
-import jchess.gui.setup.NewGameWindow;
+import jchess.gui.secondary.setup.NewGameWindow;
+import jchess.gui.secondary.themechooser.ThemeImageLoader;
 
 public class JChessTabbedPane extends JTabbedPane implements MouseListener, ImageObserver
 {
