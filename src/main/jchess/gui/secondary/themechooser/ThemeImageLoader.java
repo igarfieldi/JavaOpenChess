@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jchess.JChessApp;
+import jchess.gamelogic.Player.Color;
 import jchess.gamelogic.pieces.Piece;
 
 public class ThemeImageLoader
@@ -64,25 +65,33 @@ public class ThemeImageLoader
 	
 	public Image loadThemedPieceImage(Piece piece) {
 		String imageName = piece.getName() + "-";
-		switch(piece.getPlayer().getColor()) {
+		imageName += getColorString(piece.getPlayer().getColor());
+		imageName += ".png";
+		
+		return this.loadThemeImage(imageName);
+	}
+
+	public String getColorString(Color color)
+	{
+		String colorString = "";
+		switch(color)
+		{
 			case WHITE:
-				imageName += "W";
+				colorString += "W";
 				break;
 			case RED:
-				imageName += "BR";
+				colorString += "BR";
 				break;
 			case BLACK:
-				imageName += "B";
+				colorString += "B";
 				break;
 			case GOLDEN:
-				imageName += "G";
+				colorString += "G";
 				break;
 			default:
 				log.log(Level.SEVERE, "Piece of player with unknown color exists!");
 		}
-		imageName += ".png";
-		
-		return this.loadThemeImage(imageName);
+		return colorString;
 	}
 	
 	private Image loadImageFromResources(String path) {
