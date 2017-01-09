@@ -23,8 +23,6 @@ package jchess.gui.secondary.setup;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
-import jchess.gamelogic.game.IGameBuilderFactory;
-
 /**
  *
  * @author donmateo
@@ -34,12 +32,12 @@ public class NewGameWindow extends JDialog
 	private static final long serialVersionUID = -6260320901046879928L;
 	private LocalSettingsPanel localSettingsPanel;
 	
-	public NewGameWindow(JFrame parent, IGameBuilderFactory factory)
+	public NewGameWindow(JFrame parent)
 	{
 		super(parent);
 		setWindowProperties();
 		
-		this.localSettingsPanel = new LocalSettingsPanel(this, factory);
+		this.localSettingsPanel = new LocalSettingsPanel();
 		this.add(localSettingsPanel);
 	}
 	

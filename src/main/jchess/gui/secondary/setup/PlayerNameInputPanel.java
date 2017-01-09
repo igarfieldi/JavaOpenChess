@@ -2,8 +2,6 @@ package jchess.gui.secondary.setup;
 
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,7 +11,6 @@ import javax.swing.JTextField;
 import javax.swing.text.BadLocationException;
 
 import jchess.Localization;
-import jchess.gamelogic.Player;
 import jchess.gui.secondary.GridBagPanel;
 
 public class PlayerNameInputPanel extends GridBagPanel
@@ -121,7 +118,7 @@ public class PlayerNameInputPanel extends GridBagPanel
 		}
 	}
 	
-	public void assignPlayerNames(Player firstPlayer, Player secondPlayer)
+	/*public void assignPlayerNames(Player firstPlayer, Player secondPlayer)
 	{
 		firstPlayer.setName(this.playerNameTextFields[0].getText());
 		secondPlayer.setName(this.playerNameTextFields[1].getText());
@@ -134,6 +131,15 @@ public class PlayerNameInputPanel extends GridBagPanel
 			playerList.add(this.getPlayerName(i));
 		
 		return playerList;
+	}*/
+	
+	public String[] getPlayerNames()
+	{
+		String playerNames[] = new String[4];
+		for(int i = 0; i < 4; i++)
+			playerNames[i] = this.playerNameTextFields[i].getText();
+		
+		return playerNames;
 	}
 	
 	public String getPlayerName(int index)

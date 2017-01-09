@@ -19,19 +19,14 @@
  */
 package jchess.gui.secondary.setup;
 
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
+import javax.swing.SwingUtilities;
 
-import jchess.JChessApp;
 import jchess.Localization;
-import jchess.gamelogic.Player;
-import jchess.gamelogic.Player.Color;
-import jchess.gamelogic.game.IGame;
-import jchess.gamelogic.game.IGameBuilder;
-import jchess.gamelogic.game.IGameBuilderFactory;
 import jchess.gui.secondary.GridBagPanel;
 
 /**
@@ -41,19 +36,17 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 {
 	private static final long serialVersionUID = -9175716765749855635L;
 	
-	private JDialog newGameWindow;
+	private GameWindowCreator gameCreator;
 	
 	private PlayerNumberChoicePanel playerNumberChoicePanel;
 	private PlayerNameInputPanel playerNameInputPanel;
 	private TimerSetterPanel timerSetterPanel;
 	private JButton okButton;
-	private IGameBuilderFactory builderFactory;
 	
-	LocalSettingsPanel(JDialog newGameWindow, IGameBuilderFactory builderFactory)
+	LocalSettingsPanel()
 	{
 		super();
-		this.builderFactory = builderFactory;
-		this.newGameWindow = newGameWindow;
+		this.gameCreator = new GameWindowCreator();
 	}
 	
 	protected void initializeGuiElements()
@@ -77,7 +70,12 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 	public void actionPerformed(ActionEvent event)
 	{
 		if(event.getSource() == this.okButton)
+		{
 			startGame();
+			
+			Window parentDialog = SwingUtilities.getWindowAncestor(this);
+			parentDialog.setVisible(false);
+		}
 	}
 	
 	private void startGame()
@@ -85,46 +83,8 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 		if(!playerNameInputPanel.playerNamesEmpty())
 		{
 			playerNameInputPanel.shortenPlayerNames();
-			IGame game = setGameProperties();
-			
-			JChessApp.view.addNewGameTab(game);
-			drawGameWindow(game);
+			gameCreator.createGameWindow(timerSetterPanel.getTimeLimit(), playerNumberChoicePanel.getPlayerCount(),
+			        playerNameInputPanel.getPlayerNames());
 		}
-	}
-
-	private IGame setGameProperties()
-	{
-		IGameBuilder builder = builderFactory.getBuilder();
-		builder.setProperty("timeLimit", "" + timerSetterPanel.getTimeLimit());
-		addPlayers(builder);
-		
-		IGame game = builder.create();
-		return game;
-	}
-
-	private void addPlayers(IGameBuilder builder)
-	{
-		final int TWO_PLAYERS = 2;
-		final int FOUR_PLAYERS = 4;
-		
-		if(playerNumberChoicePanel.getPlayerCount() == TWO_PLAYERS)
-		{
-			builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(0), Color.WHITE));
-			builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(1), Color.BLACK));
-		}
-		else if(playerNumberChoicePanel.getPlayerCount() == FOUR_PLAYERS)
-		{
-			builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(0), Color.WHITE));
-			builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(1), Color.RED));
-			builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(2), Color.BLACK));
-			builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(3), Color.GOLDEN));
-		}
-	}
-	
-	private void drawGameWindow(IGame gameWindow)
-	{
-		gameWindow.newGame();
-		this.newGameWindow.setVisible(false);
-		gameWindow.getView().render();
 	}
 }
