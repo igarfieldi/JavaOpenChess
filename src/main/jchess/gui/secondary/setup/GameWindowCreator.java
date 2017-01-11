@@ -12,9 +12,18 @@ public class GameWindowCreator
 	public void createGameWindow(int timeLimit, int playerNumber, String[] playerNames)
 	{
 		IGame game = setGameProperties(timeLimit, playerNumber, playerNames);
+		String newGameTabTitle = setNewGameTabTitle(playerNames);
 		
-		JChessApp.view.addNewGameTab(game);
+		JChessApp.view.addNewGameTab(newGameTabTitle, game);
 		drawGameWindow(game);
+	}
+
+	private String setNewGameTabTitle(String[] playerNames)
+	{
+		String newGameTabTitle = playerNames[0] + " vs. " + playerNames[1];
+		if(!playerNames[2].isEmpty() && !playerNames[3].isEmpty())
+			newGameTabTitle += " vs. " + playerNames[2] + " vs. " + playerNames[3];
+		return newGameTabTitle;
 	}
 	
 	private IGame setGameProperties(int timeLimit, int playerNumber, String[] playerNames)

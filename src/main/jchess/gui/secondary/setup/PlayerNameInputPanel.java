@@ -118,21 +118,6 @@ public class PlayerNameInputPanel extends GridBagPanel
 		}
 	}
 	
-	/*public void assignPlayerNames(Player firstPlayer, Player secondPlayer)
-	{
-		firstPlayer.setName(this.playerNameTextFields[0].getText());
-		secondPlayer.setName(this.playerNameTextFields[1].getText());
-	}
-	
-	public List<String> getPlayerNames()
-	{
-		List<String> playerList = new ArrayList<String>();
-		for(int i = 0; i < 4; i++)
-			playerList.add(this.getPlayerName(i));
-		
-		return playerList;
-	}*/
-	
 	public String[] getPlayerNames()
 	{
 		String playerNames[] = new String[4];

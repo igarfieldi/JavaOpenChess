@@ -409,9 +409,9 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		});
 	}
 	
-	public void addNewGameTab(IGame game) {
+	public void addNewGameTab(String title, IGame game) {
 		this.gameList.add(game);
-		this.gamesPane.addTab("", (Component)game.getView());
+		this.gamesPane.addTab(title, (Component)game.getView());
 	}
 	
 	public void actionPerformed(ActionEvent event)
