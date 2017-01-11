@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jchess.JChessApp;
+import jchess.gamelogic.Player.Color;
 import jchess.gamelogic.pieces.Piece;
 
 public class ThemeImageLoader
@@ -16,21 +17,23 @@ public class ThemeImageLoader
 	private static Logger log = Logger.getLogger(ThemeImageLoader.class.getName());
 	
 	private static ThemeImageLoader instance;
-
+	
 	private final Toolkit toolkit;
 	private Map<String, Image> imageCache;
 	private final Properties configFile;
 	
-	private ThemeImageLoader() {
+	private ThemeImageLoader()
+	{
 		this.imageCache = new HashMap<String, Image>();
 		this.configFile = ThemeConfigurator.getConfigFile();
 		this.toolkit = Toolkit.getDefaultToolkit();
 	}
 	
-	public static ThemeImageLoader getInstance() {
-		if(instance == null) {
+	public static ThemeImageLoader getInstance()
+	{
+		if(instance == null)
 			instance = new ThemeImageLoader();
-		}
+		
 		return instance;
 	}
 	
@@ -62,37 +65,51 @@ public class ThemeImageLoader
 		return null;
 	}
 	
-	public Image loadThemedPieceImage(Piece piece) {
+	public Image loadThemedPieceImage(Piece piece)
+	{
 		String imageName = piece.getName() + "-";
-		switch(piece.getPlayer().getColor()) {
-			case WHITE:
-				imageName += "W";
-				break;
-			case RED:
-				imageName += "BR";
-				break;
-			case BLACK:
-				imageName += "B";
-				break;
-			case GOLDEN:
-				imageName += "G";
-				break;
-			default:
-				log.log(Level.SEVERE, "Piece of player with unknown color exists!");
-		}
+		imageName += getColorString(piece.getPlayer().getColor());
 		imageName += ".png";
 		
 		return this.loadThemeImage(imageName);
 	}
 	
-	private Image loadImageFromResources(String path) {
+	public String getColorString(Color color)
+	{
+		String colorString = "";
+		switch(color)
+		{
+			case WHITE:
+				colorString += "W";
+				break;
+			case RED:
+				colorString += "BR";
+				break;
+			case BLACK:
+				colorString += "B";
+				break;
+			case GOLDEN:
+				colorString += "G";
+				break;
+			default:
+				log.log(Level.SEVERE, "Piece of player with unknown color exists!");
+		}
+		return colorString;
+	}
+	
+	private Image loadImageFromResources(String path)
+	{
 		Image img = imageCache.get(path);
-		if(img == null) {
+		if(img == null)
+		{
 			// If the image is not yet in the cache, load it
-			try {
+			try
+			{
 				img = toolkit.getImage(JChessApp.class.getResource(path));
 				imageCache.put(path, img);
-			} catch(NullPointerException exc) {
+			}
+			catch(NullPointerException exc)
+			{
 				log.log(Level.SEVERE, "Failed to load image: " + path + "!", exc);
 				return null;
 			}

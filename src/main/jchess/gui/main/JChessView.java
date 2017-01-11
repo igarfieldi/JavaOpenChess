@@ -150,7 +150,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	private void initializeMainPanel()
 	{
 		mainPanel = new JPanel();
-		gamesPane = new JChessTabbedPane(gameBuilderFactory);
+		gamesPane = new JChessTabbedPane();
 		
 		configureMainPanelSize();
 		configureMainPanelLayout();
@@ -409,9 +409,9 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		});
 	}
 	
-	public void addNewGameTab(IGame game) {
+	public void addNewGameTab(String title, IGame game) {
 		this.gameList.add(game);
-		this.gamesPane.addTab("", (Component)game.getView());
+		this.gamesPane.addTab(title, (Component)game.getView());
 	}
 	
 	public void actionPerformed(ActionEvent event)
@@ -419,7 +419,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		Object target = event.getSource();
 		if(target == newGameItem)
 		{
-			this.newGameFrame = new NewGameWindow(this.getFrame(), this.gameBuilderFactory);
+			this.newGameFrame = new NewGameWindow(this.getFrame());
 			JChessApp.getApplication().show(this.newGameFrame);
 		}
 		else if(target == saveGameItem)

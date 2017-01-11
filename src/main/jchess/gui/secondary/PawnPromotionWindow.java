@@ -25,8 +25,6 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -43,7 +41,6 @@ import jchess.gui.secondary.themechooser.ThemeImageLoader;
 public class PawnPromotionWindow extends JDialog implements ActionListener
 {
 	private static final long serialVersionUID = -1026252750919159633L;
-	private static Logger log = Logger.getLogger(PawnPromotionWindow.class.getName());
 	
 	private String selectedPromotion;
 	
@@ -91,8 +88,7 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 	
 	private void createPieceButtons(Color color)
 	{
-		// TODO: very rigid; shift into ThemeLoader?
-		String colorName = setColorString(color);
+		String colorName = ThemeImageLoader.getInstance().getColorString(color);
 		
 		this.knightButton = new JButton(
 		        new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Knight-" + colorName + ".png")));
@@ -102,30 +98,6 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 		        new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Rook-" + colorName + ".png")));
 		this.queenButton = new JButton(
 		        new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Queen-" + colorName + ".png")));
-	}
-
-	private String setColorString(Color color)
-	{
-		String colorString = NOTHING_SELECTED;
-		switch(color)
-		{
-			case WHITE:
-				colorString = "W";
-				break;
-			case RED:
-				colorString = "BR";
-				break;
-			case BLACK:
-				colorString = "B";
-				break;
-			case GOLDEN:
-				colorString = "G";
-				break;
-			default:
-				log.log(Level.SEVERE, "Tried to show promotion pieces for non-existing color!");
-				break;
-		}
-		return colorString;
 	}
 	
 	private void initializePieceButtons()
