@@ -58,9 +58,16 @@ public interface IChessboardController extends LoadSaveable
 	 * 
 	 * @param player
 	 *            Player to be checked
-	 * @return true if in check
+	 * @return true if player is in check
 	 */
 	public boolean isChecked(Player player);
+	
+	/**
+	 * Returns the set of pieces which currently put the given player in check.
+	 * @param player Player to be checked
+	 * @return Set of pieces checking the player
+	 */
+	public Set<Piece> getPiecesCheckingPlayer(Player player);
 	
 	/**
 	 * Checks if the player is checkmated. This is equivalent to checking if the

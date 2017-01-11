@@ -126,7 +126,7 @@ public class FourPlayerChessboardController extends RegularChessboardController
 	 */
 	private Field getCastledKingField(CastlingType type, Piece king, Piece rook) {
 		if(rook == null || rook.hasMoved()) {
-			// A non-existant rook or one that has moved already cannot castle
+			// A non-existent rook or one that has moved already cannot castle
 			return null;
 		}
 		

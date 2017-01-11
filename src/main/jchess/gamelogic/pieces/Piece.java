@@ -84,6 +84,11 @@ public class Piece implements Copyable<Piece>
 		return player;
 	}
 	
+	public String toString() 
+	{
+		return "Piece: " + SYMBOL;
+	}
+	
 	@Override
 	public Piece copy()
 	{

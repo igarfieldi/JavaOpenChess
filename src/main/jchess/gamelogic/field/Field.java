@@ -48,6 +48,8 @@ public class Field
 	
 	@Override
 	public String toString() {
+		// TODO: flip around the y coordinate for chessboard to coincide with 
+		// the designation (lower left = starting point)
 		return Field.getAlphabeticalDesignation(getPosX()) + Integer.toString(getPosY() + 1);
 	}
 	

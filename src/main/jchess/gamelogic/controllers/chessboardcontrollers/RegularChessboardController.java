@@ -1,9 +1,11 @@
 package jchess.gamelogic.controllers.chessboardcontrollers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,18 +41,17 @@ public abstract class RegularChessboardController implements IChessboardControll
 	
 	private History movesHistory;
 	
-	public RegularChessboardController(IChessboardViewFactory viewFactory,
-			IBoardFactory boardFactory, List<Player> players)
+	public RegularChessboardController(IChessboardViewFactory viewFactory, IBoardFactory boardFactory,
+	        List<Player> players)
 	{
 		this.board = boardFactory.createChessboard(players);
-		if(viewFactory != null) {
+		if(viewFactory != null)
+		{
 			this.view = viewFactory.create();
 		}
 		this.players = players;
 		this.movesHistory = new History(this, players.get(0), players.get(1));
 		this.currPlayerIndex = 0;
-		
-		// this.movesHistory = new Moves(this, white, black);
 	}
 	
 	@Override
@@ -166,6 +167,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 			}
 		}
 		
+		// If we do not want to allow moves that put us in check, remove those
 		if(careForCheck)
 		{
 			this.removeMovesResultingInCheck(piece, reachableFields);
@@ -175,15 +177,20 @@ public abstract class RegularChessboardController implements IChessboardControll
 	}
 	
 	@Override
-	public Set<Field> getPossibleThreats(Piece piece, boolean careForCheck) {
+	public Set<Field> getPossibleThreats(Piece piece, boolean careForCheck)
+	{
 		Set<Field> threateningFields = new HashSet<Field>();
 		Field target = board.getField(piece);
 		
-		for(Player enemy : players) {
-			if(enemy != this.getActivePlayer()) {
+		for(Player enemy : players)
+		{
+			if(enemy != this.getActivePlayer())
+			{
 				// Iterate over all pieces of the player
-				for(Piece enemyPiece : board.getPieces(enemy)) {
-					if(this.getPossibleMoves(enemyPiece, careForCheck).contains(target)) {
+				for(Piece enemyPiece : board.getPieces(enemy))
+				{
+					if(this.getPossibleMoves(enemyPiece, careForCheck).contains(target))
+					{
 						threateningFields.add(board.getField(enemyPiece));
 					}
 				}
@@ -205,6 +212,13 @@ public abstract class RegularChessboardController implements IChessboardControll
 	{
 		// For each move we need to simuate the future board state and see
 		// if we're in check
+		
+		// First store the pre-existing checks of other players
+		Map<Player, Set<Piece>> preExistingChecks = new HashMap<Player, Set<Piece>>();
+		for(Player player : this.players)
+		{
+			preExistingChecks.put(player, this.getPiecesCheckingPlayer(player));
+		}
 		
 		// Store the part of the state that we cannot simply revert
 		Field activeField = null;
@@ -230,11 +244,15 @@ public abstract class RegularChessboardController implements IChessboardControll
 				// Should not happen
 				log.log(Level.SEVERE, "Unexpected error while simulating move!", exc);
 			}
-			if(this.isChecked(piece.getPlayer()))
+			
+			// If either the currently moving player is in a check OR a check
+			// between non-moving players opens up after the move, we have to
+			// remove it
+			if(this.isSelfOrUnfairCheckPresent(preExistingChecks, piece.getPlayer()))
 			{
-				// Checked moves are not allowed, so remove it
 				fieldIterator.remove();
 			}
+			
 			// Undo the move again
 			board = tempModel;
 		}
@@ -243,6 +261,42 @@ public abstract class RegularChessboardController implements IChessboardControll
 		{
 			this.getView().select(activeField);
 		}
+	}
+	
+	/**
+	 * Checks if either the given player is in check or an unfair check is
+	 * present. An unfair check is a check between two players which are
+	 * currently not moving. This can happen e.g. if the moving player moved a
+	 * piece blocking the checking path of another player (only possible with
+	 * more than 2 players). Since any previously existing checks cannot be
+	 * considered unfair.
+	 * 
+	 * @param preExistingChecks
+	 *            Map containing the set of pieces previously checking each
+	 *            player
+	 * @param movingPlayer
+	 *            The player assumed to be currently moving
+	 * @return Whether a self or unfair check exists
+	 */
+	private boolean isSelfOrUnfairCheckPresent(Map<Player, Set<Piece>> preExistingChecks, Player movingPlayer)
+	{
+		for(Player player : this.players)
+		{
+			// Check every player for possible checks that didn't exist before
+			for(Piece checking : this.getPiecesCheckingPlayer(player))
+			{
+				// For every piece that threatens the player's king check if
+				// it is NOT the currently moving player (because he just made
+				// a move; he has to be allowed to put someone else in check)
+				if(checking.getPlayer() != movingPlayer && !preExistingChecks.get(player).contains(checking))
+				{
+					// If the check didn't exist before the move it is unfair
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -266,20 +320,25 @@ public abstract class RegularChessboardController implements IChessboardControll
 	}
 	
 	/**
-	 * Returns the set of possible castling moves for the given king.
-	 * E.g. a king on h1 in 2p chess could castle to f1 or j1 (if the other
-	 * castling conditions were fulfilled).
-	 * @param piece King to get castling moves for
+	 * Returns the set of possible castling moves for the given king. E.g. a
+	 * king on h1 in 2p chess could castle to f1 or j1 (if the other castling
+	 * conditions were fulfilled).
+	 * 
+	 * @param piece
+	 *            King to get castling moves for
 	 * @return Set of possible castling moves for the king
 	 */
 	protected abstract Set<Field> getCastleMoves(Piece king);
 	
 	/**
 	 * Gets the corresponding move of the rook for a given castling king move.
-	 * E.g. a short-castling king on h1 for 2p chess needs a rook move from
-	 * k1 to i1.
-	 * @param king King which moves during castling
-	 * @param type Type of the castling (short/long)
+	 * E.g. a short-castling king on h1 for 2p chess needs a rook move from k1
+	 * to i1.
+	 * 
+	 * @param king
+	 *            King which moves during castling
+	 * @param type
+	 *            Type of the castling (short/long)
 	 * @return Move the rook will have to make
 	 */
 	protected abstract Move getRookMoveForCastling(Piece king, CastlingType type);
@@ -326,7 +385,8 @@ public abstract class RegularChessboardController implements IChessboardControll
 	{
 		Set<Field> capturableFields = new HashSet<Field>();
 		
-		capturableFields.addAll(this.getCapturableFieldsInDirection(piece, piece.getBehaviour().getCapturingMovements()));
+		capturableFields
+		        .addAll(this.getCapturableFieldsInDirection(piece, piece.getBehaviour().getCapturingMovements()));
 		
 		capturableFields.addAll(this.getEnPassantMoves(piece));
 		
@@ -437,26 +497,25 @@ public abstract class RegularChessboardController implements IChessboardControll
 	@Override
 	public boolean isChecked(Player player)
 	{
+		return !this.getPiecesCheckingPlayer(player).isEmpty();
+	}
+	
+	@Override
+	public Set<Piece> getPiecesCheckingPlayer(Player player)
+	{
+		Set<Piece> threateningPieces = new HashSet<Piece>();
 		for(Piece piece : board.getPieces(player))
 		{
 			if(piece.getBehaviour() instanceof King)
 			{
-				for(Player enemy : this.players)
+				for(Player enemy : this.getEnemies(player))
 				{
-					// You cannot be an enemy of yourself (at least in chess :)
-					// )
-					if(player != enemy)
-					{
-						if(!this.isThreatenedByPlayer(board.getField(piece), enemy).isEmpty())
-						{
-							return true;
-						}
-					}
+					threateningPieces.addAll(this.isThreatenedByPlayer(board.getField(piece), enemy));
 				}
 			}
 		}
 		
-		return false;
+		return threateningPieces;
 	}
 	
 	/*
@@ -514,7 +573,8 @@ public abstract class RegularChessboardController implements IChessboardControll
 		
 		for(Piece piece : board.getPieces(player))
 		{
-			if(this.getThreatenedFieldsInDirection(piece, piece.getBehaviour().getCapturingMovements()).contains(target))
+			if(this.getThreatenedFieldsInDirection(piece, piece.getBehaviour().getCapturingMovements())
+			        .contains(target))
 			{
 				threateningPieces.add(piece);
 			}
@@ -545,11 +605,14 @@ public abstract class RegularChessboardController implements IChessboardControll
 		return false;
 	}
 	
-	protected Set<Player> getEnemies(Player friendly) {
+	protected Set<Player> getEnemies(Player friendly)
+	{
 		Set<Player> enemies = new HashSet<Player>();
 		
-		for(Player player : this.players) {
-			if(player != friendly) {
+		for(Player player : this.players)
+		{
+			if(player != friendly)
+			{
 				enemies.add(player);
 			}
 		}
@@ -557,7 +620,8 @@ public abstract class RegularChessboardController implements IChessboardControll
 		return enemies;
 	}
 	
-	protected Set<Player> getAllies(Player friendly) {
+	protected Set<Player> getAllies(Player friendly)
+	{
 		Set<Player> allies = new HashSet<Player>();
 		allies.add(friendly);
 		return allies;
@@ -623,10 +687,12 @@ public abstract class RegularChessboardController implements IChessboardControll
 			{
 				move = new Move(begin, end, board.getPiece(begin), board.getPiece(end), CastlingType.LONG_CASTLING,
 				        false, null);
-			} else if(begin.getPosY() + 2 == end.getPosY()) {
+			} else if(begin.getPosY() + 2 == end.getPosY())
+			{
 				move = new Move(begin, end, board.getPiece(begin), board.getPiece(end), CastlingType.SHORT_CASTLING,
 				        false, null);
-			} else if(begin.getPosY() - 2 == end.getPosY()) {
+			} else if(begin.getPosY() - 2 == end.getPosY())
+			{
 				move = new Move(begin, end, board.getPiece(begin), board.getPiece(end), CastlingType.LONG_CASTLING,
 				        false, null);
 			}
@@ -635,7 +701,8 @@ public abstract class RegularChessboardController implements IChessboardControll
 			if(lastMove != null && lastMove.wasPawnTwoFieldsMove())
 			{
 				// Check if the target field lies behind the two-square pawn
-				Direction backwards = lastMove.getMovedPiece().getBehaviour().getNormalMovements().iterator().next().multiply(-1);
+				Direction backwards = lastMove.getMovedPiece().getBehaviour().getNormalMovements().iterator().next()
+				        .multiply(-1);
 				Field behindPawn = board.getField(lastMove.getTo().getPosX() + backwards.getX(),
 				        lastMove.getTo().getPosY() + backwards.getY());
 				if(behindPawn.equals(end))
@@ -653,17 +720,21 @@ public abstract class RegularChessboardController implements IChessboardControll
 				Piece promoted = null;
 				if(newPiece.equals("Queen")) // transform pawn to queen
 				{
-					promoted = PieceFactory.getInstance().buildPiece(movedPiece.getPlayer(), new Direction(0, 0), PieceType.QUEEN);
+					promoted = PieceFactory.getInstance().buildPiece(movedPiece.getPlayer(), new Direction(0, 0),
+					        PieceType.QUEEN);
 				} else if(newPiece.equals("Rook")) // transform pawn to rook
 				{
-					promoted = PieceFactory.getInstance().buildPiece(movedPiece.getPlayer(), new Direction(0, 0), PieceType.ROOK);
+					promoted = PieceFactory.getInstance().buildPiece(movedPiece.getPlayer(), new Direction(0, 0),
+					        PieceType.ROOK);
 				} else if(newPiece.equals("Bishop")) // transform pawn to
 				                                     // bishop
 				{
-					promoted = PieceFactory.getInstance().buildPiece(movedPiece.getPlayer(), new Direction(0, 0), PieceType.BISHOP);
+					promoted = PieceFactory.getInstance().buildPiece(movedPiece.getPlayer(), new Direction(0, 0),
+					        PieceType.BISHOP);
 				} else if(newPiece.equals("Knight"))// transform pawn to knight
 				{
-					promoted = PieceFactory.getInstance().buildPiece(movedPiece.getPlayer(), new Direction(0, 0), PieceType.KNIGHT);
+					promoted = PieceFactory.getInstance().buildPiece(movedPiece.getPlayer(), new Direction(0, 0),
+					        PieceType.KNIGHT);
 				} else
 				{
 					// If promotion was cancelled don't execute the move!
