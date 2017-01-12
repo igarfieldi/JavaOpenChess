@@ -9,19 +9,22 @@ import jchess.gamelogic.game.RegularGameBuilderFactory;
 
 public class SettingsAdopter
 {
+	private static final int TWO_PLAYERS = 2;
+	private static final int FOUR_PLAYERS = 4;
+	
 	public void createGameWindow(int timeLimit, int playerNumber, String[] playerNames)
 	{
 		IGame game = applyUiSettings(timeLimit, playerNumber, playerNames);
-		String newGameTabTitle = setNewGameTabTitle(playerNames);
+		String newGameTabTitle = setNewGameTabTitle(playerNames, playerNumber);
 		
 		JChessApp.view.addNewGameTab(newGameTabTitle, game);
 		drawGameWindow(game);
 	}
 
-	private String setNewGameTabTitle(String[] playerNames)
+	private String setNewGameTabTitle(String[] playerNames, int playerNumber)
 	{
 		String newGameTabTitle = playerNames[0] + " vs. " + playerNames[1];
-		if(!playerNames[2].isEmpty() && !playerNames[3].isEmpty())
+		if(playerNumber == FOUR_PLAYERS)
 			newGameTabTitle += " vs. " + playerNames[2] + " vs. " + playerNames[3];
 		return newGameTabTitle;
 	}
@@ -38,9 +41,6 @@ public class SettingsAdopter
 
 	private void addPlayers(IGameBuilder builder, int playerNumber, String[] playerNames)
 	{
-		final int TWO_PLAYERS = 2;
-		final int FOUR_PLAYERS = 4;
-		
 		if(playerNumber == TWO_PLAYERS)
 		{
 			builder.addPlayer(new Player(playerNames[0], Color.WHITE));
