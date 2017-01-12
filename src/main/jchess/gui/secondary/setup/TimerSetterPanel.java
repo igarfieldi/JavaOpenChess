@@ -33,13 +33,13 @@ public class TimerSetterPanel extends GridBagPanel
 	
 	public int getTimeLimit()
 	{
-		final int MINUTES = 60;
+		final int SECONDS_PER_MINUTE = 60;
 		final int NO_TIME_LIMIT = 0;
 		
 		if(this.hasTimeLimitCheckBox.isSelected())
 		{
 			String selectedTimeLimit = this.timeLimits[this.timeLimitsComboBox.getSelectedIndex()];
-			return ((int) Integer.parseInt(selectedTimeLimit) * MINUTES);
+			return ((int) Integer.parseInt(selectedTimeLimit) * SECONDS_PER_MINUTE);
 		}
 		else
 			return NO_TIME_LIMIT;

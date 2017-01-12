@@ -7,11 +7,11 @@ import jchess.gamelogic.game.IGame;
 import jchess.gamelogic.game.IGameBuilder;
 import jchess.gamelogic.game.RegularGameBuilderFactory;
 
-public class GameWindowCreator
+public class SettingsAdopter
 {
 	public void createGameWindow(int timeLimit, int playerNumber, String[] playerNames)
 	{
-		IGame game = setGameProperties(timeLimit, playerNumber, playerNames);
+		IGame game = applyUiSettings(timeLimit, playerNumber, playerNames);
 		String newGameTabTitle = setNewGameTabTitle(playerNames);
 		
 		JChessApp.view.addNewGameTab(newGameTabTitle, game);
@@ -26,7 +26,7 @@ public class GameWindowCreator
 		return newGameTabTitle;
 	}
 	
-	private IGame setGameProperties(int timeLimit, int playerNumber, String[] playerNames)
+	private IGame applyUiSettings(int timeLimit, int playerNumber, String[] playerNames)
 	{
 		IGameBuilder builder = RegularGameBuilderFactory.getInstance().getBuilder();
 		builder.setProperty("timeLimit", "" + timeLimit);

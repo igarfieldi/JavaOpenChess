@@ -32,6 +32,10 @@ public class NewGameWindow extends JDialog
 	private static final long serialVersionUID = -6260320901046879928L;
 	private LocalSettingsPanel localSettingsPanel;
 	
+	private static final String TITLE = "New Game";
+	private static final int WIDTH = 400;
+	private static final int HEIGHT = 700;
+	
 	public NewGameWindow(JFrame parent)
 	{
 		super(parent);
@@ -42,11 +46,7 @@ public class NewGameWindow extends JDialog
 	}
 	
 	private void setWindowProperties()
-	{
-		final String TITLE = "New Game";
-		final int WIDTH = 400;
-		final int HEIGHT = 700;
-		
+	{	
 		this.setTitle(TITLE);
 		this.setAlwaysOnTop(true);
 		this.setModalityType(ModalityType.APPLICATION_MODAL);

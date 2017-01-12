@@ -26,6 +26,7 @@ public class PlayerNameInputPanel extends GridBagPanel
 	private JTextField playerNameTextFields[];
 	
 	private static final int EMPTY = 0;
+	private static final int MAX_PLAYERS = 4;
 	
 	protected void initializeGuiElements()
 	{
@@ -34,8 +35,8 @@ public class PlayerNameInputPanel extends GridBagPanel
 		this.thirdPlayerNameLabel = new JLabel(Localization.getMessage("third_player_name") + ": ");
 		this.fourthPlayerNameLabel = new JLabel(Localization.getMessage("fourth_player_name") + ": ");
 		
-		playerNameTextFields = new JTextField[4];
-		for(int i = 0; i < 4; i++)
+		playerNameTextFields = new JTextField[MAX_PLAYERS];
+		for(int i = 0; i < MAX_PLAYERS; i++)
 		{
 			if(i <= 1)
 				this.playerNameTextFields[i] = createTextField(true);
@@ -94,7 +95,7 @@ public class PlayerNameInputPanel extends GridBagPanel
 	
 	public void shortenPlayerNames()
 	{
-		for(int i = 0; i < 4; i++)
+		for(int i = 0; i < MAX_PLAYERS; i++)
 			trimPlayerString(playerNameTextFields[i]);
 	}
 	
@@ -120,8 +121,8 @@ public class PlayerNameInputPanel extends GridBagPanel
 	
 	public String[] getPlayerNames()
 	{
-		String playerNames[] = new String[4];
-		for(int i = 0; i < 4; i++)
+		String playerNames[] = new String[MAX_PLAYERS];
+		for(int i = 0; i < MAX_PLAYERS; i++)
 			playerNames[i] = this.playerNameTextFields[i].getText();
 		
 		return playerNames;

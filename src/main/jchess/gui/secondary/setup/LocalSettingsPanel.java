@@ -36,7 +36,7 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 {
 	private static final long serialVersionUID = -9175716765749855635L;
 	
-	private GameWindowCreator gameCreator;
+	private SettingsAdopter settingsAdopter;
 	
 	private PlayerNumberChoicePanel playerNumberChoicePanel;
 	private PlayerNameInputPanel playerNameInputPanel;
@@ -46,7 +46,7 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 	LocalSettingsPanel()
 	{
 		super();
-		this.gameCreator = new GameWindowCreator();
+		this.settingsAdopter = new SettingsAdopter();
 	}
 	
 	protected void initializeGuiElements()
@@ -83,7 +83,7 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 		if(!playerNameInputPanel.playerNamesEmpty())
 		{
 			playerNameInputPanel.shortenPlayerNames();
-			gameCreator.createGameWindow(timerSetterPanel.getTimeLimit(), playerNumberChoicePanel.getPlayerCount(),
+			settingsAdopter.createGameWindow(timerSetterPanel.getTimeLimit(), playerNumberChoicePanel.getPlayerCount(),
 			        playerNameInputPanel.getPlayerNames());
 		}
 	}
