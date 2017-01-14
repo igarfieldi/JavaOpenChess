@@ -141,33 +141,35 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 	@Override
 	protected Set<Field> getEnPassantMoves(Piece piece)
 	{
+		// TODO: for the 4p case we cannot use the last move!
 		Set<Field> enPassantMoves = new HashSet<Field>();
 		
+		// Check if we have a pawn at our hands (precondition for en passant)
 		if(piece.getBehaviour() instanceof Pawn)
 		{
 			Move lastMove = getHistory().getLastMoveFromHistory();
-			// En passant
+			
+			// The last move has had to be a two field move from a pawn
 			if(lastMove != null && lastMove.wasPawnTwoFieldsMove())
 			{
 				Piece twoSquareMovedPawn = lastMove.getMovedPiece();
-				if(getBoard().getField(piece).getPosY() == getBoard().getField(twoSquareMovedPawn).getPosY())
-				{
-					// Our pawn is in the same row
-					if(Math.abs(getBoard().getField(piece).getPosX() - getBoard().getField(twoSquareMovedPawn).getPosX()) == 1)
-					{
-						// Our pawn is right next to the pawn which moved two
-						// squares. Now we need to check the direction in which
-						// the pawn has to go
-						if(piece.getPlayer() == getPlayer(1))
-						{
-							enPassantMoves.add(getBoard().getField(getBoard().getField(twoSquareMovedPawn).getPosX(),
-							        getBoard().getField(piece).getPosY() + 1));
-						} else
-						{
-							enPassantMoves.add(getBoard().getField(getBoard().getField(twoSquareMovedPawn).getPosX(),
-							        getBoard().getField(piece).getPosY() - 1));
-						}
-					}
+				Field pieceField = getBoard().getField(piece);
+				Field movedPawnField = getBoard().getField(twoSquareMovedPawn);
+				
+				// Get the forward direction of the pawn which moved two fields
+				Direction movedPawnForward = ((Pawn) twoSquareMovedPawn.getBehaviour()).getForwardDirection();
+
+				// By rotating the forward direction by 90 degrees we get the fields to its left and right
+				Field leftField = getBoard().getField(movedPawnField.getPosX() - movedPawnForward.rotate90Deg().getX(),
+						movedPawnField.getPosY() - movedPawnForward.rotate90Deg().getY());
+				Field rightField = getBoard().getField(movedPawnField.getPosX() + movedPawnForward.rotate90Deg().getX(),
+						movedPawnField.getPosY() + movedPawnForward.rotate90Deg().getY());
+				
+				// Our piece to check has to be right next to the pawn to be eligible for en passant
+				if(pieceField.equals(leftField) || pieceField.equals(rightField)) {
+					// If it is eligible, it can make a capturing move right behind the two-field-moved pawn
+					enPassantMoves.add(getBoard().getField(movedPawnField.getPosX() - movedPawnForward.getX(),
+							movedPawnField.getPosY() - movedPawnForward.getY()));
 				}
 			}
 		}

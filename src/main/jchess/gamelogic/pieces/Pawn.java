@@ -53,6 +53,10 @@ public class Pawn implements IPieceBehaviour
 		return DirectionType.getConeMovement(forward);
 	}
 	
+	public Direction getForwardDirection() {
+		return forward;
+	}
+	
 	@Override
 	public boolean canMoveMultipleSteps()
 	{

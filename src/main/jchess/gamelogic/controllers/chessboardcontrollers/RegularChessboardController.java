@@ -158,12 +158,16 @@ public abstract class RegularChessboardController implements IChessboardControll
 			Field pawnField = board.getField(piece);
 			Field inFrontOfPawn = new Field(pawnField.getPosX() + forward.getX(), pawnField.getPosY() + forward.getY());
 			
+			// Pawns cannot jump over pieces even at the start
 			if(board.getPiece(inFrontOfPawn) == null)
 			{
-				// We need to remove the two-field move
 				Field twoFieldMove = new Field(pawnField.getPosX() + 2 * forward.getX(),
 				        pawnField.getPosY() + 2 * forward.getY());
-				reachableFields.add(twoFieldMove);
+				
+				// AND they cannot capture pieces with this move either
+				if(board.getPiece(twoFieldMove) == null) {
+					reachableFields.add(twoFieldMove);
+				}
 			}
 		}
 		
@@ -709,6 +713,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 				{
 					// In that case we have an En Passant at our hands
 					move = new Move(begin, end, movedPiece, lastMove.getMovedPiece(), CastlingType.NONE, true, null);
+					getBoard().removePiece(lastMove.getTo());
 				}
 			}
 			if(clearForwardHistory && this.checkForPromotion(movedPiece, end))
