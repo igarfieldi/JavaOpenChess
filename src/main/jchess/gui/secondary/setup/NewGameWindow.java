@@ -25,7 +25,7 @@ import javax.swing.JFrame;
 
 /**
  *
- * @author donmateo
+ * Class with a dialog containing the Local Settings Panel.
  */
 public class NewGameWindow extends JDialog
 {

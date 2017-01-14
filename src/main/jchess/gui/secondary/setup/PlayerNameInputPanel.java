@@ -13,6 +13,9 @@ import javax.swing.text.BadLocationException;
 import jchess.Localization;
 import jchess.gui.secondary.GridBagPanel;
 
+/**
+ * Class with a panel containing all labels and text fields used to name the players
+ */
 public class PlayerNameInputPanel extends GridBagPanel
 {
 	private static final long serialVersionUID = -5529158483741339210L;
@@ -45,6 +48,13 @@ public class PlayerNameInputPanel extends GridBagPanel
 		}
 	}
 	
+	/**
+	 * Creates a new text field object and sets its properties
+	 * 
+	 * @param isEnabled
+	 * 				Determines whether the text field is active.
+	 * @return new text field object
+	 */
 	private JTextField createTextField(boolean isEnabled)
 	{
 		JTextField newTextField;
@@ -74,6 +84,11 @@ public class PlayerNameInputPanel extends GridBagPanel
 		setGridBagConstraints(playerNameTextFields[3], RIGHT, 3);
 	}
 	
+	/**
+	 * Checks if the text fields have any text inside them.
+	 * 
+	 * @return
+	 */
 	public boolean playerNamesEmpty()
 	{
 		if(this.playerNameTextFields[0].getText().length() == EMPTY
@@ -86,6 +101,12 @@ public class PlayerNameInputPanel extends GridBagPanel
 			return false;
 	}
 	
+	/**
+	 * Checks if the text fields for the third and fourth players are active and
+	 * if they have any text inside them.
+	 * 
+	 * @return
+	 */
 	private boolean additionalTextFieldsActiveAndEmpty()
 	{
 		return (this.playerNameTextFields[2].isEnabled() && this.playerNameTextFields[3].isEnabled())
@@ -93,12 +114,21 @@ public class PlayerNameInputPanel extends GridBagPanel
 		                || this.playerNameTextFields[3].getText().length() == EMPTY);
 	}
 	
+	/**
+	 * Trims the character length of all player names.
+	 */
 	public void shortenPlayerNames()
 	{
 		for(int i = 0; i < MAX_PLAYERS; i++)
 			trimPlayerString(playerNameTextFields[i]);
 	}
 	
+	/**
+	 * Shortens the text inside the text field to 9 characters.
+	 * 
+	 * @param textField
+	 * 				The text field whose text should be trimmed.
+	 */
 	private void trimPlayerString(JTextField textField)
 	{
 		final int MAX_NAME_LENGTH = 9;
@@ -119,6 +149,10 @@ public class PlayerNameInputPanel extends GridBagPanel
 		}
 	}
 	
+	/**
+	 * 
+	 * @return array with all player names.
+	 */
 	public String[] getPlayerNames()
 	{
 		String playerNames[] = new String[MAX_PLAYERS];
@@ -128,11 +162,23 @@ public class PlayerNameInputPanel extends GridBagPanel
 		return playerNames;
 	}
 	
+	/**
+	 * 
+	 * @param index
+	 * 				Index of the text field whose text content we want.
+	 * @return text content of the specified text field
+	 */
 	public String getPlayerName(int index)
 	{
 		return this.playerNameTextFields[index].getText();
 	}
 	
+	/**
+	 * Enables or disables the text fields of the third and fourth player.
+	 * 
+	 * @param isEnabled
+	 * 				Determines whether text fields are enabled or disabled.
+	 */
 	public void setAdditionalTextFieldsEnabled(boolean isEnabled)
 	{
 		this.playerNameTextFields[2].setEnabled(isEnabled);

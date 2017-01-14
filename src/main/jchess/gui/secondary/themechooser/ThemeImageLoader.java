@@ -38,7 +38,7 @@ public class ThemeImageLoader
 	}
 	
 	/*
-	 * Method load image by a given name with extension
+	 * Method load image by a given name with extension without specifiying the theme.
 	 * 
 	 * @name : string of image to load for ex. "chessboard.jpg"
 	 * 
@@ -49,6 +49,15 @@ public class ThemeImageLoader
 		return loadThemeImage(imageName, this.configFile.getProperty("THEME", "default"));
 	}
 	
+	/**
+	 * Loads the image by a given name and theme.
+	 * 
+	 * @param imageName
+	 * 				String of image to load for ex. "chessboard.jpg"
+	 * @param theme
+	 * 				String of the theme from which the image should be taken.
+	 * @return
+	 */
 	public Image loadThemeImage(String imageName, String theme)
 	{
 		try
@@ -65,6 +74,13 @@ public class ThemeImageLoader
 		return null;
 	}
 	
+	/**
+	 * Loads the image of the specified piece.
+	 * 
+	 * @param piece
+	 * 				The piece whose image should be loaded.
+	 * @return
+	 */
 	public Image loadThemedPieceImage(Piece piece)
 	{
 		String imageName = piece.getName() + "-";
@@ -74,6 +90,13 @@ public class ThemeImageLoader
 		return this.loadThemeImage(imageName);
 	}
 	
+	/**
+	 * Gets the string of the short version of a specified color.
+	 * 
+	 * @param color
+	 * 				Color whose short version is needed.
+	 * @return string of short version of the color.
+	 */
 	public String getColorString(Color color)
 	{
 		String colorString = "";
@@ -97,6 +120,13 @@ public class ThemeImageLoader
 		return colorString;
 	}
 	
+	/**
+	 * Loads an image inside the specified resource path.
+	 * 
+	 * @param path
+	 * 				The file path of the resource.
+	 * @return image inside the resource path.
+	 */
 	private Image loadImageFromResources(String path)
 	{
 		Image img = imageCache.get(path);

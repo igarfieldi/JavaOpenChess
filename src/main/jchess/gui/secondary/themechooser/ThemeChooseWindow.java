@@ -39,6 +39,9 @@ import javax.swing.event.ListSelectionListener;
 import jchess.JChessApp;
 import jchess.Localization;
 
+/**
+ * Class with a dialog containing UI elements to change the game's theme.
+ */
 public class ThemeChooseWindow extends JDialog implements ActionListener, ListSelectionListener
 {
 	private static final long serialVersionUID = -6866033656313872022L;
@@ -68,6 +71,12 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 			throw new Exception(Localization.getMessage("error_when_creating_theme_config_window"));
 	}
 
+	/**
+	 * Creates instances of all UI elements and sets their properties.
+	 * 
+	 * @param themeNames
+	 * 				List of all themes.
+	 */
 	private void createGUI(ArrayList<String> themeNames)
 	{
 		// JList needs an array, so we convert it to one
@@ -84,6 +93,9 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 		setButtonProperties(okButton, OK_BUTTON_LOCATION, OK_BUTTON_DIMENSION, true);
 	}
 
+	/**
+	 * Sets the properties of the dialog.
+	 */
 	private void setWindowProperties()
 	{
 		final Dimension SIZE = new Dimension(550, 230);
@@ -98,6 +110,9 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 
+	/**
+	 * Sets the properties of the list of themes.
+	 */
 	private void setThemeListProperties()
 	{
 		this.themesList.setLocation(new Point(10, 10));
@@ -107,6 +122,9 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 		this.themesList.addListSelectionListener(this);
 	}
 
+	/**
+	 * Creates instance of the preview image UI element and gives it the actual image.
+	 */
 	private void setThemePreviewImage()
 	{
 		try
@@ -121,6 +139,18 @@ public class ThemeChooseWindow extends JDialog implements ActionListener, ListSe
 		}
 	}
 
+	/**
+	 * Sets the properties of a specified button
+	 * 
+	 * @param button
+	 * 				The button whose properties should be set.
+	 * @param location
+	 * 				The position of the button.
+	 * @param size
+	 * 				The size of the button
+	 * @param isInteractable
+	 * 				Boolean to determine whether the button is active or not.
+	 */
 	private void setButtonProperties(JButton button, Point location, Dimension size, Boolean isInteractable)
 	{
 		button.setLocation(location);

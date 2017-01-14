@@ -9,10 +9,8 @@ import jchess.gui.secondary.GridBagPanel;
 import jchess.util.TypedResourceBundle;
 
 /**
- * 
  * This class is a panel that contains all information about the application.
  * This includes the title and version number of the application and the homepage and name of the developers.
- *
  */
 public class ApplicationInfoPanel extends GridBagPanel implements IResources
 {
@@ -42,28 +40,38 @@ public class ApplicationInfoPanel extends GridBagPanel implements IResources
 		final int NORMAL_SIZE = 0;
 		final int BIG_SIZE = 4;
 		
-		setLabelContent(appTitleLabel, true, BIG_SIZE, "Application.title", "Application.title", APP_PROPERTIES);
-		setLabelContent(appDescriptionLabel, false, NORMAL_SIZE, "appDescLabel.text", "appDescLabel", ABOUT_PROPERTIES);
+		setLabelContent(appTitleLabel, true, BIG_SIZE, "Application.title", APP_PROPERTIES);
+		setLabelContent(appDescriptionLabel, false, NORMAL_SIZE, "appDescLabel.text", ABOUT_PROPERTIES);
 		
-		setLabelContent(versionTitelLabel, true, NORMAL_SIZE, "versionLabel.text", "versionLabel", ABOUT_PROPERTIES);
-		setLabelContent(versionLabel, false, NORMAL_SIZE, "Application.version", "appVersionLabel", APP_PROPERTIES);
+		setLabelContent(versionTitelLabel, true, NORMAL_SIZE, "versionLabel.text", ABOUT_PROPERTIES);
+		setLabelContent(versionLabel, false, NORMAL_SIZE, "Application.version", APP_PROPERTIES);
 		
-		setLabelContent(homepageTitelLabel, true, NORMAL_SIZE, "homepageLabel.text", "homepageLabel", ABOUT_PROPERTIES);
-		setLabelContent(homepageLabel, false, NORMAL_SIZE, "Application.homepage", "appHomepageLabel", APP_PROPERTIES);
+		setLabelContent(homepageTitelLabel, true, NORMAL_SIZE, "homepageLabel.text", ABOUT_PROPERTIES);
+		setLabelContent(homepageLabel, false, NORMAL_SIZE, "Application.homepage", APP_PROPERTIES);
 		
-		setLabelContent(activeDeveloperTitleLabel, true, NORMAL_SIZE, "vendorLabel1.text", "vendorLabel1",
-		        ABOUT_PROPERTIES);
-		setLabelContent(activeDeveloperLabel, false, NORMAL_SIZE, "appHomepageLabel2.text", "appHomepageLabel2",
-		        ABOUT_PROPERTIES);
+		setLabelContent(activeDeveloperTitleLabel, true, NORMAL_SIZE, "vendorLabel1.text", ABOUT_PROPERTIES);
+		setLabelContent(activeDeveloperLabel, false, NORMAL_SIZE, "appHomepageLabel2.text", ABOUT_PROPERTIES);
 		
-		setLabelContent(inactiveDevelopersTitleLabelLabel, true, NORMAL_SIZE, "vendorLabel2.text", "vendorLabel2",
-		        ABOUT_PROPERTIES);
-		setLabelContent(inactiveDevelopersLabel, false, NORMAL_SIZE, "appHomepageLabel3.text", "appHomepageLabel3",
-		        ABOUT_PROPERTIES);
+		setLabelContent(inactiveDevelopersTitleLabelLabel, true, NORMAL_SIZE, "vendorLabel2.text", ABOUT_PROPERTIES);
+		setLabelContent(inactiveDevelopersLabel, false, NORMAL_SIZE, "appHomepageLabel3.text", ABOUT_PROPERTIES);
 	}
 	
+	/**
+	 * Sets the text content inside the specified label as well as its font.
+	 * 
+	 * @param label
+	 * 				The label to be used.
+	 * @param hasBoldFont
+	 * 				Specifies if the font is normal or bold
+	 * @param fontEnlargement
+	 * 				Specifies the text size
+	 * @param resourceName
+	 * 				The asset that contains the text.
+	 * @param resourceBundle
+	 * 				The asset pack that contains the texts.
+	 */
 	private void setLabelContent(JLabel label, Boolean hasBoldFont, int fontEnlargement, String resourceName,
-	        String labelName, TypedResourceBundle resourceBundle)
+	        TypedResourceBundle resourceBundle)
 	{
 		if(hasBoldFont)
 		{
@@ -73,7 +81,6 @@ public class ApplicationInfoPanel extends GridBagPanel implements IResources
 		}
 		
 		label.setText(resourceBundle.getString(resourceName));
-		label.setName(labelName);
 	}
 	
 	protected void initializeGuiElements()
