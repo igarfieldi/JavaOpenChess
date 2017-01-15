@@ -29,7 +29,6 @@ import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Move;
 import jchess.gamelogic.field.Move.CastlingType;
 import jchess.gamelogic.models.IBoardFactory;
-import jchess.gamelogic.pieces.King;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.views.factories.IChessboardViewFactory;
 import jchess.util.Direction;
@@ -53,6 +52,7 @@ public class FourPlayerChessboardController extends RegularChessboardController
 				Arrays.asList(new Player[]{white, red, black, golden}));
 	}
 	
+	@Override
 	protected Move getRookMoveForCastling(Piece piece, CastlingType type) {
 		Field field = getBoard().getField(piece);
 		Field rookField = null;
@@ -83,104 +83,10 @@ public class FourPlayerChessboardController extends RegularChessboardController
 				type, false, null);
 	}
 	
-	protected Set<Field> getCastleMoves(Piece piece) {
-		Set<Field> castleFields = new HashSet<Field>();
-		
-		// Castling is only possible for kings
-		if(piece.getBehaviour() instanceof King)
-		{
-			// The king must not have been moved
-			if(!piece.hasMoved())
-			{
-				// There are two possible rooks to castle with
-				Piece leftRook = this.getRookMoveForCastling(piece, CastlingType.LONG_CASTLING).getMovedPiece();
-				Piece rightRook = this.getRookMoveForCastling(piece, CastlingType.SHORT_CASTLING).getMovedPiece();
-				
-				// Check both rooks for possible castling
-				if(leftRook != null) {
-					Field castled = this.getCastledKingField(CastlingType.LONG_CASTLING,
-							piece, leftRook);
-					if(castled != null) {
-						castleFields.add(castled);
-					}
-				}
-				if(rightRook != null) {
-					Field castled = this.getCastledKingField(CastlingType.SHORT_CASTLING,
-							piece, rightRook);
-					if(castled != null) {
-						castleFields.add(castled);
-					}
-				}
-			}
-		}
-		
-		return castleFields;
-	}
-	
-	/**
-	 * Checks whether a given rook and king can castle.
-	 * @param type Type of castling
-	 * @param king King to castle with
-	 * @param rook Rook to castle with
-	 * @return The king's new field if castling is possible, null otherwise
-	 */
-	private Field getCastledKingField(CastlingType type, Piece king, Piece rook) {
-		if(rook == null || rook.hasMoved()) {
-			// A non-existent rook or one that has moved already cannot castle
-			return null;
-		}
-		
-		Field kingField = getBoard().getField(king);
-		Field rookField = getBoard().getField(rook);
-		
-		// Determine the 'direction' of the castling; e.g. (0, 1) or (-1, 0)
-		Direction castleDir = new Direction(rookField.getPosX() - kingField.getPosX(),
-				rookField.getPosY() - kingField.getPosY()).signum();
-		
-		// Determine the target field of the rook; this is dependent on the castling
-		// type
-		Field rookTarget;
-		if(type == CastlingType.SHORT_CASTLING) {
-			rookTarget = getBoard().getField(rookField.getPosX() - 2*castleDir.getX(),
-					rookField.getPosY() - 2*castleDir.getY());
-		} else {
-			rookTarget = getBoard().getField(rookField.getPosX() - 3*castleDir.getX(),
-					rookField.getPosY() - 3*castleDir.getY());
-		}
-		
-		// Check if the rook can move to its target field meaning no other pieces
-		// are in between rook and king
-		Set<Field> reachable = this.getMovableFieldsInDirection(rook, rook.getBehaviour().getNormalMovements());
-		if(reachable.contains(rookTarget))
-		{
-			// Get the fields the king would have to cross to get to its new
-			// position + its old position
-			Set<Field> involvedFields = new HashSet<Field>();
-			involvedFields.add(kingField);
-			involvedFields.add(getBoard().getField(kingField.getPosX() + castleDir.getX(),
-					kingField.getPosY() + castleDir.getY()));
-			involvedFields.add(getBoard().getField(kingField.getPosX() + 2*castleDir.getX(),
-					kingField.getPosY() + 2*castleDir.getY()));
-			
-			// None of the fields involved must be in check so they must not
-			// be threatened by an enemy
-			for(Player enemy : this.getEnemies(king.getPlayer())) {
-				if(!this.isAnyThreatenedByPlayer(involvedFields, enemy))
-				{
-					return getBoard().getField(kingField.getPosX() + 2*castleDir.getX(),
-							kingField.getPosY() + 2*castleDir.getY());
-				}
-			}
-		}
-		
-		// No castling possible
-		return null;
-	}
-	
 	@Override
-	protected Set<Field> getEnPassantMoves(Piece piece)
+	protected Set<Move> getEnPassantMoves(Piece piece)
 	{
-		Set<Field> enPassantMoves = new HashSet<Field>();
+		Set<Move> enPassantMoves = new HashSet<Move>();
 		
 		// TODO: proper En Passant implementation
 		/*if(piece instanceof Pawn)

@@ -18,6 +18,8 @@
  */
 package jchess.gamelogic.field;
 
+import java.util.Objects;
+
 import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.Piece;
 
@@ -58,6 +60,30 @@ public class Move
 		{
 			this.promotedTo = promotedPiece;
 		}
+	}
+	
+	@Override
+	public int hashCode() {
+		// TODO: is this good enough?
+		return Objects.hash(from, to, movedPiece, takenPiece);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == this) {
+			return true;
+		} else if((obj == null) || !(obj instanceof Move)) {
+			return false;
+		}
+		
+		Move move = (Move) obj;
+		return from.equals(move.from) && to.equals(move.to) &&
+				movedPiece.equals(move.movedPiece) &&
+				takenPiece.equals(move.takenPiece) &&
+				promotedTo.equals(move.promotedTo) &&
+				(wasEnPassant == move.wasEnPassant) &&
+				(castlingMove == move.castlingMove) &&
+				(wasPawnTwoFieldsMove == move.wasPawnTwoFieldsMove);
 	}
 	
 	public Field getFrom()

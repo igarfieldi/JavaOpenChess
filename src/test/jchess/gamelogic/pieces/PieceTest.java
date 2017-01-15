@@ -1,9 +1,11 @@
 package jchess.gamelogic.pieces;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.Move;
 
 public class PieceTest
 {
@@ -63,7 +65,10 @@ public class PieceTest
 	 */
 	public static boolean canMakeExactlyTheseMoves(IChessboardController board, Piece piece, Field... fields)
 	{
-		Set<Field> possibleMoves = board.getPossibleMoves(piece, true);
+		Set<Field> possibleMoves = new HashSet<Field>();
+		for(Move move : board.getPossibleMoves(piece, true)) {
+			possibleMoves.add(move.getTo());
+		}
 		if(possibleMoves.size() != fields.length)
 		{
 			return false;
