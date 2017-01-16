@@ -29,11 +29,11 @@ dependencies {
 }
 
 clover {
-	licenseLocation = '/home/bamboo/'
+	licenseLocation = '/home/bamboo/clover.license'
 	
 	report {
-        html = true
-        pdf = true
+        html = false
+        pdf = false
         filter = 'log,if,else'
     }
 }
