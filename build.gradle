@@ -73,6 +73,7 @@ configurations {
 }
 
 task cloverInstr() {
+	licenseLocation = '/home/bamboo/clover.license'
     inputs.files sourceSets.main.allJava
     outputs.dir "$buildDir/sources-instr"
  
@@ -91,6 +92,7 @@ task cloverInstr() {
 cloverClasses.dependsOn cloverInstr
   
 test {
+	licenseLocation = '/home/bamboo/clover.license'
     def cloverClasspath = configurations.testRuntime + configurations.cloverRuntime + sourceSets.test.output + sourceSets.clover.output
     classpath = cloverClasspath
 }
