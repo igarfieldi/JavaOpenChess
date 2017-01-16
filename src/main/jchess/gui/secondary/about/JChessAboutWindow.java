@@ -20,6 +20,9 @@ import java.awt.Frame;
 import javax.swing.JDialog;
 import javax.swing.WindowConstants;
 
+/**
+ * Class with a dialog containing the about panel.
+ */
 public class JChessAboutWindow extends JDialog implements IResources
 {
 	private static final long serialVersionUID = 8209938830184516667L;
@@ -42,7 +45,6 @@ public class JChessAboutWindow extends JDialog implements IResources
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		pack();
 		
-		setName("aboutBox");
 		setResizable(false);
 	}
 }

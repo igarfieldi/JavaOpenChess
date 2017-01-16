@@ -38,6 +38,9 @@ import jchess.JChessApp;
 import jchess.gui.secondary.setup.NewGameWindow;
 import jchess.gui.secondary.themechooser.ThemeImageLoader;
 
+/**
+ * Class handling the opening and closing of game tabs
+ */
 public class JChessTabbedPane extends JTabbedPane implements MouseListener, ImageObserver
 {
 	private static final long serialVersionUID = -7046648284513652282L;
@@ -84,6 +87,14 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 		}
 	}
 
+	/**
+	 * Closes a tab when its close icon is klicked.
+	 * 
+	 * @param event
+	 * 				The event of the mouse being clicked.
+	 * @param tabIndex
+	 * 				The index of the tab that is closed
+	 */
 	private void closeGameTab(MouseEvent event, int tabIndex)
 	{
 		Rectangle closeIconRectangle = ((CloseIcon) getIconAt(tabIndex)).getBounds();
@@ -95,6 +106,9 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 		}
 	}
 
+	/**
+	 * Updates the position of the add icon whenever the number of tabs changes.
+	 */
 	private void updateAddIconRectangle()
 	{
 		if(this.getTabCount() > EMPTY)
@@ -110,6 +124,9 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 			this.addIconRectangle = null;
 	}
 
+	/**
+	 * Displays the dialog to start a new game
+	 */
 	private void showNewGameWindow()
 	{
 		if(JChessApp.view.newGameFrame == null)
@@ -118,13 +135,8 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 		JChessApp.getApplication().show(JChessApp.view.newGameFrame);
 	}
 	
-	public void mouseEntered(MouseEvent event)
-	{
-	}
-	
-	public void mouseExited(MouseEvent event)
-	{
-	}
+	public void mouseEntered(MouseEvent event) {}
+	public void mouseExited(MouseEvent event) {}
 	
 	@Override
 	public void addTab(String title, Component component)
@@ -156,6 +168,9 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 		this.repaint();
 	}
 	
+	/**
+	 * This class handles the creation of a close icon taken from an image
+	 */
 	private class CloseIcon implements Icon
 	{
 		private int xPosition;

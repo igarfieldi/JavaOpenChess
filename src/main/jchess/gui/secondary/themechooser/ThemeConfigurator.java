@@ -33,17 +33,16 @@ import java.util.logging.Logger;
 
 import jchess.gui.secondary.setup.LocalSettingsPanel;
 
-/**
- * Class representing the game interface which is seen by a player and where are
- * lockated available for player opptions, current games and where can he start
- * a new game (load it or save it)
- */
 public class ThemeConfigurator
 {
 	private static Logger log = Logger.getLogger(LocalSettingsPanel.class.getName());
 	
 	private static Properties configuration;
 	
+	/**
+	 * 
+	 * @return configuration file.
+	 */
 	public static Properties getConfigFile()
 	{
 		if(configuration == null) {
@@ -62,6 +61,10 @@ public class ThemeConfigurator
 		return configuration;
 	}
 
+	/**
+	 * 
+	 * @return JAR path of this class.
+	 */
 	private static String getJarPath()
 	{
 		try

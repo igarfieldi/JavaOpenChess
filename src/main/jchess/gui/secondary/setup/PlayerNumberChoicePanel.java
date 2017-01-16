@@ -9,6 +9,9 @@ import javax.swing.JRadioButton;
 import jchess.Localization;
 import jchess.gui.secondary.GridBagPanel;
 
+/**
+ * Class with a panel that contains radio buttons to determine the amount of players.
+ */
 public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListener
 {
 	private static final long serialVersionUID = -2395769048925349725L;
@@ -25,6 +28,10 @@ public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListe
 		this.playerNameInputPanel = playerNameInputPanel;
 	}
 	
+	/**
+	 * 
+	 * @return amount of players
+	 */
 	public int getPlayerCount()
 	{
 		if(twoPlayersRadioButton.isSelected())
@@ -41,6 +48,15 @@ public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListe
 		this.fourPlayersRadioButton = createRadioButton("4_players", false);
 	}
 	
+	/**
+	 * Creates a new radio button object and sets its properties
+	 * 
+	 * @param label
+	 * 				The text content of the radio button
+	 * @param isSelected
+	 * 				Determines if the button is selected by default.
+	 * @return new radio button object
+	 */
 	private JRadioButton createRadioButton(String label, boolean isSelected)
 	{
 		JRadioButton newRadioButton;

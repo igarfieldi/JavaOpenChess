@@ -30,7 +30,8 @@ import jchess.Localization;
 import jchess.gui.secondary.GridBagPanel;
 
 /**
- * Class responsible for drawing the fold with local game settings
+ * Class with a panel containing all panels in jchess.gui.setup.
+ * Also contains a button that applies the settings and starts the game.
  */
 public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 {
@@ -70,14 +71,13 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 	public void actionPerformed(ActionEvent event)
 	{
 		if(event.getSource() == this.okButton)
-		{
 			startGame();
-			
-			Window parentDialog = SwingUtilities.getWindowAncestor(this);
-			parentDialog.setVisible(false);
-		}
 	}
 	
+	/**
+	 * Opens a game window with the specified settings and closes the settings dialog when the OK button
+	 * is clicked. 
+	 */
 	private void startGame()
 	{
 		if(!playerNameInputPanel.playerNamesEmpty())
@@ -85,6 +85,9 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 			playerNameInputPanel.shortenPlayerNames();
 			settingsAdopter.createGameWindow(timerSetterPanel.getTimeLimit(), playerNumberChoicePanel.getPlayerCount(),
 			        playerNameInputPanel.getPlayerNames());
+			
+			Window parentDialog = SwingUtilities.getWindowAncestor(this);
+			parentDialog.setVisible(false);
 		}
 	}
 }

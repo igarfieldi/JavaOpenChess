@@ -13,10 +13,19 @@ import java.util.zip.ZipInputStream;
 import jchess.JChessApp;
 import jchess.Localization;
 
+/**
+ * This class gets all files of a theme which can be either from a directory or a JAR.
+ */
 public class ThemeFileReader
 {
 	private static ArrayList<String> themes = new ArrayList<String>();
 	
+	/**
+	 * 
+	 * @return List of all available themes from either a directory or a JAR.
+	 * @throws IOException
+	 * @throws Exception
+	 */
 	public static ArrayList<String> getThemes() throws IOException, Exception
 	{
 		CodeSource codeSource = JChessApp.class.getProtectionDomain().getCodeSource();
@@ -34,6 +43,13 @@ public class ThemeFileReader
 			throw new Exception(Localization.getMessage("error_when_creating_theme_config_window"));
 	}
 
+	/**
+	 * Gets all themes from a specified file path.
+	 * 
+	 * @param jarPath
+	 * 				The file path of the themes
+	 * @return list of themes.
+	 */
 	private static ArrayList<String> getThemesFromDirectory(File jarPath)
 	{
 		ArrayList<String> themeList = new ArrayList<String>();
@@ -50,6 +66,14 @@ public class ThemeFileReader
 		return themeList;
 	}
 
+	/**
+	 * Gets all themes from a JAR.
+	 * 
+	 * @param codeSource
+	 * 				The code source of the JAR.
+	 * @return list of themes.
+	 * @throws IOException
+	 */
 	private static ArrayList<String> getThemesFromJAR(CodeSource codeSource) throws IOException
 	{
 		ArrayList<String> themeList = new ArrayList<String>();

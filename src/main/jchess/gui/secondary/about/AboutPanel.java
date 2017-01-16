@@ -13,6 +13,10 @@ import org.jdesktop.application.Application;
 import jchess.JChessApp;
 import jchess.gui.secondary.GridBagPanel;
 
+/**
+ * Class with a panel containing the panel with all application information
+ * together with an image label and a close button.
+ */
 public class AboutPanel extends GridBagPanel implements IResources
 {
 	private static final long serialVersionUID = 1265012929536332512L;
@@ -31,12 +35,18 @@ public class AboutPanel extends GridBagPanel implements IResources
 		initializeCloseButton();
 	}
 	
+	/**
+	 * Instantiates the variable and gives it the image.
+	 */
 	private void initializeImageLabel()
 	{
 		imageLabel = new JLabel();
 		imageLabel.setIcon(ABOUT_PROPERTIES.getIcon("imageLabel.icon"));
 	}
 	
+	/**
+	 * Uses the action map to give the close button its functionality.
+	 */
 	private void initializeCloseButton()
 	{
 		closeButton = new JButton();
@@ -44,6 +54,9 @@ public class AboutPanel extends GridBagPanel implements IResources
 		closeButton.setAction(actionMap.get("closeAboutBox"));
 	}
 	
+	/**
+	 * Closes the dialog that contains this panel.
+	 */
 	@Action
 	public void closeAboutBox()
 	{

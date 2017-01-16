@@ -51,6 +51,10 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 	
 	private static final String NOTHING_SELECTED = "";
 	
+	/**
+	 * 
+	 * @return String of the piece to which the pawn will be promoted to.
+	 */
 	public String getSelectedPromotion()
 	{
 		return selectedPromotion;
@@ -74,6 +78,9 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 		initializePieceButtons();
 	}
 	
+	/**
+	 * Sets the properties of this dialog.
+	 */
 	private void setWindowProperties()
 	{
 		final Dimension SIZE = new Dimension(520, 130);
@@ -86,6 +93,13 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 		this.setLayout(new GridLayout(1, 4));
 	}
 	
+	/**
+	 * Instatiates the buttons for each possible promotion. Each button has an image of the piece
+	 * in the color of the piece to be promoted.
+	 * 
+	 * @param color
+	 * 				Color of the promoted piece
+	 */
 	private void createPieceButtons(Color color)
 	{
 		String colorName = ThemeImageLoader.getInstance().getColorString(color);
@@ -100,6 +114,9 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 		        new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Queen-" + colorName + ".png")));
 	}
 	
+	/**
+	 * Helper method that adds all piece buttons to the panel.
+	 */
 	private void initializePieceButtons()
 	{
 		addPieceButtonToWindow(this.queenButton);
@@ -108,6 +125,12 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 		addPieceButtonToWindow(this.knightButton);
 	}
 	
+	/**
+	 * Adds the piece buttons to the dialog with an action listener.
+	 * 
+	 * @param pieceButton
+	 * 				The piece button to be added.
+	 */
 	private void addPieceButtonToWindow(JButton pieceButton)
 	{
 		pieceButton.addActionListener(this);
@@ -126,6 +149,12 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 		this.setVisible(false);
 	}
 	
+	/**
+	 * Sets the selectedPromotion string to the name of the piece corresponding to the appropriate button.
+	 * 
+	 * @param button
+	 * 				The button that was clicked.
+	 */
 	private void chooseSelectedPiece(ActionEvent button)
 	{
 		if(button.getSource() == queenButton)

@@ -114,9 +114,20 @@ public class Field
 		if(splitDesignation.length != 2) {
 			return null;
 		}
-		
+		if((splitDesignation[0].length() + splitDesignation[1].length()) != designation.length()) {
+			// If there are characters which are not part of either side of the
+			// split (e.g. a minus sign) we have an invalid designation
+			return null;
+		}
+
 		// For the alphabetical part, the number of repetitions is important
 		int repetitions = splitDesignation[0].length();
+		// Check if the repeated letter is the same every time
+		for(int i = 1; i < repetitions; i++) {
+			if(splitDesignation[0].charAt(i) != splitDesignation[0].charAt(0)) {
+				return null;
+			}
+		}
 		// Also get the index of the first letter for the non-repetitive component
 		int index = FIELD_LETTERS.indexOf(splitDesignation[0].charAt(0));
 
