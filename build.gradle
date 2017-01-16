@@ -4,6 +4,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+        classpath 'com.atlassian.clover:clover:4.1.1'
     }
 }
 
@@ -23,10 +24,7 @@ dependencies {
     compile group: 'org.jdesktop', name: 'appframework', version: '1.0+'
     compile group: 'org.jdesktop', name: 'swing-worker', version: '1.1+'
     testCompile group: 'junit', name: 'junit', version: '4.+'
-}
-
-test {
-    ignoreFailures = true
+    cloverCompile 'com.atlassian.clover:clover:4.1.1'
 }
 
 shadowJar {
@@ -57,5 +55,52 @@ sourceSets {
 		resources {
 			srcDirs = ['src/main']
 		}
-	}	
+	}
+	clover {
+        java {
+            srcDir "$buildDir/sources-instr"
+        }
+    }
+}
+
+configurations {
+    cloverRuntime
+    cloverRuntime.extendsFrom cloverCompile
+}
+
+task cloverInstr() {
+    inputs.files sourceSets.main.allJava
+    outputs.dir "$buildDir/sources-instr"
+ 
+    doFirst {
+        def argsList = ["--initstring", "${buildDir}/clover/clover.db",
+                        "-d", "${buildDir}/sources-instr"]
+        argsList.addAll(inputs.files.files.collect({ file ->
+            file.absolutePath
+        }))
+        String[] args = argsList.toArray()
+ 
+        com.atlassian.clover.CloverInstr.mainImpl(args)
+    }
+}
+ 
+cloverClasses.dependsOn cloverInstr
+  
+test {
+    def cloverClasspath = configurations.testRuntime + configurations.cloverRuntime + sourceSets.test.output + sourceSets.clover.output
+    classpath = cloverClasspath
+}
+
+task cloverReport {
+    inputs.dir "${buildDir}/clover"
+    outputs.dir "${reportsDir}/clover"
+    onlyIf {
+        file("${buildDir}/clover/clover.db").exists()
+    }
+    doFirst {
+        def argsList = ["--initstring", "${buildDir}/clover/clover.db",
+                        "-o", "${reportsDir}/clover"]
+        String[] args = argsList.toArray()
+        com.atlassian.clover.reporters.html.HtmlReporter.runReport(args)
+    }
 }

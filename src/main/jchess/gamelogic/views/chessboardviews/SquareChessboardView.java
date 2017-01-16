@@ -194,11 +194,11 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 				Point topLeftPoint = this.getChessboardLocation();
 				
 				// Render all threats to this piece
-				/*for(Field field : chessboard.getPossibleThreats(piece, true)) {
+				for(Field field : chessboard.getPossibleThreats(piece, true)) {
 					g2d.drawImage(this.getThreateningFieldImage(), (int) (field.getPosX() * squareHeight) + topLeftPoint.x,
 					        (int) (field.getPosY() * squareHeight) + topLeftPoint.y, (int) squareHeight,
 					        (int) squareHeight, null);
-				}*/
+				}
 			}
 		}
 	}
