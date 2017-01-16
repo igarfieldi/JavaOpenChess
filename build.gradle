@@ -28,10 +28,6 @@ dependencies {
     clover 'com.cenqua.clover:clover:3.2.0'
 }
 
-test {
-    ignoreFailures = true
-}
-
 shadowJar {
 	baseName = 'shadow'
 	classifier = null
@@ -41,16 +37,6 @@ shadowJar {
 jar {
     manifest {
         attributes 'Main-Class': 'jchess.JChessApp'
-    }
-}
-
-clover {
-	licenseLocation = 'clover.license'
-	
-	report {
-        html = true
-        pdf = true
-        filter = 'log,if,else'
     }
 }
 
@@ -71,4 +57,14 @@ sourceSets {
 			srcDirs = ['src/main']
 		}
 	}	
+}
+
+clover {
+	licenseLocation = '/home/bamboo/clover.license'
+	
+	report {
+        html = true
+        pdf = true
+        filter = 'log,if,else'
+    }
 }
