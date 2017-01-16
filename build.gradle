@@ -32,9 +32,8 @@ clover {
 	licenseLocation = '/home/bamboo/clover.license'
 	
 	report {
-        html = false
+        html = true
         pdf = false
-        filter = 'log,if,else'
     }
 }
 
