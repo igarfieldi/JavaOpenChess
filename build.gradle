@@ -18,7 +18,7 @@ repositories {
 }
 
 task myJavadocs(type: Javadoc) {
-  source = sourceSets.main.allJava
+	source = sourceSets.main.allJava
 }
 
 dependencies {
@@ -26,6 +26,16 @@ dependencies {
     compile group: 'org.jdesktop', name: 'swing-worker', version: '1.1+'
     testCompile group: 'junit', name: 'junit', version: '4.+'
     clover 'com.cenqua.clover:clover:3.2.0'
+}
+
+clover {
+	licenseLocation = '/home/bamboo/'
+	
+	report {
+        html = true
+        pdf = true
+        filter = 'log,if,else'
+    }
 }
 
 shadowJar {
@@ -57,14 +67,4 @@ sourceSets {
 			srcDirs = ['src/main']
 		}
 	}	
-}
-
-clover {
-	licenseLocation = '/home/bamboo/clover.license'
-	
-	report {
-        html = true
-        pdf = true
-        filter = 'log,if,else'
-    }
 }
