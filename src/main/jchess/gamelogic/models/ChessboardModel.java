@@ -1,4 +1,4 @@
-package jchess.gamelogic.models.chessboardmodels;
+package jchess.gamelogic.models;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +9,6 @@ import java.util.Set;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Field;
-import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.pieces.Piece;
 import jchess.util.ArgumentChecker;
 import jchess.util.BiMap;
