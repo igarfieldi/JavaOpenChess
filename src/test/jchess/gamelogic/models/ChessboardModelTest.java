@@ -232,6 +232,20 @@ public class ChessboardModelTest
 				players[0], new Direction(1, 1), PieceType.KING);
 		
 		IChessboardModel copy = model.copy();
+		
+		assertTrue(copy.getFields().size() == model.getFields().size());
+		for(Field field : model.getFields()) {
+			assertTrue(copy.getFields().contains(field));
+			// We don't need to test for reference equality since
+			// fields are immutable
+		}
+		assertTrue(copy.getPieces().size() == model.getPieces().size());
+		for(Piece piece : model.getPieces()) {
+			assertTrue(copy.getPiece(model.getField(piece)).equals(piece));
+			assertFalse(copy.getPiece(model.getField(piece)) == piece);
+		}
+		
+		
 		copy.addField(f1);
 		copy.setPiece(f1, p1);
 		

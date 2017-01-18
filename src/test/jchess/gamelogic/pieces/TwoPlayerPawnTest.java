@@ -48,8 +48,8 @@ public class TwoPlayerPawnTest
 		blackPawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(2, 5), whitePawn);
 		board.getBoard().setPiece(board.getBoard().getField(6, 2), blackPawn);
-		assertTrue(PieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(2, 4)));
-		assertTrue(PieceTest.canMakeMoves(board, blackPawn, board.getBoard().getField(6, 3)));
+		assertTrue(GeneralPieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(2, 4)));
+		assertTrue(GeneralPieceTest.canMakeMoves(board, blackPawn, board.getBoard().getField(6, 3)));
 	}
 	
 	@Test
@@ -61,9 +61,9 @@ public class TwoPlayerPawnTest
 		blackPawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(4, 4), whitePawn);
 		board.getBoard().setPiece(board.getBoard().getField(3, 3), blackPawn);
-		assertTrue(PieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(4, 3),
+		assertTrue(GeneralPieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(4, 3),
 		        board.getBoard().getField(blackPawn)));
-		assertTrue(PieceTest.canMakeMoves(board, blackPawn, board.getBoard().getField(3, 4),
+		assertTrue(GeneralPieceTest.canMakeMoves(board, blackPawn, board.getBoard().getField(3, 4),
 		        board.getBoard().getField(whitePawn)));
 	}
 	
@@ -76,9 +76,9 @@ public class TwoPlayerPawnTest
 		blackPawn.markAsMoved();
 		board.getBoard().setPiece(board.getBoard().getField(3, 4), whitePawn);
 		board.getBoard().setPiece(board.getBoard().getField(4, 3), blackPawn);
-		assertTrue(PieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(3, 3),
+		assertTrue(GeneralPieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(3, 3),
 		        board.getBoard().getField(blackPawn)));
-		assertTrue(PieceTest.canMakeMoves(board, blackPawn, board.getBoard().getField(4, 4),
+		assertTrue(GeneralPieceTest.canMakeMoves(board, blackPawn, board.getBoard().getField(4, 4),
 		        board.getBoard().getField(whitePawn)));
 	}
 	
@@ -89,9 +89,9 @@ public class TwoPlayerPawnTest
 		Piece blackPawn = factory.buildPiece(black, new Direction(0, 1), PieceType.PAWN);
 		board.getBoard().setPiece(board.getBoard().getField(3, 6), whitePawn);
 		board.getBoard().setPiece(board.getBoard().getField(3, 1), blackPawn);
-		assertTrue(PieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(3, 5),
+		assertTrue(GeneralPieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(3, 5),
 		        board.getBoard().getField(3, 4)));
-		assertTrue(PieceTest.canMakeMoves(board, blackPawn, board.getBoard().getField(3, 2),
+		assertTrue(GeneralPieceTest.canMakeMoves(board, blackPawn, board.getBoard().getField(3, 2),
 		        board.getBoard().getField(3, 3)));
 		
 		// Test if a piece blocks the two square move
@@ -118,7 +118,7 @@ public class TwoPlayerPawnTest
 		{
 			board.move(board.getBoard().getField(whitePawn), board.getBoard().getField(3, 3));
 			board.move(board.getBoard().getField(blackPawn), board.getBoard().getField(2, 3));
-			assertTrue(PieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(3, 2),
+			assertTrue(GeneralPieceTest.canMakeMoves(board, whitePawn, board.getBoard().getField(3, 2),
 			        board.getBoard().getField(2, 2)));
 		} catch(IllegalMoveException e)
 		{

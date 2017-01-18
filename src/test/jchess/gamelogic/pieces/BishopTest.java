@@ -52,7 +52,7 @@ public class BishopTest
 		        board.getBoard().getField(2, 5), board.getBoard().getField(4, 3), board.getBoard().getField(5, 2),
 		        board.getBoard().getField(6, 1), board.getBoard().getField(7, 0) };
 		
-		assertTrue(PieceTest.canMakeMoves(board, whiteBishop, diagonalMoves));
+		assertTrue(GeneralPieceTest.canMakeMoves(board, whiteBishop, diagonalMoves));
 	}
 	
 	@Test
@@ -72,9 +72,9 @@ public class BishopTest
 			board.getBoard().setPiece(testFields[i], blackPawn1);
 			board.getBoard().setPiece(fieldsBeyond[i], blackPawn2);
 			// Capturable
-			assertTrue(PieceTest.canMakeMove(board, whiteBishop, testFields[i]));
+			assertTrue(GeneralPieceTest.canMakeMove(board, whiteBishop, testFields[i]));
 			// Not reachable anymore because blocked by piece
-			assertFalse(PieceTest.canMakeMove(board, whiteBishop, fieldsBeyond[i]));
+			assertFalse(GeneralPieceTest.canMakeMove(board, whiteBishop, fieldsBeyond[i]));
 			board.getBoard().removePiece(testFields[i]);
 			board.getBoard().removePiece(fieldsBeyond[i]);
 		}

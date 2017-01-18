@@ -28,8 +28,8 @@ public class Field
 	private static final String FIELD_LETTERS =
 			"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	
-	private int posX;
-	private int posY;
+	private final int posX;
+	private final int posY;
 	
 	public Field(int posX, int posY)
 	{

@@ -21,6 +21,7 @@
 package jchess.gamelogic.pieces;
 
 import java.awt.Image;
+import java.util.Objects;
 
 import jchess.gamelogic.Player;
 import jchess.gui.secondary.themechooser.ThemeImageLoader;
@@ -90,8 +91,35 @@ public class Piece implements Copyable<Piece>
 	}
 	
 	@Override
+	public int hashCode() {
+		return Objects.hash(player, behaviour, SYMBOL, moved);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		 if(obj == this) {
+			 return true;
+		 } else if(obj == null || !(obj instanceof Piece)) {
+			 return false;
+		 }
+		 
+		 Piece test = (Piece)obj;
+		 return player.equals(test.player) &&
+				 (behaviour == test.behaviour) &&
+				 SYMBOL.equals(test.SYMBOL) &&
+				 (moved == test.moved);
+	}
+	
+	
+	@Override
 	public Piece copy()
 	{
-		return new Piece(player, SYMBOL, behaviour);
+		Piece copy = new Piece(player, SYMBOL, behaviour);
+		if(this.hasMoved()) {
+			copy.markAsMoved();
+		} else {
+			copy.markAsUnmoved();
+		}
+		return copy;
 	}
 }

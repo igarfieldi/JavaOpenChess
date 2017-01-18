@@ -49,7 +49,7 @@ public class KnightTest
 		        board.getBoard().getField(2, 2), board.getBoard().getField(4, 2), board.getBoard().getField(2, 6),
 		        board.getBoard().getField(4, 6), board.getBoard().getField(5, 3), board.getBoard().getField(5, 5) };
 		
-		assertTrue(PieceTest.canMakeMoves(board, whiteKnight, knightMoves));
+		assertTrue(GeneralPieceTest.canMakeMoves(board, whiteKnight, knightMoves));
 	}
 	
 	@Test
@@ -68,7 +68,7 @@ public class KnightTest
 		{
 			board.getBoard().setPiece(testFields[i], blackPawn);
 			// Capturable
-			assertTrue(PieceTest.canMakeMove(board, whiteKnight, testFields[i]));
+			assertTrue(GeneralPieceTest.canMakeMove(board, whiteKnight, testFields[i]));
 			// Not reachable anymore because blocked by piece
 			board.getBoard().removePiece(testFields[i]);
 		}

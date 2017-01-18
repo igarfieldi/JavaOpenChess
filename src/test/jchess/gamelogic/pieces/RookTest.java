@@ -53,8 +53,8 @@ public class RookTest
 		        board.getBoard().getField(2, 4), board.getBoard().getField(4, 4), board.getBoard().getField(5, 4),
 		        board.getBoard().getField(6, 4), board.getBoard().getField(7, 4) };
 		
-		assertTrue(PieceTest.canMakeMoves(board, whiteRook, verticalMoves));
-		assertTrue(PieceTest.canMakeMoves(board, whiteRook, horizontalMoves));
+		assertTrue(GeneralPieceTest.canMakeMoves(board, whiteRook, verticalMoves));
+		assertTrue(GeneralPieceTest.canMakeMoves(board, whiteRook, horizontalMoves));
 	}
 	
 	@Test
@@ -74,9 +74,9 @@ public class RookTest
 			board.getBoard().setPiece(testFields[i], blackPawn1);
 			board.getBoard().setPiece(fieldsBeyond[i], blackPawn2);
 			// Capturable
-			assertTrue(PieceTest.canMakeMove(board, whiteRook, testFields[i]));
+			assertTrue(GeneralPieceTest.canMakeMove(board, whiteRook, testFields[i]));
 			// Not reachable anymore because blocked by piece
-			assertFalse(PieceTest.canMakeMove(board, whiteRook, fieldsBeyond[i]));
+			assertFalse(GeneralPieceTest.canMakeMove(board, whiteRook, fieldsBeyond[i]));
 			board.getBoard().removePiece(testFields[i]);
 			board.getBoard().removePiece(fieldsBeyond[i]);
 		}
