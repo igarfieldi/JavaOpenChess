@@ -34,6 +34,7 @@ public class DirectionType
 
 	/**
 	 * Returns the set of directions which form a 'cone' around the provided direction.
+	 * The directions have to be 'adjacent', i.e. its components must be in {-1, 0, 1}.
 	 * Prime example for this is the pawn's capturing moves.
 	 * @param cone Direction in which the cone shall point
 	 * @return Set of directions
@@ -42,14 +43,26 @@ public class DirectionType
 	{
 		Set<Direction> moves = new HashSet<Direction>();
 		
+		// Basically just a set of rules: 8 possible directions
+		// => 8 possible sets of moves (and then utilize symmetry)
 		if(cone.getX() != 0)
 		{
-			moves.add(new Direction(cone.getX(), -1));
-			moves.add(new Direction(cone.getX(), 1));
+			if(cone.getY() == 0) {
+				moves.add(new Direction(cone.getX(), -1));
+				moves.add(new Direction(cone.getX(), 1));
+			} else {
+				moves.add(new Direction(0, cone.getY()));
+				moves.add(new Direction(cone.getX(), 0));
+			}
 		} else
 		{
-			moves.add(new Direction(-1, cone.getY()));
-			moves.add(new Direction(1, cone.getY()));
+			if(cone.getX() == 0) {
+				moves.add(new Direction(-1, cone.getY()));
+				moves.add(new Direction(1, cone.getY()));
+			} else {
+				moves.add(new Direction(0, cone.getY()));
+				moves.add(new Direction(cone.getX(), 0));
+			}
 		}
 		
 		return moves;

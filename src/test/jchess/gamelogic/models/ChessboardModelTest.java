@@ -3,13 +3,10 @@
  */
 package jchess.gamelogic.models;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Set;
-
-import javax.jws.WebParam.Mode;
 
 import org.junit.Before;
 import org.junit.Test;
