@@ -16,7 +16,7 @@ public class NewGameWindowTest
 	{
 		JFrame frame = new JFrame();
 		newGameWindow = new NewGameWindow(frame);
-		newGameWindow.show();
+		//newGameWindow.show();
 	}
 	
 	@Test
