@@ -31,7 +31,7 @@ public class Player implements Serializable
 	
 	public enum Color
 	{
-		WHITE, RED, BLACK, GOLDEN
+		WHITE, RED, BLACK, GOLDEN, SPECIAL
 	}
 	
 	public enum Type

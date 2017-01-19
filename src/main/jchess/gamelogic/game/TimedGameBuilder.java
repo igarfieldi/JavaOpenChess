@@ -61,14 +61,15 @@ public class TimedGameBuilder implements IGameBuilder
 						playerList.get(1)
 					);
 				break;
-			case 4:
+			case 5:
 				controller = new FourPlayerChessboardController(
 						FourPlayerChessboardViewFactory.getInstance(),
 						FourPlayerChessboardFactory.getInstance(),
 						playerList.get(0),
 						playerList.get(1),
 						playerList.get(2),
-						playerList.get(3)
+						playerList.get(3),
+						playerList.get(4)
 					);
 				break;
 			default:

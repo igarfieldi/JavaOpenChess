@@ -27,10 +27,6 @@ import jchess.util.Direction;
 
 /**
  * Class to represent a chess pawn bishop Bishop can move across the chessboard
- *
- * |_|_|_|_|_|_|_|X|7 |X|_|_|_|_|_|X|_|6 |_|X|_|_| |X|_|_|5 |_|_|X|_|X|_|_|_|4
- * |_|_|_|B|_|_|_|_|3 |_| |X|_|X|_|_|_|2 |_|X|_|_|_|X|_|_|1 |X|_|_|_|_|_|X|_|0 0
- * 1 2 3 4 5 6 7
  */
 public class Bishop implements IPieceBehaviour
 {

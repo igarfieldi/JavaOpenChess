@@ -77,6 +77,9 @@ public class ThemeImageLoader
 			case GOLDEN:
 				imageName += "G";
 				break;
+			case SPECIAL:
+				imageName = piece.getName();
+				break;
 			default:
 				log.log(Level.SEVERE, "Piece of player with unknown color exists!");
 		}

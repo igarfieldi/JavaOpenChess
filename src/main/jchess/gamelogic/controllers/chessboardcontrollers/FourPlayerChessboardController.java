@@ -44,10 +44,10 @@ public class FourPlayerChessboardController extends RegularChessboardController
 	private static int GOLDEN_BASE_LINE = 13;
 	
 	public FourPlayerChessboardController(IChessboardViewFactory viewFactory,
-			IBoardFactory boardFactory, Player white, Player red, Player black, Player golden)
+			IBoardFactory boardFactory, Player white, Player red, Player black, Player golden, Player special)
 	{
 		super(viewFactory, boardFactory,
-				Arrays.asList(new Player[]{white, red, black, golden}));
+				Arrays.asList(new Player[]{white, red, black, golden, special}));
 	}
 	
 	protected Set<Field> getCastleMoves(Piece piece) {

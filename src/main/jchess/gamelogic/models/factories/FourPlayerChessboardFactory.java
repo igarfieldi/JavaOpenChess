@@ -27,7 +27,7 @@ public class FourPlayerChessboardFactory implements IBoardFactory
 	@Override
 	public IChessboardModel createChessboard(List<Player> players)
 	{
-		if(players.size() != 4) {
+		if(players.size() != 5) {
 			return null;
 		}
 		
@@ -99,6 +99,10 @@ public class FourPlayerChessboardFactory implements IBoardFactory
 			board.setPiece(board.getField(1, y), factory.buildPiece(players.get(1), right, PieceType.PAWN));
 			board.setPiece(board.getField(12, y), factory.buildPiece(players.get(3), left, PieceType.PAWN));
 		}
+		
+		// Initialise cat piece
+		
+		board.setPiece(board.getField(6, 6), factory.buildPiece(players.get(4), down, PieceType.CAT));
 		
 		return board;
 	}

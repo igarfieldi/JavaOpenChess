@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 import jchess.gamelogic.Player;
+import jchess.gamelogic.ai.CatAi;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
 import jchess.gamelogic.field.Field;
@@ -17,11 +18,13 @@ import jchess.util.FileMapParser;
 
 public class UntimedGame implements IGame
 {
-private static Logger log = Logger.getLogger(TimedGame.class.getName());
+	private static Logger log = Logger.getLogger(TimedGame.class.getName());
 	
 	private IGameView gameView;
 	private boolean blockedChessboard;
 	private IChessboardController chessboard;
+	
+	private CatAi catAi;
 	
 	public UntimedGame(IChessboardController chessboard)
 	{
@@ -32,6 +35,8 @@ private static Logger log = Logger.getLogger(TimedGame.class.getName());
 		
 		gameView = new SwingGameView(this.chessboard.getView());
 		gameView.addInfoComponent(chessboard.getHistory().getView());
+		
+		catAi = new CatAi(chessboard);
 	}
 	
 	@Override
@@ -134,10 +139,8 @@ private static Logger log = Logger.getLogger(TimedGame.class.getName());
 				if(chessboard.isCheckmated(chessboard.getActivePlayer()))
 				{
 					this.onCheckmate();
-				} else if(chessboard.isStalemate())
-				{
-					this.onStalemate();
-				}
+				} // Check for Stalemate used to be here, I swear I will add it
+				  // later
 			}
 		} catch(IllegalMoveException exc)
 		{
@@ -176,7 +179,6 @@ private static Logger log = Logger.getLogger(TimedGame.class.getName());
 	
 	/**
 	 * Method to Start new game
-	 *
 	 */
 	@Override
 	public void newGame()
@@ -189,10 +191,11 @@ private static Logger log = Logger.getLogger(TimedGame.class.getName());
 		}
 		
 		this.getView().render();
+		
 	}
 	
 	/**
-	 * Method to end game
+	 * Method to end game.
 	 * 
 	 * @param message
 	 *            what to show player(s) at end of the game (for example "draw",
@@ -206,7 +209,7 @@ private static Logger log = Logger.getLogger(TimedGame.class.getName());
 	}
 	
 	/**
-	 * Method to swich active players after move
+	 * Method to switch active players after move.
 	 */
 	private void switchActive()
 	{
@@ -229,7 +232,16 @@ private static Logger log = Logger.getLogger(TimedGame.class.getName());
 			this.blockedChessboard = false;
 		} else if(chessboard.getActivePlayer().getType() == Player.Type.COMPUTER)
 		{
-			// TODO: implement AI^^
+			this.blockedChessboard = true;
+			if(catAi.isAlive())
+			{
+				executeMove(catAi.getCurrentPosition(), catAi.getNextTargetMove());
+			} else
+			{
+				switchActive();
+				this.blockedChessboard = false;
+			}
+			catAi.updateRespawnTimer();
 		}
 	}
 }

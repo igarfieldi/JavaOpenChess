@@ -31,6 +31,7 @@ import jchess.JChessApp;
 import jchess.Localization;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Player.Color;
+import jchess.gamelogic.Player.Type;
 import jchess.gamelogic.game.IGame;
 import jchess.gamelogic.game.IGameBuilder;
 import jchess.gamelogic.game.IGameBuilderFactory;
@@ -103,6 +104,7 @@ public class LocalSettingsPanel extends GridBagPanel implements ActionListener
 				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(1), Color.RED));
 				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(2), Color.BLACK));
 				builder.addPlayer(new Player(playerNameInputPanel.getPlayerName(3), Color.GOLDEN));
+				builder.addPlayer(new Player("Cat", Color.SPECIAL, Type.COMPUTER));
 			} else {
 				log.log(Level.SEVERE, "Could not start game because the number of players is not supported!");
 				return ;

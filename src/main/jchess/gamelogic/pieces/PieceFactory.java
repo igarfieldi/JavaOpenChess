@@ -91,6 +91,22 @@ public class PieceFactory implements IPieceFactory
 			{
 				return "K";
 			}
+		},
+		CAT
+		{
+
+			@Override
+			public IPieceBehaviour getBehaviour(Direction forward)
+			{
+				return new Cat();
+			}
+
+			@Override
+			public String getSymbol()
+			{
+				return "C";
+			}
+			
 		}
 	}
 	
