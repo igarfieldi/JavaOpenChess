@@ -67,8 +67,7 @@ public class TimedGameBuilder implements IGameBuilder
 				
 				if(timeLimit > 0)
 				{
-					GameClockController clock = new GameClockController(timeLimit, playerList.get(0), playerList.get(1),
-					        null, null);
+					GameClockController clock = new GameClockController(timeLimit, playerList.get(0), playerList.get(1));
 					
 					return new TimedGame(controller, clock);
 				}
