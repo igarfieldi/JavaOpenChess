@@ -282,7 +282,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 	 *            player
 	 * @param movingPlayer
 	 *            The player assumed to be currently moving
-	 * @return Whether a self or unfair check exists
+	 * @return True if a self or unfair check exists; false otherwise
 	 */
 	private boolean isSelfOrUnfairCheckPresent(Map<Player, Set<Piece>> preExistingChecks, Player movingPlayer)
 	{
