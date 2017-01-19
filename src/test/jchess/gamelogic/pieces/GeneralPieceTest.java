@@ -23,7 +23,11 @@ public class GeneralPieceTest
 	 */
 	public static boolean canMakeMove(IChessboardController board, Piece piece, Field field)
 	{
-		return board.getPossibleMoves(piece, true).contains(field);
+		Set<Field> possibleMoves = new HashSet<Field>();
+		for(Move move : board.getPossibleMoves(piece, true)) {
+			possibleMoves.add(move.getTo());
+		}
+		return possibleMoves.contains(field);
 	}
 	
 	/**

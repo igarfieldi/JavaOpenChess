@@ -92,7 +92,9 @@ public class Piece implements Copyable<Piece>
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(player, behaviour, SYMBOL, moved);
+		// Good enough of a hash
+		// TODO: adding 'moved' results in misses in hashmaps?
+		return Objects.hash(player, behaviour);
 	}
 	
 	@Override
@@ -104,7 +106,7 @@ public class Piece implements Copyable<Piece>
 		 }
 		 
 		 Piece test = (Piece)obj;
-		 return player.equals(test.player) &&
+		 return (player == test.player) &&
 				 (behaviour == test.behaviour) &&
 				 SYMBOL.equals(test.SYMBOL) &&
 				 (moved == test.moved);
