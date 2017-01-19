@@ -4,29 +4,37 @@ buildscript {
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+        classpath 'com.bmuschko:gradle-clover-plugin:2.0.1'
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'com.bmuschko.clover'
 
 repositories {
     mavenCentral()
 }
 
 task myJavadocs(type: Javadoc) {
-  source = sourceSets.main.allJava
+	source = sourceSets.main.allJava
 }
 
 dependencies {
     compile group: 'org.jdesktop', name: 'appframework', version: '1.0+'
     compile group: 'org.jdesktop', name: 'swing-worker', version: '1.1+'
     testCompile group: 'junit', name: 'junit', version: '4.+'
+    clover 'com.cenqua.clover:clover:3.2.0'
 }
 
-test {
-    ignoreFailures = true
+clover {
+	licenseLocation = '/home/bamboo/clover.license'
+	
+	report {
+        html = true
+        pdf = false
+    }
 }
 
 shadowJar {

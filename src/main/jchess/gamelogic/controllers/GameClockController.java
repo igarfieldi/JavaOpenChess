@@ -47,11 +47,24 @@ public class GameClockController implements Runnable
 		this.runningClock = this.clocks.getClock(0); // running/active clock
 		
 		this.setTimes(timeLimit);
-		this.setPlayers(white, black);
+		this.setPlayers(white, black, null, null);
 		
 		this.thread = new Thread(this);
 		
 		this.clockView = new GameClockView(clocks, white, black);
+	}
+	
+	public GameClockController(int timeLimit, Player white, Player black, Player brown, Player gray)
+	{
+		clocks = new GameClockModel(4);
+		this.runningClock = this.clocks.getClock(0); // running/active clock
+		
+		this.setTimes(timeLimit);
+		this.setPlayers(white, black, brown, gray);
+		
+		this.thread = new Thread(this);
+		
+		this.clockView = new GameClockView(clocks, white, black, brown, gray);
 	}
 	
 	/**
@@ -78,7 +91,19 @@ public class GameClockController implements Runnable
 	public void switchClocks()
 	{
 		// Change the running clock to the one not currently running
-		runningClock = (runningClock == clocks.getClock(0)) ? clocks.getClock(1) : clocks.getClock(0);
+		if(clocks.getClocks().size() == 4)
+		{
+			if(runningClock == clocks.getClock(0))
+				runningClock = clocks.getClock(2);
+			else if(runningClock == clocks.getClock(2))
+				runningClock = clocks.getClock(1);
+			else if(runningClock == clocks.getClock(1))
+				runningClock = clocks.getClock(3);
+			else if(runningClock == clocks.getClock(3))
+				runningClock = clocks.getClock(0);
+		}
+		else
+			runningClock = (runningClock == clocks.getClock(0)) ? clocks.getClock(1) : clocks.getClock(0);
 	}
 	
 	/**
@@ -89,10 +114,16 @@ public class GameClockController implements Runnable
 	 * @param t2
 	 *            time for clock 2
 	 */
-	public void setTimes(int t1, int t2)
+	public void setTimes(int t1, int t2, int t3, int t4)
 	{
 		clocks.getClock(0).resetClock(t1);
 		clocks.getClock(1).resetClock(t2);
+		
+		if(clocks.getClocks().size() == 4)
+		{
+			clocks.getClock(2).resetClock(t3);
+			clocks.getClock(3).resetClock(t4);
+		}
 	}
 	
 	/**
@@ -103,7 +134,7 @@ public class GameClockController implements Runnable
 	 */
 	public void setTimes(int t)
 	{
-		this.setTimes(t, t);
+		this.setTimes(t, t, t, t);
 	}
 	
 	/**
@@ -114,16 +145,15 @@ public class GameClockController implements Runnable
 	 * @param p2
 	 *            Second player
 	 */
-	private void setPlayers(Player p1, Player p2)
+	private void setPlayers(Player p1, Player p2, Player p3, Player p4)
 	{
-		if(p1.getColor() == Player.Color.WHITE)
+		clocks.getClock(0).setPlayer(p1);
+		clocks.getClock(1).setPlayer(p2);
+		
+		if (p3 != null && p4 != null)
 		{
-			clocks.getClock(0).setPlayer(p1);
-			clocks.getClock(0).setPlayer(p2);
-		} else
-		{
-			clocks.getClock(0).setPlayer(p2);
-			clocks.getClock(0).setPlayer(p1);
+			clocks.getClock(2).setPlayer(p3);
+			clocks.getClock(3).setPlayer(p4);
 		}
 	}
 	

@@ -4,7 +4,7 @@ import java.awt.Image;
 import java.util.Arrays;
 import java.util.List;
 
-import jchess.gui.ThemeImageLoader;
+import jchess.gui.secondary.themechooser.ThemeImageLoader;
 
 public class FourPlayerChessboardView extends SquareChessboardView
 {

@@ -5,6 +5,7 @@ import java.util.Set;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.Move;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.views.IChessboardView;
@@ -43,7 +44,7 @@ public interface IChessboardController extends LoadSaveable
 	 *            if true, moves resulting in a check will be filtered out
 	 * @return Set of possible moves for the piece
 	 */
-	public Set<Field> getPossibleMoves(Piece piece, boolean careForCheck);
+	public Set<Move> getPossibleMoves(Piece piece, boolean careForCheck);
 	
 	/**
 	 * Returns the set of fields which currently threaten the given piece.
@@ -58,9 +59,16 @@ public interface IChessboardController extends LoadSaveable
 	 * 
 	 * @param player
 	 *            Player to be checked
-	 * @return true if in check
+	 * @return true if player is in check
 	 */
 	public boolean isChecked(Player player);
+	
+	/**
+	 * Returns the set of pieces which currently put the given player in check.
+	 * @param player Player to be checked
+	 * @return Set of pieces checking the player
+	 */
+	public Set<Piece> getPiecesCheckingPlayer(Player player);
 	
 	/**
 	 * Checks if the player is checkmated. This is equivalent to checking if the

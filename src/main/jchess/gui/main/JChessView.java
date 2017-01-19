@@ -66,10 +66,10 @@ import jchess.gamelogic.game.IGame;
 import jchess.gamelogic.game.IGameBuilder;
 import jchess.gamelogic.game.IGameBuilderFactory;
 import jchess.gamelogic.views.IMessageDisplay.Option;
-import jchess.gui.secondary.JChessAboutBox;
 import jchess.gui.secondary.PawnPromotionWindow;
-import jchess.gui.secondary.ThemeChooseWindow;
-import jchess.gui.setup.NewGameWindow;
+import jchess.gui.secondary.about.JChessAboutWindow;
+import jchess.gui.secondary.setup.NewGameWindow;
+import jchess.gui.secondary.themechooser.ThemeChooseWindow;
 import jchess.util.FileMapParser;
 import jchess.util.TypedResourceBundle;
 
@@ -105,7 +105,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	private int busyIconIndex = 0;
 	
 	private JDialog aboutBox;
-	private PawnPromotionWindow pawnPromotionBox;
+	private PawnPromotionWindow pawnPromotionWindow;
 	public JDialog newGameFrame;
 	
 	public JChessView(SingleFrameApplication app, IGameBuilderFactory factory)
@@ -150,7 +150,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	private void initializeMainPanel()
 	{
 		mainPanel = new JPanel();
-		gamesPane = new JChessTabbedPane(gameBuilderFactory);
+		gamesPane = new JChessTabbedPane();
 		
 		configureMainPanelSize();
 		configureMainPanelLayout();
@@ -409,9 +409,9 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		});
 	}
 	
-	public void addNewGameTab(IGame game) {
+	public void addNewGameTab(String title, IGame game) {
 		this.gameList.add(game);
-		this.gamesPane.addTab("", (Component)game.getView());
+		this.gamesPane.addTab(title, (Component)game.getView());
 	}
 	
 	public void actionPerformed(ActionEvent event)
@@ -419,7 +419,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		Object target = event.getSource();
 		if(target == newGameItem)
 		{
-			this.newGameFrame = new NewGameWindow(this.getFrame(), this.gameBuilderFactory);
+			this.newGameFrame = new NewGameWindow(this.getFrame());
 			JChessApp.getApplication().show(this.newGameFrame);
 		}
 		else if(target == saveGameItem)
@@ -554,7 +554,7 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		if(aboutBox == null)
 		{
 			JFrame mainFrame = JChessApp.getApplication().getMainFrame();
-			aboutBox = new JChessAboutBox(mainFrame);
+			aboutBox = new JChessAboutWindow(mainFrame);
 			aboutBox.setLocationRelativeTo(mainFrame);
 		}
 		JChessApp.getApplication().show(aboutBox);
@@ -564,13 +564,13 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	{
 		
 		JFrame mainFrame = JChessApp.getApplication().getMainFrame();
-		pawnPromotionBox = new PawnPromotionWindow(mainFrame, color);
-		pawnPromotionBox.setLocationRelativeTo(mainFrame);
-		pawnPromotionBox.setModal(true);
+		pawnPromotionWindow = new PawnPromotionWindow(mainFrame, color);
+		pawnPromotionWindow.setLocationRelativeTo(mainFrame);
+		pawnPromotionWindow.setModal(true);
 		
-		JChessApp.getApplication().show(pawnPromotionBox);
+		JChessApp.getApplication().show(pawnPromotionWindow);
 		
-		return pawnPromotionBox.getSelectedPromotion();
+		return pawnPromotionWindow.getSelectedPromotion();
 	}
 	
 	public String showSaveWindow()

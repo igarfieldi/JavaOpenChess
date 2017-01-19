@@ -58,9 +58,9 @@ public class QueenTest
 		        board.getBoard().getField(2, 5), board.getBoard().getField(4, 3), board.getBoard().getField(5, 2),
 		        board.getBoard().getField(6, 1), board.getBoard().getField(7, 0) };
 		
-		assertTrue(PieceTest.canMakeMoves(board, whiteQueen, verticalMoves));
-		assertTrue(PieceTest.canMakeMoves(board, whiteQueen, horizontalMoves));
-		assertTrue(PieceTest.canMakeMoves(board, whiteQueen, diagonalMoves));
+		assertTrue(GeneralPieceTest.canMakeMoves(board, whiteQueen, verticalMoves));
+		assertTrue(GeneralPieceTest.canMakeMoves(board, whiteQueen, horizontalMoves));
+		assertTrue(GeneralPieceTest.canMakeMoves(board, whiteQueen, diagonalMoves));
 	}
 	
 	@Test
@@ -83,9 +83,9 @@ public class QueenTest
 			board.getBoard().setPiece(testFields[i], blackPawn1);
 			board.getBoard().setPiece(fieldsBeyond[i], blackPawn2);
 			// Capturable
-			assertTrue(PieceTest.canMakeMove(board, whiteQueen, testFields[i]));
+			assertTrue(GeneralPieceTest.canMakeMove(board, whiteQueen, testFields[i]));
 			// Not reachable anymore because blocked by piece
-			assertFalse(PieceTest.canMakeMove(board, whiteQueen, fieldsBeyond[i]));
+			assertFalse(GeneralPieceTest.canMakeMove(board, whiteQueen, fieldsBeyond[i]));
 			board.getBoard().removePiece(testFields[i]);
 			board.getBoard().removePiece(fieldsBeyond[i]);
 		}

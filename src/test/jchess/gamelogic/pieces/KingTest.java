@@ -3,6 +3,7 @@ package jchess.gamelogic.pieces;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Before;
@@ -13,6 +14,7 @@ import jchess.gamelogic.Player.Color;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.Move;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.models.factories.TwoPlayerChessboardFactory;
 import jchess.gamelogic.pieces.PieceFactory.PieceType;
@@ -52,7 +54,10 @@ public class KingTest
 	{
 		movePiece(board.getBoard().getField(4, 4), whiteKing);
 		whiteKing.markAsMoved();
-		Set<Field> moves = board.getPossibleMoves(whiteKing, true);
+		Set<Field> moves = new HashSet<Field>();
+		for(Move move : board.getPossibleMoves(whiteKing, true)) {
+			moves.add(move.getTo());
+		}
 		assertTrue(moves.contains(board.getBoard().getField(3, 3)));
 		assertTrue(moves.contains(board.getBoard().getField(4, 3)));
 		assertTrue(moves.contains(board.getBoard().getField(5, 3)));
@@ -111,9 +116,9 @@ public class KingTest
 	{
 		board.getBoard().setPiece(field, piece);
 		
-		for(Field currField : board.getPossibleMoves(piece, true))
+		for(Move move : board.getPossibleMoves(piece, true))
 		{
-			movePiece(currField, whiteKing);
+			movePiece(move.getTo(), whiteKing);
 			assertTrue(board.isChecked(white));
 		}
 	}

@@ -7,6 +7,7 @@ import java.util.Random;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.Move;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.pieces.PieceFactory;
@@ -96,11 +97,11 @@ public class CatAi
 	 * @return random field to move to
 	 */
 	
-	public Field getNextTargetMove()
+	public Field getNextMove()
 	{
 		
-		ArrayList<Field> fields = new ArrayList<Field>(chessboard.getPossibleMoves(cat, false));
-		return getRandomField(fields);
+		ArrayList<Move> moves = new ArrayList<Move>(chessboard.getPossibleMoves(cat, false));
+		return getRandomMove(moves).getTo();
 	}
 	
 	/**
@@ -123,6 +124,22 @@ public class CatAi
 		return board.getField(cat);
 	}
 	
+
+	/**
+	 * Method which gets a list of moves and chooses a random element from it.
+	 * 
+	 * @param moves
+	 *            List of moves
+	 * @return random move
+	 */
+	
+	public Move getRandomMove(List<Move> moves)
+	{
+		Random random = new Random();
+		Move randomMove = moves.get(random.nextInt(moves.size()));
+		return randomMove;
+	}
+
 	/**
 	 * Method which gets a list of fields and chooses a random element from it.
 	 * 
@@ -130,10 +147,10 @@ public class CatAi
 	 *            List of fields
 	 * @return random field
 	 */
-	public Field getRandomField(List<Field> fields)
-	{
+	public Field getRandomField(List<Field> fields){
 		Random random = new Random();
 		Field randomField = fields.get(random.nextInt(fields.size()));
 		return randomField;
 	}
+	
 }

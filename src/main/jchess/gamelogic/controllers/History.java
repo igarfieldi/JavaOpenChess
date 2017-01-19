@@ -548,9 +548,10 @@ public class History extends AbstractTableModel
 					{
 						continue;
 					}
-					for(Field possibleMove : chessboard.getPossibleMoves(piece, true))
+					for(Move possibleMove : chessboard.getPossibleMoves(piece, true))
 					{
-						if(possibleMove.getPosX() == xTo && possibleMove.getPosY() == yTo)
+						Field target = possibleMove.getTo();
+						if(target.getPosX() == xTo && target.getPosY() == yTo)
 						{
 							xFrom = field.getPosX();
 							yFrom = field.getPosY();

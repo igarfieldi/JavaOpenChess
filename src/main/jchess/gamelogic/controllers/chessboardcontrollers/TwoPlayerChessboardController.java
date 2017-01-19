@@ -27,8 +27,8 @@ import java.util.Set;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Move;
+import jchess.gamelogic.field.Move.CastlingType;
 import jchess.gamelogic.models.IBoardFactory;
-import jchess.gamelogic.pieces.King;
 import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.views.factories.IChessboardViewFactory;
@@ -51,105 +51,59 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 				Arrays.asList(new Player[]{white, black}));
 	}
 	
-	protected Set<Field> getCastleMoves(Piece piece) {
-		Set<Field> castleFields = new HashSet<Field>();
+	@Override
+	protected Move getRookMoveForCastling(Piece piece, CastlingType type) {
+		Field field = getBoard().getField(piece);
+		Field rookField = null;
+		Field rookTarget = null;
 		
-		if(piece.getBehaviour() instanceof King)
-		{
-			// Castling
-			if(!piece.hasMoved())
-			{
-				Field kingsField = getBoard().getField(piece);
-				
-				Piece leftRook = getBoard().getPiece(getBoard().getField(0, kingsField.getPosY()));
-				Piece rightRook = getBoard().getPiece(getBoard().getField(7, kingsField.getPosY()));
-				
-				if(leftRook != null && !leftRook.hasMoved())
-				{
-					// Neither left rook nor king have moved yet
-					Set<Field> reachable = this.getMovableFieldsInDirection(leftRook, leftRook.getBehaviour().getNormalMovements());
-					if(reachable.contains(getBoard().getField(kingsField.getPosX() - 1, kingsField.getPosY())))
-					{
-						// Left rook can move right next to the king -> fields
-						// in between both are free
-						Set<Field> involvedFields = new HashSet<Field>();
-						involvedFields.add(kingsField);
-						involvedFields.add(getBoard().getField(kingsField.getPosX() - 1, kingsField.getPosY()));
-						involvedFields.add(getBoard().getField(kingsField.getPosX() - 2, kingsField.getPosY()));
-						// None of the fields involved must be in check
-						
-						Player enemy = getPlayer(0);
-						if(piece.getPlayer() == getPlayer(0))
-						{
-							enemy = getPlayer(1);
-						}
-						if(!this.isAnyThreatenedByPlayer(involvedFields, enemy))
-						{
-							castleFields.add(getBoard().getField(kingsField.getPosX() - 2, kingsField.getPosY()));
-						}
-					}
-				}
-				if(rightRook != null && !rightRook.hasMoved())
-				{
-					// Neither left rook nor king have moved yet
-					Set<Field> reachable = this.getMovableFieldsInDirection(rightRook, rightRook.getBehaviour().getNormalMovements());
-					if(reachable.contains(getBoard().getField(kingsField.getPosX() + 1, kingsField.getPosY())))
-					{
-						// Right rook can move right next to the king -> fields
-						// in between both are free
-						Set<Field> involvedFields = new HashSet<Field>();
-						involvedFields.add(kingsField);
-						involvedFields.add(getBoard().getField(kingsField.getPosX() + 1, kingsField.getPosY()));
-						involvedFields.add(getBoard().getField(kingsField.getPosX() + 2, kingsField.getPosY()));
-						// None of the fields involved must be in check
-						
-						Player enemy = getPlayer(0);
-						if(piece.getPlayer() == getPlayer(0))
-						{
-							enemy = getPlayer(1);
-						}
-						if(!this.isAnyThreatenedByPlayer(involvedFields, enemy))
-						{
-							castleFields.add(getBoard().getField(kingsField.getPosX() + 2, kingsField.getPosY()));
-						}
-					}
-				}
-			}
+		if(type == CastlingType.SHORT_CASTLING) {
+			rookField = getBoard().getField(field.getPosX() + 3, field.getPosY());
+			rookTarget = getBoard().getField(field.getPosX() + 1, field.getPosY());
+		} else {
+			rookField = getBoard().getField(field.getPosX() - 4, field.getPosY());
+			rookTarget = getBoard().getField(field.getPosX() - 1, field.getPosY());
 		}
 		
-		return castleFields;
+		return new Move(rookField, rookTarget, getBoard().getPiece(rookField), null,
+				type, false, null);
 	}
 	
 	@Override
-	protected Set<Field> getEnPassantMoves(Piece piece)
+	protected Set<Move> getEnPassantMoves(Piece piece)
 	{
-		Set<Field> enPassantMoves = new HashSet<Field>();
+		// TODO: for the 4p case we cannot use the last move!
+		Set<Move> enPassantMoves = new HashSet<Move>();
 		
+		// Check if we have a pawn at our hands (precondition for en passant)
 		if(piece.getBehaviour() instanceof Pawn)
 		{
 			Move lastMove = getHistory().getLastMoveFromHistory();
-			// En passant
+			
+			// The last move has had to be a two field move from a pawn
 			if(lastMove != null && lastMove.wasPawnTwoFieldsMove())
 			{
 				Piece twoSquareMovedPawn = lastMove.getMovedPiece();
-				if(getBoard().getField(piece).getPosY() == getBoard().getField(twoSquareMovedPawn).getPosY())
-				{
-					// Our pawn is in the same row
-					if(Math.abs(getBoard().getField(piece).getPosX() - getBoard().getField(twoSquareMovedPawn).getPosX()) == 1)
-					{
-						// Our pawn is right next to the pawn which moved two
-						// squares. Now we need to check the direction in which
-						// the pawn has to go
-						if(piece.getPlayer() == getPlayer(1))
-						{
-							enPassantMoves.add(getBoard().getField(getBoard().getField(twoSquareMovedPawn).getPosX(),
-							        getBoard().getField(piece).getPosY() + 1));
-						} else
-						{
-							enPassantMoves.add(getBoard().getField(getBoard().getField(twoSquareMovedPawn).getPosX(),
-							        getBoard().getField(piece).getPosY() - 1));
-						}
-					}
+				Field pieceField = getBoard().getField(piece);
+				Field movedPawnField = getBoard().getField(twoSquareMovedPawn);
+				
+				// Get the forward direction of the pawn which moved two fields
+				Direction movedPawnForward = ((Pawn) twoSquareMovedPawn.getBehaviour()).getForwardDirection();
+
+				// By rotating the forward direction by 90 degrees we get the fields to its left and right
+				Field leftField = getBoard().getField(movedPawnField.getPosX() - movedPawnForward.rotate90Deg().getX(),
+						movedPawnField.getPosY() - movedPawnForward.rotate90Deg().getY());
+				Field rightField = getBoard().getField(movedPawnField.getPosX() + movedPawnForward.rotate90Deg().getX(),
+						movedPawnField.getPosY() + movedPawnForward.rotate90Deg().getY());
+				
+				// Our piece to check has to be right next to the pawn to be eligible for en passant
+				if(pieceField.equals(leftField) || pieceField.equals(rightField)) {
+					// If it is eligible, it can make a capturing move right behind the two-field-moved pawn
+					Field targetField = getBoard().getField(
+							movedPawnField.getPosX() - movedPawnForward.getX(),
+							movedPawnField.getPosY() - movedPawnForward.getY());
+					enPassantMoves.add(new Move(pieceField, targetField, piece,
+							twoSquareMovedPawn, CastlingType.NONE, true, null));
 				}
 			}
 		}

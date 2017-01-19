@@ -35,10 +35,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JTabbedPane;
 
 import jchess.JChessApp;
-import jchess.gamelogic.game.IGameBuilderFactory;
-import jchess.gui.ThemeImageLoader;
-import jchess.gui.setup.NewGameWindow;
+import jchess.gui.secondary.setup.NewGameWindow;
+import jchess.gui.secondary.themechooser.ThemeImageLoader;
 
+/**
+ * Class handling the opening and closing of game tabs
+ */
 public class JChessTabbedPane extends JTabbedPane implements MouseListener, ImageObserver
 {
 	private static final long serialVersionUID = -7046648284513652282L;
@@ -46,12 +48,12 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 	
 	private Image addIcon;
 	private Rectangle addIconRectangle = null;
-	private IGameBuilderFactory factory;
 	
-	public JChessTabbedPane(IGameBuilderFactory factory)
+	private static final int EMPTY = 0;
+	
+	public JChessTabbedPane()
 	{
 		super();
-		this.factory = factory;
 		this.addIcon = ThemeImageLoader.getInstance().loadThemeImage("add-tab-icon.png");
 		
 		this.setDoubleBuffered(true);
@@ -69,11 +71,13 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 	@Override
 	public void mouseClicked(MouseEvent event)
 	{
+		final int MINIMUM_INDEX = 0;
+		
 		int tabIndex = getUI().tabForCoordinate(this, event.getX(), event.getY());
-		if(tabIndex >= 0)
+		if(tabIndex >= MINIMUM_INDEX)
 		{
 			closeGameTab(event, tabIndex);
-			if(this.getTabCount() == 0)
+			if(this.getTabCount() == EMPTY)
 				this.showNewGameWindow();
 		}
 		else if(this.addIconRectangle != null && this.addIconRectangle.contains(event.getX(), event.getY()))
@@ -83,6 +87,14 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 		}
 	}
 
+	/**
+	 * Closes a tab when its close icon is klicked.
+	 * 
+	 * @param event
+	 * 				The event of the mouse being clicked.
+	 * @param tabIndex
+	 * 				The index of the tab that is closed
+	 */
 	private void closeGameTab(MouseEvent event, int tabIndex)
 	{
 		Rectangle closeIconRectangle = ((CloseIcon) getIconAt(tabIndex)).getBounds();
@@ -94,33 +106,37 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 		}
 	}
 
+	/**
+	 * Updates the position of the add icon whenever the number of tabs changes.
+	 */
 	private void updateAddIconRectangle()
 	{
-		if(this.getTabCount() > 0)
+		if(this.getTabCount() > EMPTY)
 		{
-			Rectangle newRectangleBounds = this.getBoundsAt(this.getTabCount() - 1);
-			this.addIconRectangle = new Rectangle(newRectangleBounds.x + newRectangleBounds.width + 5,
+			final int RIGHT_TAB = this.getTabCount() - 1;
+			final int RECTANGLE_WIDTH = 5;
+			
+			Rectangle newRectangleBounds = this.getBoundsAt(RIGHT_TAB);
+			this.addIconRectangle = new Rectangle(newRectangleBounds.x + newRectangleBounds.width + RECTANGLE_WIDTH,
 			        newRectangleBounds.y, this.addIcon.getWidth(this), this.addIcon.getHeight(this));
 		}
 		else
 			this.addIconRectangle = null;
 	}
 
+	/**
+	 * Displays the dialog to start a new game
+	 */
 	private void showNewGameWindow()
 	{
 		if(JChessApp.view.newGameFrame == null)
-			JChessApp.view.newGameFrame = new NewGameWindow(JChessApp.view.getFrame(), factory);
+			JChessApp.view.newGameFrame = new NewGameWindow(JChessApp.view.getFrame());
 		
 		JChessApp.getApplication().show(JChessApp.view.newGameFrame);
 	}
 	
-	public void mouseEntered(MouseEvent event)
-	{
-	}
-	
-	public void mouseExited(MouseEvent event)
-	{
-	}
+	public void mouseEntered(MouseEvent event) {}
+	public void mouseExited(MouseEvent event) {}
 	
 	@Override
 	public void addTab(String title, Component component)
@@ -152,6 +168,9 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 		this.repaint();
 	}
 	
+	/**
+	 * This class handles the creation of a close icon taken from an image
+	 */
 	private class CloseIcon implements Icon
 	{
 		private int xPosition;

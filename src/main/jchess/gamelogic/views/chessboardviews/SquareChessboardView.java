@@ -21,6 +21,7 @@ import jchess.Localization;
 import jchess.gamelogic.controllers.IBoardActionHandler;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.field.Move;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.views.IChessboardView;
 
@@ -174,10 +175,11 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 			if(piece != null)
 			{
 				Point topLeftPoint = this.getChessboardLocation();
-				for(Field field : chessboard.getPossibleMoves(chessboard.getBoard().getPiece(activeField), true))
+				for(Move move : chessboard.getPossibleMoves(chessboard.getBoard().getPiece(activeField), true))
 				{
-					g2d.drawImage(this.getPossibleFieldImage(), (int) (field.getPosX() * squareHeight) + topLeftPoint.x,
-					        (int) (field.getPosY() * squareHeight) + topLeftPoint.y, (int) squareHeight,
+					Field target = move.getTo();
+					g2d.drawImage(this.getPossibleFieldImage(), (int) (target.getPosX() * squareHeight) + topLeftPoint.x,
+					        (int) (target.getPosY() * squareHeight) + topLeftPoint.y, (int) squareHeight,
 					        (int) squareHeight, null);
 				}
 			}
@@ -191,6 +193,7 @@ public abstract class SquareChessboardView extends JPanel implements MouseListen
 			
 			if(piece != null)
 			{
+				// TODO: re-enable this
 				Point topLeftPoint = this.getChessboardLocation();
 				
 				// Render all threats to this piece

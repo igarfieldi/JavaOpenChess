@@ -236,7 +236,7 @@ public class UntimedGame implements IGame
 			//checks if the cat is alive and moves it, otherwise skips the moves and goes to the next player
 			if(catAi.isAlive())
 			{
-				executeMove(catAi.getCurrentPosition(), catAi.getNextTargetMove());
+				executeMove(catAi.getCurrentPosition(), catAi.getNextMove());
 			} else
 			{
 				switchActive();

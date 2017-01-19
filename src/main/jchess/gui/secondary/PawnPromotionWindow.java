@@ -25,15 +25,13 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 
 import jchess.gamelogic.Player.Color;
-import jchess.gui.ThemeImageLoader;
+import jchess.gui.secondary.themechooser.ThemeImageLoader;
 
 /**
  * Class responsible for promotion of a pawn. When a pawn reaches the end of the
@@ -43,7 +41,6 @@ import jchess.gui.ThemeImageLoader;
 public class PawnPromotionWindow extends JDialog implements ActionListener
 {
 	private static final long serialVersionUID = -1026252750919159633L;
-	private static Logger log = Logger.getLogger(PawnPromotionWindow.class.getName());
 	
 	private String selectedPromotion;
 	
@@ -52,6 +49,12 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 	private JButton rookButton;
 	private JButton queenButton;
 	
+	private static final String NOTHING_SELECTED = "";
+	
+	/**
+	 * 
+	 * @return String of the piece to which the pawn will be promoted to.
+	 */
 	public String getSelectedPromotion()
 	{
 		return selectedPromotion;
@@ -68,44 +71,39 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 	public PawnPromotionWindow(Frame parent, Color color)
 	{
 		super(parent);
-		this.selectedPromotion = "";
+		this.selectedPromotion = NOTHING_SELECTED;
 		
-		initializeWindow();
+		setWindowProperties();
 		createPieceButtons(color);
 		initializePieceButtons();
 	}
 	
-	private void initializeWindow()
+	/**
+	 * Sets the properties of this dialog.
+	 */
+	private void setWindowProperties()
 	{
-		this.setTitle("Choose piece");
-		this.setMinimumSize(new Dimension(520, 130));
-		this.setSize(new Dimension(520, 130));
-		this.setMaximumSize(new Dimension(520, 130));
+		final Dimension SIZE = new Dimension(520, 130);
+		
+		this.setTitle("Choose piece!");
+		this.setMinimumSize(SIZE);
+		this.setSize(SIZE);
+		this.setMaximumSize(SIZE);
 		this.setResizable(false);
 		this.setLayout(new GridLayout(1, 4));
 	}
 	
+	/**
+	 * Instatiates the buttons for each possible promotion. Each button has an image of the piece
+	 * in the color of the piece to be promoted.
+	 * 
+	 * @param color
+	 * 				Color of the promoted piece
+	 */
 	private void createPieceButtons(Color color)
 	{
-		// TODO: very rigid; shift into ThemeLoader?
-		String colorName = "";
-		switch(color) {
-			case WHITE:
-				colorName = "W";
-				break;
-			case RED:
-				colorName = "BR";
-				break;
-			case BLACK:
-				colorName = "B";
-				break;
-			case GOLDEN:
-				colorName = "G";
-				break;
-			default:
-				log.log(Level.SEVERE, "Tried to show promotion pieces for non-existing color!");
-				break;
-		}
+		String colorName = ThemeImageLoader.getInstance().getColorString(color);
+		
 		this.knightButton = new JButton(
 		        new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Knight-" + colorName + ".png")));
 		this.bishopButton = new JButton(
@@ -116,6 +114,9 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 		        new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Queen-" + colorName + ".png")));
 	}
 	
+	/**
+	 * Helper method that adds all piece buttons to the panel.
+	 */
 	private void initializePieceButtons()
 	{
 		addPieceButtonToWindow(this.queenButton);
@@ -124,6 +125,12 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 		addPieceButtonToWindow(this.knightButton);
 	}
 	
+	/**
+	 * Adds the piece buttons to the dialog with an action listener.
+	 * 
+	 * @param pieceButton
+	 * 				The piece button to be added.
+	 */
 	private void addPieceButtonToWindow(JButton pieceButton)
 	{
 		pieceButton.addActionListener(this);
@@ -142,6 +149,12 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 		this.setVisible(false);
 	}
 	
+	/**
+	 * Sets the selectedPromotion string to the name of the piece corresponding to the appropriate button.
+	 * 
+	 * @param button
+	 * 				The button that was clicked.
+	 */
 	private void chooseSelectedPiece(ActionEvent button)
 	{
 		if(button.getSource() == queenButton)
