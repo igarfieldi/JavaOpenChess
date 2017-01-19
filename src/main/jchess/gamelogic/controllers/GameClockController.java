@@ -41,6 +41,19 @@ public class GameClockController implements Runnable
 	private Thread thread;
 	private IGameStateHandler stateHandler;
 	
+	public GameClockController(int timeLimit, Player white, Player black)
+	{
+		clocks = new GameClockModel(2);
+		this.runningClock = this.clocks.getClock(0); // running/active clock
+		
+		this.setTimes(timeLimit);
+		this.setPlayers(white, black, null, null);
+		
+		this.thread = new Thread(this);
+		
+		this.clockView = new GameClockView(clocks, white, black);
+	}
+	
 	public GameClockController(int timeLimit, Player white, Player black, Player brown, Player gray)
 	{
 		clocks = new GameClockModel(4);
@@ -78,9 +91,7 @@ public class GameClockController implements Runnable
 	public void switchClocks()
 	{
 		// Change the running clock to the one not currently running
-		if(this.clocks.getClock(2).getPlayer() == null && this.clocks.getClock(3).getPlayer() == null)
-			runningClock = (runningClock == clocks.getClock(0)) ? clocks.getClock(1) : clocks.getClock(0);
-		else
+		if(clocks.getClocks().size() == 4)
 		{
 			if(runningClock == clocks.getClock(0))
 				runningClock = clocks.getClock(2);
@@ -91,6 +102,8 @@ public class GameClockController implements Runnable
 			else if(runningClock == clocks.getClock(3))
 				runningClock = clocks.getClock(0);
 		}
+		else
+			runningClock = (runningClock == clocks.getClock(0)) ? clocks.getClock(1) : clocks.getClock(0);
 	}
 	
 	/**
@@ -106,8 +119,11 @@ public class GameClockController implements Runnable
 		clocks.getClock(0).resetClock(t1);
 		clocks.getClock(1).resetClock(t2);
 		
-		clocks.getClock(2).resetClock(t3);
-		clocks.getClock(3).resetClock(t4);
+		if(clocks.getClocks().size() == 4)
+		{
+			clocks.getClock(2).resetClock(t3);
+			clocks.getClock(3).resetClock(t4);
+		}
 	}
 	
 	/**
