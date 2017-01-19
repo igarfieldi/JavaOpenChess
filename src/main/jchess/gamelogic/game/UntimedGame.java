@@ -233,6 +233,7 @@ public class UntimedGame implements IGame
 		} else if(chessboard.getActivePlayer().getType() == Player.Type.COMPUTER)
 		{
 			this.blockedChessboard = true;
+			//checks if the cat is alive and moves it, otherwise skips the moves and goes to the next player
 			if(catAi.isAlive())
 			{
 				executeMove(catAi.getCurrentPosition(), catAi.getNextTargetMove());

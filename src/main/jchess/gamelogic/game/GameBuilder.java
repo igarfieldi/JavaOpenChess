@@ -21,14 +21,14 @@ import jchess.gamelogic.views.factories.TwoPlayerChessboardViewFactory;
  * it will also create a game with running clock.
  * @author Florian Bethe
  */
-public class TimedGameBuilder implements IGameBuilder
+public class GameBuilder implements IGameBuilder
 {
-	private static Logger log = Logger.getLogger(TimedGameBuilder.class.getName());
+	private static Logger log = Logger.getLogger(GameBuilder.class.getName());
 	
 	private int timeLimit;
 	private List<Player> playerList;
 	
-	public TimedGameBuilder() {
+	public GameBuilder() {
 		this.timeLimit = 0;
 		this.playerList = new ArrayList<Player>();
 	}

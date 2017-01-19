@@ -13,6 +13,13 @@ import jchess.gamelogic.pieces.PieceFactory;
 import jchess.gamelogic.pieces.PieceFactory.PieceType;
 import jchess.util.Direction;
 
+/**
+ * Class responsible for controlling the Cat movement on the board.
+ * 
+ * @author Panagiota Thomopoulou
+ *
+ */
+
 public class CatAi
 {
 	private IChessboardModel board;
@@ -32,10 +39,22 @@ public class CatAi
 		activePlayer = chessboard.getActivePlayer();
 	}
 	
+	/**
+	 * Checks if the cat piece is on the board.
+	 * 
+	 * @return true if the cat is on the board
+	 */
+	
 	public boolean isAlive()
 	{
 		return !board.getPieces(activePlayer).isEmpty();
 	}
+	
+	/**
+	 * Checks if the cat piece has to respawn. If it does, calls the method
+	 * responsible for that and resets the timer. If not, checks if the cat is
+	 * alive and reduces the timer by one.
+	 */
 	
 	public void updateRespawnTimer()
 	{
@@ -49,6 +68,10 @@ public class CatAi
 			turnsToRespawn--;
 		}
 	}
+	
+	/**
+	 * Places a new cat piece on the board.
+	 */
 	
 	private void respawnCat()
 	{
@@ -67,6 +90,12 @@ public class CatAi
 		turnsToRespawn = 2;
 	}
 	
+	/**
+	 * Method responsible for finding the next move randomly for the cat piece.
+	 * 
+	 * @return random field to move to
+	 */
+	
 	public Field getNextTargetMove()
 	{
 		
@@ -74,6 +103,11 @@ public class CatAi
 		return getRandomField(fields);
 	}
 	
+	/**
+	 * Finds the position the cat is on.
+	 * 
+	 * @return field of the cat
+	 */
 	public Field getCurrentPosition()
 	{
 		// I swear I'm gonna remove this
@@ -89,6 +123,13 @@ public class CatAi
 		return board.getField(cat);
 	}
 	
+	/**
+	 * Method which gets a list of fields and chooses a random element from it.
+	 * 
+	 * @param fields
+	 *            List of fields
+	 * @return random field
+	 */
 	public Field getRandomField(List<Field> fields)
 	{
 		Random random = new Random();
