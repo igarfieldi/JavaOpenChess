@@ -79,7 +79,6 @@ public class CatAi
 		PieceFactory factory = PieceFactory.getInstance();
 		board.setPiece(getRandomField(board.getEmptyFields()),
 		        factory.buildPiece(activePlayer, new Direction(0, -1), PieceType.CAT));
-		activePlayer = chessboard.getActivePlayer();
 		for(Piece piece : board.getPieces(activePlayer))
 		{
 			cat = piece;

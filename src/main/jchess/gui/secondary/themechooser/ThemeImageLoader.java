@@ -83,7 +83,7 @@ public class ThemeImageLoader
 	 */
 	public Image loadThemedPieceImage(Piece piece)
 	{
-		String imageName = piece.getName() + "-";
+		String imageName = piece.getName();
 		imageName += getColorString(piece.getPlayer().getColor());
 		imageName += ".png";
 		
@@ -99,7 +99,7 @@ public class ThemeImageLoader
 	 */
 	public String getColorString(Color color)
 	{
-		String colorString = "";
+		String colorString = "-";
 		switch(color)
 		{
 			case WHITE:
@@ -116,6 +116,7 @@ public class ThemeImageLoader
 				break;
 			case SPECIAL:
 				colorString = "";
+				break;
 			default:
 				log.log(Level.SEVERE, "Piece of player with unknown color exists!");
 		}

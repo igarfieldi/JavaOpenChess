@@ -3,6 +3,7 @@ package jchess.gui.secondary.setup;
 import jchess.JChessApp;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Player.Color;
+import jchess.gamelogic.Player.Type;
 import jchess.gamelogic.game.IGame;
 import jchess.gamelogic.game.IGameBuilder;
 import jchess.gamelogic.game.RegularGameBuilderFactory;
@@ -97,6 +98,7 @@ public class SettingsAdopter
 			builder.addPlayer(new Player(playerNames[1], Color.RED));
 			builder.addPlayer(new Player(playerNames[2], Color.BLACK));
 			builder.addPlayer(new Player(playerNames[3], Color.GOLDEN));
+			builder.addPlayer(new Player("Cat", Color.SPECIAL, Type.COMPUTER));
 		}
 	}
 	
