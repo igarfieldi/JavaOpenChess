@@ -7,6 +7,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -16,35 +18,41 @@ import jchess.gamelogic.models.GameClockModel;
 public class GameClockView extends JPanel implements IRenderable
 {
 	private static final long serialVersionUID = -5110241622282357707L;
+	private static final Color PLAYER_BACKGROUND_COLORS[] = {
+			Color.WHITE,
+			Color.ORANGE,
+			Color.BLACK,
+			Color.GRAY
+	};
+	private static final Color PLAYER_FOREGROUND_COLORS[] = {
+			Color.BLACK,
+			Color.GRAY,
+			Color.WHITE,
+			Color.ORANGE
+	};
 	private static final Font clockFont = new Font("Sarif", Font.ITALIC, 14);
+	private static final int WIDTH_PER_PLAYER = 90;
+	private static final int STRING_BUFFER_PER_SIDE = 10;
+	private static final int PLAYER_NAME_HEIGHT = 50;
+	private static final int CLOCK_TIME_HEIGHT = 80;
+	private static final int BOX_UPPER_BORDER = 30;
+	private static final int BOX_LOWER_BORDER = 90;
+	private static final int BOX_HEIGHT = 30;
+	private static final int BOX_BUFFER_PER_SIDE = 5;
 	
 	private BufferedImage background = new BufferedImage(600, 600, BufferedImage.TYPE_INT_ARGB);
 	private GameClockModel clocks;
-	private Player white, black, brown, gray;
+	private List<Player> players;
 	
-	public GameClockView(GameClockModel clocks, Player white, Player black)
-	{
-		this.white = white;
-		this.black = black;
+	public GameClockView(GameClockModel clocks, Player... players) {
 		this.clocks = clocks;
+		this.players = new ArrayList<Player>();
+		for(Player player : players) {
+			this.players.add(player);
+		}
 		
 		this.setDoubleBuffered(true);
-		
-		preRenderBackgroundImage(200);
-	}
-	
-	public GameClockView(GameClockModel clocks, Player white, Player black, Player brown, Player gray)
-	{
-		this.white = white;
-		this.black = black;
-		this.brown = brown;
-		this.gray = gray;
-		this.clocks = clocks;
-		
-		this.setDoubleBuffered(true);
-		
-		// Pre-render the static background image
-		preRenderBackgroundImage(370);
+		preRenderBackgroundImage(2*STRING_BUFFER_PER_SIDE + players.length*WIDTH_PER_PLAYER);
 	}
 	
 	private void preRenderBackgroundImage(int width)
@@ -52,8 +60,8 @@ public class GameClockView extends JPanel implements IRenderable
 		Graphics2D g2d = (Graphics2D) this.background.getGraphics();
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		this.drawBackground(g2d);
-		this.setMinimumSize(new Dimension(width, 100));
-		this.setPreferredSize(new Dimension(width, 100));
+		this.setMinimumSize(new Dimension(width, BOX_LOWER_BORDER + STRING_BUFFER_PER_SIDE));
+		this.setPreferredSize(new Dimension(width, BOX_LOWER_BORDER + STRING_BUFFER_PER_SIDE));
 	}
 	
 	@Override
@@ -72,24 +80,16 @@ public class GameClockView extends JPanel implements IRenderable
 	 */
 	private void drawBackground(Graphics2D g2d)
 	{
-		g2d.setColor(Color.WHITE);
-		g2d.fillRect(5, 30, 80, 30);
-		g2d.setColor(Color.BLACK);
-		g2d.fillRect(85, 30, 90, 30);
-		g2d.drawRect(5, 30, 170, 30);
-		g2d.drawRect(5, 60, 170, 30);
-		g2d.drawLine(85, 30, 85, 90);
-		
-		if(clocks.getClocks().size() == 4)
-		{
-    		g2d.setColor(Color.ORANGE);
-    		g2d.fillRect(175, 30, 90, 30);
-    		g2d.setColor(Color.GRAY);
-    		g2d.fillRect(265, 30, 90, 30);
-    		
-    		g2d.drawRect(175, 30, 180, 30);
-    		g2d.drawRect(175, 60, 180, 30);
-    		g2d.drawLine(265, 30, 265, 90);
+		for(int i = 0; i < players.size(); i++) {
+			g2d.setColor(PLAYER_BACKGROUND_COLORS[i]);
+			g2d.fillRect(WIDTH_PER_PLAYER*i + BOX_BUFFER_PER_SIDE, BOX_UPPER_BORDER,
+					WIDTH_PER_PLAYER, BOX_HEIGHT);
+			g2d.setColor(Color.BLACK);
+			g2d.drawRect(WIDTH_PER_PLAYER*i + BOX_BUFFER_PER_SIDE, BOX_UPPER_BORDER,
+					WIDTH_PER_PLAYER, BOX_HEIGHT);
+			g2d.drawRect(WIDTH_PER_PLAYER*i + BOX_BUFFER_PER_SIDE,
+					(BOX_UPPER_BORDER + BOX_LOWER_BORDER) / 2,
+					WIDTH_PER_PLAYER, BOX_HEIGHT);
 		}
 	}
 	
@@ -101,13 +101,10 @@ public class GameClockView extends JPanel implements IRenderable
 	{
 		g2d.setFont(clockFont);
 		g2d.setColor(Color.BLACK);
-		g2d.drawString(this.clocks.getClock(0).toString(), 10, 80);
-		g2d.drawString(this.clocks.getClock(1).toString(), 90, 80);
-		
-		if(clocks.getClocks().size() == 4)
-		{
-			g2d.drawString(this.clocks.getClock(2).toString(), 180, 80);
-			g2d.drawString(this.clocks.getClock(3).toString(), 270, 80);
+		for(int i = 0; i < players.size(); i++) {
+			g2d.drawString(clocks.getClock(i).toString(),
+					STRING_BUFFER_PER_SIDE + i*WIDTH_PER_PLAYER,
+					CLOCK_TIME_HEIGHT);
 		}
 	}
 	
@@ -118,17 +115,10 @@ public class GameClockView extends JPanel implements IRenderable
 	private void drawPlayerNames(Graphics2D g2d)
 	{
 		g2d.setFont(clockFont);
-		g2d.setColor(Color.BLACK);
-		g2d.drawString(white.getName(), 10, 50);
-		g2d.setColor(Color.WHITE);
-		g2d.drawString(black.getName(), 100, 50);
-		
-		if (brown != null && gray != null)
-		{
-			g2d.setColor(Color.BLACK);
-			g2d.drawString(brown.getName(), 190, 50);
-			g2d.setColor(Color.WHITE);
-			g2d.drawString(gray.getName(), 280, 50);
+		for(int i = 0; i < players.size(); i++) {
+			g2d.setColor(PLAYER_FOREGROUND_COLORS[i]);
+			g2d.drawString(players.get(i).getName(),
+					STRING_BUFFER_PER_SIDE + i*WIDTH_PER_PLAYER, PLAYER_NAME_HEIGHT);
 		}
 	}
 	

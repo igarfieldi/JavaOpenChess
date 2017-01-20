@@ -17,6 +17,10 @@ repositories {
     mavenCentral()
 }
 
+test {
+	ignoreFailures = true
+}
+
 task myJavadocs(type: Javadoc) {
 	source = sourceSets.main.allJava
 }

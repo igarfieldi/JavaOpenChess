@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.Piece;
+import jchess.util.Direction;
 
 public class Move
 {
@@ -39,6 +40,10 @@ public class Move
 		NONE, SHORT_CASTLING, LONG_CASTLING
 	}
 	
+	public Move(Field from, Field to, Piece movedPiece) {
+		this(from, to, movedPiece, null, CastlingType.NONE, false, null);
+	}
+	
 	public Move(Field from, Field to, Piece movedPiece, Piece takenPiece, CastlingType castlingMove, boolean wasEnPassant,
 	        Piece promotedPiece)
 	{
@@ -51,13 +56,20 @@ public class Move
 		this.castlingMove = castlingMove;
 		this.wasEnPassant = wasEnPassant;
 		
-		// TODO: adapt to 4p chess
-		if(movedPiece.getBehaviour() instanceof Pawn && (Math.abs(to.getPosY() - from.getPosY()) == 2||
-				Math.abs(to.getPosX() - from.getPosX()) == 2))
-		{
-			this.wasPawnTwoFieldsMove = true;
-		} else if(movedPiece.getBehaviour() instanceof Pawn && promotedPiece != null)
-		{
+		this.wasPawnTwoFieldsMove = false;
+		
+		if(movedPiece.getBehaviour() instanceof Pawn) {
+			// Check if it was a two field move of a pawn (first step of pawn)
+			// For that see if the target field equals the second field in
+			// the pawn's forward direction
+			Direction forward = ((Pawn) movedPiece.getBehaviour()).getForwardDirection();
+			Field twoFieldMove = new Field(from.getPosX() + 2*forward.getX(),
+					from.getPosY() + 2*forward.getY());
+			if(twoFieldMove.equals(to)) {
+				this.wasPawnTwoFieldsMove = true;
+			}
+			
+			// Set promoted piece (only applicable to pawns, too)
 			this.promotedTo = promotedPiece;
 		}
 	}

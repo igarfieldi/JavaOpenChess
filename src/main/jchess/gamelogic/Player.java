@@ -72,26 +72,4 @@ public class Player implements Serializable
 	{
 		return this.playerType;
 	}
-	
-	/**
-	 * Method setting the players name
-	 * 
-	 * @param name
-	 *            name of player
-	 */
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-	
-	/**
-	 * Method setting the players type
-	 * 
-	 * @param type
-	 *            type of player - enumerate
-	 */
-	public void setType(Type type)
-	{
-		this.playerType = type;
-	}
 }
