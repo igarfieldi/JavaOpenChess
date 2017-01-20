@@ -14,6 +14,7 @@ import jchess.JChessApp;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.controllers.History;
 import jchess.gamelogic.controllers.IChessboardController;
+import jchess.gamelogic.controllers.IllegalMoveException;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Move;
 import jchess.gamelogic.field.Move.CastlingType;

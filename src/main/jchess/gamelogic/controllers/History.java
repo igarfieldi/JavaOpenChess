@@ -32,7 +32,6 @@ import javax.swing.table.DefaultTableModel;
 
 import jchess.Localization;
 import jchess.gamelogic.Player;
-import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Move;
 import jchess.gamelogic.field.Move.CastlingType;

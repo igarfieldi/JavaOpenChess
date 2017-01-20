@@ -29,7 +29,7 @@ import javax.swing.JOptionPane;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.controllers.GameClockController;
 import jchess.gamelogic.controllers.IChessboardController;
-import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
+import jchess.gamelogic.controllers.IllegalMoveException;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.views.IGameView;

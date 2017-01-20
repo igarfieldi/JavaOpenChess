@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import jchess.gamelogic.Player.Color;
 import jchess.gamelogic.controllers.IChessboardController;
-import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
+import jchess.gamelogic.controllers.IllegalMoveException;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.game.IGame;

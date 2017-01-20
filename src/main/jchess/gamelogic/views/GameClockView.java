@@ -18,18 +18,7 @@ import jchess.gamelogic.models.GameClockModel;
 public class GameClockView extends JPanel implements IRenderable
 {
 	private static final long serialVersionUID = -5110241622282357707L;
-	private static final Color PLAYER_BACKGROUND_COLORS[] = {
-			Color.WHITE,
-			Color.ORANGE,
-			Color.BLACK,
-			Color.GRAY
-	};
-	private static final Color PLAYER_FOREGROUND_COLORS[] = {
-			Color.BLACK,
-			Color.GRAY,
-			Color.WHITE,
-			Color.ORANGE
-	};
+	
 	private static final Font clockFont = new Font("Sarif", Font.ITALIC, 14);
 	private static final int WIDTH_PER_PLAYER = 90;
 	private static final int STRING_BUFFER_PER_SIDE = 10;
@@ -81,7 +70,7 @@ public class GameClockView extends JPanel implements IRenderable
 	private void drawBackground(Graphics2D g2d)
 	{
 		for(int i = 0; i < players.size(); i++) {
-			g2d.setColor(PLAYER_BACKGROUND_COLORS[i]);
+			g2d.setColor(getPlayerBackgroundColor(i));
 			g2d.fillRect(WIDTH_PER_PLAYER*i + BOX_BUFFER_PER_SIDE, BOX_UPPER_BORDER,
 					WIDTH_PER_PLAYER, BOX_HEIGHT);
 			g2d.setColor(Color.BLACK);
@@ -108,6 +97,36 @@ public class GameClockView extends JPanel implements IRenderable
 		}
 	}
 	
+	private Color getPlayerBackgroundColor(int index) {
+		switch(index) {
+			case 0:
+				return Color.WHITE;
+			case 1:
+				return Color.ORANGE;
+			case 2:
+				return Color.BLACK;
+			case 3:
+				return Color.GRAY;
+			default:
+				return Color.GREEN;
+		}
+	}
+	
+	private Color getPlayerForegroundColor(int index) {
+		switch(index) {
+			case 0:
+				return Color.BLACK;
+			case 1:
+				return Color.GRAY;
+			case 2:
+				return Color.WHITE;
+			case 3:
+				return Color.ORANGE;
+			default:
+				return Color.MAGENTA;
+		}
+	}
+	
 	/**
 	 * Draws the current player names.
 	 * @param g2d graphics context
@@ -116,7 +135,7 @@ public class GameClockView extends JPanel implements IRenderable
 	{
 		g2d.setFont(clockFont);
 		for(int i = 0; i < players.size(); i++) {
-			g2d.setColor(PLAYER_FOREGROUND_COLORS[i]);
+			g2d.setColor(getPlayerForegroundColor(i));
 			g2d.drawString(players.get(i).getName(),
 					STRING_BUFFER_PER_SIDE + i*WIDTH_PER_PLAYER, PLAYER_NAME_HEIGHT);
 		}

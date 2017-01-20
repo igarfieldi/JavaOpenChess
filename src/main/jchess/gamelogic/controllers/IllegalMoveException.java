@@ -1,4 +1,4 @@
-package jchess.gamelogic.controllers.chessboardcontrollers;
+package jchess.gamelogic.controllers;
 
 public class IllegalMoveException extends Exception
 {

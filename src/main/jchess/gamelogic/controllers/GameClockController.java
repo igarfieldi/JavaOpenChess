@@ -31,7 +31,7 @@ import jchess.gamelogic.views.GameClockView;
 /**
  * Class to representing the full game time.
  */
-public class GameClockController implements Runnable
+public class GameClockController
 {
 	private static Logger log = Logger.getLogger(GameClockController.class.getName());
 	
@@ -52,7 +52,7 @@ public class GameClockController implements Runnable
 		}
 		this.clockView = new GameClockView(clocks, players);
 		
-		this.thread = new Thread(this);
+		this.thread = new Thread(new ClockThread());
 	}
 	
 	/**
@@ -96,35 +96,10 @@ public class GameClockController implements Runnable
 	}
 	
 	/**
-	 * Method with is running the time on clock.
-	 */
-	public void run()
-	{
-		while(this.runningClock != null)
-		{
-			if(this.runningClock.decrement())
-			{
-				clockView.render();
-				try
-				{
-					Thread.sleep(1000);
-				} catch(InterruptedException exc)
-				{
-					log.log(Level.SEVERE, "Error putting game clock to sleep!", exc);
-				}
-			} else
-			{
-				this.timeOver();
-			}
-		}
-	}
-	
-	/**
 	 * Method of checking is the time of the game is not over.
 	 */
 	private void timeOver()
 	{
-		switchClocks(); // Current clock ran out of time -> other clock wins
 		this.stateHandler.onTimeOver();
 	}
 
@@ -132,4 +107,35 @@ public class GameClockController implements Runnable
 	{
 		this.stateHandler = handler;
 	}
+	
+	/**
+	 * Runs down the currently active clock.
+	 * @author Florian Bethe
+	 */
+	private class ClockThread implements Runnable {
+
+		@Override
+		public void run()
+		{
+			while(GameClockController.this.runningClock != null)
+			{
+				if(GameClockController.this.runningClock.decrement())
+				{
+					clockView.render();
+					try
+					{
+						Thread.sleep(1000);
+					} catch(InterruptedException exc)
+					{
+						log.log(Level.SEVERE, "Error putting game clock to sleep!", exc);
+					}
+				} else
+				{
+					GameClockController.this.timeOver();
+				}
+			}
+		}
+		
+	}
+	
 }

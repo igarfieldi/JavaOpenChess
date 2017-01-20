@@ -48,7 +48,7 @@ public class Clock
 	 */
 	public void resetClock(int time)
 	{
-		this.timeLeft = time;
+		this.timeLeft = Math.max(0, time);
 	}
 	
 	/**
