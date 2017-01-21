@@ -28,20 +28,21 @@ public class GameClockView extends JPanel implements IRenderable
 	private static final int BOX_LOWER_BORDER = 90;
 	private static final int BOX_HEIGHT = 30;
 	private static final int BOX_BUFFER_PER_SIDE = 5;
+	private static final int FOUR_CLOCKS = 4;
 	
 	private BufferedImage background = new BufferedImage(600, 600, BufferedImage.TYPE_INT_ARGB);
 	private GameClockModel clocks;
 	private List<Player> players;
 	
-	public GameClockView(GameClockModel clocks, Player... players) {
+	public GameClockView(GameClockModel clocks, Player... players)
+	{
 		this.clocks = clocks;
 		this.players = new ArrayList<Player>();
-		for(Player player : players) {
+		for(Player player : players)
 			this.players.add(player);
-		}
 		
 		this.setDoubleBuffered(true);
-		preRenderBackgroundImage(2*STRING_BUFFER_PER_SIDE + players.length*WIDTH_PER_PLAYER);
+		preRenderBackgroundImage(2 * STRING_BUFFER_PER_SIDE + players.length * WIDTH_PER_PLAYER);
 	}
 	
 	private void preRenderBackgroundImage(int width)
@@ -54,55 +55,64 @@ public class GameClockView extends JPanel implements IRenderable
 	}
 	
 	@Override
-	public void render() {
+	public void render()
+	{
 		this.repaint();
 	}
 	
 	@Override
-	public void changeSize(int width, int height) {
+	public void changeSize(int width, int height)
+	{
 		this.setSize(width, height);
 	}
 	
 	/**
 	 * Draws the clock background.
-	 * @param g2d graphics context
+	 * 
+	 * @param g2d
+	 *            graphics context
 	 */
 	private void drawBackground(Graphics2D g2d)
 	{
-		for(int i = 0; i < players.size(); i++) {
+		for(int i = 0; i < players.size(); i++)
+		{
 			g2d.setColor(getPlayerBackgroundColor(i));
-			g2d.fillRect(WIDTH_PER_PLAYER*i + BOX_BUFFER_PER_SIDE, BOX_UPPER_BORDER,
-					WIDTH_PER_PLAYER, BOX_HEIGHT);
+			g2d.fillRect(WIDTH_PER_PLAYER * i + BOX_BUFFER_PER_SIDE, BOX_UPPER_BORDER, WIDTH_PER_PLAYER, BOX_HEIGHT);
 			g2d.setColor(Color.BLACK);
-			g2d.drawRect(WIDTH_PER_PLAYER*i + BOX_BUFFER_PER_SIDE, BOX_UPPER_BORDER,
-					WIDTH_PER_PLAYER, BOX_HEIGHT);
-			g2d.drawRect(WIDTH_PER_PLAYER*i + BOX_BUFFER_PER_SIDE,
-					(BOX_UPPER_BORDER + BOX_LOWER_BORDER) / 2,
-					WIDTH_PER_PLAYER, BOX_HEIGHT);
+			g2d.drawRect(WIDTH_PER_PLAYER * i + BOX_BUFFER_PER_SIDE, BOX_UPPER_BORDER, WIDTH_PER_PLAYER, BOX_HEIGHT);
+			g2d.drawRect(WIDTH_PER_PLAYER * i + BOX_BUFFER_PER_SIDE, (BOX_UPPER_BORDER + BOX_LOWER_BORDER) / 2,
+			        WIDTH_PER_PLAYER, BOX_HEIGHT);
 		}
 	}
 	
 	/**
 	 * Draws the current time of both clocks.
-	 * @param g2d graphics context
+	 * 
+	 * @param g2d
+	 *            graphics context
 	 */
 	private void drawTime(Graphics2D g2d)
 	{
 		g2d.setFont(clockFont);
 		g2d.setColor(Color.BLACK);
-		for(int i = 0; i < players.size(); i++) {
-			g2d.drawString(clocks.getClock(i).toString(),
-					STRING_BUFFER_PER_SIDE + i*WIDTH_PER_PLAYER,
-					CLOCK_TIME_HEIGHT);
+		for(int i = 0; i < players.size(); i++)
+		{
+			g2d.drawString(clocks.getClock(i).toString(), STRING_BUFFER_PER_SIDE + i * WIDTH_PER_PLAYER,
+			        CLOCK_TIME_HEIGHT);
 		}
 	}
 	
-	private Color getPlayerBackgroundColor(int index) {
-		switch(index) {
+	private Color getPlayerBackgroundColor(int index)
+	{
+		switch(index)
+		{
 			case 0:
 				return Color.WHITE;
 			case 1:
-				return Color.ORANGE;
+				if(clocks.getClocks().size() == FOUR_CLOCKS)
+					return Color.ORANGE;
+				else
+					return Color.BLACK;
 			case 2:
 				return Color.BLACK;
 			case 3:
@@ -112,16 +122,21 @@ public class GameClockView extends JPanel implements IRenderable
 		}
 	}
 	
-	private Color getPlayerForegroundColor(int index) {
-		switch(index) {
+	private Color getPlayerForegroundColor(int index)
+	{
+		switch(index)
+		{
 			case 0:
 				return Color.BLACK;
 			case 1:
-				return Color.GRAY;
+				if(clocks.getClocks().size() == FOUR_CLOCKS)
+					return Color.BLACK;
+				else
+					return Color.WHITE;
 			case 2:
 				return Color.WHITE;
 			case 3:
-				return Color.ORANGE;
+				return Color.WHITE;
 			default:
 				return Color.MAGENTA;
 		}
@@ -129,15 +144,17 @@ public class GameClockView extends JPanel implements IRenderable
 	
 	/**
 	 * Draws the current player names.
-	 * @param g2d graphics context
+	 * 
+	 * @param g2d
+	 *            graphics context
 	 */
 	private void drawPlayerNames(Graphics2D g2d)
 	{
 		g2d.setFont(clockFont);
-		for(int i = 0; i < players.size(); i++) {
+		for(int i = 0; i < players.size(); i++)
+		{
 			g2d.setColor(getPlayerForegroundColor(i));
-			g2d.drawString(players.get(i).getName(),
-					STRING_BUFFER_PER_SIDE + i*WIDTH_PER_PLAYER, PLAYER_NAME_HEIGHT);
+			g2d.drawString(players.get(i).getName(), STRING_BUFFER_PER_SIDE + i * WIDTH_PER_PLAYER, PLAYER_NAME_HEIGHT);
 		}
 	}
 	
@@ -161,7 +178,9 @@ public class GameClockView extends JPanel implements IRenderable
 	
 	/**
 	 * Annotation to superclass Graphics updateing clock graphisc
-	 * @param g graphics context
+	 * 
+	 * @param g
+	 *            graphics context
 	 */
 	@Override
 	public void update(Graphics g)
