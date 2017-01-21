@@ -22,6 +22,9 @@ package jchess.gamelogic.controllers;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,13 +40,14 @@ import jchess.gamelogic.field.Move;
 import jchess.gamelogic.field.Move.CastlingType;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.views.HistoryView;
+import jchess.util.ArgumentChecker;
 
 /**
  * Class representing the players moves, it's also checking that the moves taken
  * by player are correct. All moves which was taken by current player are saving
  * as List of Strings The history of moves is printing in a table.
  */
-public class History extends AbstractTableModel
+public class History extends AbstractTableModel implements IHistory
 {
 	private static final long serialVersionUID = -316401211821501289L;
 	private static Logger log = Logger.getLogger(History.class.getName());
@@ -59,14 +63,11 @@ public class History extends AbstractTableModel
 	private Stack<Move> moveBackStack = new Stack<Move>();
 	private Stack<Move> moveForwardStack = new Stack<Move>();
 	private IChessboardController chessboard;
-	private Player white;
-	private Player black;
+	private List<Player> players;
 	
-	public History(IChessboardController chessboard, Player white, Player black)
-	{
+	public History(IChessboardController chessboard, List<Player> players) {
 		super();
-		this.white = white;
-		this.black = black;
+		this.players = players;
 		this.chessboard = chessboard;
 		this.tableModel = new MyDefaultTableModel();
 		this.table = new JTable(this.tableModel);
@@ -100,24 +101,6 @@ public class History extends AbstractTableModel
 	protected void addRow()
 	{
 		this.tableModel.addRow(new String[2]);
-	}
-	
-	protected void addCastling(String move)
-	{
-		this.move.remove(this.move.size() - 1);// remove last element (move of
-		                                       // Rook)
-		if(!this.enterBlack)
-		{
-			this.tableModel.setValueAt(move, this.tableModel.getRowCount() - 1, 1);// replace
-			                                                                       // last
-			                                                                       // value
-		} else
-		{
-			this.tableModel.setValueAt(move, this.tableModel.getRowCount() - 1, 0);// replace
-			                                                                       // last
-			                                                                       // value
-		}
-		this.move.add(move);// add new move (O-O or O-O-O)
 	}
 	
 	@Override
@@ -161,25 +144,10 @@ public class History extends AbstractTableModel
 		}
 	}
 	
-	/**
-	 * Method of adding new move
-	 * 
-	 * @param move
-	 *            String which in is capt player move
-	 */
-	public void addMove(String move)
-	{
-		if(isMoveCorrect(move))
-		{
-			this.move.add(move);
-			this.addMove2Table(move);
-			this.moveForwardStack.clear();
-		}
-		
-	}
-	
 	public void addMove(Move move, boolean registerInHistory)
 	{
+		ArgumentChecker.checkForNull(move);
+		
 		String locMove = new String(move.getMovedPiece().getSymbol());
 		
 		// Get field designation of 'from' field
@@ -200,36 +168,41 @@ public class History extends AbstractTableModel
 		{
 			locMove += "(e.p)";// pawn take down opponent en passant
 		}
-		if((!this.enterBlack && this.chessboard.isChecked(black))
-		        || (this.enterBlack && this.chessboard.isChecked(white)))
-		{// if checked
-			
-			if((!this.enterBlack && this.chessboard.isCheckmated(black))
-			        || (this.enterBlack && this.chessboard.isCheckmated(white)))
-			{// check if checkmated
-				locMove += "#";// check mate
-			} else
-			{
-				locMove += "+";// check
-			}
-		}
-		if(move.getCastlingMove() == CastlingType.SHORT_CASTLING)
-		{
-			this.addCastling("0-0");
-		} else if(move.getCastlingMove() == CastlingType.LONG_CASTLING)
-		{
-			this.addCastling("0-0-0");
-		} else
-		{
-			this.move.add(locMove);
-			this.addMove2Table(locMove);
-		}
-		this.view.scrollRectToVisible(new Rectangle(0, this.view.getHeight() - 2, 1, 1));
 		
+		// Gotta enter the move to the history now so that en passant and whatnot
+		// can detect it properly
 		if(registerInHistory)
 		{
 			this.moveBackStack.add(move);
 		}
+		
+		// Temporarily switch to the next player so the check condition can be
+		// verified
+		chessboard.switchToNextPlayer();
+		if(chessboard.isChecked(chessboard.getActivePlayer())) {
+			
+			if(chessboard.isCheckmated(chessboard.getActivePlayer())) {
+				locMove += "#";
+			} else {
+				locMove += "+";
+			}
+			
+		}
+		// Switch back to the original player
+		chessboard.switchToPreviousPlayer();
+		
+		if(move.getCastlingMove() == CastlingType.SHORT_CASTLING)
+		{
+			locMove = "O-O";
+		} else if(move.getCastlingMove() == CastlingType.LONG_CASTLING)
+		{
+			locMove = "O-O-O";
+		}
+		
+		this.move.add(locMove);
+		this.addMove2Table(locMove);
+		
+		this.view.scrollRectToVisible(new Rectangle(0, this.view.getHeight() - 2, 1, 1));
 	}
 	
 	public void clearMoveForwardStack()
@@ -242,11 +215,6 @@ public class History extends AbstractTableModel
 		return this.view;
 	}
 	
-	public ArrayList<String> getMoveList()
-	{
-		return this.move;
-	}
-	
 	public synchronized Move getLastMoveFromHistory()
 	{
 		try
@@ -257,73 +225,6 @@ public class History extends AbstractTableModel
 		{
 			return null;
 		}
-	}
-	
-	public synchronized Move getNextMoveFromHistory()
-	{
-		try
-		{
-			Move next = this.moveForwardStack.get(this.moveForwardStack.size() - 1);
-			return next;
-		} catch(java.lang.ArrayIndexOutOfBoundsException exc)
-		{
-			return null;
-		}
-		
-	}
-	
-	public synchronized Move undo()
-	{
-		try
-		{
-			Move last = this.moveBackStack.pop();
-			if(last != null)
-			{
-				this.moveForwardStack.push(last);
-				
-				if(this.enterBlack)
-				{
-					this.tableModel.setValueAt("", this.tableModel.getRowCount() - 1, 0);
-					this.tableModel.removeRow(this.tableModel.getRowCount() - 1);
-					
-					if(this.rowsNum > 0)
-					{
-						this.rowsNum--;
-					}
-				} else
-				{
-					if(this.tableModel.getRowCount() > 0)
-					{
-						this.tableModel.setValueAt("", this.tableModel.getRowCount() - 1, 1);
-					}
-				}
-				this.move.remove(this.move.size() - 1);
-				this.enterBlack = !this.enterBlack;
-			}
-			return last;
-		} catch(java.util.EmptyStackException exc)
-		{
-			this.enterBlack = false;
-			return null;
-		} catch(java.lang.ArrayIndexOutOfBoundsException exc)
-		{
-			return null;
-		}
-	}
-	
-	public synchronized Move redo()
-	{
-		try
-		{
-			Move first = this.moveForwardStack.pop();
-			this.moveBackStack.push(first);
-			
-			return first;
-		} catch(java.util.EmptyStackException exc)
-		{
-			return null;
-		}
-		
 	}
 	
 	/**
@@ -393,30 +294,19 @@ public class History extends AbstractTableModel
 		return true;
 	}
 	
-	public void addMoves(ArrayList<String> list)
-	{
-		for(String singleMove : list)
-		{
-			if(isMoveCorrect(singleMove))
-			{
-				this.addMove(singleMove);
-			}
-		}
-	}
-	
 	/**
 	 * Method of getting the moves in string
 	 * 
 	 * @return str String which in is capt player move
 	 */
-	public String getMovesInString()
+	public String getMovesAsString()
 	{
 		int n = 1;
 		int i = 0;
 		String str = new String();
-		for(String locMove : this.getMoveList())
+		for(String locMove : this.move)
 		{
-			if(i % 2 == 0)
+			if(i % players.size() == 0)
 			{
 				str += n + ". ";
 				n += 1;
@@ -428,7 +318,7 @@ public class History extends AbstractTableModel
 	}
 	
 	/**
-	 * Method to set all moves from String with validation test (usefoul for
+	 * Method to set all moves from String with validation test (useful for
 	 * network game)
 	 * 
 	 * @param moves
@@ -445,6 +335,9 @@ public class History extends AbstractTableModel
 		{
 			from = moves.indexOf(" ", from);
 			to = moves.indexOf(" ", from + 1);
+			if(to < 0) {
+				to = moves.length();
+			}
 			log.log(Level.FINE, from + ">" + to);
 			try
 			{
@@ -454,7 +347,7 @@ public class History extends AbstractTableModel
 				log.log(Level.SEVERE, "Error while parsing moves from file!", exc);
 				break;
 			}
-			if(n % 2 == 0)
+			if(n % players.size() == 0)
 			{
 				from = moves.indexOf(".", to);
 				if(from < to)
@@ -471,16 +364,9 @@ public class History extends AbstractTableModel
 				break;
 			}
 		}
-		for(String locMove : tempArray) // test if moves are written correctly
-		{
-			if(!History.isMoveCorrect(locMove.trim())) // if not
-			{
-				this.chessboard.getView().showMessage("invalid_file_to_load", move.toString());
-				return;// show message and finish reading game
-			}
-		}
 		for(String locMove : tempArray)
 		{
+			System.out.println(locMove);
 			if(locMove.equals("O-O-O") || locMove.equals("O-O")) // if castling
 			{
 				int[] values = new int[4];
@@ -517,7 +403,21 @@ public class History extends AbstractTableModel
 				                                                                  // is
 				                                                                  // illegal
 				{
-					this.chessboard.getView().showMessage("illegal_move_on", locMove);
+					if(chessboard.getView() != null) {
+						this.chessboard.getView().showMessage("illegal_move_on", locMove);
+					}
+					return;// finish reading game and show message
+				}
+				
+				try {
+					chessboard.move(new Field(values[0], values[1]), new Field(values[2], values[3]));
+					chessboard.switchToNextPlayer();
+				} catch(IllegalMoveException exc) {
+					log.log(Level.SEVERE, "Illegal move le loading!", exc);
+					if(chessboard.getView() != null) {
+						this.chessboard.getView().showMessage("illegal_move_on", locMove);
+						this.chessboard.getView().unselect();
+					}
 					return;// finish reading game and show message
 				}
 				continue;
@@ -575,6 +475,7 @@ public class History extends AbstractTableModel
 			}
 			try {
 				chessboard.move(new Field(xFrom, yFrom), new Field(xTo, yTo));
+				chessboard.switchToNextPlayer();
 			} catch(IllegalMoveException exc) {
 				log.log(Level.SEVERE, "Illegal move le loading!", exc);
 				this.chessboard.getView().showMessage("illegal_move_on", locMove);
@@ -593,7 +494,13 @@ public class History extends AbstractTableModel
 			Piece piece = chessboard.getBoard().getPiece(from);
 			if(to != null && piece != null)
 			{
-				return chessboard.getPossibleMoves(piece, true).contains(to);
+				for(Move move : chessboard.getPossibleMoves(piece, true)) {
+					if(move.getTo().equals(to)) {
+						return true;
+					}
+				}
+				
+				return false;
 			}
 		}
 		

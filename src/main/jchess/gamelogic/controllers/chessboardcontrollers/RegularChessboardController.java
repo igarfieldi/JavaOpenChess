@@ -51,7 +51,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 			this.view = viewFactory.create();
 		}
 		this.players = players;
-		this.movesHistory = new History(this, players.get(0), players.get(1));
+		this.movesHistory = new History(this, players);
 		this.currPlayerIndex = 0;
 	}
 	
@@ -63,12 +63,13 @@ public abstract class RegularChessboardController implements IChessboardControll
 			parser.setProperty(player.getColor().toString(), player.getName());
 		}
 		
-		parser.setProperty("Moves", this.getHistory().getMovesInString());
+		parser.setProperty("Moves", this.getHistory().getMovesAsString());
 	}
 	
 	@Override
 	public void load(FileMapParser parser)
 	{
+		// TODO: load player names etc.!
 		this.movesHistory.setMoves(parser.getProperty("Moves"));
 	}
 	
@@ -113,8 +114,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 	@Override
 	public void switchToNextPlayer()
 	{
-		currPlayerIndex++;
-		if(currPlayerIndex >= players.size())
+		if(++currPlayerIndex >= players.size())
 		{
 			currPlayerIndex = 0;
 		}
@@ -129,8 +129,10 @@ public abstract class RegularChessboardController implements IChessboardControll
 	@Override
 	public void switchToPreviousPlayer()
 	{
-		// Since we only have two players, this is equal to switchToNextPlayer
-		this.switchToNextPlayer();
+		if(--currPlayerIndex < 0)
+		{
+			currPlayerIndex = players.size() - 1;
+		}
 	}
 	
 	/*
@@ -255,7 +257,8 @@ public abstract class RegularChessboardController implements IChessboardControll
 			// If either the currently moving player is in a check OR a check
 			// between non-moving players opens up after the move, we have to
 			// remove it
-			if(this.isSelfOrUnfairCheckPresent(preExistingChecks, piece.getPlayer()))
+			if(this.isChecked(piece.getPlayer()) ||
+					this.isUnfairCheckPresent(preExistingChecks, piece.getPlayer()))
 			{
 				fieldIterator.remove();
 			}
@@ -271,7 +274,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 	}
 	
 	/**
-	 * Checks if either the given player is in check or an unfair check is
+	 * Checks if an unfair check is
 	 * present. An unfair check is a check between two players which are
 	 * currently not moving. This can happen e.g. if the moving player moved a
 	 * piece blocking the checking path of another player (only possible with
@@ -283,9 +286,9 @@ public abstract class RegularChessboardController implements IChessboardControll
 	 *            player
 	 * @param movingPlayer
 	 *            The player assumed to be currently moving
-	 * @return True if a self or unfair check exists; false otherwise
+	 * @return True if an unfair check exists; false otherwise
 	 */
-	private boolean isSelfOrUnfairCheckPresent(Map<Player, Set<Piece>> preExistingChecks, Player movingPlayer)
+	private boolean isUnfairCheckPresent(Map<Player, Set<Piece>> preExistingChecks, Player movingPlayer)
 	{
 		for(Player player : this.players)
 		{

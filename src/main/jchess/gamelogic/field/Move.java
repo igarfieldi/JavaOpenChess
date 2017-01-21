@@ -58,7 +58,7 @@ public class Move
 		
 		this.wasPawnTwoFieldsMove = false;
 		
-		if(movedPiece.getBehaviour() instanceof Pawn) {
+		if(movedPiece != null && movedPiece.getBehaviour() instanceof Pawn) {
 			// Check if it was a two field move of a pawn (first step of pawn)
 			// For that see if the target field equals the second field in
 			// the pawn's forward direction
