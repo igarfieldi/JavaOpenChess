@@ -19,6 +19,7 @@ public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListe
 	private ButtonGroup gameTypeChoiceButtonGroup;
 	private JRadioButton twoPlayersRadioButton;
 	private JRadioButton fourPlayersRadioButton;
+	private JRadioButton aiFourPlayersRadioButton;
 	
 	private PlayerNameInputPanel playerNameInputPanel;
 	
@@ -36,8 +37,10 @@ public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListe
 	{
 		if(twoPlayersRadioButton.isSelected())
 			return 2;
-		else
+		else if (fourPlayersRadioButton.isSelected())
 			return 4;
+		else
+			return 5;
 	}
 	
 	protected void initializeGuiElements()
@@ -46,6 +49,7 @@ public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListe
 		
 		this.twoPlayersRadioButton = createRadioButton("2_players", true);
 		this.fourPlayersRadioButton = createRadioButton("4_players", false);
+		this.aiFourPlayersRadioButton = createRadioButton("Ai_4_players", false);
 	}
 	
 	/**
@@ -71,6 +75,7 @@ public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListe
 	{
 		setGridBagConstraints(twoPlayersRadioButton, LEFT, 0);
 		setGridBagConstraints(fourPlayersRadioButton, RIGHT, 0);
+		setGridBagConstraints(aiFourPlayersRadioButton, 2, 0);
 	}
 	
 	@Override
@@ -79,6 +84,8 @@ public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListe
 		if(event.getSource() == twoPlayersRadioButton)
 			playerNameInputPanel.setAdditionalTextFieldsEnabled(false);
 		if(event.getSource() == fourPlayersRadioButton)
+			playerNameInputPanel.setAdditionalTextFieldsEnabled(true);
+		if(event.getSource() == aiFourPlayersRadioButton)
 			playerNameInputPanel.setAdditionalTextFieldsEnabled(true);
 	}
 }

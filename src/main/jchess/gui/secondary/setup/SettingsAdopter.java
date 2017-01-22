@@ -16,6 +16,7 @@ public class SettingsAdopter
 {
 	private static final int TWO_PLAYERS = 2;
 	private static final int FOUR_PLAYERS = 4;
+	private static final int AI_FOUR_PLAYERS = 5;
 	
 	/**
 	 * Creates the window for the new game with the specified settings.
@@ -50,6 +51,9 @@ public class SettingsAdopter
 		String newGameTabTitle = playerNames[0] + " vs. " + playerNames[1];
 		if(playerNumber == FOUR_PLAYERS)
 			newGameTabTitle += " vs. " + playerNames[2] + " vs. " + playerNames[3];
+		if (playerNumber == AI_FOUR_PLAYERS){
+			newGameTabTitle += " vs. Cat";
+		}
 		return newGameTabTitle;
 	}
 	
@@ -94,6 +98,12 @@ public class SettingsAdopter
 		}
 		else if(playerNumber == FOUR_PLAYERS)
 		{
+			builder.addPlayer(new Player(playerNames[0], Color.WHITE));
+			builder.addPlayer(new Player(playerNames[1], Color.RED));
+			builder.addPlayer(new Player(playerNames[2], Color.BLACK));
+			builder.addPlayer(new Player(playerNames[3], Color.GOLDEN));
+		}
+		else if(playerNumber == AI_FOUR_PLAYERS){
 			builder.addPlayer(new Player(playerNames[0], Color.WHITE));
 			builder.addPlayer(new Player(playerNames[1], Color.RED));
 			builder.addPlayer(new Player(playerNames[2], Color.BLACK));

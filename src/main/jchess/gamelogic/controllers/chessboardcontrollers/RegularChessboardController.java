@@ -711,7 +711,19 @@ public abstract class RegularChessboardController implements IChessboardControll
 		return false;
 	}
 	
-	protected Set<Player> getEnemies(Player friendly)
+
+	public List<Move> getThreateningMoves(Piece piece, Player player)
+	{
+		List<Move> threateningMoves = new ArrayList<Move>();
+		for (Move moves : getPossibleMoves(piece, true)){
+			if (board.getPiece(moves.getTo())!= null){
+				threateningMoves.add(moves);
+			}
+		}
+		return threateningMoves;
+	}
+	
+	public Set<Player> getEnemies(Player friendly)
 	{
 		Set<Player> enemies = new HashSet<Player>();
 		
@@ -726,7 +738,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 		return enemies;
 	}
 	
-	protected Set<Player> getAllies(Player friendly)
+	public Set<Player> getAllies(Player friendly)
 	{
 		Set<Player> allies = new HashSet<Player>();
 		allies.add(friendly);

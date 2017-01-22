@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 import jchess.gamelogic.Player;
-import jchess.gamelogic.ai.CatAi;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.IllegalMoveException;
 import jchess.gamelogic.field.Field;
@@ -18,25 +17,21 @@ import jchess.util.FileMapParser;
 
 public class UntimedGame implements IGame
 {
-	private static Logger log = Logger.getLogger(TimedGame.class.getName());
+	private static Logger log = Logger.getLogger(UntimedGame.class.getName());
 	
 	private IGameView gameView;
-	private boolean blockedChessboard;
+	protected boolean blockedChessboard;
 	private IChessboardController chessboard;
-	
-	private CatAi catAi;
 	
 	public UntimedGame(IChessboardController chessboard)
 	{
 		this.chessboard = chessboard;
 		this.chessboard.getView().initialize(chessboard, this);
 		
-		this.blockedChessboard = false;
+		blockedChessboard = false;
 		
 		gameView = new SwingGameView(this.chessboard.getView());
 		gameView.addInfoComponent(chessboard.getHistory().getView());
-		
-		catAi = new CatAi(chessboard);
 	}
 	
 	@Override
@@ -123,7 +118,7 @@ public class UntimedGame implements IGame
 	 * @param target
 	 *            Target field for move
 	 */
-	private void executeMove(Field origin, Field target)
+	protected void executeMove(Field origin, Field target)
 	{
 		// Try to execute move
 		try
@@ -170,9 +165,9 @@ public class UntimedGame implements IGame
 	{
 		log.info("Loading saved local game");
 		
-		this.blockedChessboard = true;
+		blockedChessboard = true;
 		chessboard.load(parser);
-		this.blockedChessboard = false;
+		blockedChessboard = false;
 		
 		this.getView().render();
 	}
@@ -187,7 +182,7 @@ public class UntimedGame implements IGame
 		
 		if(chessboard.getActivePlayer().getType() != Player.Type.LOCAL)
 		{
-			this.blockedChessboard = true;
+			blockedChessboard = true;
 		}
 		
 		this.getView().render();
@@ -201,9 +196,9 @@ public class UntimedGame implements IGame
 	 *            what to show player(s) at end of the game (for example "draw",
 	 *            "black wins" etc.)
 	 */
-	private void endGame(String message)
+	protected void endGame(String message)
 	{
-		this.blockedChessboard = true;
+		blockedChessboard = true;
 		log.info(message);
 		JOptionPane.showMessageDialog(null, message);
 	}
@@ -211,7 +206,7 @@ public class UntimedGame implements IGame
 	/**
 	 * Method to switch active players after move.
 	 */
-	private void switchActive()
+	protected void switchActive()
 	{
 		chessboard.switchToNextPlayer();
 	}
@@ -219,7 +214,7 @@ public class UntimedGame implements IGame
 	/**
 	 * Method to go to next move (checks if game is local/network etc.)
 	 */
-	private void nextMove()
+	protected void nextMove()
 	{
 		switchActive();
 		
@@ -229,20 +224,10 @@ public class UntimedGame implements IGame
 		                + chessboard.getActivePlayer().getType().name());
 		if(chessboard.getActivePlayer().getType() == Player.Type.LOCAL)
 		{
-			this.blockedChessboard = false;
+			blockedChessboard = false;
 		} else if(chessboard.getActivePlayer().getType() == Player.Type.COMPUTER)
 		{
-			this.blockedChessboard = true;
-			//checks if the cat is alive and moves it, otherwise skips the moves and goes to the next player
-			if(catAi.isAlive())
-			{
-				executeMove(catAi.getCurrentPosition(), catAi.getNextMove());
-			} else
-			{
-				switchActive();
-				this.blockedChessboard = false;
-			}
-			catAi.updateRespawnTimer();
+			
 		}
 	}
 }

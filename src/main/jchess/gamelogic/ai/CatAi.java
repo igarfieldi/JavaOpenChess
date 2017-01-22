@@ -21,47 +21,53 @@ import jchess.util.Direction;
  *
  */
 
-public class CatAi
+public class CatAi implements ICatAi
 {
+	private static final int DEFAULT_SLEEP_TIME = 1;
+	private static final int DEFAULT_RESPAWN_TIME = 2;
 	private IChessboardModel board;
 	private Piece cat;
 	private IChessboardController chessboard;
-	private Player activePlayer;
+	private Player aiPlayer;
 	private int turnsToRespawn;
-	private boolean addCatPiece; // I promise to remove that later, it's only
-	                             // temporary to add the cat piece to the cat.
+	private int turnsToWakeUp;
+	private boolean isSleeping;
 	
-	public CatAi(IChessboardController chessboard)
+	public CatAi(IChessboardController chessboard, Player aiPlayer)
 	{
-		board = chessboard.getBoard();
 		this.chessboard = chessboard;
-		addCatPiece = true;
-		turnsToRespawn = 2;
-		activePlayer = chessboard.getActivePlayer();
+		board = chessboard.getBoard();
+		turnsToWakeUp = DEFAULT_SLEEP_TIME;
+		wakeUpCat();
+		turnsToRespawn = DEFAULT_RESPAWN_TIME;
+		this.aiPlayer = aiPlayer;
+		spawnCat();
 	}
 	
-	/**
-	 * Checks if the cat piece is on the board.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return true if the cat is on the board
+	 * @see jchess.gamelogic.ai.ICatAi#isAlive()
 	 */
 	
+	@Override
 	public boolean isAlive()
 	{
-		return !board.getPieces(activePlayer).isEmpty();
+		return !board.getPieces(aiPlayer).isEmpty();
 	}
 	
-	/**
-	 * Checks if the cat piece has to respawn. If it does, calls the method
-	 * responsible for that and resets the timer. If not, checks if the cat is
-	 * alive and reduces the timer by one.
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jchess.gamelogic.ai.ICatAi#updateRespawnTimer()
 	 */
 	
+	@Override
 	public void updateRespawnTimer()
 	{
 		if(turnsToRespawn == 0)
 		{
-			respawnCat();
+			spawnCat();
 			resetRespawnTimer();
 		}
 		if(!isAlive())
@@ -74,12 +80,12 @@ public class CatAi
 	 * Places a new cat piece on the board.
 	 */
 	
-	private void respawnCat()
+	private void spawnCat()
 	{
 		PieceFactory factory = PieceFactory.getInstance();
 		board.setPiece(getRandomField(board.getEmptyFields()),
-		        factory.buildPiece(activePlayer, new Direction(0, -1), PieceType.CAT));
-		for(Piece piece : board.getPieces(activePlayer))
+		        factory.buildPiece(aiPlayer, new Direction(0, -1), PieceType.CAT));
+		for(Piece piece : board.getPieces(aiPlayer))
 		{
 			cat = piece;
 		}
@@ -87,66 +93,102 @@ public class CatAi
 	
 	private void resetRespawnTimer()
 	{
-		turnsToRespawn = 2;
+		turnsToRespawn = DEFAULT_RESPAWN_TIME;
 	}
 	
-	/**
-	 * Method responsible for finding the next move randomly for the cat piece.
-	 * 
-	 * @return random field to move to
-	 */
+	@Override
+	public void updateSleepTimer()
+	{
+		if(turnsToWakeUp == 0)
+		{
+			wakeUpCat();
+			resetSleepTime();
+		}
+		if(isSleeping)
+		{
+			turnsToWakeUp--;
+		}
+	}
 	
+	private void resetSleepTime()
+	{
+		turnsToWakeUp = DEFAULT_SLEEP_TIME;
+		wakeUpCat();
+		
+	}
+	
+	private void wakeUpCat()
+	{
+		isSleeping = false;
+	}
+	
+	private void sleepCat()
+	{
+		isSleeping = true;
+	}
+	
+	public boolean isSleeping()
+	{
+		return isSleeping;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jchess.gamelogic.ai.ICatAi#getNextMove()
+	 */
+	@Override
 	public Field getNextMove()
 	{
-		
-		ArrayList<Move> moves = new ArrayList<Move>(chessboard.getPossibleMoves(cat, false));
-		return getRandomMove(moves).getTo();
+		if(!chessboard.getThreateningMoves(cat, aiPlayer).isEmpty())
+		{
+			sleepCat();
+			return getRandomCaptureMove().getTo();
+			
+		} else
+		{
+			ArrayList<Move> moves = new ArrayList<Move>(chessboard.getPossibleMoves(cat, false));
+			return getRandomMove(moves).getTo();
+		}
 	}
 	
-	/**
-	 * Finds the position the cat is on.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return field of the cat
+	 * @see jchess.gamelogic.ai.ICatAi#getCurrentPosition()
 	 */
+	@Override
 	public Field getCurrentPosition()
 	{
-		// I swear I'm gonna remove this
-		if(addCatPiece)
-		{
-			activePlayer = chessboard.getActivePlayer();
-			for(Piece piece : board.getPieces(activePlayer))
-			{
-				cat = piece;
-			}
-			addCatPiece = false;
-		}
 		return board.getField(cat);
 	}
 	
-
-	/**
-	 * Method which gets a list of moves and chooses a random element from it.
-	 * 
-	 * @param moves
-	 *            List of moves
-	 * @return random move
-	 */
+	public Move getRandomCaptureMove()
+	{
+		return getRandomMove(chessboard.getThreateningMoves(cat, aiPlayer));
+	}
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jchess.gamelogic.ai.ICatAi#getRandomMove(java.util.List)
+	 */
+	@Override
 	public Move getRandomMove(List<Move> moves)
 	{
 		Random random = new Random();
 		Move randomMove = moves.get(random.nextInt(moves.size()));
 		return randomMove;
 	}
-
-	/**
-	 * Method which gets a list of fields and chooses a random element from it.
+	
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param fields
-	 *            List of fields
-	 * @return random field
+	 * @see jchess.gamelogic.ai.ICatAi#getRandomField(java.util.List)
 	 */
-	public Field getRandomField(List<Field> fields){
+	@Override
+	public Field getRandomField(List<Field> fields)
+	{
 		Random random = new Random();
 		Field randomField = fields.get(random.nextInt(fields.size()));
 		return randomField;
