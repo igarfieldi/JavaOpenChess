@@ -22,9 +22,7 @@ package jchess.gamelogic.controllers;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,7 +31,6 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 
-import jchess.Localization;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Move;
@@ -53,17 +50,15 @@ public class History extends AbstractTableModel implements IHistory
 	private static Logger log = Logger.getLogger(History.class.getName());
 	
 	private ArrayList<String> move = new ArrayList<String>();
-	private int columnsNum = 3;
-	private int rowsNum = 0;
-	private String[] names = new String[]{ Localization.getMessage("white"), Localization.getMessage("black") };
 	private MyDefaultTableModel tableModel;
 	private HistoryView view;
 	private JTable table;
-	private boolean enterBlack = false;
 	private Stack<Move> moveBackStack = new Stack<Move>();
 	private Stack<Move> moveForwardStack = new Stack<Move>();
 	private IChessboardController chessboard;
 	private List<Player> players;
+	private int currentRowCount = 0;
+	private int currentPlayer = 0;
 	
 	public History(IChessboardController chessboard, List<Player> players) {
 		super();
@@ -74,8 +69,9 @@ public class History extends AbstractTableModel implements IHistory
 		this.view = new HistoryView(this.table);
 		//this.table.setMinimumSize(new Dimension(100, 100));
 		
-		this.tableModel.addColumn(this.names[0]);
-		this.tableModel.addColumn(this.names[1]);
+		for(Player player : players) {
+			this.tableModel.addColumn(player.getColor().name());
+		}
 		this.addTableModelListener(null);
 		this.tableModel.addTableModelListener(null);
 	}
@@ -89,13 +85,13 @@ public class History extends AbstractTableModel implements IHistory
 	@Override
 	public int getRowCount()
 	{
-		return this.rowsNum;
+		return this.currentRowCount;
 	}
-	
+
 	@Override
 	public int getColumnCount()
 	{
-		return this.columnsNum;
+		return this.players.size();
 	}
 	
 	protected void addRow()
@@ -117,31 +113,17 @@ public class History extends AbstractTableModel implements IHistory
 	 */
 	protected void addMove2Table(String str)
 	{
-		try
-		{
-			if(!this.enterBlack)
-			{
-				this.addRow();
-				this.rowsNum = this.tableModel.getRowCount() - 1;
-				this.tableModel.setValueAt(str, rowsNum, 0);
-			} else
-			{
-				this.tableModel.setValueAt(str, rowsNum, 1);
-				this.rowsNum = this.tableModel.getRowCount() - 1;
-			}
-			this.enterBlack = !this.enterBlack;
-			this.table.scrollRectToVisible(table.getCellRect(table.getRowCount() - 1, 0, true));// scroll
-			                                                                                    // to
-			                                                                                    // down
-			
-		} catch(java.lang.ArrayIndexOutOfBoundsException exc)
-		{
-			if(this.rowsNum > 0)
-			{
-				this.rowsNum--;
-				addMove2Table(str);
-			}
+		if(currentPlayer == 0) {
+			this.addRow();
+			this.currentRowCount++;
 		}
+		this.tableModel.setValueAt(str, currentRowCount - 1, currentPlayer);
+		
+		if(++currentPlayer >= this.players.size()) {
+			currentPlayer = 0;
+		}
+		
+		this.table.scrollRectToVisible(table.getCellRect(table.getRowCount() - 1, 0, true));
 	}
 	
 	public void addMove(Move move, boolean registerInHistory)
