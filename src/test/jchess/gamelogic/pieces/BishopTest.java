@@ -63,37 +63,80 @@ public class BishopTest
 	@Test
 	public void testPossibleMovesRegular()
 	{
+		// Check centre, corner and centre 'edge' positions
+		Field testPositions[] = {
+				new Field(3, 4), new Field(0, 0), new Field(0, 7),
+				new Field(7, 0), new Field(7, 7), new Field(3, 0),
+				new Field(0, 3), new Field(4, 7), new Field(7, 4)
+		};
+		Field diagonalMovesFromPostion[][] = {
+				{	// Centre
+					new Field(0, 1), new Field(1, 2), new Field(2, 3),
+					new Field(4, 5), new Field(5, 6), new Field(6, 7),
+					new Field(0, 7), new Field(1, 6), new Field(2, 5),
+					new Field(4, 3), new Field(5, 2), new Field(6, 1), new Field(7, 0)
+				},
+				{	// A1 corner
+					new Field(1, 1), new Field(2, 2), new Field(3, 3), 
+					new Field(4, 4), new Field(5, 5), new Field(6, 6), new Field(7, 7),
+				},
+				{	// A8 corner
+					new Field(1, 6), new Field(2, 5), new Field(3, 4), 
+					new Field(4, 3), new Field(5, 2), new Field(6, 1), new Field(7, 0),
+				},
+				{	// H1 corner
+					new Field(6, 1), new Field(5, 2), new Field(4, 3), 
+					new Field(3, 4), new Field(2, 5), new Field(1, 6), new Field(0, 7),
+				},
+				{	// H8 corner
+					new Field(6, 6), new Field(5, 5), new Field(4, 4), 
+					new Field(3, 3), new Field(2, 2), new Field(1, 1), new Field(0, 0),
+				},
+				{	// 1 edge
+					new Field(2, 1), new Field(1, 2), new Field(0, 3),
+					new Field(4, 1), new Field(5, 2), new Field(6, 3), new Field(7, 4)
+				},
+				{	// A edge
+					new Field(1, 2), new Field(2, 1), new Field(3, 0),
+					new Field(1, 4), new Field(2, 5), new Field(3, 6), new Field(4, 7)
+				},
+				{	// 8 edge
+					new Field(5, 6), new Field(6, 5), new Field(7, 4),
+					new Field(3, 6), new Field(2, 5), new Field(1, 4), new Field(0, 3)
+				},
+				{	// H edge
+					new Field(6, 5), new Field(5, 6), new Field(4, 7),
+					new Field(6, 3), new Field(5, 2), new Field(4, 1), new Field(3, 0)
+				}
+		};
+		
 		for(Player player : players2p) {
 			Piece bishop = factory.buildPiece(player, null, PieceType.BISHOP);
-			board2p.setPiece(board2p.getField(3, 4), bishop);
 			
-			// The bishop can move diagonally
-			Field[] diagonalMoves = {
-					board2p.getField(0, 1), board2p.getField(1, 2),
-					board2p.getField(2, 3), board2p.getField(4, 5), board2p.getField(5, 6),
-			        board2p.getField(6, 7), board2p.getField(0, 7), board2p.getField(1, 6),
-			        board2p.getField(2, 5), board2p.getField(4, 3), board2p.getField(5, 2),
-			        board2p.getField(6, 1), board2p.getField(7, 0)
-			};
-			
-			assertTrue(GeneralPieceTest.canMakeExactlyTheseMoves(controller2p, bishop, diagonalMoves));
-			
-			// Check if enemy pieces can be captured on these positions
-			// Don't care for blocking movement for now
-			for(Player enemy : controller2p.getEnemies(player)) {
-				Piece enemyPiece = factory.buildPiece(enemy, null, PieceType.ROOK);
+			for(int i = 0; i < testPositions.length; i++) {
+				board2p.setPiece(testPositions[i], bishop);
 				
-				for(Field field : diagonalMoves) {
-					board2p.setPiece(field, enemyPiece);
-					assertTrue(GeneralPieceTest.canMakeMove(controller2p, bishop, field));
-					board2p.removePiece(field);
+				assertTrue(GeneralPieceTest.canMakeExactlyTheseMoves(
+						controller2p, bishop, diagonalMovesFromPostion[i]));
+				
+				// Check if enemy pieces can be captured on these positions
+				// Don't care for blocking movement for now
+				for(Player enemy : controller2p.getEnemies(player)) {
+					Piece enemyPiece = factory.buildPiece(enemy, null, PieceType.ROOK);
+					
+					for(Field field : diagonalMovesFromPostion[i]) {
+						board2p.setPiece(field, enemyPiece);
+						assertTrue(GeneralPieceTest.canMakeMove(controller2p, bishop, field));
+						board2p.removePiece(field);
+					}
 				}
+				
+				board2p.removePiece(testPositions[i]);
 			}
 			
-			board2p.removePiece(board2p.getField(3, 4));
+			
 			// TODO: add 4p controller
 		}
-		
 	}
 	
 	@Test
