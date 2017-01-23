@@ -26,6 +26,10 @@ public interface IChessboardController extends LoadSaveable
 	
 	public Player getActivePlayer();
 	
+	public Set<Player> getEnemies(Player friendly);
+	
+	public Set<Player> getAllies(Player friendly);
+	
 	public void switchToNextPlayer();
 	
 	public void switchToPreviousPlayer();

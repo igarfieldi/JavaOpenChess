@@ -130,26 +130,7 @@ public class History extends AbstractTableModel implements IHistory
 	{
 		ArgumentChecker.checkForNull(move);
 		
-		String locMove = new String(move.getMovedPiece().getSymbol());
-		
-		// Get field designation of 'from' field
-		locMove += move.getFrom().toString();
-		
-		if(move.getTakenPiece() != null)
-		{
-			locMove += "x";// take down opponent piece
-		} else
-		{
-			locMove += "-";// normal move
-		}
-		
-		// Get field designation of 'from' field
-		locMove += move.getTo().toString();
-		
-		if(move.wasEnPassant())
-		{
-			locMove += "(e.p)";// pawn take down opponent en passant
-		}
+		String moveString = move.toString();
 		
 		// Gotta enter the move to the history now so that en passant and whatnot
 		// can detect it properly
@@ -164,25 +145,17 @@ public class History extends AbstractTableModel implements IHistory
 		if(chessboard.isChecked(chessboard.getActivePlayer())) {
 			
 			if(chessboard.isCheckmated(chessboard.getActivePlayer())) {
-				locMove += "#";
+				moveString += "#";
 			} else {
-				locMove += "+";
+				moveString += "+";
 			}
 			
 		}
 		// Switch back to the original player
 		chessboard.switchToPreviousPlayer();
 		
-		if(move.getCastlingMove() == CastlingType.SHORT_CASTLING)
-		{
-			locMove = "O-O";
-		} else if(move.getCastlingMove() == CastlingType.LONG_CASTLING)
-		{
-			locMove = "O-O-O";
-		}
-		
-		this.move.add(locMove);
-		this.addMove2Table(locMove);
+		this.move.add(moveString);
+		this.addMove2Table(moveString);
 		
 		this.view.scrollRectToVisible(new Rectangle(0, this.view.getHeight() - 2, 1, 1));
 	}

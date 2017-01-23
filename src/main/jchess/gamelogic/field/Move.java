@@ -101,6 +101,29 @@ public class Move
 				(wasPawnTwoFieldsMove == move.wasPawnTwoFieldsMove);
 	}
 	
+	@Override
+	public String toString() {
+		if(castlingMove == CastlingType.SHORT_CASTLING) {
+			return "O-O";
+		} else if(castlingMove == CastlingType.LONG_CASTLING) {
+			return "O-O-O";
+		}
+		
+		String move = movedPiece.getSymbol() + from.toString();
+		if(takenPiece != null) {
+			move += "x";
+		} else {
+			move += "-";
+		}
+		move += to.toString();
+		
+		if(wasEnPassant) {
+			move += "(e.p)";
+		}
+		
+		return move;
+	}
+	
 	public Field getFrom()
 	{
 		return this.from;

@@ -73,6 +73,7 @@ public class GeneralPieceTest
 		for(Move move : board.getPossibleMoves(piece, true)) {
 			possibleMoves.add(move.getTo());
 		}
+		
 		if(possibleMoves.size() != fields.length)
 		{
 			return false;
