@@ -4,12 +4,12 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
 import jchess.Localization;
-import jchess.gui.secondary.GridBagPanel;
+import jchess.gui.secondary.AbstractGridBagPanel;
 
 /**
  * Class with a panel that contains a checkbox and combobox to set a game's time limit.
  */
-public class TimerSetterPanel extends GridBagPanel
+public class TimerSetterPanel extends AbstractGridBagPanel
 {
 	private static final long serialVersionUID = -4383996249396913058L;
 	
@@ -40,16 +40,18 @@ public class TimerSetterPanel extends GridBagPanel
 	 */
 	public int getTimeLimit()
 	{
-		final int SECONDS_PER_MINUTE = 60;
-		final int NO_TIME_LIMIT = 0;
-		
 		if(this.hasTimeLimitCheckBox.isSelected())
 		{
+			final int SECONDS_PER_MINUTE = 60;
 			String selectedTimeLimit = this.timeLimits[this.timeLimitsComboBox.getSelectedIndex()];
-			return ((int) Integer.parseInt(selectedTimeLimit) * SECONDS_PER_MINUTE);
+			
+			return (int) Integer.parseInt(selectedTimeLimit) * SECONDS_PER_MINUTE;
 		}
 		else
+		{
+			final int NO_TIME_LIMIT = 0;
 			return NO_TIME_LIMIT;
+		}
 	}
 	
 	/**

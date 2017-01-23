@@ -7,12 +7,12 @@ import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 
 import jchess.Localization;
-import jchess.gui.secondary.GridBagPanel;
+import jchess.gui.secondary.AbstractGridBagPanel;
 
 /**
  * Class with a panel that contains radio buttons to determine the amount of players.
  */
-public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListener
+public class PlayerNumberChoicePanel extends AbstractGridBagPanel implements ActionListener
 {
 	private static final long serialVersionUID = -2395769048925349725L;
 	
