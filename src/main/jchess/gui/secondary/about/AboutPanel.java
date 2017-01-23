@@ -11,13 +11,13 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
 import jchess.JChessApp;
-import jchess.gui.secondary.GridBagPanel;
+import jchess.gui.secondary.AbstractGridBagPanel;
 
 /**
  * Class with a panel containing the panel with all application information
  * together with an image label and a close button.
  */
-public class AboutPanel extends GridBagPanel implements IResources
+public class AboutPanel extends AbstractGridBagPanel implements IResources
 {
 	private static final long serialVersionUID = 1265012929536332512L;
 	

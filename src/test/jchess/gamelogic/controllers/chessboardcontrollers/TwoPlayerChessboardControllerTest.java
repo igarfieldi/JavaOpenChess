@@ -1,7 +1,7 @@
 /**
  * 
  */
-package jchess.gamelogic.controller.chessboardcontrollers;
+package jchess.gamelogic.controllers.chessboardcontrollers;
 
 import static org.junit.Assert.*;
 
@@ -13,6 +13,7 @@ import jchess.gamelogic.Player.Color;
 import jchess.gamelogic.controllers.IllegalMoveException;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
 import jchess.gamelogic.field.Field;
+import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.models.factories.TwoPlayerChessboardFactory;
 import jchess.util.FileMapParser;
 
@@ -24,6 +25,7 @@ public class TwoPlayerChessboardControllerTest
 	private Player white = new Player("p1", Color.WHITE);
 	private Player black = new Player("p2", Color.BLACK);
 	private TwoPlayerChessboardController controller;
+	private IChessboardModel board;
 	
 	/**
 	 * @throws java.lang.Exception
@@ -33,6 +35,7 @@ public class TwoPlayerChessboardControllerTest
 	{
 		controller = new TwoPlayerChessboardController(
 				null, TwoPlayerChessboardFactory.getInstance(), white, black);
+		board = controller.getBoard();
 	}
 	
 	/**
@@ -74,8 +77,10 @@ public class TwoPlayerChessboardControllerTest
 		gameLoader.setProperty("Moves", games[0]);
 		controller.load(gameLoader);
 		
+		// This just tests the basic capability of loading a game; testing
+		// correctness is done in the history test class
 		
-		// TODO: extensive testing of different scenarios!
+		//controller.getHistory().
 		
 		fail("Not yet implemented");
 	}
@@ -112,6 +117,7 @@ public class TwoPlayerChessboardControllerTest
 	@Test
 	public void testIsChecked()
 	{
+		
 		fail("Not yet implemented");
 	}
 	

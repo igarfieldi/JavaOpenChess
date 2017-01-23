@@ -27,13 +27,13 @@ import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
 import jchess.Localization;
-import jchess.gui.secondary.GridBagPanel;
+import jchess.gui.secondary.AbstractGridBagPanel;
 
 /**
  * Class with a panel containing all panels in jchess.gui.setup.
  * Also contains a button that applies the settings and starts the game.
  */
-public class LocalSettingsPanel extends GridBagPanel implements ActionListener
+public class LocalSettingsPanel extends AbstractGridBagPanel implements ActionListener
 {
 	private static final long serialVersionUID = -9175716765749855635L;
 	

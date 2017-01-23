@@ -23,6 +23,7 @@ package jchess.gui.secondary;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -50,6 +51,10 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 	private JButton queenButton;
 	
 	private static final String NOTHING_SELECTED = "";
+	private static final String KNIGHT = "Knight";
+	private static final String BISHOP = "Bishop";
+	private static final String ROOK = "Rook";
+	private static final String QUEEN = "Queen";
 	
 	/**
 	 * 
@@ -84,13 +89,14 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 	private void setWindowProperties()
 	{
 		final Dimension SIZE = new Dimension(520, 130);
+		final GridLayout GRID_LAYOUT = new GridLayout(1, 4);
 		
 		this.setTitle("Choose piece!");
 		this.setMinimumSize(SIZE);
 		this.setSize(SIZE);
 		this.setMaximumSize(SIZE);
 		this.setResizable(false);
-		this.setLayout(new GridLayout(1, 4));
+		this.setLayout(GRID_LAYOUT);
 	}
 	
 	/**
@@ -104,14 +110,27 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 	{
 		String colorName = ThemeImageLoader.getInstance().getColorString(color);
 		
-		this.knightButton = new JButton(
-		        new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Knight-" + colorName + ".png")));
-		this.bishopButton = new JButton(
-		        new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Bishop-" + colorName + ".png")));
-		this.rookButton = new JButton(
-		        new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Rook-" + colorName + ".png")));
-		this.queenButton = new JButton(
-		        new ImageIcon(ThemeImageLoader.getInstance().loadThemeImage("Queen-" + colorName + ".png")));
+		this.knightButton = createImageButton(KNIGHT, colorName);
+		this.bishopButton = createImageButton(BISHOP, colorName);
+		this.rookButton = createImageButton(ROOK, colorName);
+		this.queenButton = createImageButton(QUEEN, colorName);
+	}
+
+	/**
+	 * Creates a button with the piece and the color of the promoted pawn as an image.
+	 * 
+	 * @param pieceName
+	 * 				The name of the piece.
+	 * @param colorName
+	 * 				The string of the color that the pawn has.
+	 * @return button with image
+	 */
+	private JButton createImageButton(String pieceName, String colorName)
+	{
+		final Image PIECE_IMAGE = ThemeImageLoader.getInstance().loadThemeImage(pieceName + "-" + colorName + ".png");
+		ImageIcon imageIcon = new ImageIcon(PIECE_IMAGE);
+		
+		return new JButton(imageIcon);
 	}
 	
 	/**
@@ -158,12 +177,12 @@ public class PawnPromotionWindow extends JDialog implements ActionListener
 	private void chooseSelectedPiece(ActionEvent button)
 	{
 		if(button.getSource() == queenButton)
-			this.selectedPromotion = "Queen";
+			this.selectedPromotion = QUEEN;
 		else if(button.getSource() == rookButton)
-			this.selectedPromotion = "Rook";
+			this.selectedPromotion = ROOK;
 		else if(button.getSource() == bishopButton)
-			this.selectedPromotion = "Bishop";
+			this.selectedPromotion = BISHOP;
 		else if(button.getSource() == knightButton)
-			this.selectedPromotion = "Knight";
+			this.selectedPromotion = KNIGHT;
 	}
 }

@@ -107,7 +107,7 @@ public class Piece implements Copyable<Piece>
 		 
 		 Piece test = (Piece)obj;
 		 return (player == test.player) &&
-				 (behaviour == test.behaviour) &&
+				 (behaviour.equals(test.behaviour)) &&
 				 SYMBOL.equals(test.SYMBOL) &&
 				 (moved == test.moved);
 	}

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package jchess.gamelogic.controller;
+package jchess.gamelogic.controllers;
 
 import static org.junit.Assert.*;
 

@@ -98,12 +98,20 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 				
 				// Our piece to check has to be right next to the pawn to be eligible for en passant
 				if(pieceField.equals(leftField) || pieceField.equals(rightField)) {
-					// If it is eligible, it can make a capturing move right behind the two-field-moved pawn
+					// If it is eligible, it may be able to make a capturing
+					// move right behind the two-field-moved pawn
 					Field targetField = getBoard().getField(
 							movedPawnField.getPosX() - movedPawnForward.getX(),
 							movedPawnField.getPosY() - movedPawnForward.getY());
-					enPassantMoves.add(new Move(pieceField, targetField, piece,
-							twoSquareMovedPawn, CastlingType.NONE, true, null));
+					
+					// Check if its behaviour allows such a move
+					Direction captureDir = new Direction(
+							targetField.getPosX() - pieceField.getPosX(),
+							targetField.getPosY() - pieceField.getPosY());
+					if(piece.getBehaviour().getCapturingMovements().contains(captureDir)) {
+						enPassantMoves.add(new Move(pieceField, targetField, piece,
+								twoSquareMovedPawn, CastlingType.NONE, true, null));
+					}
 				}
 			}
 		}

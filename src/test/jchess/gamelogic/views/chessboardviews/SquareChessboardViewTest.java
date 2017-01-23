@@ -7,6 +7,8 @@ import java.awt.event.MouseEvent;
 import org.junit.Before;
 import org.junit.Test;
 
+import jchess.gamelogic.Player;
+import jchess.gamelogic.Player.Color;
 import jchess.gamelogic.controllers.IBoardActionHandler;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
@@ -24,7 +26,9 @@ public class SquareChessboardViewTest
 	{
 		IChessboardController controller = new TwoPlayerChessboardController(
 				TwoPlayerChessboardViewFactory.getInstance(),
-				TwoPlayerChessboardFactory.getInstance(), null, null);
+				TwoPlayerChessboardFactory.getInstance(),
+				new Player("p1", Color.WHITE),
+				new Player("p2", Color.BLACK));
 		view = (SquareChessboardView) controller.getView();
 		handler = new CustomActionHandler();
 		view.initialize(controller, handler);

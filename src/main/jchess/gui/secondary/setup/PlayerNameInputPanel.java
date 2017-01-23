@@ -11,12 +11,12 @@ import javax.swing.JTextField;
 import javax.swing.text.BadLocationException;
 
 import jchess.Localization;
-import jchess.gui.secondary.GridBagPanel;
+import jchess.gui.secondary.AbstractGridBagPanel;
 
 /**
  * Class with a panel containing all labels and text fields used to name the players
  */
-public class PlayerNameInputPanel extends GridBagPanel
+public class PlayerNameInputPanel extends AbstractGridBagPanel
 {
 	private static final long serialVersionUID = -5529158483741339210L;
 	private static Logger log = Logger.getLogger(PlayerNameInputPanel.class.getName());

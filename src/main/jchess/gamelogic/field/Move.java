@@ -58,15 +58,18 @@ public class Move
 		
 		this.wasPawnTwoFieldsMove = false;
 		
-		if(movedPiece.getBehaviour() instanceof Pawn) {
+		if(movedPiece != null && movedPiece.getBehaviour() instanceof Pawn) {
 			// Check if it was a two field move of a pawn (first step of pawn)
 			// For that see if the target field equals the second field in
 			// the pawn's forward direction
 			Direction forward = ((Pawn) movedPiece.getBehaviour()).getForwardDirection();
-			Field twoFieldMove = new Field(from.getPosX() + 2*forward.getX(),
-					from.getPosY() + 2*forward.getY());
-			if(twoFieldMove.equals(to)) {
-				this.wasPawnTwoFieldsMove = true;
+			try {
+    			Field twoFieldMove = new Field(from.getPosX() + 2*forward.getX(),
+    					from.getPosY() + 2*forward.getY());
+    			if(twoFieldMove.equals(to)) {
+    				this.wasPawnTwoFieldsMove = true;
+    			}
+			} catch(IllegalArgumentException exc) {
 			}
 			
 			// Set promoted piece (only applicable to pawns, too)

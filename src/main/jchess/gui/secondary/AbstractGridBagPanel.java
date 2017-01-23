@@ -12,7 +12,7 @@ import javax.swing.JPanel;
  * With such a layout, UI elements are placed in a grid.
  * Any class that extends from this will use that layout.
  */
-public abstract class GridBagPanel extends JPanel
+public abstract class AbstractGridBagPanel extends JPanel
 {
 	private static final long serialVersionUID = 2558539019418926458L;
 	
@@ -22,8 +22,9 @@ public abstract class GridBagPanel extends JPanel
 	protected static final int LEFT = 0;
 	protected static final int RIGHT = 1;
 
-	public GridBagPanel()
+	public AbstractGridBagPanel()
 	{
+		super();
 		initializeLayout();
 		initializeGuiElements();
 		placeGuiElements();

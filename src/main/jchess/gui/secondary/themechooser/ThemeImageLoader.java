@@ -12,7 +12,7 @@ import jchess.JChessApp;
 import jchess.gamelogic.Player.Color;
 import jchess.gamelogic.pieces.Piece;
 
-public class ThemeImageLoader
+public final class ThemeImageLoader
 {
 	private static Logger log = Logger.getLogger(ThemeImageLoader.class.getName());
 	
