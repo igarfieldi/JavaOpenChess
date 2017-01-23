@@ -3,7 +3,8 @@
  */
 package jchess.gamelogic.controllers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +14,6 @@ import org.junit.Test;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Player.Color;
-import jchess.gamelogic.controllers.GameClockController;
-import jchess.gamelogic.controllers.IGameStateHandler;
 
 /**
  * Tests the GameClockController for differing player counts.

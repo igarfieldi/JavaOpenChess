@@ -34,7 +34,6 @@ import javax.swing.table.DefaultTableModel;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Move;
-import jchess.gamelogic.field.Move.CastlingType;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.views.HistoryView;
 import jchess.util.ArgumentChecker;

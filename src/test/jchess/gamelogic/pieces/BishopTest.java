@@ -1,6 +1,5 @@
 package jchess.gamelogic.pieces;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -16,7 +15,6 @@ import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.models.factories.FourPlayerChessboardFactory;
 import jchess.gamelogic.models.factories.TwoPlayerChessboardFactory;
 import jchess.gamelogic.pieces.PieceFactory.PieceType;
-import jchess.util.Direction;
 
 public class BishopTest
 {
@@ -136,7 +134,6 @@ public class BishopTest
 		
 		for(Player player : players2p) {
 			Piece bishop = factory.buildPiece(player, null, PieceType.BISHOP);
-			Piece friendlyPawn = factory.buildPiece(player, new Direction(0, 1), PieceType.PAWN);
 			board2p.setPiece(board2p.getField(3, 4), bishop);
 				
 			for(int i = 0; i < blockingFields.length; i++) {

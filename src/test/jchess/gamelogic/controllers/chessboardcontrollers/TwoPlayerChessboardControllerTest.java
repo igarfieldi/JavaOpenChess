@@ -3,7 +3,8 @@
  */
 package jchess.gamelogic.controllers.chessboardcontrollers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +12,6 @@ import org.junit.Test;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.Player.Color;
 import jchess.gamelogic.controllers.IllegalMoveException;
-import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.models.IChessboardModel;
 import jchess.gamelogic.models.factories.TwoPlayerChessboardFactory;

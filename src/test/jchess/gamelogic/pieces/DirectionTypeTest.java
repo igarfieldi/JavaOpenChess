@@ -3,7 +3,7 @@
  */
 package jchess.gamelogic.pieces;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
 
