@@ -18,9 +18,9 @@ public final class ThemeImageLoader
 	
 	private static ThemeImageLoader instance;
 	
-	private final Toolkit toolkit;
-	private Map<String, Image> imageCache;
-	private final Properties configFile;
+	private transient final Toolkit toolkit;
+	private transient Map<String, Image> imageCache;
+	private transient final Properties configFile;
 	
 	private ThemeImageLoader()
 	{
@@ -29,6 +29,10 @@ public final class ThemeImageLoader
 		this.toolkit = Toolkit.getDefaultToolkit();
 	}
 	
+	/**
+	 * 
+	 * @return Singleton instance of this class.
+	 */
 	public static ThemeImageLoader getInstance()
 	{
 		if(instance == null)
@@ -99,25 +103,25 @@ public final class ThemeImageLoader
 	 */
 	public String getColorString(Color color)
 	{
-		String colorString = "";
+		StringBuilder colorString = new StringBuilder("");
 		switch(color)
 		{
 			case WHITE:
-				colorString += "W";
+				colorString.append("W");
 				break;
 			case RED:
-				colorString += "BR";
+				colorString.append("BR");
 				break;
 			case BLACK:
-				colorString += "B";
+				colorString.append("B");
 				break;
 			case GOLDEN:
-				colorString += "G";
+				colorString.append("G");
 				break;
 			default:
 				log.log(Level.SEVERE, "Piece of player with unknown color exists!");
 		}
-		return colorString;
+		return colorString.toString();
 	}
 	
 	/**
