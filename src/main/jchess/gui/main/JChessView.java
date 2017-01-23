@@ -1,18 +1,3 @@
-/*
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package jchess.gui.main;
 
 import java.awt.Component;
@@ -23,8 +8,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +17,6 @@ import java.util.logging.Logger;
 
 import javax.swing.ActionMap;
 import javax.swing.GroupLayout;
-import javax.swing.Icon;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -50,13 +32,11 @@ import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
-import javax.swing.Timer;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 import org.jdesktop.application.FrameView;
 import org.jdesktop.application.SingleFrameApplication;
-import org.jdesktop.application.TaskMonitor;
 
 import jchess.JChessApp;
 import jchess.Localization;
@@ -91,18 +71,8 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	private JMenuBar menuBar;
 	private JMenuItem newGameItem;
 	private JMenu optionsMenu;
-	private JProgressBar progressBar;
 	private JMenuItem saveGameItem;
-	private JLabel statusAnimationLabel;
-	private JLabel statusMessageLabel;
-	private JPanel statusPanel;
 	private JMenuItem themeSettingsMenu;
-	
-	private Timer messageTimer;
-	private Timer busyIconTimer;
-	private Icon idleIcon;
-	private final Icon[] busyIcons = new Icon[15];
-	private int busyIconIndex = 0;
 	
 	private JDialog aboutBox;
 	private PawnPromotionWindow pawnPromotionWindow;
@@ -114,14 +84,6 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		this.gameBuilderFactory = factory;
 		
 		initializeComponents();
-		
-		// status bar initialization - message timeout, idle icon and busy
-		// animation, etc
-		initializeTimers(VIEW_PROPERTIES);
-		initializeIcons(VIEW_PROPERTIES);
-		
-		// connecting action tasks to status bar via TaskMonitor
-		initializeTaskMonitor();
 	}
 
 	private void initializeComponents()
@@ -129,7 +91,6 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		initializeGuiElements();
 		initializeMainPanel();
 		initializeMenuBar();
-		initializeStatusPanel();
 	}
 
 	private void initializeGuiElements()
@@ -141,10 +102,6 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		gameMenu = new JMenu();
 		optionsMenu = new JMenu();
 		themeSettingsMenu = new JMenuItem();
-		statusPanel = new JPanel();
-		statusMessageLabel = new JLabel();
-		statusAnimationLabel = new JLabel();
-		progressBar = new JProgressBar();
 	}
 
 	private void initializeMainPanel()
@@ -256,157 +213,6 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		helpMenu.add(aboutMenuItem);
 		
 		menuBar.add(helpMenu);
-	}
-
-	private void initializeStatusPanel()
-	{
-		JSeparator statusPanelSeparator = new JSeparator();
-		
-		setStatusGuiElementNames(statusPanelSeparator);
-		
-		GroupLayout statusPanelLayout = new GroupLayout(statusPanel);
-		statusPanel.setLayout(statusPanelLayout);
-		setHorizontalStatusPanelLayout(statusPanelSeparator, statusPanelLayout);
-		setVerticalStatusPanelLayout(statusPanelSeparator, statusPanelLayout);
-		
-		setStatusBar(statusPanel);
-	}
-
-	private void setStatusGuiElementNames(JSeparator statusPanelSeparator)
-	{
-		statusPanel.setName("statusPanel"); // NOI18N
-		
-		statusPanelSeparator.setName("statusPanelSeparator"); // NOI18N
-		
-		statusMessageLabel.setName("statusMessageLabel"); // NOI18N
-		
-		statusAnimationLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		statusAnimationLabel.setName("statusAnimationLabel"); // NOI18N
-		
-		progressBar.setName("progressBar");
-	}
-
-	private void setHorizontalStatusPanelLayout(JSeparator statusPanelSeparator, GroupLayout statusPanelLayout)
-	{
-		statusPanelLayout.setHorizontalGroup(statusPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-		        .addComponent(statusPanelSeparator, GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
-		        .addGroup(statusPanelLayout.createSequentialGroup().addContainerGap().addComponent(statusMessageLabel)
-		                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 616, Short.MAX_VALUE)
-		                .addComponent(progressBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-		                        GroupLayout.PREFERRED_SIZE)
-		                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(statusAnimationLabel)
-		                .addContainerGap()));
-	}
-
-	private void setVerticalStatusPanelLayout(JSeparator statusPanelSeparator, GroupLayout statusPanelLayout)
-	{
-		statusPanelLayout.setVerticalGroup(statusPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-		        .addGroup(statusPanelLayout.createSequentialGroup()
-		                .addComponent(statusPanelSeparator, GroupLayout.PREFERRED_SIZE, 2, GroupLayout.PREFERRED_SIZE)
-		                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE,
-		                        Short.MAX_VALUE)
-		                .addGroup(statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-		                        .addComponent(statusMessageLabel).addComponent(statusAnimationLabel).addComponent(
-		                                progressBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-		                                GroupLayout.PREFERRED_SIZE))
-		                .addGap(3, 3, 3)));
-	}
-
-	private void initializeTimers(TypedResourceBundle resourceBundle)
-	{
-		int messageTimeout = resourceBundle.getInteger("StatusBar.messageTimeout");
-		messageTimer = setMessageTimer(messageTimeout);
-		messageTimer.setRepeats(false);
-		
-		int busyAnimationRate = resourceBundle.getInteger("StatusBar.busyAnimationRate");
-		for(int i = 0; i < busyIcons.length; i++)
-			busyIcons[i] = resourceBundle.getIcon("StatusBar.busyIcons[" + i + "]");
-		busyIconTimer = setBusyIconTimer(busyAnimationRate);
-	}
-
-	private Timer setMessageTimer(int messageTimeout)
-	{
-		return new Timer(messageTimeout, new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				statusMessageLabel.setText("");
-			}
-		});
-	}
-
-	private Timer setBusyIconTimer(int busyAnimationRate)
-	{
-		return new Timer(busyAnimationRate, new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				busyIconIndex = (busyIconIndex + 1) % busyIcons.length;
-				statusAnimationLabel.setIcon(busyIcons[busyIconIndex]);
-			}
-		});
-	}
-
-	private void initializeIcons(TypedResourceBundle resourceBundle)
-	{
-		idleIcon = resourceBundle.getIcon("StatusBar.idleIcon");
-		statusAnimationLabel.setIcon(idleIcon);
-		progressBar.setVisible(false);
-	}
-
-	private void initializeTaskMonitor()
-	{
-		TaskMonitor taskMonitor = new TaskMonitor(getApplication().getContext());
-		taskMonitor.addPropertyChangeListener(new PropertyChangeListener()
-		{
-			public void propertyChange(PropertyChangeEvent event)
-			{
-				String propertyName = event.getPropertyName();
-				if("started".equals(propertyName))
-					startProgressTracking();
-				else if("done".equals(propertyName))
-					stopProgressTracking();
-				else if("message".equals(propertyName))
-					receiveMessage(event);
-				else if("progress".equals(propertyName))
-					updateProgress(event);
-			}
-
-			private void startProgressTracking()
-			{
-				if(!busyIconTimer.isRunning())
-				{
-					statusAnimationLabel.setIcon(busyIcons[0]);
-					busyIconIndex = 0;
-					busyIconTimer.start();
-				}
-				progressBar.setVisible(true);
-				progressBar.setIndeterminate(true);
-			}
-
-			private void stopProgressTracking()
-			{
-				busyIconTimer.stop();
-				statusAnimationLabel.setIcon(idleIcon);
-				progressBar.setVisible(false);
-				progressBar.setValue(0);
-			}
-
-			private void receiveMessage(PropertyChangeEvent event)
-			{
-				String text = (String) (event.getNewValue());
-				statusMessageLabel.setText((text == null) ? "" : text);
-				messageTimer.restart();
-			}
-
-			private void updateProgress(PropertyChangeEvent event)
-			{
-				int value = (Integer) (event.getNewValue());
-				progressBar.setVisible(true);
-				progressBar.setIndeterminate(false);
-				progressBar.setValue(value);
-			}
-		});
 	}
 	
 	public void addNewGameTab(String title, IGame game) {
