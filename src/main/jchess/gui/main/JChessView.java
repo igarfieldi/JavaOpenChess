@@ -6,8 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,21 +15,14 @@ import java.util.logging.Logger;
 
 import javax.swing.ActionMap;
 import javax.swing.GroupLayout;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
-import javax.swing.KeyStroke;
-import javax.swing.LayoutStyle;
-import javax.swing.SwingConstants;
 
 import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
@@ -70,13 +61,10 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	private JPanel mainPanel;
 	private JMenuBar menuBar;
 	private JMenuItem newGameItem;
-	private JMenu optionsMenu;
 	private JMenuItem saveGameItem;
 	private JMenuItem themeSettingsMenu;
 	
-	private JDialog aboutBox;
 	private PawnPromotionWindow pawnPromotionWindow;
-	public JDialog newGameFrame;
 	
 	public JChessView(SingleFrameApplication app, IGameBuilderFactory factory)
 	{
@@ -100,7 +88,6 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		loadGameItem = new JMenuItem();
 		saveGameItem = new JMenuItem();
 		gameMenu = new JMenu();
-		optionsMenu = new JMenu();
 		themeSettingsMenu = new JMenuItem();
 	}
 
@@ -124,8 +111,6 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 
 	private void configureMainPanelLayout()
 	{
-		gamesPane.setName("gamesPane");
-		
 		GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
 		mainPanel.setLayout(mainPanelLayout);
 		mainPanelLayout.setHorizontalGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -138,81 +123,67 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 
 	private void initializeMenuBar()
 	{
-		ActionMap actionMap = Application.getInstance(JChessApp.class).getContext()
-		        .getActionMap(JChessView.class, this);
-		
-		menuBar.setName("menuBar"); // NOI18N
-		
-		addFileMenu(VIEW_PROPERTIES, actionMap);
-		addGameMenu(VIEW_PROPERTIES);
-		addOptionsMenu(VIEW_PROPERTIES);
-		addHelpMenu(VIEW_PROPERTIES, actionMap);
+		addFileMenu();
+		addGameMenu();
+		addOptionsMenu();
+		addHelpMenu();
 		
 		setMenuBar(menuBar);
 	}
 
-	private void addFileMenu(TypedResourceBundle resourceBundle, ActionMap actionMap)
+	private void addFileMenu()
 	{
-		JMenu fileMenu = new JMenu();
-		JMenuItem exitMenuItem = new JMenuItem();
+		JMenu fileMenu = createMenu("fileMenu");
 		
-		fileMenu.setText(resourceBundle.getString("fileMenu.text")); // NOI18N
-		fileMenu.setName("fileMenu"); // NOI18N
+		addMenuItem(fileMenu, newGameItem, "newGame");
+		addMenuItem(fileMenu, loadGameItem, "loadGame");
+		addMenuItem(fileMenu, saveGameItem, "saveGame");
+		addMenuItem(fileMenu, "quit");
 		
-		setMenuItem(fileMenu, resourceBundle, newGameItem, KeyEvent.VK_N, "newGameItem");
-		setMenuItem(fileMenu, resourceBundle, loadGameItem, KeyEvent.VK_L, "loadGameItem");
-		setMenuItem(fileMenu, resourceBundle, saveGameItem, KeyEvent.VK_S, "saveGameItem");
+	}
+	
+	private JMenu createMenu(String label)
+	{
+		JMenu menu = new JMenu();
+		menu.setText(VIEW_PROPERTIES.getString(label + ".text"));
+		menuBar.add(menu);
 		
-		exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
-		exitMenuItem.setName("exitMenuItem"); // NOI18N
-		fileMenu.add(exitMenuItem);
-		
-		menuBar.add(fileMenu);
+		return menu;
 	}
 
-	private void setMenuItem(JMenu fileMenu, TypedResourceBundle resourceBundle, JMenuItem menuItem, int hotkey, String menuItemName)
+	private void addMenuItem(JMenu fileMenu, JMenuItem menuItem, String menuItemName)
 	{
-		menuItem.setAccelerator(KeyStroke.getKeyStroke(hotkey, InputEvent.CTRL_MASK));
-		menuItem.setText(resourceBundle.getString(menuItemName + ".text"));
-		menuItem.setName(menuItemName);
-		fileMenu.add(menuItem);
+		menuItem.setText(VIEW_PROPERTIES.getString(menuItemName + "Item.text"));
 		menuItem.addActionListener(this);
+		fileMenu.add(menuItem);
+	}
+	
+	private void addMenuItem(JMenu menuParent, String action)
+	{
+		ActionMap actionMap = Application.getInstance(JChessApp.class).getContext()
+		        .getActionMap(JChessView.class, this);
+		
+		JMenuItem aboutMenuItem = new JMenuItem();
+		aboutMenuItem.setAction(actionMap.get(action));
+		menuParent.add(aboutMenuItem);
 	}
 
-	private void addGameMenu(TypedResourceBundle resourceBundle)
+	private void addGameMenu()
 	{
-		gameMenu.setText(resourceBundle.getString("gameMenu.text")); // NOI18N
-		gameMenu.setName("gameMenu"); // NOI18N
-		
+		gameMenu.setText(VIEW_PROPERTIES.getString("gameMenu.text"));
 		menuBar.add(gameMenu);
 	}
 
-	private void addOptionsMenu(TypedResourceBundle resourceBundle)
+	private void addOptionsMenu()
 	{
-		optionsMenu.setText(resourceBundle.getString("optionsMenu.text")); // NOI18N
-		optionsMenu.setName("optionsMenu"); // NOI18N
-		
-		themeSettingsMenu.setText(resourceBundle.getString("themeSettingsMenu.text")); // NOI18N
-		themeSettingsMenu.setName("themeSettingsMenu"); // NOI18N
-		themeSettingsMenu.addActionListener(this);
-		optionsMenu.add(themeSettingsMenu);
-		
-		menuBar.add(optionsMenu);
+		JMenu optionsMenu = createMenu("optionsMenu");
+		addMenuItem(optionsMenu, themeSettingsMenu, "themeSettingsMenu");
 	}
 
-	private void addHelpMenu(TypedResourceBundle resourceBundle, ActionMap actionMap)
+	private void addHelpMenu()
 	{
-		JMenu helpMenu = new JMenu();
-		JMenuItem aboutMenuItem = new JMenuItem();
-		
-		helpMenu.setText(resourceBundle.getString("helpMenu.text")); // NOI18N
-		helpMenu.setName("helpMenu"); // NOI18N
-		
-		aboutMenuItem.setAction(actionMap.get("showAboutBox")); // NOI18N
-		aboutMenuItem.setName("aboutMenuItem"); // NOI18N
-		helpMenu.add(aboutMenuItem);
-		
-		menuBar.add(helpMenu);
+		JMenu helpMenu = createMenu("helpMenu");
+		addMenuItem(helpMenu, "showAboutBox");
 	}
 	
 	public void addNewGameTab(String title, IGame game) {
@@ -225,8 +196,9 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		Object target = event.getSource();
 		if(target == newGameItem)
 		{
-			this.newGameFrame = new NewGameWindow(this.getFrame());
-			JChessApp.getApplication().show(this.newGameFrame);
+			JFrame mainFrame = JChessApp.getApplication().getMainFrame();
+			NewGameWindow newGameWindow = new NewGameWindow(mainFrame);
+			JChessApp.getApplication().show(newGameWindow);
 		}
 		else if(target == saveGameItem)
 		{ // saveGame
@@ -357,13 +329,11 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 	@Action
 	public void showAboutBox()
 	{
-		if(aboutBox == null)
-		{
-			JFrame mainFrame = JChessApp.getApplication().getMainFrame();
-			aboutBox = new JChessAboutWindow(mainFrame);
-			aboutBox.setLocationRelativeTo(mainFrame);
-		}
-		JChessApp.getApplication().show(aboutBox);
+		JFrame mainFrame = JChessApp.getApplication().getMainFrame();
+		JChessAboutWindow aboutWindow = new JChessAboutWindow(mainFrame);
+		
+		aboutWindow.setLocationRelativeTo(mainFrame);
+		JChessApp.getApplication().show(aboutWindow);
 	}
 	
 	public String showPawnPromotionBox(Color color)
@@ -384,9 +354,9 @@ public class JChessView extends FrameView implements ActionListener, ComponentLi
 		return "";
 	}
 	
-	public void setGameBuilderFactory(IGameBuilderFactory factory) {
-		this.gameBuilderFactory = factory;
-	}
+    public void setGameBuilderFactory(IGameBuilderFactory factory) {
+        this.gameBuilderFactory = factory;
+    }
 	
 	public void componentResized(ComponentEvent event)
 	{
