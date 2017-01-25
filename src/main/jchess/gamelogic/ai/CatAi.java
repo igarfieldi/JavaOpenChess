@@ -96,6 +96,12 @@ public class CatAi implements ICatAi
 		turnsToRespawn = DEFAULT_RESPAWN_TIME;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see jchess.gamelogic.ai.ICatAi#updateSleepTimer()
+	 */
+	
 	@Override
 	public void updateSleepTimer()
 	{
@@ -109,6 +115,11 @@ public class CatAi implements ICatAi
 			turnsToWakeUp--;
 		}
 	}
+	
+	/**
+	 * Resets sleep timer to the default sleep time and calls the wakeUpCat
+	 * method to wake the cat up.
+	 */
 	
 	private void resetSleepTime()
 	{
@@ -163,7 +174,14 @@ public class CatAi implements ICatAi
 		return board.getField(cat);
 	}
 	
-	public Move getRandomCaptureMove()
+	/**
+	 * Chooses a random move that can capture a piece from a list of all the
+	 * moves that can capture pieces.
+	 * 
+	 * @return move that captures a piece
+	 */
+	
+	private Move getRandomCaptureMove()
 	{
 		return getRandomMove(chessboard.getThreateningMoves(cat, aiPlayer));
 	}

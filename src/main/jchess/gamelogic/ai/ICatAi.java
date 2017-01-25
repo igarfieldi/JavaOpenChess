@@ -26,6 +26,8 @@ public interface ICatAi
 	
 	/**
 	 * Method responsible for finding the next move randomly for the cat piece.
+	 * Moves that can capture pieces get selected first; if there isn't any
+	 * piece to capture, a random move will be returned.
 	 * 
 	 * @return random field to move to
 	 */
@@ -58,7 +60,18 @@ public interface ICatAi
 	 */
 	public Field getRandomField(List<Field> fields);
 	
+	/**
+	 * Gets called after the cat has captured a piece. If it's already sleeping,
+	 * reduces the timer by one.
+	 */
+	
 	public void updateSleepTimer();
+	
+	/**
+	 * Checks if the cat is sleeping.
+	 * 
+	 * @return true if it's sleeping
+	 */
 	
 	public boolean isSleeping();
 	
