@@ -77,11 +77,11 @@ public class PlayerNameInputPanel extends GridBagPanel
 		
 		this.gridBagConstraints.insets = BUFFER;
 		
-		setGridBagConstraints(thirdPlayerNameLabel, RIGHT, 0);
-		setGridBagConstraints(playerNameTextFields[2], RIGHT, 1);
+		setGridBagConstraints(thirdPlayerNameLabel, MIDDLE, 0);
+		setGridBagConstraints(playerNameTextFields[2], MIDDLE, 1);
 		
-		setGridBagConstraints(fourthPlayerNameLabel, RIGHT, 2);
-		setGridBagConstraints(playerNameTextFields[3], RIGHT, 3);
+		setGridBagConstraints(fourthPlayerNameLabel, MIDDLE, 2);
+		setGridBagConstraints(playerNameTextFields[3], MIDDLE, 3);
 	}
 	
 	/**

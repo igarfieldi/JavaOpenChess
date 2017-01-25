@@ -67,7 +67,7 @@ public class AboutPanel extends GridBagPanel implements IResources
 	protected void placeGuiElements()
 	{
 		setGridBagConstraints(imageLabel, LEFT, 0);
-		setGridBagConstraints(applicationInfoPanel, RIGHT, 0);
-		setGridBagConstraints(closeButton, RIGHT, 1);
+		setGridBagConstraints(applicationInfoPanel, MIDDLE, 0);
+		setGridBagConstraints(closeButton, MIDDLE, 1);
 	}
 }

@@ -74,8 +74,8 @@ public class PlayerNumberChoicePanel extends GridBagPanel implements ActionListe
 	protected void placeGuiElements()
 	{
 		setGridBagConstraints(twoPlayersRadioButton, LEFT, 0);
-		setGridBagConstraints(fourPlayersRadioButton, RIGHT, 0);
-		setGridBagConstraints(aiFourPlayersRadioButton, 2, 0);
+		setGridBagConstraints(fourPlayersRadioButton, MIDDLE, 0);
+		setGridBagConstraints(aiFourPlayersRadioButton, RIGHT, 0);
 	}
 	
 	@Override

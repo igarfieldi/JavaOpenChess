@@ -105,15 +105,15 @@ public class ApplicationInfoPanel extends GridBagPanel implements IResources
 		setGridBagConstraints(appDescriptionLabel, LEFT, 1);
 		
 		setGridBagConstraints(versionTitelLabel, LEFT, 2);
-		setGridBagConstraints(versionLabel, RIGHT, 2);
+		setGridBagConstraints(versionLabel, MIDDLE, 2);
 		
 		setGridBagConstraints(homepageTitelLabel, LEFT, 3);
-		setGridBagConstraints(homepageLabel, RIGHT, 3);
+		setGridBagConstraints(homepageLabel, MIDDLE, 3);
 		
 		setGridBagConstraints(activeDeveloperTitleLabel, LEFT, 4);
-		setGridBagConstraints(activeDeveloperLabel, RIGHT, 4);
+		setGridBagConstraints(activeDeveloperLabel, MIDDLE, 4);
 		
 		setGridBagConstraints(inactiveDevelopersTitleLabelLabel, LEFT, 5);
-		setGridBagConstraints(inactiveDevelopersLabel, RIGHT, 5);
+		setGridBagConstraints(inactiveDevelopersLabel, MIDDLE, 5);
 	}
 }

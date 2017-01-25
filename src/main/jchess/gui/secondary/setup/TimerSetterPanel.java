@@ -31,7 +31,7 @@ public class TimerSetterPanel extends GridBagPanel
 	protected void placeGuiElements()
 	{
 		setGridBagConstraints(hasTimeLimitCheckBox, LEFT, 0);
-		setGridBagConstraints(timeLimitsComboBox, RIGHT, 0);
+		setGridBagConstraints(timeLimitsComboBox, MIDDLE, 0);
 	}
 	
 	/**

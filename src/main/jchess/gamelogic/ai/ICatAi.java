@@ -14,7 +14,7 @@ public interface ICatAi
 	 * @return true if the cat is on the board
 	 */
 	
-	boolean isAlive();
+	public boolean isAlive();
 	
 	/**
 	 * Checks if the cat piece has to respawn. If it does, calls the method
@@ -22,7 +22,7 @@ public interface ICatAi
 	 * alive and reduces the timer by one.
 	 */
 	
-	void updateRespawnTimer();
+	public void updateRespawnTimer();
 	
 	/**
 	 * Method responsible for finding the next move randomly for the cat piece.
@@ -30,14 +30,14 @@ public interface ICatAi
 	 * @return random field to move to
 	 */
 	
-	Field getNextMove();
+	public Field getNextMove();
 	
 	/**
 	 * Finds the position the cat is on.
 	 * 
 	 * @return field of the cat
 	 */
-	Field getCurrentPosition();
+	public Field getCurrentPosition();
 	
 	/**
 	 * Method which gets a list of moves and chooses a random element from it.
@@ -47,7 +47,7 @@ public interface ICatAi
 	 * @return random move
 	 */
 	
-	Move getRandomMove(List<Move> moves);
+	public Move getRandomMove(List<Move> moves);
 	
 	/**
 	 * Method which gets a list of fields and chooses a random element from it.
@@ -56,10 +56,10 @@ public interface ICatAi
 	 *            List of fields
 	 * @return random field
 	 */
-	Field getRandomField(List<Field> fields);
-
+	public Field getRandomField(List<Field> fields);
+	
 	public void updateSleepTimer();
-
+	
 	public boolean isSleeping();
 	
 }
