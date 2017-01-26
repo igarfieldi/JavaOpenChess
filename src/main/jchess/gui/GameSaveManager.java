@@ -17,12 +17,11 @@ import jchess.gamelogic.game.IGame;
 import jchess.gamelogic.game.IGameBuilder;
 import jchess.gamelogic.game.IGameBuilderFactory;
 import jchess.gamelogic.views.IMessageDisplay.Option;
-import jchess.gui.main.JChessView;
 import jchess.util.FileMapParser;
 
 public class GameSaveManager
 {
-	private static Logger log = Logger.getLogger(JChessView.class.getName());
+	private static Logger log = Logger.getLogger(GameSaveManager.class.getName());
 	
 	private IGameBuilderFactory gameBuilderFactory;
 	private JTabbedPane gamesPane;
@@ -47,7 +46,7 @@ public class GameSaveManager
 			if(retVal == JFileChooser.APPROVE_OPTION)
 			{
 				File selectedFile = fileChooser.getSelectedFile();
-				IGame tempGUI = null;//this.getActiveTabGame();
+				IGame tempGUI = JChessApp.getApplication().view.getActiveTabGame();
 				if(!selectedFile.exists())
 					createSaveFile(selectedFile);
 				else if(selectedFile.exists())
