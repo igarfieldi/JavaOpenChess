@@ -29,6 +29,7 @@ import jchess.gamelogic.game.IGameBuilderFactory;
 import jchess.gamelogic.views.IMessageDisplay.Option;
 import jchess.gui.secondary.about.JChessAboutWindow;
 import jchess.gui.secondary.setup.NewGameWindow;
+import jchess.gui.secondary.setup.SettingsAdopter;
 import jchess.gui.secondary.themechooser.ThemeChooseWindow;
 import jchess.util.FileMapParser;
 import jchess.util.TypedResourceBundle;
@@ -202,39 +203,34 @@ public class JChessMenuBar extends JMenuBar implements ActionListener
 		{
 			File file = fileChooser.getSelectedFile();
 			if(file.exists() && file.canRead()) {
-				FileMapParser parser = new FileMapParser();
 				try
 				{
-					parser.load(file);
-					IGame newGame = null;
-					String gameType = parser.getProperty("Event");
-					
-					// Depending on the game we start a new one
-					switch(gameType) {
-						case "Game":
-							IGameBuilder builder = gameBuilderFactory.getBuilder();
-
-							Player white = new Player(parser.getProperty("WHITE"), Color.WHITE);
-							Player black = new Player(parser.getProperty("BLACK"), Color.BLACK);
-							builder.addPlayer(white);
-							builder.addPlayer(black);
-							
-							newGame = builder.create();
-							break;
-						default:
-							log.log(Level.SEVERE, "Unknown game type!");
-							return ;
-					}
-					
-					newGame.load(parser);
-					
-				} catch(IOException exc)
+					readSaveFile(file);
+				}
+				catch(IOException exc)
 				{
 					log.log(Level.SEVERE, "Failed to load saved game!", exc);
 					JOptionPane.showMessageDialog(JChessApp.getApplication().getMainFrame(),
 					        Localization.getMessage("error_reading_file"));
 				}
 			}
+		}
+	}
+
+	private void readSaveFile(File file) throws IOException
+	{
+		FileMapParser parser = new FileMapParser();
+		parser.load(file);
+		String gameType = parser.getProperty("Event");
+		
+		// Depending on the game we start a new one
+		switch(gameType) {
+			case "Game":
+				SettingsAdopter settingsAdopter = new SettingsAdopter();
+				settingsAdopter.createLoadedGameWindow(parser);
+				break;
+			default:
+				log.log(Level.SEVERE, "Unknown game type!");
 		}
 	}
 	

@@ -6,6 +6,7 @@ import jchess.gamelogic.Player.Color;
 import jchess.gamelogic.game.IGame;
 import jchess.gamelogic.game.IGameBuilder;
 import jchess.gamelogic.game.RegularGameBuilderFactory;
+import jchess.util.FileMapParser;
 
 /**
  * This class feeds the properties set in the UI of the NewGameWindow to the IGame interface which
@@ -31,6 +32,17 @@ public class SettingsAdopter
 		IGame game = createGameWithSettings(timeLimit, playerNumber, playerNames);
 		String newGameTabTitle = setNewGameTabTitle(playerNames, playerNumber);
 		
+		JChessApp.view.addNewGameTab(newGameTabTitle, game);
+		drawGameWindow(game);
+	}
+	
+	public void createLoadedGameWindow(FileMapParser parser)
+	{
+		String[] playerNames = { parser.getProperty("WHITE") , parser.getProperty("BLACK") };
+		IGame game = createGameWithSettings(0, 2, playerNames);
+		game.load(parser);
+		
+		String newGameTabTitle = setNewGameTabTitle(playerNames, 2);
 		JChessApp.view.addNewGameTab(newGameTabTitle, game);
 		drawGameWindow(game);
 	}

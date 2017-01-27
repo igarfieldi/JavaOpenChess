@@ -17,6 +17,7 @@ import jchess.gamelogic.game.IGame;
 import jchess.gamelogic.game.IGameBuilder;
 import jchess.gamelogic.game.IGameBuilderFactory;
 import jchess.gamelogic.views.IMessageDisplay.Option;
+import jchess.gui.secondary.setup.SettingsAdopter;
 import jchess.util.FileMapParser;
 
 public class GameSaveManager
@@ -131,24 +132,11 @@ public class GameSaveManager
 		switch(gameType) // Depending on the game we start a new one
 		{
 			case "Game":
-				IGame newGame = createGame(parser);
-				newGame.load(parser);
+				SettingsAdopter settingsAdopter = new SettingsAdopter();
+				settingsAdopter.createLoadedGameWindow(parser);
 				break;
 			default:
 				log.log(Level.SEVERE, "Unknown game type!");
 		}
-	}
-
-	private IGame createGame(FileMapParser parser)
-	{
-		IGameBuilder builder = gameBuilderFactory.getBuilder();
-		
-		Player white = new Player(parser.getProperty("WHITE"), Color.WHITE);
-		Player black = new Player(parser.getProperty("BLACK"), Color.BLACK);
-		builder.addPlayer(white);
-		builder.addPlayer(black);
-		
-		IGame newGame = builder.create();
-		return newGame;
 	}
 }
