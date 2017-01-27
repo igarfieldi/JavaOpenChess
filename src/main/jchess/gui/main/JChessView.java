@@ -1,11 +1,11 @@
 package jchess.gui.main;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -29,8 +29,6 @@ public class JChessView extends FrameView
 	private JPanel mainPanel;
 	private JTabbedPane gamesPane;
 	
-	private PawnPromotionWindow pawnPromotionWindow;
-	
 	private static final Dimension PANEL_SIZE = new Dimension(800, 600);
 	
 	public JChessView(SingleFrameApplication app, IGameBuilderFactory factory)
@@ -43,7 +41,7 @@ public class JChessView extends FrameView
 		initializeMainPanel();
 		setMenuBar(menuBar);
 	}
-
+	
 	private void initializeMainPanel()
 	{
 		mainPanel = new JPanel();
@@ -52,35 +50,30 @@ public class JChessView extends FrameView
 		configureMainPanelLayout();
 		setComponent(mainPanel);
 	}
-
+	
 	private void configureMainPanelSize()
 	{
 		mainPanel.setMaximumSize(PANEL_SIZE);
 		mainPanel.setMinimumSize(PANEL_SIZE);
 		mainPanel.setPreferredSize(PANEL_SIZE);
 	}
-
+	
 	private void configureMainPanelLayout()
 	{
-		GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
-		mainPanel.setLayout(mainPanelLayout);
-		mainPanelLayout.setHorizontalGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-		        .addGroup(mainPanelLayout.createSequentialGroup().addContainerGap()
-		                .addComponent(gamesPane, GroupLayout.DEFAULT_SIZE, 776, Short.MAX_VALUE).addContainerGap()));
-		mainPanelLayout.setVerticalGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-		        .addGroup(mainPanelLayout.createSequentialGroup().addContainerGap().addComponent(gamesPane,
-		                GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)));
+		this.mainPanel.setLayout(new BorderLayout());
+		mainPanel.add(this.gamesPane, BorderLayout.CENTER);
 	}
 	
-	public void addNewGameTab(String title, IGame game) {
+	public void addNewGameTab(String title, IGame game)
+	{
 		this.gameList.add(game);
-		this.gamesPane.addTab(title, (Component)game.getView());
+		this.gamesPane.addTab(title, (Component) game.getView());
 	}
 	
 	public String showPawnPromotionBox(Color color)
 	{
 		JFrame mainFrame = JChessApp.getApplication().getMainFrame();
-		pawnPromotionWindow = new PawnPromotionWindow(mainFrame, color);
+		PawnPromotionWindow pawnPromotionWindow = new PawnPromotionWindow(mainFrame, color);
 		pawnPromotionWindow.setLocationRelativeTo(mainFrame);
 		pawnPromotionWindow.setModal(true);
 		
