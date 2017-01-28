@@ -2,13 +2,10 @@ package jchess.gui.main;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.ActionMap;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -20,20 +17,15 @@ import org.jdesktop.application.Action;
 import org.jdesktop.application.Application;
 
 import jchess.JChessApp;
-import jchess.Localization;
-import jchess.gamelogic.Player;
-import jchess.gamelogic.Player.Color;
-import jchess.gamelogic.game.IGame;
-import jchess.gamelogic.game.IGameBuilder;
-import jchess.gamelogic.game.IGameBuilderFactory;
-import jchess.gamelogic.views.IMessageDisplay.Option;
+import jchess.gui.GameSaveManager;
 import jchess.gui.secondary.about.JChessAboutWindow;
 import jchess.gui.secondary.setup.NewGameWindow;
-import jchess.gui.secondary.setup.SettingsAdopter;
 import jchess.gui.secondary.themechooser.ThemeChooseWindow;
-import jchess.util.FileMapParser;
 import jchess.util.TypedResourceBundle;
 
+/**
+ * This class handles the creation and behavior of the menu bar in the JChessView.
+ */
 public class JChessMenuBar extends JMenuBar implements ActionListener
 {
 	private static Logger log = Logger.getLogger(JChessMenuBar.class.getName());
@@ -46,28 +38,32 @@ public class JChessMenuBar extends JMenuBar implements ActionListener
 	private JMenuItem saveGameItem;
 	
 	private JFrame mainFrame;
-	private IGameBuilderFactory gameBuilderFactory;
-	private JTabbedPane gamesPane;
+	private GameSaveManager gameSaveManager;
 	
-	public JChessMenuBar(JTabbedPane gamesPane, IGameBuilderFactory factory)
+	public JChessMenuBar(JTabbedPane gamesPane)
 	{
 		super();
 		
 		this.mainFrame = JChessApp.getApplication().getMainFrame();
-		this.gamesPane = gamesPane;
-		this.gameBuilderFactory = factory;
+		this.gameSaveManager = new GameSaveManager(gamesPane);
 		
-		initializeMenuBarElements();
+		initializeMenuItems();
 		createMenuBar();
 	}
 	
-	private void initializeMenuBarElements()
+	/**
+	 * Initializes the menu items for the file menu.
+	 */
+	private void initializeMenuItems()
 	{
 		newGameItem = new JMenuItem();
 		loadGameItem = new JMenuItem();
 		saveGameItem = new JMenuItem();
 	}
 	
+	/**
+	 * Adds all menus to the menu bar.
+	 */
 	private void createMenuBar()
 	{
 		addFileMenu();
@@ -76,6 +72,9 @@ public class JChessMenuBar extends JMenuBar implements ActionListener
 		addMenu("helpMenu", "About");
 	}
 	
+	/**
+	 * Adds all the menu items to the file menu.
+	 */
 	private void addFileMenu()
 	{
 		JMenu fileMenu = createMenu("fileMenu");
@@ -86,6 +85,13 @@ public class JChessMenuBar extends JMenuBar implements ActionListener
 		addMenuItem(fileMenu, "quit");
 	}
 	
+	/**
+	 * Instantiates a menu.
+	 * 
+	 * @param label
+	 * 			The label to access the menu name from VIEW_PROPERTIES.
+	 * @return new menu.
+	 */
 	private JMenu createMenu(String label)
 	{
 		JMenu menu = new JMenu();
@@ -95,19 +101,45 @@ public class JChessMenuBar extends JMenuBar implements ActionListener
 		return menu;
 	}
 
-	private void addMenuItem(JMenu menuParent, JMenuItem menuItem, String menuItemName)
+	/**
+	 * Adds a menu item with an action listener.
+	 * 
+	 * @param menuParent
+	 * 				The menu that this item belongs to.
+	 * @param menuItem
+	 * 				The menu item to be added.
+	 * @param menuItemLabel
+	 * 				The label to access the menu item name from VIEW_PROPERTIES.
+	 */
+	private void addMenuItem(JMenu menuParent, JMenuItem menuItem, String menuItemLabel)
 	{
-		menuItem.setText(VIEW_PROPERTIES.getString(menuItemName + "Item.text"));
+		menuItem.setText(VIEW_PROPERTIES.getString(menuItemLabel + "Item.text"));
 		menuItem.addActionListener(this);
 		menuParent.add(menuItem);
 	}
 	
+	/**
+	 * Adds a new menu to the menu bar
+	 * 
+	 * @param name
+	 * 				The label to access the menu name from VIEW_PROPERTIES.
+	 * @param menuItemName
+	 * 				The name of the menu item that belongs to this menu.
+	 */
 	private void addMenu(String name, String menuItemName)
 	{
-		JMenu optionsMenu = createMenu(name);
-		addMenuItem(optionsMenu, menuItemName);
+		JMenu menu = createMenu(name);
+		addMenuItem(menu, menuItemName);
 	}
 	
+	/**
+	 * Adds a menu item whose action is set by an action map.
+	 * 
+	 * @param menuParent
+	 * 				The menu that this menu item belongs to.
+	 * @param action
+	 * 				The action that the menu item does.
+	 */
 	private void addMenuItem(JMenu menuParent, String action)
 	{
 		ActionMap actionMap = Application.getInstance(JChessApp.class).getContext()
@@ -128,118 +160,26 @@ public class JChessMenuBar extends JMenuBar implements ActionListener
 		}
 		else if(target == this.saveGameItem)
 		{
-			if(this.gamesPane.getTabCount() == 0)
-			{
-				JOptionPane.showMessageDialog(null, Localization.getMessage("save_not_called_for_tab"));
-				return;
-			}
-			while(true)
-			{// until
-				JFileChooser fileChooser = new JFileChooser();
-				int retVal = fileChooser.showSaveDialog(this.gamesPane);
-				if(retVal == JFileChooser.APPROVE_OPTION)
-				{
-					File selectedFile = fileChooser.getSelectedFile();
-					IGame tempGUI = JChessApp.getApplication().view.getActiveTabGame();
-					if(!selectedFile.exists())
-						createSaveFile(selectedFile);
-					else if(selectedFile.exists())
-					{
-						if(tempGUI.getView().showConfirmMessage("file_exists", "") != Option.YES) {
-							continue;
-						}
-					}
-					if(selectedFile.canWrite()) {
-						try
-						{
-							FileMapParser parser = new FileMapParser();
-							tempGUI.save(parser);
-							parser.save(selectedFile);
-							tempGUI.getView().showMessage("game_saved_properly", "");
-							
-							// TODO: save to disk
-						} catch(IOException exc)
-						{
-							log.log(Level.SEVERE, "Failed to save game!", exc);
-							// TODO: add message key for individual message
-							tempGUI.getView().showMessage("error_writing_to_file", selectedFile.getName());
-						}
-					} else {
-						tempGUI.getView().showMessage("error_writing_to_file", selectedFile.getName());
-					}
-					
-					log.info(Boolean.toString(fileChooser.getSelectedFile().isFile()));
-					break;
-				}
-				else if(retVal == JFileChooser.CANCEL_OPTION)
-				{
-					break;
-				}
-			}
+			gameSaveManager.saveGame();
 		}
 		else if(target == this.loadGameItem)
 		{
-			loadGame();
+			gameSaveManager.loadGame();
 		}
 	}
 	
-	private void createSaveFile(File selectedFile)
-	{
-		try
-		{
-			selectedFile.createNewFile();
-		}
-		catch(IOException exception)
-		{
-			log.log(Level.SEVERE, "error creating file: ", exception);
-		}
-	}
-
-	private void loadGame()
-	{
-		JFileChooser fileChooser = new JFileChooser();
-		int retVal = fileChooser.showOpenDialog(this.gamesPane);
-		if(retVal == JFileChooser.APPROVE_OPTION)
-		{
-			File file = fileChooser.getSelectedFile();
-			if(file.exists() && file.canRead()) {
-				try
-				{
-					readSaveFile(file);
-				}
-				catch(IOException exc)
-				{
-					log.log(Level.SEVERE, "Failed to load saved game!", exc);
-					JOptionPane.showMessageDialog(JChessApp.getApplication().getMainFrame(),
-					        Localization.getMessage("error_reading_file"));
-				}
-			}
-		}
-	}
-
-	private void readSaveFile(File file) throws IOException
-	{
-		FileMapParser parser = new FileMapParser();
-		parser.load(file);
-		String gameType = parser.getProperty("Event");
-		
-		// Depending on the game we start a new one
-		switch(gameType) {
-			case "Game":
-				SettingsAdopter settingsAdopter = new SettingsAdopter();
-				settingsAdopter.createLoadedGameWindow(parser);
-				break;
-			default:
-				log.log(Level.SEVERE, "Unknown game type!");
-		}
-	}
-	
+	/**
+	 * Shows the JChessAboutWindow.
+	 */
 	@Action
 	public void About()
 	{
 		JChessApp.getApplication().show(new JChessAboutWindow(mainFrame));
 	}
 	
+	/**
+	 * Shows the ThemeChooseWindow.
+	 */
 	@Action
 	public void Theme()
 	{

@@ -101,6 +101,7 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 		if(closeIconRectangle.contains(event.getX(), event.getY()))
 		{
 			log.log(Level.FINE, "Removing tab with " + tabIndex + " number!...");
+			JChessApp.getApplication().view.removeGamefromListAt(tabIndex);
 			this.removeTabAt(tabIndex);
 			this.updateAddIconRectangle();
 		}

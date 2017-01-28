@@ -36,12 +36,15 @@ public class JChessView extends FrameView
 		super(app);
 		
 		this.gamesPane = new JChessTabbedPane();
-		JChessMenuBar menuBar = new JChessMenuBar(gamesPane, factory);
+		JChessMenuBar menuBar = new JChessMenuBar(gamesPane);
 		
 		initializeMainPanel();
 		setMenuBar(menuBar);
 	}
 	
+	/**
+	 * Initializes panel of the view
+	 */
 	private void initializeMainPanel()
 	{
 		mainPanel = new JPanel();
@@ -51,6 +54,9 @@ public class JChessView extends FrameView
 		setComponent(mainPanel);
 	}
 	
+	/**
+	 * Sets the size of the panel.
+	 */
 	private void configureMainPanelSize()
 	{
 		mainPanel.setMaximumSize(PANEL_SIZE);
@@ -58,18 +64,36 @@ public class JChessView extends FrameView
 		mainPanel.setPreferredSize(PANEL_SIZE);
 	}
 	
+	/**
+	 * Sets the layout of the panel.
+	 */
 	private void configureMainPanelLayout()
 	{
 		this.mainPanel.setLayout(new BorderLayout());
 		mainPanel.add(this.gamesPane, BorderLayout.CENTER);
 	}
 	
+	/**
+	 * Adds a new game tab to the tabbed pane and updates the game list.
+	 * 
+	 * @param title
+	 * 				The title of the tab.
+	 * @param game
+	 * 				The game that the new tab contains.
+	 */
 	public void addNewGameTab(String title, IGame game)
 	{
 		this.gameList.add(game);
 		this.gamesPane.addTab(title, (Component) game.getView());
 	}
 	
+	/**
+	 * Displays the pawn promotion window when a pawn is about to be promoted
+	 * 
+	 * @param color
+	 * 				The color of the pawn to be promoted.
+	 * @return
+	 */
 	public String showPawnPromotionBox(Color color)
 	{
 		JFrame mainFrame = JChessApp.getApplication().getMainFrame();
@@ -82,18 +106,23 @@ public class JChessView extends FrameView
 		return pawnPromotionWindow.getSelectedPromotion();
 	}
 	
-	public String showSaveWindow()
-	{
-		return "";
-	}
-	
-	public IGame getActiveTabGame() throws ArrayIndexOutOfBoundsException
+	/**
+	 * 
+	 * @return Game that is currently displayed
+	 * @throws ArrayIndexOutOfBoundsException
+	 */
+	public IGame getActiveGame() throws ArrayIndexOutOfBoundsException
 	{
 		return this.gameList.get(this.gamesPane.getSelectedIndex());
 	}
 	
-	public int getNumberOfOpenedTabs()
+	/**
+	 * Removes game from the game list at the specified index.
+	 * 
+	 * @param index
+	 */
+	public void removeGamefromListAt(int index)
 	{
-		return this.gamesPane.getTabCount();
+		this.gameList.remove(index);
 	}
 }

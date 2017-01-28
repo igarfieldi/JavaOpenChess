@@ -36,6 +36,12 @@ public class SettingsAdopter
 		drawGameWindow(game);
 	}
 	
+	/**
+	 * Creates a new game that was loaded and displays it.
+	 * 
+	 * @param parser
+	 * 				The parser containing the loaded game info.
+	 */
 	public void createLoadedGameWindow(FileMapParser parser)
 	{
 		String[] playerNames = { parser.getProperty("WHITE") , parser.getProperty("BLACK") };
