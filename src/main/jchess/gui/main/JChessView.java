@@ -35,6 +35,8 @@ public class JChessView extends FrameView
 	{
 		super(app);
 		
+		this.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
 		this.gamesPane = new JChessTabbedPane();
 		JChessMenuBar menuBar = new JChessMenuBar(gamesPane);
 		
