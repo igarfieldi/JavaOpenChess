@@ -21,8 +21,6 @@
 package jchess.gamelogic.controllers.chessboardcontrollers;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Field;
@@ -81,12 +79,6 @@ public class FourPlayerChessboardController extends RegularChessboardController
 		
 		return new Move(rookField, rookTarget, getBoard().getPiece(rookField), null,
 				type, false, null);
-	}
-	
-	@Override
-	protected Set<Move> getEnPassantMoves(Piece piece)
-	{
-		return new HashSet<Move>();
 	}
 
 	/*

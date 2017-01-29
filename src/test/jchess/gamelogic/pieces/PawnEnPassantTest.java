@@ -76,10 +76,10 @@ public class PawnEnPassantTest
 		return Arrays.asList(new Object[][] {
 			{controller2p, players2p, new Direction(0, 1)},
 			{controller2p, players2p, new Direction(0, -1)},
-			//{controller4p, players4p, new Direction(1, 0)},
-			//{controller4p, players4p, new Direction(-1, 0)},
-			//{controller4p, players4p, new Direction(0, 1)},
-			//{controller4p, players4p, new Direction(0, -1)},
+			{controller4p, players4p, new Direction(1, 0)},
+			{controller4p, players4p, new Direction(-1, 0)},
+			{controller4p, players4p, new Direction(0, 1)},
+			{controller4p, players4p, new Direction(0, -1)},
 			// Potentially enable these if 4p gets en passant
 		});
 	}
@@ -132,6 +132,7 @@ public class PawnEnPassantTest
 							
 							// Clear the history to avoid pollution by any previous moves
 							controller.getHistory().clearHistory();
+							// Put in the 
 							// Execute the move
 							controller.move(testField, twoMovedField);
 							

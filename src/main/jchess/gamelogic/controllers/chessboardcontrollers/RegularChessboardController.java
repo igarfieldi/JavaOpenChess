@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -104,6 +105,17 @@ public abstract class RegularChessboardController implements IChessboardControll
 	public Player getActivePlayer()
 	{
 		return this.players.get(currPlayerIndex);
+	}
+	
+	@Override
+	public int getPlayerIndex(Player player) {
+		int index = players.indexOf(player);
+		
+		if(index < 0) {
+			throw new NoSuchElementException("Player " + player + " is not part of the game!");
+		}
+		
+		return index;
 	}
 	
 	/*
@@ -252,7 +264,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 			
 			try
 			{
-				this.move(tempModel.getField(piece), currField, false, false, false, false);
+				this.move(tempModel.getField(piece), currField, false, false, false);
 			} catch(IllegalMoveException exc)
 			{
 				// Should not happen
@@ -507,7 +519,65 @@ public abstract class RegularChessboardController implements IChessboardControll
 		return captureMoves;
 	}
 	
-	protected abstract Set<Move> getEnPassantMoves(Piece piece);
+	private Set<Move> getEnPassantMoves(Piece piece)
+	{
+		// TODO: for the 4p case we cannot use the last move!
+		Set<Move> enPassantMoves = new HashSet<Move>();
+		
+		// Check if we have a pawn at our hands (precondition for en passant)
+		if(piece.getBehaviour() instanceof Pawn)
+		{
+			Field pieceField = board.getField(piece);
+			Direction forward = ((Pawn) piece.getBehaviour()).getForwardDirection();
+			Direction sidewards = forward.rotate90Deg();
+			
+			Set<Field> candidates = new HashSet<Field>();
+			// Add field on one side
+			try {
+				Field candidate = new Field(pieceField.getPosX() + sidewards.getX(),
+						pieceField.getPosY() + sidewards.getY());
+				candidates.add(candidate);
+			} catch(IllegalArgumentException exc) {
+				// Field doesn't exist
+			}
+			
+			// Add field on the other side
+			try {
+				Field candidate = new Field(pieceField.getPosX() - sidewards.getX(),
+						pieceField.getPosY() - sidewards.getY());
+				candidates.add(candidate);
+			} catch(IllegalArgumentException exc) {
+				// Field doesn't exist
+			}
+			
+			for(Field candidate : candidates) {
+				Piece twoMoved = board.getPiece(candidate);
+				if(twoMoved != null && (twoMoved.getBehaviour() instanceof Pawn)) {
+					// We have a possible two-field-moved pawn
+					
+					// Check it's direction (has to be inverse of our piece)
+					Direction twoMovedDir = ((Pawn)twoMoved.getBehaviour()).getForwardDirection();
+					if(twoMovedDir.invert().equals(forward)) {
+						// Now we can check the history and see if it actually was
+						// a two field pawn move
+						Move lastMove = getHistory().getLastMove(twoMoved.getPlayer());
+						if(lastMove != null &&
+								lastMove.getTo().equals(candidate) &&
+								lastMove.wasPawnTwoFieldsMove()) {
+							// Shift the target field to where our piece will go
+							// and add it to the list
+							enPassantMoves.add(new Move(pieceField, new Field(
+									candidate.getPosX() + forward.getX(),
+									candidate.getPosY() + forward.getY()),
+									piece, twoMoved, CastlingType.NONE, true, null));
+						}
+					}
+				}
+			}
+		}
+		
+		return enPassantMoves;
+	}
 	
 	/**
 	 * Returns the set of fields a given piece can move to without capturing.
@@ -754,7 +824,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 	@Override
 	public boolean move(Field begin, Field end) throws IllegalMoveException
 	{
-		return move(begin, end, true, true, true, true);
+		return move(begin, end, true, true, true);
 	}
 	
 	/**
@@ -771,7 +841,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 	 */
 	protected abstract boolean checkForPromotion(Piece piece, Field target);
 	
-	private boolean move(Field begin, Field end, boolean checkMove, boolean refresh, boolean clearForwardHistory,
+	private boolean move(Field begin, Field end, boolean checkMove, boolean refresh,
 	        boolean enterIntoHistory) throws IllegalMoveException
 	{
 		// Standard move
@@ -780,6 +850,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 		{
 			throw new NullPointerException("No piece on starting field!");
 		}
+		
 		
 		if(checkMove)
 		{
@@ -795,7 +866,6 @@ public abstract class RegularChessboardController implements IChessboardControll
 		}
 		
 		Move move = new Move(begin, end, movedPiece, board.getPiece(end), CastlingType.NONE, false, null);
-		Move lastMove = this.getHistory().getLastMoveFromHistory();
 		
 		if(board.getPiece(begin).getBehaviour() instanceof King)
 		{
@@ -820,20 +890,16 @@ public abstract class RegularChessboardController implements IChessboardControll
 			}
 		} else if(board.getPiece(begin).getBehaviour() instanceof Pawn)
 		{
-			if(lastMove != null && lastMove.wasPawnTwoFieldsMove())
-			{
-				// Check if the target field lies behind the two-square pawn
-				Direction backwards = ((Pawn)lastMove.getMovedPiece().getBehaviour()).getForwardDirection().multiply(-1);
-				Field behindPawn = board.getField(lastMove.getTo().getPosX() + backwards.getX(),
-				        lastMove.getTo().getPosY() + backwards.getY());
-				if(behindPawn.equals(end))
-				{
-					// In that case we have an En Passant at our hands
-					move = new Move(begin, end, movedPiece, lastMove.getMovedPiece(), CastlingType.NONE, true, null);
-					getBoard().removePiece(lastMove.getTo());
+			// Get the en passant moves
+			for(Move enPassantMove : this.getEnPassantMoves(board.getPiece(begin))) {
+				if(enPassantMove.getFrom().equals(begin) &&
+						enPassantMove.getTo().equals(end)) {
+					move = enPassantMove;
+					getBoard().removePiece(board.getField(move.getTakenPiece()));
 				}
 			}
-			if(clearForwardHistory && (view != null) && this.checkForPromotion(movedPiece, end))
+			
+			if(refresh && (view != null) && this.checkForPromotion(movedPiece, end))
 			{
 				// Promotion of pawns has to be handled for the specific board
 				// layout
@@ -887,14 +953,9 @@ public abstract class RegularChessboardController implements IChessboardControll
 			view.render();
 		}
 		
-		if(clearForwardHistory)
-		{
-			this.movesHistory.clearMoveForwardStack();
-		}
-		
 		if(enterIntoHistory)
 		{
-			this.movesHistory.addMove(move, clearForwardHistory);
+			this.movesHistory.addMove(move);
 		}
 		
 		return true;

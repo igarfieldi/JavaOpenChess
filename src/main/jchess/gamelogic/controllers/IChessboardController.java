@@ -30,6 +30,16 @@ public interface IChessboardController extends LoadSaveable
 	
 	public Set<Player> getAllies(Player friendly);
 	
+	/**
+	 * Returns the index of the player.
+	 * This is equivalent to which turn the player will be on for a newly
+	 * started round.
+	 * @param player Player to get index for
+	 * @return Index of player
+	 * @throws NoSuchElementException if the player isn't part of the game
+	 */
+	public int getPlayerIndex(Player player);
+	
 	public void switchToNextPlayer();
 	
 	public void switchToPreviousPlayer();

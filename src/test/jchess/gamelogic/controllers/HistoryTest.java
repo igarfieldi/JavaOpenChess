@@ -61,40 +61,35 @@ public class HistoryTest
 	 * Tests the addMove method (and implicitly getLastMove too).
 	 */
 	@Test
-	public void testAddMoveMoveBoolean()
+	public void testAddMove()
 	{
 		Move initialMove = new Move(new Field(4, 1), new Field(3, 7), twoPlayerBoard.getPiece(new Field(4, 1)));
 		Move testMove = new Move(new Field(1, 1), new Field(6, 5), twoPlayerBoard.getPiece(new Field(1, 1)));
 
 		// Initial setup of the history (need at least one entry for lastMove)
-		twoPlayerHistory.addMove(initialMove, true);
-		fourPlayerHistory.addMove(initialMove, true);
-		assertTrue(twoPlayerHistory.getLastMoveFromHistory().equals(initialMove));
-		assertTrue(fourPlayerHistory.getLastMoveFromHistory().equals(initialMove));
+		twoPlayerHistory.addMove(initialMove);
+		fourPlayerHistory.addMove(initialMove);
+		assertTrue(twoPlayerHistory.getLastMove().equals(initialMove));
+		assertTrue(fourPlayerHistory.getLastMove().equals(initialMove));
 		
 		// Test two player history
-		twoPlayerHistory.addMove(testMove, false);
-		assertTrue(twoPlayerHistory.getLastMoveFromHistory().equals(initialMove));
-		twoPlayerHistory.addMove(testMove, true);
-		assertTrue(twoPlayerHistory.getLastMoveFromHistory().equals(testMove));
+		twoPlayerHistory.addMove(testMove);
+		assertTrue(twoPlayerHistory.getLastMove().equals(testMove));
 		try {
-			twoPlayerHistory.addMove(null, true);
+			twoPlayerHistory.addMove(null);
 			fail("Null check missing!");
 		} catch(IllegalArgumentException exc) {
-			assertTrue(twoPlayerHistory.getLastMoveFromHistory().equals(testMove));
+			assertTrue(twoPlayerHistory.getLastMove().equals(testMove));
 		}
 		
-
 		// Test four player history
-		fourPlayerHistory.addMove(testMove, false);
-		assertTrue(fourPlayerHistory.getLastMoveFromHistory().equals(initialMove));
-		fourPlayerHistory.addMove(testMove, true);
-		assertTrue(fourPlayerHistory.getLastMoveFromHistory().equals(testMove));
+		fourPlayerHistory.addMove(testMove);
+		assertTrue(fourPlayerHistory.getLastMove().equals(testMove));
 		try {
-			fourPlayerHistory.addMove(null, true);
+			fourPlayerHistory.addMove(null);
 			fail("Null check missing!");
 		} catch(IllegalArgumentException exc) {
-			assertTrue(fourPlayerHistory.getLastMoveFromHistory().equals(testMove));
+			assertTrue(fourPlayerHistory.getLastMove().equals(testMove));
 		}
 
 	}
@@ -256,7 +251,7 @@ public class HistoryTest
 	@Test
 	public void testSetMovesTwoPlayer()
 	{
-		/*Move moves[] = {
+		Move moves[] = {
 				new Move(new Field(3, 6), new Field(3, 4), twoPlayerBoard.getPiece(new Field(3, 6))),
 				new Move(new Field(4, 1), new Field(4, 3), twoPlayerBoard.getPiece(new Field(4, 1))),
 				new Move(new Field(3, 4), new Field(4, 3), twoPlayerBoard.getPiece(new Field(3, 6))),
@@ -297,7 +292,7 @@ public class HistoryTest
 				assertTrue(twoPlayerBoard.getPiece(field).getName().
 						equals(testController.getBoard().getPiece(field).getName()));
 			}
-		}*/
+		}
 	}
 	
 	/**

@@ -22,7 +22,10 @@ package jchess.gamelogic.controllers;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,12 +55,11 @@ public class History extends AbstractTableModel implements IHistory
 	private MyDefaultTableModel tableModel;
 	private HistoryView view;
 	private JTable table;
-	private Stack<Move> moveBackStack = new Stack<Move>();
-	private Stack<Move> moveForwardStack = new Stack<Move>();
+	private Map<Player, List<Move>> moveHistory;
+	private Move lastMove;
 	private IChessboardController chessboard;
 	private List<Player> players;
 	private int currentRowCount = 0;
-	private int currentPlayer = 0;
 	
 	public History(IChessboardController chessboard, List<Player> players) {
 		super();
@@ -66,10 +68,13 @@ public class History extends AbstractTableModel implements IHistory
 		this.tableModel = new MyDefaultTableModel();
 		this.table = new JTable(this.tableModel);
 		this.view = new HistoryView(this.table);
+		this.moveHistory = new HashMap<>();
+		this.lastMove = null;
 		//this.table.setMinimumSize(new Dimension(100, 100));
 		
 		for(Player player : players) {
 			this.tableModel.addColumn(player.getColor().name());
+			moveHistory.put(player, new ArrayList<Move>());
 		}
 		this.addTableModelListener(null);
 		this.tableModel.addTableModelListener(null);
@@ -112,20 +117,18 @@ public class History extends AbstractTableModel implements IHistory
 	 */
 	protected void addMove2Table(String str)
 	{
-		if(currentPlayer == 0) {
+		int currentColumn = chessboard.getPlayerIndex(chessboard.getActivePlayer());
+		if(currentColumn == 0) {
 			this.addRow();
 			this.currentRowCount++;
 		}
-		this.tableModel.setValueAt(str, currentRowCount - 1, currentPlayer);
-		
-		if(++currentPlayer >= this.players.size()) {
-			currentPlayer = 0;
-		}
+		this.tableModel.setValueAt(str, currentRowCount - 1, currentColumn);
 		
 		this.table.scrollRectToVisible(table.getCellRect(table.getRowCount() - 1, 0, true));
 	}
-	
-	public void addMove(Move move, boolean registerInHistory)
+
+	@Override
+	public void addMove(Move move)
 	{
 		ArgumentChecker.checkForNull(move);
 		
@@ -133,10 +136,8 @@ public class History extends AbstractTableModel implements IHistory
 		
 		// Gotta enter the move to the history now so that en passant and whatnot
 		// can detect it properly
-		if(registerInHistory)
-		{
-			this.moveBackStack.add(move);
-		}
+		this.moveHistory.get(move.getMovedPiece().getPlayer()).add(move);
+		this.lastMove = move;
 		
 		// Temporarily switch to the next player so the check condition can be
 		// verified
@@ -159,38 +160,43 @@ public class History extends AbstractTableModel implements IHistory
 		this.view.scrollRectToVisible(new Rectangle(0, this.view.getHeight() - 2, 1, 1));
 	}
 	
-	public void clearMoveForwardStack()
-	{
-		this.moveForwardStack.clear();
-	}
-	
 	/**
 	 * Clears the entire history.
 	 */
 	public void clearHistory() {
-		this.moveBackStack.clear();
-		this.moveForwardStack.clear();
+		for(Player player : players) {
+			this.moveHistory.get(player).clear();
+		}
+		this.lastMove = null;
 		this.move.clear();
 		this.tableModel.setRowCount(0);
-		this.currentPlayer = 0;
 		this.currentRowCount = 0;
 	}
-	
+
+	@Override
 	public HistoryView getView()
 	{
 		return this.view;
 	}
 	
-	public synchronized Move getLastMoveFromHistory()
-	{
-		try
-		{
-			Move last = this.moveBackStack.get(this.moveBackStack.size() - 1);
-			return last;
-		} catch(java.lang.ArrayIndexOutOfBoundsException exc)
-		{
+	@Override
+	public Move getLastMove(Player player) {
+		if(currentRowCount == 0) {
 			return null;
 		}
+		
+		List<Move> playerMoves = this.moveHistory.get(player);
+		if(playerMoves == null || playerMoves.isEmpty()) {
+			return null;
+		} else {
+			return playerMoves.get(playerMoves.size() - 1);
+		}
+	}
+	
+	@Override
+	public Move getLastMove()
+	{
+		return lastMove;
 	}
 	
 	/**
@@ -290,6 +296,7 @@ public class History extends AbstractTableModel implements IHistory
 	 * @param moves
 	 *            String to set in String like PGN with full-notation format
 	 */
+	@Override
 	public void setMoves(String moves)
 	{
 		int from = 0;
