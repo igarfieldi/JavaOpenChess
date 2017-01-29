@@ -25,16 +25,6 @@ public interface ICatAi
 	public void updateRespawnTimer();
 	
 	/**
-	 * Method responsible for finding the next move randomly for the cat piece.
-	 * Moves that can capture pieces get selected first; if there isn't any
-	 * piece to capture, a random move will be returned.
-	 * 
-	 * @return random field to move to
-	 */
-	
-	public Field getNextMove();
-	
-	/**
 	 * Finds the position the cat is on.
 	 * 
 	 * @return field of the cat
@@ -74,5 +64,43 @@ public interface ICatAi
 	 */
 	
 	public boolean isSleeping();
+	
+	/**
+	 * Checks if that cat can move.
+	 * 
+	 * @return true if it can move
+	 */
+	
+	public boolean canMove();
+	
+	/**
+	 * Checks if it's possible for the cat to capture any piece.
+	 * 
+	 * @return true if can capture piece
+	 */
+	
+	public boolean canCapture();
+	
+	/**
+	 * Finds a random move that can capture an enemy piece.
+	 * 
+	 * @return field of the capturing piece
+	 */
+	
+	public Field getRandomThreateningMove();
+	
+	/**
+	 * Finds a random move.
+	 * 
+	 * @return field of the target move
+	 */
+	
+	public Field getRandomNormalMove();
+	
+	/**
+	 * Puts cat to sleep; changes the behaviour from Cat to SleepingCat.
+	 */
+	
+	public void sleepCat();
 	
 }

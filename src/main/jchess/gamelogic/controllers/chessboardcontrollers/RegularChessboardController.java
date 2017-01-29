@@ -712,9 +712,9 @@ public abstract class RegularChessboardController implements IChessboardControll
 	}
 	
 
-	public List<Move> getThreateningMoves(Piece piece, Player player)
+	public Set<Move> getThreateningMoves(Piece piece, Player player)
 	{
-		List<Move> threateningMoves = new ArrayList<Move>();
+		Set<Move> threateningMoves = new HashSet<Move>();
 		for (Move moves : getPossibleMoves(piece, true)){
 			if (board.getPiece(moves.getTo())!= null){
 				threateningMoves.add(moves);

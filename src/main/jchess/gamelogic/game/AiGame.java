@@ -13,8 +13,9 @@ public class AiGame extends UntimedGame implements IGame
 	private IChessboardController chessboard;
 	private ICatAi catAi;
 	
-	public AiGame(IChessboardController chessboard, ICatAi catAi){
-		super (chessboard);
+	public AiGame(IChessboardController chessboard, ICatAi catAi)
+	{
+		super(chessboard);
 		this.chessboard = chessboard;
 		blockedChessboard = false;
 		this.catAi = catAi;
@@ -35,17 +36,26 @@ public class AiGame extends UntimedGame implements IGame
 		} else if(chessboard.getActivePlayer().getType() == Player.Type.COMPUTER)
 		{
 			blockedChessboard = true;
-			//checks if the cat is alive and moves it, otherwise skips the moves and goes to the next player
-			if(catAi.isAlive() && !catAi.isSleeping())
+			// checks if the cat is alive and moves it, otherwise skips the
+			// moves and goes to the next player
+			if(catAi.canMove())
 			{
-				executeMove(catAi.getCurrentPosition(), catAi.getNextMove());
+				if(catAi.canCapture())
+				{
+					executeMove(catAi.getCurrentPosition(), catAi.getRandomThreateningMove());
+					catAi.sleepCat();
+				} else
+				{
+					executeMove(catAi.getCurrentPosition(), catAi.getRandomNormalMove());
+				}
+				
 			} else
 			{
 				switchActive();
 			}
-			blockedChessboard = false;
-			catAi.updateSleepTimer();
 			catAi.updateRespawnTimer();
+			catAi.updateSleepTimer();
+			blockedChessboard = false;
 		}
 	}
 	

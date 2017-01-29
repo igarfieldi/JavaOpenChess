@@ -1,6 +1,5 @@
 package jchess.gamelogic.controllers;
 
-import java.util.List;
 import java.util.Set;
 
 import jchess.gamelogic.Player;
@@ -58,7 +57,7 @@ public interface IChessboardController extends LoadSaveable
 	 */
 	public Set<Field> getPossibleThreats(Piece piece, boolean careForCheck);
 	
-	public List<Move> getThreateningMoves(Piece piece, Player player);
+	public Set<Move> getThreateningMoves(Piece piece, Player player);
 	
 	/**
 	 * Checks if the player is currently in a check position.

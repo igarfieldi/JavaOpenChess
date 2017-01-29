@@ -36,13 +36,15 @@ public class ThemeImageLoader
 		
 		return instance;
 	}
-	
-	/*
-	 * Method load image by a given name with extension without specifiying the theme.
+
+	/**
+	 * Method load image by a given name with extension without specifying the
+	 * theme.
 	 * 
-	 * @name : string of image to load for ex. "chessboard.jpg"
+	 * @param imageName
+	 *            string of image to load, for example "chessboard.jpg"
 	 * 
-	 * @returns : image or null if cannot load
+	 * @return image or null if cannot load
 	 */
 	public Image loadThemeImage(String imageName)
 	{

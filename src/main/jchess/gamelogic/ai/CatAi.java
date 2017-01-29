@@ -3,27 +3,28 @@ package jchess.gamelogic.ai;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.controllers.IChessboardController;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Move;
 import jchess.gamelogic.models.IChessboardModel;
+import jchess.gamelogic.pieces.Cat;
+import jchess.gamelogic.pieces.King;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.pieces.PieceFactory;
 import jchess.gamelogic.pieces.PieceFactory.PieceType;
+import jchess.gamelogic.pieces.SleepingCat;
 import jchess.util.Direction;
 
 /**
  * Class responsible for controlling the Cat movement on the board.
- * 
- * @author Panagiota Thomopoulou
- *
  */
 
 public class CatAi implements ICatAi
 {
-	private static final int DEFAULT_SLEEP_TIME = 1;
+	private static final int DEFAULT_SLEEP_TIME = 2;
 	private static final int DEFAULT_RESPAWN_TIME = 2;
 	private IChessboardModel board;
 	private Piece cat;
@@ -31,14 +32,12 @@ public class CatAi implements ICatAi
 	private Player aiPlayer;
 	private int turnsToRespawn;
 	private int turnsToWakeUp;
-	private boolean isSleeping;
 	
 	public CatAi(IChessboardController chessboard, Player aiPlayer)
 	{
 		this.chessboard = chessboard;
 		board = chessboard.getBoard();
 		turnsToWakeUp = DEFAULT_SLEEP_TIME;
-		wakeUpCat();
 		turnsToRespawn = DEFAULT_RESPAWN_TIME;
 		this.aiPlayer = aiPlayer;
 		spawnCat();
@@ -68,6 +67,7 @@ public class CatAi implements ICatAi
 		if(turnsToRespawn == 0)
 		{
 			spawnCat();
+			resetSleepTimer();
 			resetRespawnTimer();
 		}
 		if(!isAlive())
@@ -77,7 +77,7 @@ public class CatAi implements ICatAi
 	}
 	
 	/**
-	 * Places a new cat piece on the board.
+	 * Places a new cat piece on the board randomly.
 	 */
 	
 	private void spawnCat()
@@ -90,6 +90,53 @@ public class CatAi implements ICatAi
 			cat = piece;
 		}
 	}
+	
+	/**
+	 * Spawns a cat piece on a specific field on the board and with the desired
+	 * behaviour.
+	 * 
+	 * @param type
+	 *            type of the behaviour. Can be Cat or SleepingCat
+	 * @param field
+	 *            desired spawn position
+	 */
+	
+	private void spawnCat(PieceType type, Field field)
+	{
+		PieceFactory factory = PieceFactory.getInstance();
+		board.setPiece(field, factory.buildPiece(aiPlayer, new Direction(0, -1), type));
+		for(Piece piece : board.getPieces(aiPlayer))
+		{
+			cat = piece;
+		}
+	}
+	
+	/**
+	 * Method responsible for changing the behaviour of the cat piece from Cat
+	 * to SleepingCat. Does so by removing the piece and spawning a new one on
+	 * the same field with the opposite behaviour.
+	 */
+	
+	private void changeBehaviour()
+	{
+		if(cat != null)
+		{
+			Field currentPosition = board.getField(cat);
+			if(cat.getBehaviour() instanceof Cat)
+			{
+				board.removePiece(currentPosition);
+				spawnCat(PieceType.SLEEPINGCAT, currentPosition);
+			} else
+			{
+				board.removePiece(currentPosition);
+				spawnCat(PieceType.CAT, currentPosition);
+			}
+		}
+	}
+	
+	/**
+	 * Resets turnstoRespawn to the default respawn time.
+	 */
 	
 	private void resetRespawnTimer()
 	{
@@ -105,42 +152,42 @@ public class CatAi implements ICatAi
 	@Override
 	public void updateSleepTimer()
 	{
-		if(turnsToWakeUp == 0)
+		if(turnsToWakeUp == 0 && isAlive())
 		{
-			wakeUpCat();
-			resetSleepTime();
+			changeBehaviour();
+			resetSleepTimer();
 		}
-		if(isSleeping)
+		if(isSleeping())
 		{
 			turnsToWakeUp--;
 		}
 	}
 	
 	/**
-	 * Resets sleep timer to the default sleep time and calls the wakeUpCat
-	 * method to wake the cat up.
+	 * Resets sleep timer to the default sleep time.
 	 */
 	
-	private void resetSleepTime()
+	private void resetSleepTimer()
 	{
 		turnsToWakeUp = DEFAULT_SLEEP_TIME;
-		wakeUpCat();
 		
-	}
-	
-	private void wakeUpCat()
-	{
-		isSleeping = false;
-	}
-	
-	private void sleepCat()
-	{
-		isSleeping = true;
 	}
 	
 	public boolean isSleeping()
 	{
-		return isSleeping;
+		if(isAlive())
+		{
+			if(cat.getBehaviour() instanceof SleepingCat)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void sleepCat()
+	{
+		changeBehaviour();
 	}
 	
 	/*
@@ -148,19 +195,59 @@ public class CatAi implements ICatAi
 	 * 
 	 * @see jchess.gamelogic.ai.ICatAi#getNextMove()
 	 */
-	@Override
-	public Field getNextMove()
+	
+	public boolean canMove()
 	{
-		if(!chessboard.getThreateningMoves(cat, aiPlayer).isEmpty())
+		return isAlive() && !isSleeping();
+	}
+	
+	public boolean canCapture()
+	{
+		if(canMove())
 		{
-			sleepCat();
-			return getRandomCaptureMove().getTo();
-			
-		} else
+			return getRandomThreateningMove() != null;
+		}
+		return false;
+	}
+	
+	public Field getRandomThreateningMove()
+	{
+		List<Move> moves = new ArrayList<Move>();
+		moves.addAll(removeKingCapture(chessboard.getThreateningMoves(cat, aiPlayer)));
+		if(!moves.isEmpty())
 		{
-			ArrayList<Move> moves = new ArrayList<Move>(chessboard.getPossibleMoves(cat, false));
 			return getRandomMove(moves).getTo();
 		}
+		return null;
+	}
+	
+	public Field getRandomNormalMove()
+	{
+		List<Move> moves = new ArrayList<Move>();
+		moves.addAll(removeKingCapture(chessboard.getPossibleMoves(cat, false)));
+		return getRandomMove(moves).getTo();
+	}
+	
+	/**
+	 * Method that makes sure that the cat won't try to capture a king.
+	 * 
+	 * @param moves
+	 *            set of possible moves cat can move
+	 * @return moves without a king capturing move
+	 */
+	private Set<Move> removeKingCapture(Set<Move> moves)
+	{
+		for(Move move : moves)
+		{
+			if((board.getPiece(move.getTo()) != null))
+			{
+				if(board.getPiece(move.getTo()).getBehaviour() instanceof King)
+				{
+					moves.remove(move);
+				}
+			}
+		}
+		return moves;
 	}
 	
 	/*
@@ -172,18 +259,6 @@ public class CatAi implements ICatAi
 	public Field getCurrentPosition()
 	{
 		return board.getField(cat);
-	}
-	
-	/**
-	 * Chooses a random move that can capture a piece from a list of all the
-	 * moves that can capture pieces.
-	 * 
-	 * @return move that captures a piece
-	 */
-	
-	private Move getRandomCaptureMove()
-	{
-		return getRandomMove(chessboard.getThreateningMoves(cat, aiPlayer));
 	}
 	
 	/*

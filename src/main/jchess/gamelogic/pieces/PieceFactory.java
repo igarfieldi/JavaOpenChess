@@ -107,7 +107,24 @@ public class PieceFactory implements IPieceFactory
 				return "C";
 			}
 			
+		},
+		SLEEPINGCAT
+		{
+
+			@Override
+			public IPieceBehaviour getBehaviour(Direction forward)
+			{
+				return new SleepingCat();
+			}
+
+			@Override
+			public String getSymbol()
+			{
+				return "SC";
+			}
+			
 		}
+
 	}
 	
 	private static PieceFactory instance;
