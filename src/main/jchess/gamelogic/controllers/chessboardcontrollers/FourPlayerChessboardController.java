@@ -86,39 +86,7 @@ public class FourPlayerChessboardController extends RegularChessboardController
 	@Override
 	protected Set<Move> getEnPassantMoves(Piece piece)
 	{
-		Set<Move> enPassantMoves = new HashSet<Move>();
-		
-		// TODO: proper En Passant implementation
-		/*if(piece instanceof Pawn)
-		{
-			Move lastMove = getHistory().getLastMoveFromHistory();
-			// En passant
-			if(lastMove != null && lastMove.wasPawnTwoFieldsMove())
-			{
-				Pawn twoSquareMovedPawn = (Pawn) lastMove.getMovedPiece();
-				if(getBoard().getField(piece).getPosY() == getBoard().getField(twoSquareMovedPawn).getPosY())
-				{
-					// Our pawn is in the same row
-					if(Math.abs(getBoard().getField(piece).getPosX() - getBoard().getField(twoSquareMovedPawn).getPosX()) == 1)
-					{
-						// Our pawn is right next to the pawn which moved two
-						// squares. Now we need to check the direction in which
-						// the pawn has to go
-						if(piece.getPlayer() == getPlayer(1))
-						{
-							enPassantMoves.add(getBoard().getField(getBoard().getField(twoSquareMovedPawn).getPosX(),
-							        getBoard().getField(piece).getPosY() + 1));
-						} else
-						{
-							enPassantMoves.add(getBoard().getField(getBoard().getField(twoSquareMovedPawn).getPosX(),
-							        getBoard().getField(piece).getPosY() - 1));
-						}
-					}
-				}
-			}
-		}*/
-		
-		return enPassantMoves;
+		return new HashSet<Move>();
 	}
 
 	/*

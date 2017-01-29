@@ -12,10 +12,13 @@ public class ArgumentChecker
 	 * @param args Arguments to be checked for nullity
 	 */
 	public static void checkForNull(Object ...args) {
+		int index = 0;
 		for(Object obj : args) {
 			if(obj == null) {
-				throw new IllegalArgumentException("Argument " + obj + " must not be null!");
+				throw new IllegalArgumentException(
+						"Argument no. " + index + " must not be null!");
 			}
+			index++;
 		}
 	}
 }

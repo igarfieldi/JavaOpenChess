@@ -91,26 +91,43 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 				Direction movedPawnForward = ((Pawn) twoSquareMovedPawn.getBehaviour()).getForwardDirection();
 
 				// By rotating the forward direction by 90 degrees we get the fields to its left and right
-				Field leftField = getBoard().getField(movedPawnField.getPosX() - movedPawnForward.rotate90Deg().getX(),
-						movedPawnField.getPosY() - movedPawnForward.rotate90Deg().getY());
-				Field rightField = getBoard().getField(movedPawnField.getPosX() + movedPawnForward.rotate90Deg().getX(),
-						movedPawnField.getPosY() + movedPawnForward.rotate90Deg().getY());
+				Set<Field> candidates = new HashSet<Field>();
+				// First possible field
+				try {
+					candidates.add(new Field(
+							movedPawnField.getPosX() - movedPawnForward.rotate90Deg().getX(),
+							movedPawnField.getPosY() - movedPawnForward.rotate90Deg().getY()));
+				} catch(IllegalArgumentException exc) {
+					// Field doesn't exist
+				}
 				
-				// Our piece to check has to be right next to the pawn to be eligible for en passant
-				if(pieceField.equals(leftField) || pieceField.equals(rightField)) {
-					// If it is eligible, it may be able to make a capturing
-					// move right behind the two-field-moved pawn
-					Field targetField = getBoard().getField(
-							movedPawnField.getPosX() - movedPawnForward.getX(),
-							movedPawnField.getPosY() - movedPawnForward.getY());
-					
-					// Check if its behaviour allows such a move
-					Direction captureDir = new Direction(
-							targetField.getPosX() - pieceField.getPosX(),
-							targetField.getPosY() - pieceField.getPosY());
-					if(piece.getBehaviour().getCapturingMovements().contains(captureDir)) {
-						enPassantMoves.add(new Move(pieceField, targetField, piece,
-								twoSquareMovedPawn, CastlingType.NONE, true, null));
+				// Other possible field
+				try {
+					candidates.add(new Field(
+							movedPawnField.getPosX() + movedPawnForward.rotate90Deg().getX(),
+							movedPawnField.getPosY() + movedPawnForward.rotate90Deg().getY()));
+				} catch(IllegalArgumentException exc) {
+					// Field doesn't exist
+				}
+				
+				for(Field candidate : candidates) {
+					if(candidate.equals(pieceField)) {
+						try {
+							Field targetField = getBoard().getField(
+									movedPawnField.getPosX() - movedPawnForward.getX(),
+									movedPawnField.getPosY() - movedPawnForward.getY());
+							
+							// Check if its behaviour allows such a move
+							Direction captureDir = new Direction(
+									targetField.getPosX() - pieceField.getPosX(),
+									targetField.getPosY() - pieceField.getPosY());
+							if(piece.getBehaviour().getCapturingMovements().contains(captureDir)) {
+								enPassantMoves.add(new Move(pieceField, targetField, piece,
+										twoSquareMovedPawn, CastlingType.NONE, true, null));
+							}
+						} catch(IllegalArgumentException exc) {
+							// Field doesn't exist -> no en passant here
+						}
 					}
 				}
 			}

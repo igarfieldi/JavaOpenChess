@@ -164,6 +164,18 @@ public class History extends AbstractTableModel implements IHistory
 		this.moveForwardStack.clear();
 	}
 	
+	/**
+	 * Clears the entire history.
+	 */
+	public void clearHistory() {
+		this.moveBackStack.clear();
+		this.moveForwardStack.clear();
+		this.move.clear();
+		this.tableModel.setRowCount(0);
+		this.currentPlayer = 0;
+		this.currentRowCount = 0;
+	}
+	
 	public HistoryView getView()
 	{
 		return this.view;

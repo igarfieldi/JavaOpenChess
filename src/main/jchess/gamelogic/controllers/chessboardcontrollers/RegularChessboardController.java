@@ -159,19 +159,24 @@ public abstract class RegularChessboardController implements IChessboardControll
 			// Pawns only have one direction anyway
 			Direction forward = piece.getBehaviour().getNormalMovements().iterator().next();
 			Field pawnField = board.getField(piece);
-			Field inFrontOfPawn = new Field(pawnField.getPosX() + forward.getX(), pawnField.getPosY() + forward.getY());
-			
-			// Pawns cannot jump over pieces even at the start
-			if(board.getPiece(inFrontOfPawn) == null)
-			{
-				Field twoFieldMove = new Field(pawnField.getPosX() + 2 * forward.getX(),
-				        pawnField.getPosY() + 2 * forward.getY());
-				
-				// AND they cannot capture pieces with this move either
-				if(board.getPiece(twoFieldMove) == null) {
-					possibleMoves.add(new Move(pawnField, twoFieldMove, piece,
-							null, CastlingType.NONE, true, null));
-				}
+			try {
+    			Field inFrontOfPawn = new Field(pawnField.getPosX() + forward.getX(), pawnField.getPosY() + forward.getY());
+    			
+    			// Pawns cannot jump over pieces even at the start
+    			if(board.getPiece(inFrontOfPawn) == null)
+    			{
+    				Field twoFieldMove = new Field(pawnField.getPosX() + 2 * forward.getX(),
+    				        pawnField.getPosY() + 2 * forward.getY());
+    				
+    				// AND they cannot capture pieces with this move either
+    				if(board.getPiece(twoFieldMove) == null) {
+    					possibleMoves.add(new Move(pawnField, twoFieldMove, piece,
+    							null, CastlingType.NONE, true, null));
+    				}
+    				
+    			}
+			} catch(IllegalArgumentException exc) {
+				// The field is invalid (and thus doesn't exist)
 			}
 		}
 		
@@ -818,8 +823,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 			if(lastMove != null && lastMove.wasPawnTwoFieldsMove())
 			{
 				// Check if the target field lies behind the two-square pawn
-				Direction backwards = lastMove.getMovedPiece().getBehaviour().getNormalMovements().iterator().next()
-				        .multiply(-1);
+				Direction backwards = ((Pawn)lastMove.getMovedPiece().getBehaviour()).getForwardDirection().multiply(-1);
 				Field behindPawn = board.getField(lastMove.getTo().getPosX() + backwards.getX(),
 				        lastMove.getTo().getPosY() + backwards.getY());
 				if(behindPawn.equals(end))
@@ -829,7 +833,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 					getBoard().removePiece(lastMove.getTo());
 				}
 			}
-			if(clearForwardHistory && this.checkForPromotion(movedPiece, end))
+			if(clearForwardHistory && (view != null) && this.checkForPromotion(movedPiece, end))
 			{
 				// Promotion of pawns has to be handled for the specific board
 				// layout
