@@ -52,6 +52,6 @@ public class NewGameWindow extends JDialog
 		this.setModalityType(ModalityType.APPLICATION_MODAL);
 		this.setSize(WIDTH, HEIGHT);
 		this.setResizable(false);
-		this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 }

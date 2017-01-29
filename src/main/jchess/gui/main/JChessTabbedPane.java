@@ -101,6 +101,7 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 		if(closeIconRectangle.contains(event.getX(), event.getY()))
 		{
 			log.log(Level.FINE, "Removing tab with " + tabIndex + " number!...");
+			JChessApp.getApplication().view.removeGamefromListAt(tabIndex);
 			this.removeTabAt(tabIndex);
 			this.updateAddIconRectangle();
 		}
@@ -129,10 +130,7 @@ public class JChessTabbedPane extends JTabbedPane implements MouseListener, Imag
 	 */
 	private void showNewGameWindow()
 	{
-		if(JChessApp.view.newGameFrame == null)
-			JChessApp.view.newGameFrame = new NewGameWindow(JChessApp.view.getFrame());
-		
-		JChessApp.getApplication().show(JChessApp.view.newGameFrame);
+		JChessApp.getApplication().show(new NewGameWindow(JChessApp.view.getFrame()));
 	}
 	
 	public void mouseEntered(MouseEvent event) {}
