@@ -5,12 +5,14 @@ public interface LoadSaveable
 	/**
 	 * Saves the current state to the given parser.
 	 * @param parser Property map parser
+	 * @return True if successful
 	 */
-	public void save(FileMapParser parser);
+	public boolean save(FileMapParser parser);
 
 	/**
 	 * Loads the state from the given parser.
 	 * @param parser Property map parser
+	 * @return True if successful
 	 */
-	public void load(FileMapParser parser);
+	public boolean load(FileMapParser parser);
 }

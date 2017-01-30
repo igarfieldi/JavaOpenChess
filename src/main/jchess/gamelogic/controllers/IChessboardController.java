@@ -15,9 +15,9 @@ import jchess.util.LoadSaveable;
 public interface IChessboardController extends LoadSaveable
 {
 	
-	public void save(FileMapParser parser);
+	public boolean save(FileMapParser parser);
 	
-	public void load(FileMapParser parser);
+	public boolean load(FileMapParser parser);
 	
 	public IChessboardView getView();
 	

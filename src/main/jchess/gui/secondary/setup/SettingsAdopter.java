@@ -29,10 +29,20 @@ public class SettingsAdopter
 	 * @param playerNames
 	 * 				The array with all player names.
 	 */
-	public void createGameWindow(int timeLimit, int playerNumber, String[] playerNames)
+	public void createGameWindow(int timeLimit, int playerCount, String[] playerNames)
 	{
+		// If we want an AI game, add the AI's name, too
+		if(playerCount == AI_FOUR_PLAYERS) {
+			String[] extendedPlayerNames = new String[AI_FOUR_PLAYERS];
+			for(int i = 0; i < playerNames.length; i++) {
+				extendedPlayerNames[i] = playerNames[i];
+			}
+			extendedPlayerNames[AI_FOUR_PLAYERS - 1] = "Cat";
+			
+			playerNames = extendedPlayerNames;
+		}
 		IGame game = createGameWithSettings(timeLimit, playerNames);
-		String newGameTabTitle = setNewGameTabTitle(playerNames, playerNumber);
+		String newGameTabTitle = setNewGameTabTitle(playerNames, playerNames.length);
 		
 		JChessApp.view.addNewGameTab(newGameTabTitle, game);
 		drawGameWindow(game);

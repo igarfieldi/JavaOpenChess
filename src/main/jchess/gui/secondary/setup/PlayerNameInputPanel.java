@@ -155,11 +155,19 @@ public class PlayerNameInputPanel extends AbstractGridBagPanel
 	 */
 	public String[] getPlayerNames()
 	{
-		String playerNames[] = new String[MAX_PLAYERS];
-		for(int i = 0; i < MAX_PLAYERS; i++)
-			playerNames[i] = this.playerNameTextFields[i].getText();
-		
-		return playerNames;
+		if(playerNameTextFields[2].isEnabled()) {
+			return new String[] {
+					this.playerNameTextFields[0].getText(),
+					this.playerNameTextFields[1].getText(),
+					this.playerNameTextFields[2].getText(),
+					this.playerNameTextFields[3].getText()
+			};
+		} else {
+			return new String[] {
+					this.playerNameTextFields[0].getText(),
+					this.playerNameTextFields[1].getText()
+			};
+		}
 	}
 	
 	/**

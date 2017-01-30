@@ -183,7 +183,7 @@ public class TimedGame implements IGame
 	 *            address of place where game will be saved
 	 */
 	@Override
-	public void save(FileMapParser parser)
+	public boolean save(FileMapParser parser)
 	{
 		String gameType = "Game" + chessboard.getPlayerCount() + "pTimed";
 		parser.setProperty("Event", gameType);
@@ -192,20 +192,16 @@ public class TimedGame implements IGame
 		parser.setProperty("Date",
 		        cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH));
 		this.chessboard.save(parser);
+		
+		return true;
 	}
 	
 	@Override
-	public void load(FileMapParser parser)
+	public boolean load(FileMapParser parser)
 	{
-		// TODO: load clock times, too!
-		log.info("Loading saved local game");
-		
-		this.blockedChessboard = true;
-		chessboard.load(parser);
-		this.blockedChessboard = false;
-		
-		this.getView().render();
-		this.gameClock.start();
+		// TODO: if we allow loading load clocks too
+		this.getView().showMessage("unloadable_game_type", "Timed game");
+		return false;
 	}
 	
 	/**

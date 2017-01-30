@@ -44,17 +44,21 @@ public class GameSaveManager
 		}
 		else
 		{
-			int chosenOption = fileChooser.showSaveDialog(this.gamesPane);
-			if(chosenOption == JFileChooser.APPROVE_OPTION)
-			{
-				File selectedFile = fileChooser.getSelectedFile();
-				IGame activeTab = JChessApp.getApplication().view.getActiveGame();
-				if(!selectedFile.exists() || (activeTab.getView().showConfirmMessage("file_exists", "") == Option.YES))
-				{
-					createSaveFile(selectedFile);
-					writeSaveFile(selectedFile, activeTab);
-					log.info(Boolean.toString(fileChooser.getSelectedFile().isFile()));
-				}
+			IGame activeTab = JChessApp.view.getActiveGame();
+			FileMapParser parser = new FileMapParser();
+			
+			if(activeTab.save(parser)) {
+    			int chosenOption = fileChooser.showSaveDialog(this.gamesPane);
+    			if(chosenOption == JFileChooser.APPROVE_OPTION)
+    			{
+    				File selectedFile = fileChooser.getSelectedFile();
+    				if(!selectedFile.exists() || (activeTab.getView().showConfirmMessage("file_exists", "") == Option.YES))
+    				{
+    					createSaveFile(selectedFile);
+    					writeSaveFile(parser, selectedFile, activeTab);
+    					log.info(Boolean.toString(fileChooser.getSelectedFile().isFile()));
+    				}
+    			}
 			}
 		}
 	}
@@ -85,16 +89,14 @@ public class GameSaveManager
 	 * @param activeGameTab
 	 * 				The game whose info should be written to the file.
 	 */
-	private void writeSaveFile(File selectedFile, IGame activeGameTab)
+	private void writeSaveFile(FileMapParser parser, File selectedFile, IGame activeGameTab)
 	{
 		if(selectedFile.canWrite())
 		{
 			try
 			{
-				FileMapParser parser = new FileMapParser();
-				activeGameTab.save(parser);
 				parser.save(selectedFile);
-				activeGameTab.getView().showMessage("game_saved_properly", "");
+    			activeGameTab.getView().showMessage("game_saved_properly", "");
 			}
 			catch(IOException exc)
 			{
@@ -168,7 +170,7 @@ public class GameSaveManager
 			log.log(Level.SEVERE, "Unknown game type!");
 			return ;
 		}
-
+		
 		if(gameType.contains("Timed")) {
 			JOptionPane.showMessageDialog(JChessApp.getApplication().getMainFrame(),
 			        Localization.getMessage("unloadable_game_type"));

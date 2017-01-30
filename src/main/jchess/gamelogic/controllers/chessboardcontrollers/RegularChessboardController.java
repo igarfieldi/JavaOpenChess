@@ -57,7 +57,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 	}
 	
 	@Override
-	public void save(FileMapParser parser)
+	public boolean save(FileMapParser parser)
 	{
 		for(Player player : players)
 		{
@@ -65,13 +65,15 @@ public abstract class RegularChessboardController implements IChessboardControll
 		}
 		
 		parser.setProperty("Moves", this.getHistory().getMovesAsString());
+		return true;
 	}
 	
 	@Override
-	public void load(FileMapParser parser)
+	public boolean load(FileMapParser parser)
 	{
 		// TODO: load player names etc.!
 		this.movesHistory.setMoves(parser.getProperty("Moves"));
+		return true;
 	}
 	
 	@Override

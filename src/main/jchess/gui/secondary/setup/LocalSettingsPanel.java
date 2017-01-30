@@ -83,8 +83,9 @@ public class LocalSettingsPanel extends AbstractGridBagPanel implements ActionLi
 		if(!playerNameInputPanel.playerNamesEmpty())
 		{
 			playerNameInputPanel.shortenPlayerNames();
-			settingsAdopter.createGameWindow(timerSetterPanel.getTimeLimit(), playerNumberChoicePanel.getPlayerCount(),
-			        playerNameInputPanel.getPlayerNames());
+			settingsAdopter.createGameWindow(timerSetterPanel.getTimeLimit(),
+					playerNumberChoicePanel.getPlayerCount(),
+					playerNameInputPanel.getPlayerNames());
 			
 			Window parentDialog = SwingUtilities.getWindowAncestor(this);
 			parentDialog.setVisible(false);

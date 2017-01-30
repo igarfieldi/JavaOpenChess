@@ -1,6 +1,5 @@
 package jchess.gamelogic.game;
 
-import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,15 +23,17 @@ public class AiGame extends UntimedGame implements IGame
 	}
 	
 	@Override
-	public void save(FileMapParser parser)
+	public boolean save(FileMapParser parser)
 	{
 		this.getView().showMessage("unsaveable_game_type", "Cat AI game");
+		return false;
 	}
 	
 	@Override
-	public void load(FileMapParser parser)
+	public boolean load(FileMapParser parser)
 	{
 		this.getView().showMessage("unloadable_game_type", "Cat AI game");
+		return false;
 	}
 	
 	@Override
