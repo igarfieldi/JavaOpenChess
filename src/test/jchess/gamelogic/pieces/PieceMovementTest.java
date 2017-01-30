@@ -46,8 +46,10 @@ public class PieceMovementTest
 	private PieceType type;
 	private Direction forward;
 	
+	private Set<Field> testPositions;
+	
 	public PieceMovementTest(IChessboardController controller, BoardConstraints constraints, PieceType type,
-	        Direction forward, Player[] players)
+	        Direction forward, Player[] players, Set<Field> testPositions)
 	{
 		this.controller = controller;
 		
@@ -55,6 +57,8 @@ public class PieceMovementTest
 		this.constraints = constraints;
 		this.type = type;
 		this.forward = forward;
+		
+		this.testPositions = testPositions;
 	}
 	
 	/**
@@ -74,34 +78,59 @@ public class PieceMovementTest
 		IChessboardController controller4p = new FourPlayerChessboardController(null,
 		        FourPlayerChessboardFactory.getInstance(), players4p[0], players4p[1], players4p[2], players4p[3]);
 		
+		// Test positions for both board types
+		// These represent centre, corners, edges
+		Set<Field> positions2p = PieceTestSupport.toSet(new Field[]{
+				new Field(3, 3),
+				new Field(0, 0), new Field(0, 7), new Field(7, 0), new Field(7, 7),
+				new Field(0, 4), new Field(7, 5), new Field(3, 0), new Field(4, 7)
+		});
+		// Additionally the 'inner' corners
+		Set<Field> positions4p = PieceTestSupport.toSet(new Field[]{
+				new Field(7, 7),
+				new Field(3, 0), new Field(10, 0), new Field(3, 13), new Field(10, 13),
+				new Field(0, 3), new Field(0, 10), new Field(13, 3), new Field(13, 10),
+				new Field(0, 6), new Field(13, 8), new Field(7, 0), new Field(6, 13),
+				new Field(3, 3), new Field(10, 3), new Field(3, 10), new Field(10, 10)
+		});
+		
 		return Arrays.asList(new Object[][]{
 		        { controller2p, PieceTestSupport.CONSTRAINTS_TWO_PLAYER, PieceType.PAWN, new Direction(-1, 0),
-		                players2p },
-		        { controller2p, PieceTestSupport.CONSTRAINTS_TWO_PLAYER, PieceType.PAWN, new Direction(1, 0),
-		                players2p },
+		                players2p, positions2p },
+		        { controller2p, PieceTestSupport.CONSTRAINTS_TWO_PLAYER, PieceType.PAWN, new Direction(1, 0), players2p,
+		                positions2p },
 		        { controller2p, PieceTestSupport.CONSTRAINTS_TWO_PLAYER, PieceType.PAWN, new Direction(0, -1),
-		                players2p },
-		        { controller2p, PieceTestSupport.CONSTRAINTS_TWO_PLAYER, PieceType.PAWN, new Direction(0, 1),
-		                players2p },
+		                players2p, positions2p },
+		        { controller2p, PieceTestSupport.CONSTRAINTS_TWO_PLAYER, PieceType.PAWN, new Direction(0, 1), players2p,
+		                positions2p },
 		        { controller4p, PieceTestSupport.CONSTRAINTS_FOUR_PLAYER, PieceType.PAWN, new Direction(-1, 0),
-		                players4p },
+		                players4p, positions4p },
 		        { controller4p, PieceTestSupport.CONSTRAINTS_FOUR_PLAYER, PieceType.PAWN, new Direction(1, 0),
-		                players4p },
+		                players4p, positions4p },
 		        { controller4p, PieceTestSupport.CONSTRAINTS_FOUR_PLAYER, PieceType.PAWN, new Direction(0, -1),
-		                players4p },
+		                players4p, positions4p },
 		        { controller4p, PieceTestSupport.CONSTRAINTS_FOUR_PLAYER, PieceType.PAWN, new Direction(0, 1),
-		                players4p },
+		                players4p, positions4p },
 		        
-		        { controller2p, PieceTestSupport.CONSTRAINTS_TWO_PLAYER, PieceType.ROOK, null, players2p },
-		        { controller4p, PieceTestSupport.CONSTRAINTS_FOUR_PLAYER, PieceType.ROOK, null, players4p },
-		        { controller2p, PieceTestSupport.CONSTRAINTS_TWO_PLAYER, PieceType.KNIGHT, null, players2p },
-		        { controller4p, PieceTestSupport.CONSTRAINTS_FOUR_PLAYER, PieceType.KNIGHT, null, players4p },
-		        { controller2p, PieceTestSupport.CONSTRAINTS_TWO_PLAYER, PieceType.BISHOP, null, players2p },
-		        { controller4p, PieceTestSupport.CONSTRAINTS_FOUR_PLAYER, PieceType.BISHOP, null, players4p },
-		        { controller2p, PieceTestSupport.CONSTRAINTS_TWO_PLAYER, PieceType.QUEEN, null, players2p },
-		        { controller4p, PieceTestSupport.CONSTRAINTS_FOUR_PLAYER, PieceType.QUEEN, null, players4p },
-		        { controller2p, PieceTestSupport.CONSTRAINTS_TWO_PLAYER, PieceType.KING, null, players2p },
-		        { controller4p, PieceTestSupport.CONSTRAINTS_FOUR_PLAYER, PieceType.KING, null, players4p } });
+		        { controller2p, PieceTestSupport.CONSTRAINTS_TWO_PLAYER, PieceType.ROOK, null, players2p, positions2p },
+		        { controller4p, PieceTestSupport.CONSTRAINTS_FOUR_PLAYER, PieceType.ROOK, null, players4p,
+		                positions4p },
+		        { controller2p, PieceTestSupport.CONSTRAINTS_TWO_PLAYER, PieceType.KNIGHT, null, players2p,
+		                positions2p },
+		        { controller4p, PieceTestSupport.CONSTRAINTS_FOUR_PLAYER, PieceType.KNIGHT, null, players4p,
+		                positions4p },
+		        { controller2p, PieceTestSupport.CONSTRAINTS_TWO_PLAYER, PieceType.BISHOP, null, players2p,
+		                positions2p },
+		        { controller4p, PieceTestSupport.CONSTRAINTS_FOUR_PLAYER, PieceType.BISHOP, null, players4p,
+		                positions4p },
+		        { controller2p, PieceTestSupport.CONSTRAINTS_TWO_PLAYER, PieceType.QUEEN, null, players2p,
+		                positions2p },
+		        { controller4p, PieceTestSupport.CONSTRAINTS_FOUR_PLAYER, PieceType.QUEEN, null, players4p,
+		                positions4p },
+		        { controller2p, PieceTestSupport.CONSTRAINTS_TWO_PLAYER, PieceType.KING, null, players2p,
+		                positions2p },
+		        { controller4p, PieceTestSupport.CONSTRAINTS_FOUR_PLAYER, PieceType.KING, null, players4p,
+		                positions4p } });
 	}
 	
 	@Before
@@ -124,7 +153,6 @@ public class PieceMovementTest
 	public void testPlayerPossibleMovesRegular()
 	{
 		// Test for all positions of the board
-		Set<Field> testPositions = board.getFields();
 		
 		for(Player player : players)
 		{
@@ -154,7 +182,6 @@ public class PieceMovementTest
 	public void testPlayerPossibleMovesCapture()
 	{
 		// Test for all positions of the board
-		Set<Field> testPositions = board.getFields();
 		
 		for(Player player : players)
 		{
@@ -196,7 +223,6 @@ public class PieceMovementTest
 	public void testPossibleMovesRegularBlocking()
 	{
 		// Test for all positions of the board
-		Set<Field> testPositions = board.getFields();
 		
 		// Test for all players
 		for(Player player : players)
@@ -246,7 +272,6 @@ public class PieceMovementTest
 	public void testPossibleMovesCapturingBlocking()
 	{
 		// Test for all positions of the board
-		Set<Field> testPositions = board.getFields();
 		
 		for(Player player : players)
 		{

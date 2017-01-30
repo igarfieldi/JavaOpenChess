@@ -80,11 +80,6 @@ public abstract class RegularChessboardController implements IChessboardControll
 		return movesHistory;
 	}
 	
-	protected Player getPlayer(int index)
-	{
-		return this.players.get(index);
-	}
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -258,6 +253,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 			// use .remove()
 			Move currMove = fieldIterator.next();
 			Field currField = currMove.getTo();
+			
 			// Simulate the board state
 			IChessboardModel tempModel = board;
 			board = board.copy();
@@ -411,16 +407,7 @@ public abstract class RegularChessboardController implements IChessboardControll
 		return null;
 	}
 	
-	/**
-	 * Returns the set of possible castling moves for the given king. E.g. a
-	 * king on h1 in 2p chess could castle to f1 or j1 (if the other castling
-	 * conditions were fulfilled).
-	 * 
-	 * @param piece
-	 *            King to get castling moves for
-	 * @return Set of possible castling moves for the king
-	 */
-	private Set<Move> getCastleMoves(Piece piece) {
+	public Set<Move> getCastleMoves(Piece piece) {
 		Set<Move> castleMoves = new HashSet<Move>();
 		
 		// Castling is only possible for kings

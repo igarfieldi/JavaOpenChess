@@ -27,6 +27,7 @@ import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Move;
 import jchess.gamelogic.field.Move.CastlingType;
 import jchess.gamelogic.models.IBoardFactory;
+import jchess.gamelogic.pieces.Pawn;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.views.factories.IChessboardViewFactory;
 import jchess.util.Direction;
@@ -73,7 +74,10 @@ public class TwoPlayerChessboardController extends RegularChessboardController
 	 */
 	@Override
 	protected boolean checkForPromotion(Piece pawn, Field target) {
-		Direction forward = pawn.getBehaviour().getNormalMovements().iterator().next();
+		if(!(pawn.getBehaviour() instanceof Pawn)) {
+			return false;
+		}
+		Direction forward = ((Pawn)pawn.getBehaviour()).getForwardDirection();
 		
 		// Only two possibilities: pawn moves up or down; then check if it
 		// is at the board end

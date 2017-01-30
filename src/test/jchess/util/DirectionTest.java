@@ -9,8 +9,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import jchess.util.Direction;
-
 /**
  * Test class for util.Direction.
  * @author Florian Bethe

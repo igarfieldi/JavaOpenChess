@@ -1,5 +1,6 @@
 package jchess.gamelogic.controllers;
 
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import jchess.gamelogic.Player;
@@ -66,6 +67,17 @@ public interface IChessboardController extends LoadSaveable
 	 * @return Set of threatening fields
 	 */
 	public Set<Field> getPossibleThreats(Piece piece, boolean careForCheck);
+	
+	/**
+	 * Returns the set of possible castling moves for the given king. E.g. a
+	 * king on h1 in 2p chess could castle to f1 or j1 (if the other castling
+	 * conditions were fulfilled).
+	 * 
+	 * @param piece
+	 *            King to get castling moves for
+	 * @return Set of possible castling moves for the king
+	 */
+	public Set<Move> getCastleMoves(Piece piece);
 	
 	/**
 	 * Checks if the player is currently in a check position.

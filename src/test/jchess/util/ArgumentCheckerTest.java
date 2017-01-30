@@ -6,8 +6,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import jchess.util.ArgumentChecker;
-
 /**
  * Test class for ArgumentChecker.
  * @author Florian Bethe

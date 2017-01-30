@@ -1,6 +1,3 @@
-/**
- * 
- */
 package jchess.gamelogic.controllers.chessboardcontrollers;
 
 import static org.junit.Assert.assertFalse;
@@ -21,22 +18,21 @@ import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Move;
 import jchess.gamelogic.field.Move.CastlingType;
 import jchess.gamelogic.models.IChessboardModel;
-import jchess.gamelogic.models.factories.TwoPlayerChessboardFactory;
+import jchess.gamelogic.models.factories.FourPlayerChessboardFactory;
 import jchess.gamelogic.pieces.Piece;
 import jchess.gamelogic.pieces.PieceFactory;
 import jchess.gamelogic.pieces.PieceFactory.PieceType;
 import jchess.util.Direction;
 import jchess.util.FileMapParser;
 
-/**
- * @author Florian Bethe
- */
-public class TwoPlayerChessboardControllerTest
+public class FourPlayerChessboardControllerTest
 {
 	private PieceFactory factory;
 	private Player white = new Player("p1", Color.WHITE);
-	private Player black = new Player("p2", Color.BLACK);
-	private TwoPlayerChessboardController controller;
+	private Player red = new Player("p2", Color.RED);
+	private Player black = new Player("p3", Color.BLACK);
+	private Player golden = new Player("p4", Color.GOLDEN);
+	private FourPlayerChessboardController controller;
 	private IChessboardModel board;
 	
 	/**
@@ -45,25 +41,11 @@ public class TwoPlayerChessboardControllerTest
 	@Before
 	public void setUp() throws Exception
 	{
-		controller = new TwoPlayerChessboardController(
-				null, TwoPlayerChessboardFactory.getInstance(), white, black);
+		controller = new FourPlayerChessboardController(
+				null, FourPlayerChessboardFactory.getInstance(),
+				white, red, black, golden);
 		board = controller.getBoard();
 		this.factory = PieceFactory.getInstance();
-	}
-	
-	/**
-	 * Gets the fields a piece can move to.
-	 * @param piece Piece to move
-	 * @return Set of fields
-	 */
-	private Set<Field> getPossibleFields(Piece piece) {
-		Set<Field> fields = new HashSet<>();
-		
-		for(Move move : controller.getPossibleMoves(piece, true)) {
-			fields.add(move.getTo());
-		}
-		
-		return fields;
 	}
 	
 	/**
@@ -77,56 +59,89 @@ public class TwoPlayerChessboardControllerTest
 	
 	@Test
 	public void testGetRookMoveForCastling() {
-		for(Player player : new Player[]{white, black}) {
+		for(Player player : new Player[]{white, red, black, golden}) {
 			Piece king = factory.buildPiece(player, null, PieceType.KING);
 			Move rookMove;
 
-			board.setPiece(new Field(4, 0), king);
+			board.setPiece(new Field(7, 0), king);
 			rookMove = controller.getRookMoveForCastling(king, CastlingType.SHORT_CASTLING);
-			assertTrue(rookMove.getFrom().equals(new Field(7, 0)));
-			assertTrue(rookMove.getTo().equals(new Field(5, 0)));
+			assertTrue(rookMove.getFrom().equals(new Field(10, 0)));
+			assertTrue(rookMove.getTo().equals(new Field(8, 0)));
 			rookMove = controller.getRookMoveForCastling(king, CastlingType.LONG_CASTLING);
-			assertTrue(rookMove.getFrom().equals(new Field(0, 0)));
-			assertTrue(rookMove.getTo().equals(new Field(3, 0)));
+			assertTrue(rookMove.getFrom().equals(new Field(3, 0)));
+			assertTrue(rookMove.getTo().equals(new Field(6, 0)));
 			
-			board.movePiece(king, new Field(4, 7));
+			board.movePiece(king, new Field(7, 13));
 			rookMove = controller.getRookMoveForCastling(king, CastlingType.SHORT_CASTLING);
-			assertTrue(rookMove.getFrom().equals(new Field(7, 7)));
-			assertTrue(rookMove.getTo().equals(new Field(5, 7)));
+			assertTrue(rookMove.getFrom().equals(new Field(10, 13)));
+			assertTrue(rookMove.getTo().equals(new Field(8, 13)));
 			rookMove = controller.getRookMoveForCastling(king, CastlingType.LONG_CASTLING);
-			assertTrue(rookMove.getFrom().equals(new Field(0, 7)));
-			assertTrue(rookMove.getTo().equals(new Field(3, 7)));
+			assertTrue(rookMove.getFrom().equals(new Field(3, 13)));
+			assertTrue(rookMove.getTo().equals(new Field(6, 13)));
 			
-			board.removePiece(new Field(4, 7));
+			board.movePiece(king, new Field(0, 7));
+			rookMove = controller.getRookMoveForCastling(king, CastlingType.SHORT_CASTLING);
+			assertTrue(rookMove.getFrom().equals(new Field(0, 10)));
+			assertTrue(rookMove.getTo().equals(new Field(0, 8)));
+			rookMove = controller.getRookMoveForCastling(king, CastlingType.LONG_CASTLING);
+			assertTrue(rookMove.getFrom().equals(new Field(0, 3)));
+			assertTrue(rookMove.getTo().equals(new Field(0, 6)));
+			
+			board.movePiece(king, new Field(13, 7));
+			rookMove = controller.getRookMoveForCastling(king, CastlingType.SHORT_CASTLING);
+			assertTrue(rookMove.getFrom().equals(new Field(13, 10)));
+			assertTrue(rookMove.getTo().equals(new Field(13, 8)));
+			rookMove = controller.getRookMoveForCastling(king, CastlingType.LONG_CASTLING);
+			assertTrue(rookMove.getFrom().equals(new Field(13, 3)));
+			assertTrue(rookMove.getTo().equals(new Field(13, 6)));
+			
+			board.removePiece(new Field(13, 7));
 		}
 	}
 	
 	@Test
 	public void testCheckForPromotion() {
 		for(Player player : new Player[]{white, black}) {
-			Piece pawn1 = factory.buildPiece(player, new Direction(0, 1), PieceType.PAWN);
-			Piece pawn2 = factory.buildPiece(player, new Direction(0, -1), PieceType.PAWN);
+			Piece pawn1 = factory.buildPiece(player, new Direction(1, 0), PieceType.PAWN);
+			Piece pawn2 = factory.buildPiece(player, new Direction(-1, 0), PieceType.PAWN);
+			Piece pawn3 = factory.buildPiece(player, new Direction(0, 1), PieceType.PAWN);
+			Piece pawn4 = factory.buildPiece(player, new Direction(0, -1), PieceType.PAWN);
 			Piece nonPawn = factory.buildPiece(player, null, PieceType.QUEEN);
-			
-			// Test entire width
-			for(int x = 0; x < 8; x++) {
-				// Test entire height
-				for(int y = 1; y < 7; y++) {
-					assertFalse(controller.checkForPromotion(pawn1, new Field(x, y)));
-					assertFalse(controller.checkForPromotion(pawn2, new Field(x, y)));
-					assertFalse(controller.checkForPromotion(nonPawn, new Field(x, y)));
-				}
 
-				// Check top row
-				assertFalse(controller.checkForPromotion(pawn1, new Field(x, 0)));
-				assertTrue(controller.checkForPromotion(pawn2, new Field(x, 0)));
-				assertFalse(controller.checkForPromotion(nonPawn, new Field(x, 0)));
-				
-				// Check bottom row
-				assertTrue(controller.checkForPromotion(pawn1, new Field(x, 7)));
-				assertFalse(controller.checkForPromotion(pawn2, new Field(x, 7)));
-				assertFalse(controller.checkForPromotion(nonPawn, new Field(x, 7)));
-			}
+			// First pawn; must only promote at the right border
+			assertFalse(controller.checkForPromotion(pawn1, new Field(0, 7)));
+			assertTrue(controller.checkForPromotion(pawn1, new Field(13, 7)));
+			assertFalse(controller.checkForPromotion(pawn1, new Field(7, 0)));
+			assertFalse(controller.checkForPromotion(pawn1, new Field(7, 13)));
+			assertFalse(controller.checkForPromotion(pawn1, new Field(12, 7)));
+
+			// Second pawn; must only promote at the left border
+			assertTrue(controller.checkForPromotion(pawn2, new Field(0, 7)));
+			assertFalse(controller.checkForPromotion(pawn2, new Field(13, 7)));
+			assertFalse(controller.checkForPromotion(pawn2, new Field(7, 0)));
+			assertFalse(controller.checkForPromotion(pawn2, new Field(7, 13)));
+			assertFalse(controller.checkForPromotion(pawn2, new Field(12, 7)));
+
+			// Third pawn; must only promote at the bottom border
+			assertFalse(controller.checkForPromotion(pawn3, new Field(0, 7)));
+			assertFalse(controller.checkForPromotion(pawn3, new Field(13, 7)));
+			assertFalse(controller.checkForPromotion(pawn3, new Field(7, 0)));
+			assertTrue(controller.checkForPromotion(pawn3, new Field(7, 13)));
+			assertFalse(controller.checkForPromotion(pawn3, new Field(12, 7)));
+
+			// Fourth pawn; must only promote at the top border
+			assertFalse(controller.checkForPromotion(pawn4, new Field(0, 7)));
+			assertFalse(controller.checkForPromotion(pawn4, new Field(13, 7)));
+			assertTrue(controller.checkForPromotion(pawn4, new Field(7, 0)));
+			assertFalse(controller.checkForPromotion(pawn4, new Field(7, 13)));
+			assertFalse(controller.checkForPromotion(pawn4, new Field(12, 7)));
+			
+			// Non-pawn; must never promote
+			assertFalse(controller.checkForPromotion(nonPawn, new Field(0, 7)));
+			assertFalse(controller.checkForPromotion(nonPawn, new Field(13, 7)));
+			assertFalse(controller.checkForPromotion(nonPawn, new Field(7, 0)));
+			assertFalse(controller.checkForPromotion(nonPawn, new Field(7, 13)));
+			assertFalse(controller.checkForPromotion(nonPawn, new Field(12, 7)));
 		}
 	}
 	
@@ -138,17 +153,17 @@ public class TwoPlayerChessboardControllerTest
 	{
 		try
 		{
-			controller.move(new Field(3, 6), new Field(3, 5));
-			controller.move(new Field(6, 1), new Field(6, 2));
-			controller.move(new Field(2, 7), new Field(4, 5));
-			controller.move(new Field(6, 0), new Field(5, 2));
+			controller.move(new Field(4, 12), new Field(4, 10));
+			controller.move(new Field(1, 6), new Field(3, 6));
+			controller.move(new Field(4, 0), new Field(5, 2));
+			controller.move(new Field(12, 8), new Field(10, 8));
 		} catch(IllegalMoveException e)
 		{
 			fail("Unexpected illegal move!");
 		}
 		FileMapParser saveFile = new FileMapParser();
 		controller.save(saveFile);
-
+		
 		assertTrue(saveFile.getProperty("Moves").trim().equals(controller.getHistory().getMovesAsString().trim()));
 		assertTrue(saveFile.getProperty("WHITE").trim().equals(white.getName()));
 		assertTrue(saveFile.getProperty("BLACK").trim().equals(black.getName()));
@@ -160,8 +175,9 @@ public class TwoPlayerChessboardControllerTest
 	@Test
 	public void testLoad()
 	{
+
 		FileMapParser gameLoader = new FileMapParser();
-		String game = "1. a7-a5 b2-b4 2. Nb8-c6 g2-g3";
+		String game = "1. e13-e11 b7-d7 Ne1-f3 m9-l9 2. Bf14-c11 d7-e7 e2-e4 l9-k9";
 		
 		gameLoader.setProperty("Moves", game);
 		controller.load(gameLoader);
@@ -179,7 +195,11 @@ public class TwoPlayerChessboardControllerTest
 	{
 		assertTrue(controller.getActivePlayer().equals(white));
 		controller.switchToNextPlayer();
+		assertTrue(controller.getActivePlayer().equals(red));
+		controller.switchToNextPlayer();
 		assertTrue(controller.getActivePlayer().equals(black));
+		controller.switchToNextPlayer();
+		assertTrue(controller.getActivePlayer().equals(golden));
 		controller.switchToNextPlayer();
 		assertTrue(controller.getActivePlayer().equals(white));
 	}
@@ -192,7 +212,11 @@ public class TwoPlayerChessboardControllerTest
 	{
 		assertTrue(controller.getActivePlayer().equals(white));
 		controller.switchToPreviousPlayer();
+		assertTrue(controller.getActivePlayer().equals(golden));
+		controller.switchToPreviousPlayer();
 		assertTrue(controller.getActivePlayer().equals(black));
+		controller.switchToPreviousPlayer();
+		assertTrue(controller.getActivePlayer().equals(red));
 		controller.switchToPreviousPlayer();
 		assertTrue(controller.getActivePlayer().equals(white));
 	}
@@ -204,7 +228,9 @@ public class TwoPlayerChessboardControllerTest
 	public void testGetPlayerIndex()
 	{
 		assertTrue(controller.getPlayerIndex(white) == 0);
-		assertTrue(controller.getPlayerIndex(black) == 1);
+		assertTrue(controller.getPlayerIndex(red) == 1);
+		assertTrue(controller.getPlayerIndex(black) == 2);
+		assertTrue(controller.getPlayerIndex(golden) == 3);
 		try {
 			controller.getPlayerIndex(new Player("", Color.WHITE));
 			fail("Shouldn't find player");
@@ -221,7 +247,7 @@ public class TwoPlayerChessboardControllerTest
 		this.clearBoard();
 		
 		// Set up board scenarios
-		for(Player player : new Player[]{black, white}) {
+		for(Player player : new Player[]{white, red, black, golden}) {
 			Piece king = factory.buildPiece(player, null, PieceType.KING);
 			board.setPiece(new Field(3, 3), king);
 			
@@ -263,38 +289,67 @@ public class TwoPlayerChessboardControllerTest
 		this.clearBoard();
 		
 		// Set up board scenarios
-		for(Player player : new Player[]{black, white}) {
-			// Switch players until it's our turn
-			while(!controller.getActivePlayer().equals(player)) {
-				controller.switchToNextPlayer();
-			}
+		for(Player player : new Player[]{white, red, black, golden}) {
 			
 			Piece king = factory.buildPiece(player, null, PieceType.KING);
-			board.setPiece(new Field(3, 3), king);
+			board.setPiece(new Field(5, 5), king);
 			
 			for(Player enemy : controller.getEnemies(player)) {
 				// Place an enemy unit with nearby capturing trajectory
 				Piece threat = factory.buildPiece(enemy, null, PieceType.ROOK);
-				board.setPiece(new Field(4, 6), threat);
-				
+				board.setPiece(new Field(6, 0), threat);
+
+				// Switch players until it's our turn
+				while(!controller.getActivePlayer().equals(player)) {
+					controller.switchToNextPlayer();
+				}
 				// King must not be able to move 'into' the rook
-				assertFalse(getPossibleFields(king).contains(new Field(4, 3)));
-				assertFalse(getPossibleFields(king).contains(new Field(4, 2)));
-				assertFalse(getPossibleFields(king).contains(new Field(4, 4)));
 				
-				board.movePiece(threat, new Field(0, 3));
-				Piece friendly = factory.buildPiece(player, null, PieceType.BISHOP);
-				board.setPiece(new Field(2, 3), friendly);
+				assertFalse(getPossibleFields(king).contains(new Field(6, 4)));
+				assertFalse(getPossibleFields(king).contains(new Field(6, 5)));
+				assertFalse(getPossibleFields(king).contains(new Field(6, 6)));
 				
-				// The friendly unit must not be allowed to move away
-				// else the king would be in check
-				assertTrue(getPossibleFields(friendly).isEmpty());
-				
-				board.removePiece(new Field(2, 3));
+				board.movePiece(threat, new Field(5, 0));
+				// Check for all players that they can't move
+				for(Player mover : new Player[]{white, red, black, golden}) {
+					// Switch players until it's our turn
+					while(!controller.getActivePlayer().equals(mover)) {
+						controller.switchToNextPlayer();
+					}
+					Piece piece = factory.buildPiece(mover, null, PieceType.BISHOP);
+					board.setPiece(new Field(5, 3), piece);
+					
+					// The unit must not be allowed to move away
+					// else the king would be in check
+					if(!mover.equals(enemy)) {
+						assertTrue(getPossibleFields(piece).isEmpty());
+					} else {
+						assertFalse(getPossibleFields(piece).isEmpty());
+					}
+					
+					board.removePiece(new Field(5, 3));
+				}
+
+				board.removePiece(new Field(5, 6));
 			}
 			
-			board.removePiece(new Field(3, 3));
+			board.removePiece(new Field(5, 5));
 		}
+	}
+	
+	/**
+	 * Gets the fields a piece can move to.
+	 * @param piece Piece to move
+	 * @return Set of fields
+	 */
+	private Set<Field> getPossibleFields(Piece piece) {
+		Set<Field> fields = new HashSet<>();
+		
+		for(Move move : controller.getPossibleMoves(piece, true)) {
+			fields.add(move.getTo());
+		}
+		
+		return fields;
 	}
 	
 	/**
@@ -306,7 +361,7 @@ public class TwoPlayerChessboardControllerTest
 		this.clearBoard();
 		
 		// Set up board scenarios
-		for(Player player : new Player[]{black, white}) {
+		for(Player player : new Player[]{white, red, black, golden}) {
 			Piece king = factory.buildPiece(player, null, PieceType.KING);
 			board.setPiece(new Field(3, 3), king);
 			
@@ -343,7 +398,7 @@ public class TwoPlayerChessboardControllerTest
 	{
 		this.clearBoard();
 		
-		for(Player player : new Player[]{white, black}) {
+		for(Player player : new Player[]{white, red, black, golden}) {
 			Piece king = factory.buildPiece(player, null, PieceType.KING);
 			
 			for(Player enemy : controller.getEnemies(player)) {
@@ -351,28 +406,28 @@ public class TwoPlayerChessboardControllerTest
 				Piece rook2 = factory.buildPiece(enemy, null, PieceType.ROOK);
 				Piece queen = factory.buildPiece(enemy, null, PieceType.QUEEN);
 
-				board.setPiece(new Field(0, 0), king);
+				board.setPiece(new Field(3, 0), king);
 				assertFalse(controller.isCheckmated(player));
-				board.setPiece(new Field(1, 4), rook1);
+				board.setPiece(new Field(4, 6), rook1);
 				assertFalse(controller.isCheckmated(player));
-				board.setPiece(new Field(4, 1), rook2);
+				board.setPiece(new Field(6, 1), rook2);
 				assertFalse(controller.isCheckmated(player));
-				board.setPiece(new Field(0, 5), queen);
+				board.setPiece(new Field(3, 5), queen);
 				assertTrue(controller.isCheckmated(player));
 				
 				Piece helpingPiece = factory.buildPiece(player, null, PieceType.BISHOP);
 				// Piece blocks queen threat
-				board.setPiece(new Field(0, 3), helpingPiece);
+				board.setPiece(new Field(3, 3), helpingPiece);
 				assertFalse(controller.isCheckmated(player));
 				// Piece can kill the queen
-				board.movePiece(helpingPiece, new Field(1, 6));
+				board.movePiece(helpingPiece, new Field(4, 6));
 				assertFalse(controller.isCheckmated(player));
 
-				board.removePiece(new Field(0, 0));
-				board.removePiece(new Field(1, 4));
-				board.removePiece(new Field(4, 1));
-				board.removePiece(new Field(0, 5));
-				board.removePiece(new Field(1, 6));
+				board.removePiece(new Field(3, 0));
+				board.removePiece(new Field(4, 6));
+				board.removePiece(new Field(6, 1));
+				board.removePiece(new Field(3, 5));
+				board.removePiece(new Field(4, 6));
 			}
 		}
 	}
@@ -385,7 +440,6 @@ public class TwoPlayerChessboardControllerTest
 	{
 		this.clearBoard();
 		
-		// Check for all players
 		for(Player player : new Player[]{white, black}) {
 			Piece king = factory.buildPiece(player, null, PieceType.KING);
 			
@@ -399,11 +453,11 @@ public class TwoPlayerChessboardControllerTest
 				}
 				
 				// Place king into stalemate
-				board.setPiece(new Field(0, 0), king);
+				board.setPiece(new Field(3, 0), king);
 				assertFalse(controller.isStalemate());
-				board.setPiece(new Field(1, 4), rook1);
+				board.setPiece(new Field(6, 1), rook1);
 				assertFalse(controller.isStalemate());
-				board.setPiece(new Field(4, 1), rook2);
+				board.setPiece(new Field(4, 6), rook2);
 				assertTrue(controller.isStalemate());
 				
 				Piece helpingPiece = factory.buildPiece(player, null, PieceType.BISHOP);
@@ -416,16 +470,14 @@ public class TwoPlayerChessboardControllerTest
 				Piece pawn = factory.buildPiece(player, new Direction(0, -1),
 						PieceType.PAWN);
 				// Piece can't move -> still stalemate
-				board.setPiece(new Field(1, 5), pawn);
+				board.setPiece(new Field(4, 7), pawn);
 				assertTrue(controller.isStalemate());
 				
-
-				board.removePiece(new Field(0, 0));
-				board.removePiece(new Field(1, 4));
-				board.removePiece(new Field(4, 1));
-				board.removePiece(new Field(1, 5));
+				board.removePiece(new Field(3, 0));
+				board.removePiece(new Field(6, 1));
+				board.removePiece(new Field(4, 6));
+				board.removePiece(new Field(6, 5));
 			}
 		}
 	}
-	
 }

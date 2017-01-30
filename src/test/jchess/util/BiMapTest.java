@@ -8,8 +8,6 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import jchess.util.BiMap;
-
 /**
  * Test class for the BiMap.
  * @author Florian Bethe

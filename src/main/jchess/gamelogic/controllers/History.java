@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,7 +35,10 @@ import javax.swing.table.DefaultTableModel;
 import jchess.gamelogic.Player;
 import jchess.gamelogic.field.Field;
 import jchess.gamelogic.field.Move;
+import jchess.gamelogic.field.Move.CastlingType;
+import jchess.gamelogic.pieces.King;
 import jchess.gamelogic.pieces.Piece;
+import jchess.gamelogic.pieces.PieceFactory.PieceType;
 import jchess.gamelogic.views.HistoryView;
 import jchess.util.ArgumentChecker;
 
@@ -200,73 +201,6 @@ public class History extends AbstractTableModel implements IHistory
 	}
 	
 	/**
-	 * Method with is checking is the move is correct
-	 * 
-	 * @param move
-	 *            String which in is capt player move
-	 * @return boolean 1 if the move is correct, else 0
-	 */
-	static public boolean isMoveCorrect(String move)
-	{
-		if(move.equals("O-O") || move.equals("O-O-O"))
-		{
-			return true;
-		}
-		try
-		{
-			int from = 0;
-			int sign = move.charAt(from);// get First
-			switch(sign) // if sign of piece, get next
-			{
-				case 66: // B like Bishop
-				case 75: // K like King
-				case 78: // N like Knight
-				case 81: // Q like Queen
-				case 82:
-					from = 1;
-					break; // R like Rook
-			}
-			sign = move.charAt(from);
-			log.log(Level.FINE, "Sign: " + sign);
-			if(sign < 97 || sign > 104) // if lower than 'a' or higher than 'h'
-			{
-				return false;
-			}
-			sign = move.charAt(from + 1);
-			if(sign < 49 || sign > 56) // if lower than '1' or higher than '8'
-			{
-				return false;
-			}
-			if(move.length() > 3) // if is equal to 3 or lower, than it's in
-			                      // short notation, no more checking needed
-			{
-				sign = move.charAt(from + 2);
-				if(sign != 45 && sign != 120) // if isn't '-' and 'x'
-				{
-					return false;
-				}
-				sign = move.charAt(from + 3);
-				if(sign < 97 || sign > 104) // if lower than 'a' or higher than
-				                            // 'h'
-				{
-					return false;
-				}
-				sign = move.charAt(from + 4);
-				if(sign < 49 || sign > 56) // if lower than '1' or higher than
-				                           // '8'
-				{
-					return false;
-				}
-			}
-		} catch(java.lang.StringIndexOutOfBoundsException exc)
-		{
-			return false;
-		}
-		
-		return true;
-	}
-	
-	/**
 	 * Method of getting the moves in string
 	 * 
 	 * @return str String which in is capt player move
@@ -290,194 +224,124 @@ public class History extends AbstractTableModel implements IHistory
 	}
 	
 	/**
+	 * Splits the given game string into the individual moves.
+	 * @param game Game string
+	 * @return List of move strings
+	 */
+	private List<String> splitIntoMoves(String game) {
+		List<String> moves = new ArrayList<>();
+		for(String round : game.split("\\d\\. ")) {
+			for(String move : round.split(" ")) {
+				if(!move.isEmpty()) {
+					moves.add(move);
+				}
+			}
+		}
+		
+		return moves;
+	}
+	
+	private Piece getPlayerKing(Player player) {
+		for(Piece piece : chessboard.getBoard().getPieces(player)) {
+			if(piece.getBehaviour() instanceof King) {
+				return piece;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * Method to set all moves from String with validation test (useful for
 	 * network game)
 	 * 
-	 * @param moves
+	 * @param game
 	 *            String to set in String like PGN with full-notation format
 	 */
 	@Override
-	public void setMoves(String moves)
+	public void setMoves(String game)
 	{
-		int from = 0;
-		int to = 0;
-		int n = 1;
-		ArrayList<String> tempArray = new ArrayList<String>();
-		int tempStrSize = moves.length() - 1;
-		while(true)
-		{
-			from = moves.indexOf(" ", from);
-			to = moves.indexOf(" ", from + 1);
-			if(to < 0) {
-				to = moves.length();
-			}
-			log.log(Level.FINE, from + ">" + to);
-			try
-			{
-				tempArray.add(moves.substring(from + 1, to).trim());
-			} catch(java.lang.StringIndexOutOfBoundsException exc)
-			{
-				log.log(Level.SEVERE, "Error while parsing moves from file!", exc);
-				break;
-			}
-			if(n % players.size() == 0)
-			{
-				from = moves.indexOf(".", to);
-				if(from < to)
-				{
-					break;
-				}
-			} else
-			{
-				from = to;
-			}
-			n += 1;
-			if(from > tempStrSize || to > tempStrSize)
-			{
-				break;
-			}
-		}
-		for(String locMove : tempArray)
-		{
-			System.out.println(locMove);
-			if(locMove.equals("O-O-O") || locMove.equals("O-O")) // if castling
-			{
-				int[] values = new int[4];
-				if(locMove.equals("O-O-O"))
-				{
-					if(this.chessboard.getActivePlayer().getColor() == Player.Color.BLACK) // if
-					// black
-					// turn
-					{
-						values = new int[]{ 4, 0, 2, 0 };// move value for
-						                                 // castling (King move)
-					} else
-					{
-						values = new int[]{ 4, 7, 2, 7 };// move value for
-						                                 // castling (King move)
-					}
-				} else if(locMove.equals("O-O")) // if short castling
-				{
-					if(this.chessboard.getActivePlayer().getColor() == Player.Color.BLACK) // if
-					// black
-					// turn
-					{
-						values = new int[]{ 4, 0, 6, 0 };// move value for
-						                                 // castling (King move)
-					} else
-					{
-						values = new int[]{ 4, 7, 6, 7 };// move value for
-						                                 // castling (King move)
-					}
-				}
-				
-				if(!this.isValidMove(values[0], values[1], values[2], values[3])) // if
-				                                                                  // move
-				                                                                  // is
-				                                                                  // illegal
-				{
-					if(chessboard.getView() != null) {
-						this.chessboard.getView().showMessage("illegal_move_on", locMove);
-					}
-					return;// finish reading game and show message
-				}
-				
-				try {
-					chessboard.move(new Field(values[0], values[1]), new Field(values[2], values[3]));
-					chessboard.switchToNextPlayer();
-				} catch(IllegalMoveException exc) {
-					log.log(Level.SEVERE, "Illegal move le loading!", exc);
-					if(chessboard.getView() != null) {
-						this.chessboard.getView().showMessage("illegal_move_on", locMove);
-						this.chessboard.getView().unselect();
-					}
-					return;// finish reading game and show message
-				}
-				continue;
-			}
-			from = 0;
-			int num = locMove.charAt(from);
-			if(num <= 90 && num >= 65)
-			{
-				from = 1;
-			}
-			int xFrom = 9; // set to higher value than chessboard has fields, to
-			               // cause error if piece won't be found
-			int yFrom = 9;
-			int xTo = 9;
-			int yTo = 9;
-			boolean pieceFound = false;
-			if(locMove.length() <= 3)
-			{
-				Field tempTo = Field.getFieldFromDesignation(locMove.substring(from, from + 1));
-				xTo = tempTo.getPosX();
-				yTo = tempTo.getPosY();
-				
-				for(Field field : chessboard.getBoard().getFields())
-				{
-					Piece piece = chessboard.getBoard().getPiece(field);
-					if(piece == null || this.chessboard.getActivePlayer().getColor() != piece.getPlayer().getColor())
-					{
-						continue;
-					}
-					for(Move possibleMove : chessboard.getPossibleMoves(piece, true))
-					{
-						Field target = possibleMove.getTo();
-						if(target.getPosX() == xTo && target.getPosY() == yTo)
-						{
-							xFrom = field.getPosX();
-							yFrom = field.getPosY();
-							pieceFound = true;
-						}
-					}
-					if(pieceFound)
-					{
+		for(String move : this.splitIntoMoves(game)) {
+			Field from = null;
+			Field to = null;
+			if(move.equals("O-O")) {
+				// Get the player's king
+				Piece king = this.getPlayerKing(chessboard.getActivePlayer());
+				// Get all possible castling moves
+				for(Move castlingMove : chessboard.getCastleMoves(king)) {
+					// Get the short castling one
+					if(castlingMove.getCastlingMove() == CastlingType.SHORT_CASTLING) {
+						from = castlingMove.getFrom();
+						to = castlingMove.getTo();
 						break;
 					}
 				}
-			} else
-			{
+			} else if(move.equals("O-O-O")) {
+				// Get the player's king
+				Piece king = this.getPlayerKing(chessboard.getActivePlayer());
+				// Get all possible castling moves
+				for(Move castlingMove : chessboard.getCastleMoves(king)) {
+					// Get the long castling one
+					if(castlingMove.getCastlingMove() == CastlingType.LONG_CASTLING) {
+						from = castlingMove.getFrom();
+						to = castlingMove.getTo();
+						break;
+					}
+				}
+			} else {
+				String[] splitMove;
 				
-				Field tempFrom = Field.getFieldFromDesignation(locMove.substring(from, from + 2));
-				Field tempTo = Field.getFieldFromDesignation(locMove.substring(from + 3, from + 5));
+				if(move.contains("-")) {
+					splitMove = move.split("-");
+					// No capture
+				} else {
+					// Capture
+					splitMove = move.split("x");
+				}
 				
-				xFrom = tempFrom.getPosX();
-				yFrom = tempFrom.getPosY();
-				xTo = tempTo.getPosX();
-				yTo = tempTo.getPosY();
+				// First part is always field of origin
+				String fromDesignation = splitMove[0];
+				// Since there may be a symbol to designate the piece, remove it
+				for(PieceType type : PieceType.values()) {
+					if(type.getSymbol().equals(fromDesignation.substring(0, 1))) {
+						fromDesignation = fromDesignation.substring(1);
+						// Only one symbol should be removed!
+						break;
+					}
+				}
+				
+				// For the to field we have to take care of some symbols
+				// occurring after it
+				String toDesignation = splitMove[1];
+				if(toDesignation.contains("(e.p)")) {
+					// En passant
+					toDesignation = toDesignation.substring(0, toDesignation.indexOf('('));
+				}
+				if(toDesignation.contains("+")) {
+					// Check
+					toDesignation = toDesignation.substring(0, toDesignation.indexOf('+'));
+				}
+				if(toDesignation.contains("#")) {
+					// Checkmate
+					toDesignation = toDesignation.substring(0, toDesignation.indexOf('#'));
+				}
+				
+				// Convert them to the fields
+				from = Field.getFieldFromDesignation(fromDesignation);
+				to = Field.getFieldFromDesignation(toDesignation);
 			}
+			
+			// Carry out the move
 			try {
-				chessboard.move(new Field(xFrom, yFrom), new Field(xTo, yTo));
+				chessboard.move(from, to);
 				chessboard.switchToNextPlayer();
-			} catch(IllegalMoveException exc) {
+			} catch(IllegalMoveException|NullPointerException exc) {
 				log.log(Level.SEVERE, "Illegal move le loading!", exc);
-				this.chessboard.getView().showMessage("illegal_move_on", locMove);
+				this.chessboard.getView().showMessage("illegal_move_on", move);
 				this.chessboard.getView().unselect();
 				return;// finish reading game and show message
 			}
 		}
-	}
-	
-	private boolean isValidMove(int xFrom, int yFrom, int xTo, int yTo)
-	{
-		Field from = chessboard.getBoard().getField(xFrom, yFrom);
-		if(from != null)
-		{
-			Field to = chessboard.getBoard().getField(xTo, yTo);
-			Piece piece = chessboard.getBoard().getPiece(from);
-			if(to != null && piece != null)
-			{
-				for(Move move : chessboard.getPossibleMoves(piece, true)) {
-					if(move.getTo().equals(to)) {
-						return true;
-					}
-				}
-				
-				return false;
-			}
-		}
-		
-		return false;
 	}
 }
 
