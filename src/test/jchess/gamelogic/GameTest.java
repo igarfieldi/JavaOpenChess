@@ -83,7 +83,7 @@ public class GameTest
 		// Create virtual game save file
 		FileMapParser parser = new FileMapParser();
 		parser.setProperty("Date", "2016.12.11");
-		parser.setProperty("Event", "Game");
+		parser.setProperty("Event", "Game2p");
 		parser.setProperty("WHITE", "a");
 		parser.setProperty("BLACK", "b");
 		parser.setProperty("Moves", "1. a7-a5 b2-b4 2. b8-c6 g2-g3 ");
@@ -116,7 +116,7 @@ public class GameTest
 		FileMapParser parser = new FileMapParser();
 		game.save(parser);
 
-		assertTrue(parser.getProperty("Event").equals("Game"));
+		assertTrue(parser.getProperty("Event").equals("Game2p"));
 		assertTrue(parser.getProperty("WHITE").equals("p1"));
 		assertTrue(parser.getProperty("BLACK").equals("p2"));
 		System.out.println(parser.getProperty("Moves"));
