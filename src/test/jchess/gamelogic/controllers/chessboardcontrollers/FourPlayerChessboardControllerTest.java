@@ -238,6 +238,11 @@ public class FourPlayerChessboardControllerTest
 		}
 	}
 	
+	@Test
+	public void testGetPlayerCount() {
+		assertTrue(controller.getPlayerCount() == 4);
+	}
+	
 	/**
 	 * Test method for {@link jchess.gamelogic.controllers.chessboardcontrollers.RegularChessboardController#getPlayerIndex(jchess.gamelogic.Player)}.
 	 */

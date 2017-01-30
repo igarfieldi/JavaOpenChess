@@ -41,6 +41,8 @@ public interface IChessboardController extends LoadSaveable
 	 */
 	public int getPlayerIndex(Player player);
 	
+	public int getPlayerCount();
+	
 	public void switchToNextPlayer();
 	
 	public void switchToPreviousPlayer();

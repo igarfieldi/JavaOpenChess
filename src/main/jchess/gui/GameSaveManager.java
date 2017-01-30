@@ -145,16 +145,37 @@ public class GameSaveManager
 		FileMapParser parser = new FileMapParser();
 		parser.load(file);
 		String gameType = parser.getProperty("Event");
+
+		SettingsAdopter settingsAdopter = new SettingsAdopter();
+		String playerNames[] = null;
 		
 		// Depending on the game we start a new one
-		switch(gameType)
-		{
-			case "Game":
-				SettingsAdopter settingsAdopter = new SettingsAdopter();
-				settingsAdopter.createLoadedGameWindow(parser);
-				break;
-			default:
-				log.log(Level.SEVERE, "Unknown game type!");
+		if(gameType.contains("2p")) {
+			playerNames = new String[] {
+					parser.getProperty("WHITE"),
+					parser.getProperty("BLACK")
+			};
+		} else if(gameType.contains("4p")) {
+			playerNames = new String[] {
+					parser.getProperty("WHITE"),
+					parser.getProperty("RED"),
+					parser.getProperty("BLACK"),
+					parser.getProperty("GOLDEN")
+			};
+		} else {
+			JOptionPane.showMessageDialog(JChessApp.getApplication().getMainFrame(),
+			        Localization.getMessage("unknown_game_type"));
+			log.log(Level.SEVERE, "Unknown game type!");
+			return ;
+		}
+
+		if(gameType.contains("Timed")) {
+			
+		} else if(gameType.contains("Ai")) {
+			JOptionPane.showMessageDialog(JChessApp.getApplication().getMainFrame(),
+			        Localization.getMessage("unloadable_game_type"));
+		} else {
+			settingsAdopter.createLoadedGameWindow(parser, playerNames);
 		}
 	}
 }

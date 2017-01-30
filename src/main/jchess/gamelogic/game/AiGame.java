@@ -1,11 +1,13 @@
 package jchess.gamelogic.game;
 
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jchess.gamelogic.Player;
 import jchess.gamelogic.ai.ICatAi;
 import jchess.gamelogic.controllers.IChessboardController;
+import jchess.util.FileMapParser;
 
 public class AiGame extends UntimedGame implements IGame
 {
@@ -19,6 +21,18 @@ public class AiGame extends UntimedGame implements IGame
 		this.chessboard = chessboard;
 		blockedChessboard = false;
 		this.catAi = catAi;
+	}
+	
+	@Override
+	public void save(FileMapParser parser)
+	{
+		this.getView().showMessage("unsaveable_game_type", "Cat AI game");
+	}
+	
+	@Override
+	public void load(FileMapParser parser)
+	{
+		this.getView().showMessage("unloadable_game_type", "Cat AI game");
 	}
 	
 	@Override

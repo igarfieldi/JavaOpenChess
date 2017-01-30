@@ -113,6 +113,11 @@ public abstract class RegularChessboardController implements IChessboardControll
 		return index;
 	}
 	
+	@Override
+	public int getPlayerCount() {
+		return players.size();
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

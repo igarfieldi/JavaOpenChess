@@ -185,7 +185,8 @@ public class TimedGame implements IGame
 	@Override
 	public void save(FileMapParser parser)
 	{
-		parser.setProperty("Event", "Game"); // TODO: different game types!
+		String gameType = "Game" + chessboard.getPlayerCount() + "pTimed";
+		parser.setProperty("Event", gameType);
 		
 		Calendar cal = Calendar.getInstance();
 		parser.setProperty("Date",

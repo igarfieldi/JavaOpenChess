@@ -31,7 +31,7 @@ public class SettingsAdopter
 	 */
 	public void createGameWindow(int timeLimit, int playerNumber, String[] playerNames)
 	{
-		IGame game = createGameWithSettings(timeLimit, playerNumber, playerNames);
+		IGame game = createGameWithSettings(timeLimit, playerNames);
 		String newGameTabTitle = setNewGameTabTitle(playerNames, playerNumber);
 		
 		JChessApp.view.addNewGameTab(newGameTabTitle, game);
@@ -44,10 +44,9 @@ public class SettingsAdopter
 	 * @param parser
 	 * 				The parser containing the loaded game info.
 	 */
-	public void createLoadedGameWindow(FileMapParser parser)
+	public void createLoadedGameWindow(FileMapParser parser, String[] playerNames)
 	{
-		String[] playerNames = { parser.getProperty("WHITE") , parser.getProperty("BLACK") };
-		IGame game = createGameWithSettings(0, 2, playerNames);
+		IGame game = createGameWithSettings(0, playerNames);
 		game.load(parser);
 		
 		String newGameTabTitle = setNewGameTabTitle(playerNames, 2);
@@ -86,11 +85,11 @@ public class SettingsAdopter
 	 * 				The array with all player names.
 	 * @return new game with the specified settings.
 	 */
-	private IGame createGameWithSettings(int timeLimit, int playerNumber, String[] playerNames)
+	private IGame createGameWithSettings(int timeLimit, String[] playerNames)
 	{
 		IGameBuilder builder = RegularGameBuilderFactory.getInstance().getBuilder();
 		builder.setProperty("timeLimit", "" + timeLimit);
-		addPlayers(builder, playerNumber, playerNames);
+		addPlayers(builder, playerNames.length, playerNames);
 		
 		IGame game = builder.create();
 		return game;

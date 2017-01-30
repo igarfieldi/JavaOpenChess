@@ -197,6 +197,11 @@ public class TwoPlayerChessboardControllerTest
 		assertTrue(controller.getActivePlayer().equals(white));
 	}
 	
+	@Test
+	public void testGetPlayerCount() {
+		assertTrue(controller.getPlayerCount() == 2);
+	}
+	
 	/**
 	 * Test method for {@link jchess.gamelogic.controllers.chessboardcontrollers.RegularChessboardController#switchToPreviousPlayer()}.
 	 */

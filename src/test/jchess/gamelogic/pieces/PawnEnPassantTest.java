@@ -40,14 +40,16 @@ public class PawnEnPassantTest
 	private Player players[];
 	
 	private Direction direction;
+	private Set<Field> testPositions;
 	
 	public PawnEnPassantTest(IChessboardController controller,
-			Player players[], Direction direction)
+			Player players[], Direction direction, Set<Field> testPositions)
 	{
 		this.controller = controller;
 		this.players = players;
 		
 		this.direction = direction;
+		this.testPositions = testPositions;
 	}
 	
 	/**
@@ -73,13 +75,29 @@ public class PawnEnPassantTest
 				null, FourPlayerChessboardFactory.getInstance(),
 				players4p[0], players4p[1], players4p[2], players4p[3]);
 		
+		// Test positions for both board types
+		// These represent centre, corners, edges
+		Set<Field> positions2p = PieceTestSupport.toSet(new Field[]{
+				new Field(3, 3),
+				new Field(0, 0), new Field(0, 7), new Field(7, 0), new Field(7, 7),
+				new Field(0, 4), new Field(7, 5), new Field(3, 0), new Field(4, 7)
+		});
+		// Additionally the 'inner' corners
+		Set<Field> positions4p = PieceTestSupport.toSet(new Field[]{
+				new Field(7, 7),
+				new Field(3, 0), new Field(10, 0), new Field(3, 13), new Field(10, 13),
+				new Field(0, 3), new Field(0, 10), new Field(13, 3), new Field(13, 10),
+				new Field(0, 6), new Field(13, 8), new Field(7, 0), new Field(6, 13),
+				new Field(3, 3), new Field(10, 3), new Field(3, 10), new Field(10, 10)
+		});
+		
 		return Arrays.asList(new Object[][] {
-			{controller2p, players2p, new Direction(0, 1)},
-			{controller2p, players2p, new Direction(0, -1)},
-			{controller4p, players4p, new Direction(1, 0)},
-			{controller4p, players4p, new Direction(-1, 0)},
-			{controller4p, players4p, new Direction(0, 1)},
-			{controller4p, players4p, new Direction(0, -1)},
+			{controller2p, players2p, new Direction(0, 1), positions2p},
+			{controller2p, players2p, new Direction(0, -1), positions2p},
+			{controller4p, players4p, new Direction(1, 0), positions4p},
+			{controller4p, players4p, new Direction(-1, 0), positions4p},
+			{controller4p, players4p, new Direction(0, 1), positions4p},
+			{controller4p, players4p, new Direction(0, -1), positions4p},
 			// Potentially enable these if 4p gets en passant
 		});
 	}
@@ -97,14 +115,13 @@ public class PawnEnPassantTest
 	 */
 	@Test
 	public void testEnPassantWithPawn() {
-		Set<Field> testFields = board.getFields();
 		
 		// Test for all players
 		for(Player player : players) {
 			Piece pawn = factory.buildPiece(player, direction, PieceType.PAWN);
 			
 			// Test for all fields of the board
-			for(Field pawnField : testFields) {
+			for(Field pawnField : testPositions) {
 				board.setPiece(pawnField, pawn);
 				
 				// Place the enemy pawn on fields not yet occupied
