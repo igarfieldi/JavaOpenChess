@@ -170,7 +170,8 @@ public class GameSaveManager
 		}
 
 		if(gameType.contains("Timed")) {
-			
+			JOptionPane.showMessageDialog(JChessApp.getApplication().getMainFrame(),
+			        Localization.getMessage("unloadable_game_type"));
 		} else if(gameType.contains("Ai")) {
 			JOptionPane.showMessageDialog(JChessApp.getApplication().getMainFrame(),
 			        Localization.getMessage("unloadable_game_type"));
