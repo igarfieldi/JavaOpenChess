@@ -126,7 +126,7 @@ public class ChessboardModel implements IChessboardModel
 		
 		for(Piece piece : pieces.values())
 		{
-			if(piece.getPlayer() == player)
+			if(piece.getPlayer().equals(player))
 			{
 				playerPieces.add(piece);
 			}
