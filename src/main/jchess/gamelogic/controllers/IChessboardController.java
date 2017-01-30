@@ -62,11 +62,16 @@ public interface IChessboardController extends LoadSaveable
 	
 	/**
 	 * Returns the set of fields which currently threaten the given piece.
-	 * @param piece Piece under threat
-	 * @param careForCheck Should moves resulting in check be filtered out or not
+	 * 
+	 * @param piece
+	 *            Piece under threat
+	 * @param careForCheck
+	 *            Should moves resulting in check be filtered out or not
 	 * @return Set of threatening fields
 	 */
 	public Set<Field> getPossibleThreats(Piece piece, boolean careForCheck);
+	
+	public Set<Move> getThreateningMoves(Piece piece, Player player);
 	
 	/**
 	 * Returns the set of possible castling moves for the given king. E.g. a
@@ -90,7 +95,9 @@ public interface IChessboardController extends LoadSaveable
 	
 	/**
 	 * Returns the set of pieces which currently put the given player in check.
-	 * @param player Player to be checked
+	 * 
+	 * @param player
+	 *            Player to be checked
 	 * @return Set of pieces checking the player
 	 */
 	public Set<Piece> getPiecesCheckingPlayer(Player player);
@@ -114,8 +121,8 @@ public interface IChessboardController extends LoadSaveable
 	 *            square from which move piece
 	 * @param end
 	 *            square where we want to move piece
-	 * @throws IllegalMoveException if the proposed move is not valid
+	 * @throws IllegalMoveException
+	 *             if the proposed move is not valid
 	 */
 	public boolean move(Field begin, Field end) throws IllegalMoveException;
-	
 }

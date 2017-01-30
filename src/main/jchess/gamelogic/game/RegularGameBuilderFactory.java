@@ -22,6 +22,6 @@ public class RegularGameBuilderFactory implements IGameBuilderFactory
 	
 	@Override
 	public IGameBuilder getBuilder() {
-		return new TimedGameBuilder();
+		return new GameBuilder();
 	}
 }

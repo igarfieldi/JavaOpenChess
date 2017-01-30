@@ -6,10 +6,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jchess.gamelogic.Player;
+import jchess.gamelogic.ai.CatAi;
+import jchess.gamelogic.ai.ICatAi;
 import jchess.gamelogic.controllers.GameClockController;
 import jchess.gamelogic.controllers.IChessboardController;
+import jchess.gamelogic.controllers.chessboardcontrollers.AiFourPlayerChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.FourPlayerChessboardController;
 import jchess.gamelogic.controllers.chessboardcontrollers.TwoPlayerChessboardController;
+import jchess.gamelogic.models.factories.AiFourPlayerChessboardFactory;
 import jchess.gamelogic.models.factories.FourPlayerChessboardFactory;
 import jchess.gamelogic.models.factories.TwoPlayerChessboardFactory;
 import jchess.gamelogic.views.factories.FourPlayerChessboardViewFactory;
@@ -21,14 +25,14 @@ import jchess.gamelogic.views.factories.TwoPlayerChessboardViewFactory;
  * 
  * @author Florian Bethe
  */
-public class TimedGameBuilder implements IGameBuilder
+public class GameBuilder implements IGameBuilder
 {
-	private static Logger log = Logger.getLogger(TimedGameBuilder.class.getName());
+	private static Logger log = Logger.getLogger(GameBuilder.class.getName());
 	
 	private int timeLimit;
 	private List<Player> playerList;
 	
-	public TimedGameBuilder()
+	public GameBuilder()
 	{
 		this.timeLimit = 0;
 		this.playerList = new ArrayList<Player>();
@@ -67,11 +71,11 @@ public class TimedGameBuilder implements IGameBuilder
 				
 				if(timeLimit > 0)
 				{
-					GameClockController clock = new GameClockController(timeLimit, playerList.get(0), playerList.get(1));
+					GameClockController clock = new GameClockController(timeLimit, playerList.get(0),
+					        playerList.get(1));
 					
 					return new TimedGame(controller, clock);
-				}
-				else
+				} else
 				{
 					return new UntimedGame(controller);
 				}
@@ -90,6 +94,12 @@ public class TimedGameBuilder implements IGameBuilder
 				{
 					return new UntimedGame(controller);
 				}
+			case 5:
+				controller = new AiFourPlayerChessboardController(FourPlayerChessboardViewFactory.getInstance(),
+				        AiFourPlayerChessboardFactory.getInstance(), playerList.get(0), playerList.get(1),
+				        playerList.get(2), playerList.get(3), playerList.get(4));
+				ICatAi catAi = new CatAi(controller, playerList.get(4));
+				return new AiGame(controller, catAi);
 			default:
 				log.log(Level.SEVERE, "Invalid number of players for this game builder!");
 				throw new UnsupportedOperationException("Invalid number of players for this game builder!");

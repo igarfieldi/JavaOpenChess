@@ -17,10 +17,10 @@ import jchess.util.FileMapParser;
 
 public class UntimedGame implements IGame
 {
-private static Logger log = Logger.getLogger(TimedGame.class.getName());
+	private static Logger log = Logger.getLogger(UntimedGame.class.getName());
 	
 	private IGameView gameView;
-	private boolean blockedChessboard;
+	protected boolean blockedChessboard;
 	private IChessboardController chessboard;
 	
 	public UntimedGame(IChessboardController chessboard)
@@ -28,7 +28,7 @@ private static Logger log = Logger.getLogger(TimedGame.class.getName());
 		this.chessboard = chessboard;
 		this.chessboard.getView().initialize(chessboard, this);
 		
-		this.blockedChessboard = false;
+		blockedChessboard = false;
 		
 		gameView = new SwingGameView(this.chessboard.getView());
 		gameView.addInfoComponent(chessboard.getHistory().getView());
@@ -118,7 +118,7 @@ private static Logger log = Logger.getLogger(TimedGame.class.getName());
 	 * @param target
 	 *            Target field for move
 	 */
-	private void executeMove(Field origin, Field target)
+	protected void executeMove(Field origin, Field target)
 	{
 		// Try to execute move
 		try
@@ -134,10 +134,8 @@ private static Logger log = Logger.getLogger(TimedGame.class.getName());
 				if(chessboard.isCheckmated(chessboard.getActivePlayer()))
 				{
 					this.onCheckmate();
-				} else if(chessboard.isStalemate())
-				{
-					this.onStalemate();
-				}
+				} // Check for Stalemate used to be here, I swear I will add it
+				  // later
 			}
 		} catch(IllegalMoveException exc)
 		{
@@ -167,16 +165,15 @@ private static Logger log = Logger.getLogger(TimedGame.class.getName());
 	{
 		log.info("Loading saved local game");
 		
-		this.blockedChessboard = true;
+		blockedChessboard = true;
 		chessboard.load(parser);
-		this.blockedChessboard = false;
+		blockedChessboard = false;
 		
 		this.getView().render();
 	}
 	
 	/**
 	 * Method to Start new game
-	 *
 	 */
 	@Override
 	public void newGame()
@@ -185,30 +182,31 @@ private static Logger log = Logger.getLogger(TimedGame.class.getName());
 		
 		if(chessboard.getActivePlayer().getType() != Player.Type.LOCAL)
 		{
-			this.blockedChessboard = true;
+			blockedChessboard = true;
 		}
 		
 		this.getView().render();
+		
 	}
 	
 	/**
-	 * Method to end game
+	 * Method to end game.
 	 * 
 	 * @param message
 	 *            what to show player(s) at end of the game (for example "draw",
 	 *            "black wins" etc.)
 	 */
-	private void endGame(String message)
+	protected void endGame(String message)
 	{
-		this.blockedChessboard = true;
+		blockedChessboard = true;
 		log.info(message);
 		JOptionPane.showMessageDialog(null, message);
 	}
 	
 	/**
-	 * Method to swich active players after move
+	 * Method to switch active players after move.
 	 */
-	private void switchActive()
+	protected void switchActive()
 	{
 		chessboard.switchToNextPlayer();
 	}
@@ -216,7 +214,7 @@ private static Logger log = Logger.getLogger(TimedGame.class.getName());
 	/**
 	 * Method to go to next move (checks if game is local/network etc.)
 	 */
-	private void nextMove()
+	protected void nextMove()
 	{
 		switchActive();
 		
@@ -226,10 +224,10 @@ private static Logger log = Logger.getLogger(TimedGame.class.getName());
 		                + chessboard.getActivePlayer().getType().name());
 		if(chessboard.getActivePlayer().getType() == Player.Type.LOCAL)
 		{
-			this.blockedChessboard = false;
+			blockedChessboard = false;
 		} else if(chessboard.getActivePlayer().getType() == Player.Type.COMPUTER)
 		{
-			// TODO: implement AI^^
+			
 		}
 	}
 }

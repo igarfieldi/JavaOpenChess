@@ -8,12 +8,13 @@ import javax.swing.JTable;
 public class HistoryView extends JScrollPane implements IRenderable
 {
 	private static final long serialVersionUID = -987353227190945465L;
+	private static final int SIZE_PER_PLAYER = 90;
 
-	public HistoryView(JTable table) {
+	public HistoryView(JTable table, int playerCount) {
 		super(table);
-		this.setMinimumSize(new Dimension(180, 250));
+		this.setMinimumSize(new Dimension(SIZE_PER_PLAYER*playerCount, 250));
 		// Have the history take up all the available space; maybe not so smart?
-		this.setPreferredSize(new Dimension(180, 50000));
+		this.setPreferredSize(new Dimension(SIZE_PER_PLAYER*playerCount, 50000));
 		this.setAutoscrolls(true);
 	}
 	

@@ -40,13 +40,15 @@ public final class ThemeImageLoader
 		
 		return instance;
 	}
-	
-	/*
-	 * Method load image by a given name with extension without specifiying the theme.
+
+	/**
+	 * Method load image by a given name with extension without specifying the
+	 * theme.
 	 * 
-	 * @name : string of image to load for ex. "chessboard.jpg"
+	 * @param imageName
+	 *            string of image to load, for example "chessboard.jpg"
 	 * 
-	 * @returns : image or null if cannot load
+	 * @return image or null if cannot load
 	 */
 	public Image loadThemeImage(String imageName)
 	{
@@ -87,7 +89,7 @@ public final class ThemeImageLoader
 	 */
 	public Image loadThemedPieceImage(Piece piece)
 	{
-		String imageName = piece.getName() + "-";
+		String imageName = piece.getName();
 		imageName += getColorString(piece.getPlayer().getColor());
 		imageName += ".png";
 		
@@ -103,20 +105,24 @@ public final class ThemeImageLoader
 	 */
 	public String getColorString(Color color)
 	{
-		StringBuilder colorString = new StringBuilder("");
+		String colorString = "-";
+		
 		switch(color)
 		{
 			case WHITE:
-				colorString.append("W");
+				colorString += "W";
 				break;
 			case RED:
-				colorString.append("BR");
+				colorString += "BR";
 				break;
 			case BLACK:
-				colorString.append("B");
+				colorString += "B";
 				break;
 			case GOLDEN:
-				colorString.append("G");
+				colorString += "G";
+				break;
+			case SPECIAL:
+				colorString = "";
 				break;
 			default:
 				log.log(Level.SEVERE, "Piece of player with unknown color exists!");

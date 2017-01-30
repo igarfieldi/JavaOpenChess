@@ -30,6 +30,8 @@ public interface IChessboardModel extends Copyable<IChessboardModel>
 	
 	public Set<Field> getFields();
 	
+	public List<Field> getEmptyFields();
+	
 	public Field getFieldInDirection(Field origin, Direction dir);
 	
 	public List<Field> getFieldsInDirection(Field start, Direction dir);

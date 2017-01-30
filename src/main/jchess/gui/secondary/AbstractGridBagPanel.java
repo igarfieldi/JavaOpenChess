@@ -20,7 +20,8 @@ public abstract class AbstractGridBagPanel extends JPanel
 	protected GridBagConstraints gridBagConstraints;
 	
 	protected static final int LEFT = 0;
-	protected static final int RIGHT = 1;
+	protected static final int MIDDLE = 1;
+	protected static final int RIGHT = 2;
 
 	public AbstractGridBagPanel()
 	{

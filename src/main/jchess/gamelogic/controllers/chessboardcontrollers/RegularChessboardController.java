@@ -776,6 +776,18 @@ public abstract class RegularChessboardController implements IChessboardControll
 		}
 		return false;
 	}
+
+	@Override
+	public Set<Move> getThreateningMoves(Piece piece, Player player)
+	{
+		Set<Move> threateningMoves = new HashSet<Move>();
+		for (Move moves : getPossibleMoves(piece, true)){
+			if (board.getPiece(moves.getTo())!= null){
+				threateningMoves.add(moves);
+			}
+		}
+		return threateningMoves;
+	}
 	
 	@Override
 	public Set<Player> getEnemies(Player friendly)

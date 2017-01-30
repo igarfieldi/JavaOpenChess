@@ -68,7 +68,7 @@ public class History extends AbstractTableModel implements IHistory
 		this.chessboard = chessboard;
 		this.tableModel = new MyDefaultTableModel();
 		this.table = new JTable(this.tableModel);
-		this.view = new HistoryView(this.table);
+		this.view = new HistoryView(this.table, players.size());
 		this.moveHistory = new HashMap<>();
 		this.lastMove = null;
 		//this.table.setMinimumSize(new Dimension(100, 100));

@@ -264,7 +264,7 @@ public class TimedGame implements IGame
 			this.blockedChessboard = false;
 		} else if(chessboard.getActivePlayer().getType() == Player.Type.COMPUTER)
 		{
-			// TODO: implement AI^^
+			this.blockedChessboard = true;
 		}
 	}
 }
